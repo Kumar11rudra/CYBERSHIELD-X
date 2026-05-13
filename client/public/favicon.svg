@@ -1,0 +1,14 @@
+<svg width="100%" height="100%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0" y1="0" x2="100" y2="0">
+      <stop offset="0%" stop-color="#00d4ff"/>
+      <stop offset="100%" stop-color="#00ff88"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Thick Shield Outline for Favicon Scale -->
+  <path d="M50 5 L92 20 L92 65 C92 82 50 95 50 95 C50 95 8 82 8 65 L8 20 Z" fill="#080c14" stroke="url(#shieldGrad)" stroke-width="8"/>
+  
+  <!-- Solid Glowing X for Favicon Scale -->
+  <path d="M30 35 L44 50 L30 65 L38 73 L50 58 L62 73 L70 65 L56 50 L70 35 L62 27 L50 42 L38 27 Z" fill="url(#shieldGrad)"/>
+</svg>

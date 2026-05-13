@@ -1,0 +1,44 @@
+# ─── Dependencies ─────────────────────────────────────────────────────────────
+node_modules/
+.npm_cache/
+.npm-cache/
+
+# ─── Environment / Secrets (NEVER commit these) ───────────────────────────────
+.env
+.env.*
+!.env.example           # Keep the example file
+!.env.production.example # Keep the production example file
+
+# ─── Build Outputs ────────────────────────────────────────────────────────────
+dist/
+build/
+client/build/
+client/dist/
+
+# ─── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+server/logs/
+*_diag.log
+server_restart.log
+
+# ─── Database / Exports ───────────────────────────────────────────────────────
+*.pdf
+*.csv
+*.sqlite
+
+# ─── Runtime PID Files ───────────────────────────────────────────────────────
+.backend.pid
+.frontend.pid
+
+# ─── OS / Editor Junk ─────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/settings.json
+.idea/
+
+# ─── Test Coverage ─────────────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+

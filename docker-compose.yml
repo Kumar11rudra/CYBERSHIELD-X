@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  nexus-db:
+    image: mongo:latest
+    container_name: nexus-db
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - nexus-data:/data/db
+    networks:
+      - nexus-net
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  nexus-server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: nexus-server
+    restart: always
+    ports:
+      - "5001:5001"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://nexus-db:27017/cybershield
+      - PORT=3001
+      # JWT Secrets and API keys should be passed via .env file on host
+    env_file:
+      - ./server/.env
+    depends_on:
+      nexus-db:
+        condition: service_healthy
+    networks:
+      - nexus-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/api/admin/metrics"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  nexus-frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL=/api
+    container_name: nexus-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - nexus-server
+    networks:
+      - nexus-net
+
+networks:
+  nexus-net:
+    driver: bridge
+
+volumes:
+  nexus-data:

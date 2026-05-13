@@ -1,0 +1,302 @@
+/**
+ * RTL Support Stylesheet
+ * 
+ * This file provides RTL (Right-to-Left) support for Arabic and other RTL languages.
+ * Automatically applied when document.dir="rtl"
+ * 
+ * All styles use attribute selectors [dir="rtl"] so they don't interfere with LTR mode.
+ */
+
+/* Global RTL adjustments */
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] * {
+  direction: rtl;
+}
+
+/* Text alignment */
+[dir="rtl"] .text-left {
+  text-align: right;
+}
+
+[dir="rtl"] .text-right {
+  text-align: left;
+}
+
+/* Margin/Padding flipping */
+[dir="rtl"] .ml-4 {
+  margin-left: 0;
+  margin-right: 1rem;
+}
+
+[dir="rtl"] .ml-2 {
+  margin-left: 0;
+  margin-right: 0.5rem;
+}
+
+[dir="rtl"] .ml-1 {
+  margin-left: 0;
+  margin-right: 0.25rem;
+}
+
+[dir="rtl"] .mr-4 {
+  margin-right: 0;
+  margin-left: 1rem;
+}
+
+[dir="rtl"] .mr-3 {
+  margin-right: 0;
+  margin-left: 0.75rem;
+}
+
+[dir="rtl"] .mr-2 {
+  margin-right: 0;
+  margin-left: 0.5rem;
+}
+
+[dir="rtl"] .mr-1 {
+  margin-right: 0;
+  margin-left: 0.25rem;
+}
+
+[dir="rtl"] .pl-4 {
+  padding-left: 0;
+  padding-right: 1rem;
+}
+
+[dir="rtl"] .pl-3 {
+  padding-left: 0;
+  padding-right: 0.75rem;
+}
+
+[dir="rtl"] .pl-2 {
+  padding-left: 0;
+  padding-right: 0.5rem;
+}
+
+[dir="rtl"] .pr-4 {
+  padding-right: 0;
+  padding-left: 1rem;
+}
+
+[dir="rtl"] .pr-3 {
+  padding-right: 0;
+  padding-left: 0.75rem;
+}
+
+[dir="rtl"] .pr-2 {
+  padding-right: 0;
+  padding-left: 0.5rem;
+}
+
+/* Flex direction */
+[dir="rtl"] .flex-row {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .justify-start {
+  justify-content: flex-end;
+}
+
+[dir="rtl"] .justify-end {
+  justify-content: flex-start;
+}
+
+/* Border radius */
+[dir="rtl"] .rounded-l {
+  border-radius: 0 0.375rem 0.375rem 0;
+}
+
+[dir="rtl"] .rounded-r {
+  border-radius: 0.375rem 0 0 0.375rem;
+}
+
+/* Transform & positioning */
+[dir="rtl"] .origin-left {
+  transform-origin: right;
+}
+
+[dir="rtl"] .origin-right {
+  transform-origin: left;
+}
+
+/* Sidebar */
+[dir="rtl"] .sidebar-left {
+  position: fixed;
+  right: 0;
+  left: auto;
+}
+
+[dir="rtl"] .sidebar-right {
+  position: fixed;
+  left: 0;
+  right: auto;
+}
+
+/* Dropdowns & popouts */
+[dir="rtl"] .dropdown-right {
+  right: auto;
+  left: 0;
+}
+
+[dir="rtl"] .dropdown-left {
+  left: auto;
+  right: 0;
+}
+
+/* Float utilities */
+[dir="rtl"] .float-left {
+  float: right;
+}
+
+[dir="rtl"] .float-right {
+  float: left;
+}
+
+/* Icons & inline elements */
+[dir="rtl"] .icon-left {
+  margin-left: 0;
+  margin-right: 0.5rem;
+}
+
+[dir="rtl"] .icon-right {
+  margin-right: 0;
+  margin-left: 0.5rem;
+}
+
+/* List items */
+[dir="rtl"] ul,
+[dir="rtl"] ol {
+  padding-left: 0;
+  padding-right: 1.5rem;
+}
+
+/* Scrollbar side (when needed) */
+[dir="rtl"] ::-webkit-scrollbar {
+  position: left;
+}
+
+/* Form elements */
+[dir="rtl"] input,
+[dir="rtl"] textarea,
+[dir="rtl"] select {
+  text-align: right;
+}
+
+[dir="rtl"] input[type="radio"],
+[dir="rtl"] input[type="checkbox"] {
+  margin-left: 0;
+  margin-right: 0.5rem;
+}
+
+[dir="rtl"] label {
+  margin-right: 0;
+  margin-left: 0.5rem;
+}
+
+/* Specific components that may need RTL */
+
+/* Sidebar nav items */
+[dir="rtl"] .nav-item {
+  padding-left: 0;
+  padding-right: 1rem;
+  text-align: right;
+}
+
+/* Breadcrumbs */
+[dir="rtl"] .breadcrumb {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .breadcrumb separator::before {
+  content: '\\';
+  transform: scaleX(-1);
+}
+
+/* Buttons with icons */
+[dir="rtl"] .btn-icon-left {
+  flex-direction: row-reverse;
+}
+
+/* Charts */
+[dir="rtl"] .chart-container {
+  direction: ltr; /* Keep charts in LTR */
+}
+
+/* Notifications */
+[dir="rtl"] .notification-left {
+  margin-left: 0;
+  margin-right: 1rem;
+}
+
+[dir="rtl"] .notification-right {
+  margin-right: 0;
+  margin-left: 1rem;
+}
+
+/* Tables */
+[dir="rtl"] table {
+  text-align: right;
+}
+
+[dir="rtl"] thead th {
+  text-align: right;
+}
+
+[dir="rtl"] tbody td {
+  text-align: right;
+}
+
+/* Utilities for developers */
+.rtl-only {
+  display: none !important;
+}
+
+[dir="rtl"] .rtl-only {
+  display: block !important;
+}
+
+.ltr-only {
+  display: block !important;
+}
+
+[dir="rtl"] .ltr-only {
+  display: none !important;
+}
+
+/* Skip if RTL */
+[dir="rtl"] .skip-rtl {
+  display: none !important;
+}
+
+/* Only in RTL */
+[dir="rtl"] .only-rtl {
+  display: block !important;
+}
+
+/* Smooth transition for layout changes */
+[dir="rtl"],
+[dir="rtl"] * {
+  transition-duration: 0.15s;
+}
+
+/* Debug: Show RTL mode active (optional) */
+[dir="rtl"]::after {
+  /* Optional debug indicator - comment out in production */
+  content: none;
+}
+
+/* Print RTL */
+@media print {
+  [dir="rtl"] {
+    direction: rtl;
+  }
+  
+  [dir="rtl"] * {
+    direction: rtl;
+  }
+}

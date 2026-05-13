@@ -1,0 +1,19 @@
+{
+  "appId": "com.cybershieldx.nexus",
+  "appName": "CyberShield X: Nexus",
+  "webDir": "build",
+  "server": {
+    "androidScheme": "https",
+    "allowNavigation": ["*"]
+  },
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon_config_sample",
+      "iconColor": "#00d4ff",
+      "sound": "beep.wav"
+    }
+  }
+}

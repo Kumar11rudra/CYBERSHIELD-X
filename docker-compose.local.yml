@@ -1,0 +1,11 @@
+services:
+  server:
+    ports:
+      - "5001:5000"
+  client:
+    ports:
+      - "8080:80"
+      - "8443:443"
+  mongo:
+    ports:
+      - "27018:27017"
