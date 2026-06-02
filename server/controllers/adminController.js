@@ -54,8 +54,12 @@ const updateUserRole = async (req, res, next) => {
     if (!['user', 'admin'].includes(role)) {
       return res.status(400).json({ error: 'Invalid role' });
     }
+    const targetUser = await User.findById(req.params.id);
+    if (!targetUser) return res.status(404).json({ error: 'User not found' });
+    if (targetUser.email === 'official.cybershieldx@gmail.com' && req.user.email !== 'official.cybershieldx@gmail.com') {
+      return res.status(403).json({ error: 'Cannot modify root admin role' });
+    }
     const user = await User.findByIdAndUpdate(req.params.id, { role }, { new: true }).select('-password');
-    if (!user) return res.status(404).json({ error: 'User not found' });
 
     logger.info(`[AUDIT] Admin ${req.user._id} updated role of User ${req.params.id} to ${role}`);
     res.json({ message: 'Role updated', user });
@@ -70,9 +74,12 @@ const deleteUser = async (req, res, next) => {
       return res.status(400).json({ error: 'Cannot delete your own account' });
     }
 
-    const existingUser = await User.findById(req.params.id).select('_id');
+    const existingUser = await User.findById(req.params.id).select('_id email');
     if (!existingUser) {
       return res.status(404).json({ error: 'User not found' });
+    }
+    if (existingUser.email === 'official.cybershieldx@gmail.com') {
+      return res.status(403).json({ error: 'Cannot delete root admin' });
     }
 
     await Promise.all([
@@ -95,6 +102,9 @@ const toggleBanUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id).select('-password');
     if (!user) return res.status(404).json({ error: 'User not found' });
+    if (user.email === 'official.cybershieldx@gmail.com') {
+      return res.status(403).json({ error: 'Cannot ban root admin' });
+    }
 
     if (user._id.toString() === req.user._id.toString()) {
       return res.status(400).json({ error: 'Cannot ban yourself' });

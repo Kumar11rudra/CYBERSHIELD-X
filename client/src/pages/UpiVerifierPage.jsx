@@ -8,6 +8,7 @@ import { fadeUp, transitions } from '../utils/motion';
 import toast from 'react-hot-toast';
 import usePdfExport from '../hooks/usePdfExport';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function UpiVerifierPage() {
   const [upi, setUpi] = useState('');
@@ -16,6 +17,7 @@ export default function UpiVerifierPage() {
   const [error, setError] = useState('');
   const { user } = useAuth();
   const { exportToolReportPdf, exporting } = usePdfExport();
+  const navigate = useNavigate();
 
   const handleVerify = async () => {
     const trimmed = upi.trim();
@@ -128,7 +130,14 @@ export default function UpiVerifierPage() {
                   <div className="flex flex-col items-end gap-2">
                     <RiskBadge level={result.riskLevel} />
                     <button 
-                      onClick={() => exportToolReportPdf('UPI/Payment Verifier', upi, result, user)}
+                      onClick={() => {
+                        if (!user) {
+                          toast.error('Operator profile required to download PDF report. Redirecting to login...', { duration: 4000 });
+                          setTimeout(() => navigate('/login'), 2000);
+                          return;
+                        }
+                        exportToolReportPdf('UPI/Payment Verifier', upi, result, user);
+                      }}
                       disabled={exporting}
                       className="text-[9px] font-mono uppercase tracking-widest bg-cyber-accent/10 border border-cyber-accent/30 text-cyber-accent px-3 py-1.5 rounded hover:bg-cyber-accent hover:text-black transition-colors disabled:opacity-50"
                     >

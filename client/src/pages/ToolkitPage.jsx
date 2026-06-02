@@ -21,11 +21,14 @@ const CATEGORIES = [
   { id: 'devsecops', label: 'toolkit.categories.devsecops' },
   { id: 'mobile', label: 'toolkit.categories.mobile' },
   { id: 'intelligence', label: 'toolkit.categories.intelligence' },
+  { id: 'utility', label: 'toolkit.categories.utility' },
 ];
 
 const TOOLS = [
   // 📡 Reconnaissance
   { id: 'nmap', category: 'recon', icon: '📡', name: 'Nexus Port Sentinel', original: 'Nmap', status: 'active', color: '#00d4ff' },
+  { id: 'sherlock', category: 'recon', icon: '🕵️‍♂️', name: 'Aegis Username Hunter', original: 'Sherlock', status: 'active', color: '#00ff88' },
+  { id: 'whatweb', category: 'recon', icon: '🕸️', name: 'Nexus Tech Stack Profiler', original: 'WhatWeb', status: 'active', color: '#00d4ff' },
   { id: 'harvester', category: 'recon', icon: '👤', name: 'Identity Harvester', original: 'theHarvester', status: 'coming_soon', color: '#00ff88' },
   { id: 'shodan', category: 'recon', icon: '👁️', name: 'IoT Watchtower', original: 'Shodan', status: 'coming_soon', color: '#ff8c00' },
   { id: 'maltego', category: 'recon', icon: '🕸️', name: 'Graph Intelligence', original: 'Maltego', status: 'coming_soon', color: '#b400ff' },
@@ -89,11 +92,12 @@ const TOOLS = [
   { id: 'lacework', category: 'cloud', icon: '🧶', name: 'Cloud Lacework Engine', original: 'Lacework', status: 'coming_soon', color: '#ff8c00' },
 
   // 📱 Mobile
-  { id: 'mobsf', category: 'mobile', icon: '📱', name: 'Mobile Sentinel Hub', original: 'MobSF', status: 'coming_soon', color: '#ff2244' },
+  { id: 'mobsf', category: 'mobile', icon: '📱', name: 'Mobile Sentinel Hub', original: 'MobSF', status: 'active', color: '#ff2244' },
   { id: 'frida', category: 'mobile', icon: '💉', name: 'Runtime App Injector', original: 'Frida', status: 'coming_soon', color: '#00d4ff' },
   { id: 'apktool', category: 'mobile', icon: '📦', name: 'APK Binary Decompiler', original: 'APKTool', status: 'coming_soon', color: '#00ff88' },
 
   // 🧬 DevSecOps
+  { id: 'slither', category: 'devsecops', icon: '🪙', name: 'Web3 Contract Auditor', original: 'Slither', status: 'active', color: '#b400ff' },
   { id: 'snyk', category: 'devsecops', icon: '🐶', name: 'Nexus Dependency Guard', original: 'Snyk', status: 'coming_soon', color: '#b400ff' },
   { id: 'trivy', category: 'devsecops', icon: '🐳', name: 'Container Integrity Radar', original: 'Trivy', status: 'coming_soon', color: '#00d4ff' },
   { id: 'checkov', category: 'devsecops', icon: '🏗️', name: 'IaC Security Scanner', original: 'Checkov', status: 'coming_soon', color: '#00ff88' },
@@ -103,6 +107,8 @@ const TOOLS = [
   { id: 'autopsy', category: 'forensics', icon: '🔍', name: 'Ghost Forensics Lab', original: 'Autopsy', status: 'active', color: '#00d4ff' },
   { id: 'ftk', category: 'forensics', icon: '📸', name: 'Evidence Imaging Lab', original: 'FTK Imager', status: 'active', color: '#00ff88' },
   { id: 'volatility', category: 'forensics', icon: '🧠', name: 'Memory Intelligence', original: 'Volatility', status: 'active', color: '#ff2244' },
+  { id: 'stegano', category: 'forensics', icon: '🖼️', name: 'Steghide Secret Decoder', original: 'Steghide', status: 'active', color: '#ff8c00' },
+  { id: 'exiftool', category: 'forensics', icon: '🧹', name: 'Aegis Metadata Wiper', original: 'ExifTool', status: 'active', color: '#ff2244' },
   { id: 'sleuthkit', category: 'forensics', icon: '🕵️', name: 'File System Sleuth', original: 'Sleuth Kit', status: 'coming_soon', color: '#ff8c00' },
 
   // 🧠 Reverse Engineering
@@ -115,6 +121,11 @@ const TOOLS = [
   { id: 'virustotal', category: 'intelligence', icon: '☣️', name: 'Global Threat Engine', original: 'VirusTotal', status: 'active', color: '#ff2244' },
   { id: 'misp', category: 'intelligence', icon: '🤝', name: 'Threat Intelligence MISP', original: 'MISP', status: 'coming_soon', color: '#00ff88' },
   { id: 'opencti', category: 'intelligence', icon: '📑', name: 'Open Threat Intelligence', original: 'OpenCTI', status: 'coming_soon', color: '#00d4ff' },
+
+  // 🛠️ Cyber Decoders (100% Client-Side Pure JS Utilities)
+  { id: 'jwt-parser', category: 'utility', icon: '🔑', name: 'Aegis JWT Parser', original: 'Pure Client-Side JS', status: 'active', color: '#00d4ff' },
+  { id: 'base64-decoder', category: 'utility', icon: '📝', name: 'Base64 Decoder-Encoder', original: 'Pure Client-Side JS', status: 'active', color: '#00ff88' },
+  { id: 'url-sanitizer', category: 'utility', icon: '🔗', name: 'URL Payload Sanitizer', original: 'Pure Client-Side JS', status: 'active', color: '#ff8c00' },
 ];
 
 
@@ -252,7 +263,7 @@ export default function ToolkitPage() {
                   : 'bg-white/5 border-white/10 text-cyber-muted hover:border-white/20'
               }`}
             >
-              {cat.id === 'all' ? 'All Modules' : cat.id.toUpperCase()}
+              {cat.id === 'all' ? 'All Modules' : (t(cat.label) || cat.id.toUpperCase())}
             </button>
           ))}
         </div>

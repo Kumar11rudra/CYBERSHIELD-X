@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -216,23 +216,15 @@ function LiveTicker() {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function HomePage() {
-  const { user, demoLogin } = useAuth();
+  const { user } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const handleDemoLogin = async () => {
-    try {
-      await demoLogin();
-      navigate('/dashboard');
-    } catch (err) {
-      console.error("Demo login failed:", err);
-    }
-  };
   const [typedText, setTypedText] = useState('');
   const fullText = t('home.hero.subtitle');
   const [selectedMember, setSelectedMember] = useState(null);
 
   const team = [
-    { name: 'Anil', role: 'Founder', color: '00bfff', email: 'official.cybershieldx@gmail.com', phone: '+919351636193', isFounder: true },
+    { name: 'Anil Kumar', role: 'Founder & Cybersecurity Analyst', color: '00bfff', email: 'official.cybershieldx@gmail.com', phone: '+919351636193', isFounder: true },
     { name: 'Suryansh Pandey', role: 'Data Analyst', color: '00ff88', email: 'pandeysuryansh560@gmail.com', phone: '+917565813054' },
     { name: 'Aryan Patel', role: 'AI & Machine Learning', color: 'ff8c00', email: 'aryanpatel9171235114@gmail.com', phone: '+919827035235' },
     { name: 'Pranav Kumar', role: 'Data Analyst', color: 'b400ff', email: 'Parmarpranav57@gmail.com', phone: '+918529395855' },
@@ -259,7 +251,7 @@ export default function HomePage() {
       intelCount: '65k+ Ports',
       tag: 'RECON',
       color: 'blue',
-      path: user ? '/toolkit/nmap' : '/login',
+      path: '/toolkit/nmap',
     },
     {
       id: 'nikto',
@@ -270,7 +262,7 @@ export default function HomePage() {
       intelCount: '6.7k+ Tests',
       tag: 'VULNERABILITY',
       color: 'orange',
-      path: user ? '/toolkit/nikto' : '/login',
+      path: '/toolkit/nikto',
     },
     {
       id: 'sqlmap',
@@ -281,7 +273,7 @@ export default function HomePage() {
       intelCount: 'DBMS Multi',
       tag: 'WEB',
       color: 'red',
-      path: user ? '/toolkit/sqlmap' : '/login',
+      path: '/toolkit/sqlmap',
     },
     {
       id: 'john',
@@ -292,7 +284,7 @@ export default function HomePage() {
       intelCount: 'Multi-Format',
       tag: 'PASSWORD',
       color: 'purple',
-      path: user ? '/toolkit/john' : '/login',
+      path: '/toolkit/john',
     },
     {
       id: 'autopsy',
@@ -303,7 +295,7 @@ export default function HomePage() {
       intelCount: 'OS Artifacts',
       tag: 'FORENSICS',
       color: 'blue',
-      path: user ? '/toolkit/autopsy' : '/login',
+      path: '/toolkit/autopsy',
     },
     {
       id: 'splunk',
@@ -314,7 +306,7 @@ export default function HomePage() {
       intelCount: 'Real-time SIEM',
       tag: 'SOC',
       color: 'orange',
-      path: user ? '/toolkit/splunk' : '/login',
+      path: '/toolkit/splunk',
     },
     {
       id: 'wiz',
@@ -325,7 +317,7 @@ export default function HomePage() {
       intelCount: 'Multi-Cloud',
       tag: 'CLOUD',
       color: 'blue',
-      path: user ? '/toolkit/wiz' : '/login',
+      path: '/toolkit/wiz',
     },
     {
       id: 'virustotal',
@@ -336,7 +328,7 @@ export default function HomePage() {
       intelCount: '74+ Engines',
       tag: 'INTEL',
       color: 'red',
-      path: user ? '/toolkit/virustotal' : '/login',
+      path: '/toolkit/virustotal',
     },
     {
       id: 'breach',
@@ -347,7 +339,7 @@ export default function HomePage() {
       intelCount: '12B+ Records',
       tag: 'DARK WEB',
       color: 'red',
-      path: user ? '/breach-checker' : '/login',
+      path: '/breach-checker',
     },
     {
       id: 'vault',
@@ -358,7 +350,7 @@ export default function HomePage() {
       intelCount: 'Encrypted',
       tag: 'ENCRYPTED',
       color: 'purple',
-      path: user ? '/vault' : '/login',
+      path: '/vault',
     },
     {
       id: 'zerothreat',
@@ -369,7 +361,7 @@ export default function HomePage() {
       intelCount: 'Neural Intel',
       tag: 'AI',
       color: 'green',
-      path: user ? '/toolkit/zerothreat' : '/login',
+      path: '/toolkit/zerothreat',
     },
     {
       id: 'mobsf',
@@ -380,12 +372,100 @@ export default function HomePage() {
       intelCount: 'Static/Dynamic',
       tag: 'MOBILE',
       color: 'red',
-      path: user ? '/toolkit/mobsf' : '/login',
+      path: '/toolkit/mobsf',
+    },
+    {
+      id: 'sherlock',
+      icon: '🕵️‍♂️',
+      title: 'Aegis Username Hunter',
+      desc: 'Search username footprints across 300+ social platforms.',
+      engine: 'Sherlock v0.14',
+      intelCount: '300+ Targets',
+      tag: 'OSINT',
+      color: 'green',
+      path: '/toolkit/sherlock',
+    },
+    {
+      id: 'stegano',
+      icon: '🖼️',
+      title: 'Steghide Secret Decoder',
+      desc: 'Extract hidden text and files embedded inside image payloads.',
+      engine: 'Steghide v0.5',
+      intelCount: 'JPG/BMP/WAV',
+      tag: 'FORENSICS',
+      color: 'orange',
+      path: '/toolkit/stegano',
+    },
+    {
+      id: 'whatweb',
+      icon: '🕸️',
+      title: 'Nexus Tech Stack Profiler',
+      desc: 'Passive technology profiling of remote web servers.',
+      engine: 'WhatWeb v0.5.5',
+      intelCount: '1.8k+ Signatures',
+      tag: 'RECON',
+      color: 'blue',
+      path: '/toolkit/whatweb',
+    },
+    {
+      id: 'exiftool',
+      icon: '🧹',
+      title: 'Aegis Metadata Wiper',
+      desc: 'Analyze and strip tracking geolocation and EXIF metadata.',
+      engine: 'ExifTool v12.76',
+      intelCount: 'GPS/EXIF/Tags',
+      tag: 'PRIVACY',
+      color: 'red',
+      path: '/toolkit/exiftool',
+    },
+    {
+      id: 'slither',
+      icon: '🪙',
+      title: 'Web3 Contract Auditor',
+      desc: 'Static security analysis for Solidity smart contracts.',
+      engine: 'Slither v0.10',
+      intelCount: '30+ Checkers',
+      tag: 'WEB3',
+      color: 'purple',
+      path: '/toolkit/slither',
+    },
+    {
+      id: 'metasploit',
+      icon: '🛡️',
+      title: 'Metasploit Coordinator',
+      desc: 'Scan target hosts for known CVEs and coordinate payload validation.',
+      engine: 'Metasploit v6.3',
+      intelCount: '2.3k+ Exploits',
+      tag: 'EXPLOIT',
+      color: 'red',
+      path: '/toolkit/metasploit',
+    },
+    {
+      id: 'trivy',
+      icon: '🐳',
+      title: 'Trivy Container Auditor',
+      desc: 'Scan container images, Kubernetes namespaces, and repositories for CVEs.',
+      engine: 'Trivy v0.49',
+      intelCount: 'Vulnerabilities',
+      tag: 'CONTAINER',
+      color: 'blue',
+      path: '/toolkit/trivy',
+    },
+    {
+      id: 'aircrack',
+      icon: '📶',
+      title: 'Aircrack Wireless Analyst',
+      desc: 'Monitor 802.11 packets, capture WPA handshakes, and dictionary audits.',
+      engine: 'Aircrack-ng v1.7',
+      intelCount: '802.11 Auditing',
+      tag: 'WIRELESS',
+      color: 'orange',
+      path: '/toolkit/aircrack',
     },
   ];
 
   const stats = [
-    { label: t('home.stats.threatModules'), value: 12, suffix: '', color: '#00bfff' },
+    { label: t('home.stats.threatModules'), value: 20, suffix: '', color: '#00bfff' },
     { label: t('home.stats.intelSources'), value: 24, suffix: '+', color: '#00ff88' },
     { label: t('home.stats.riskTiers'), value: 5, suffix: '', color: '#ff2244' },
     { label: t('home.stats.responseTime'), value: 15, suffix: 's', color: '#e0e6ff' },
@@ -512,11 +592,12 @@ export default function HomePage() {
           position: 'absolute', inset: 0,
           backgroundImage: 'linear-gradient(rgba(0,191,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,191,255,0.04) 1px,transparent 1px)',
           backgroundSize: '48px 48px', animation: 'gridFade 1.5s ease both',
+          pointerEvents: 'none'
         }} />
 
         {/* Glow orbs */}
-        <div style={{ position: 'absolute', top: '20%', left: '15%', width: 300, height: 300, background: 'radial-gradient(circle,rgba(0,191,255,0.06),transparent 70%)', borderRadius: '50%', animation: 'float 8s ease-in-out infinite' }} />
-        <div style={{ position: 'absolute', bottom: '20%', right: '10%', width: 240, height: 240, background: 'radial-gradient(circle,rgba(0,255,136,0.05),transparent 70%)', borderRadius: '50%', animation: 'float 10s ease-in-out infinite reverse' }} />
+        <div style={{ position: 'absolute', top: '20%', left: '15%', width: 300, height: 300, background: 'radial-gradient(circle,rgba(0,191,255,0.06),transparent 70%)', borderRadius: '50%', animation: 'float 8s ease-in-out infinite', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '20%', right: '10%', width: 240, height: 240, background: 'radial-gradient(circle,rgba(0,255,136,0.05),transparent 70%)', borderRadius: '50%', animation: 'float 10s ease-in-out infinite reverse', pointerEvents: 'none' }} />
 
         {/* Badge */}
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: '1px solid rgba(0,255,136,0.3)', background: 'rgba(0,255,136,0.05)', borderRadius: 20, padding: '6px 16px', marginBottom: 28, animation: 'fadeSlideUp 0.5s ease both' }}>
@@ -541,6 +622,21 @@ export default function HomePage() {
         <p style={{ maxWidth: 580, fontSize: 14, color: '#5a7fa8', lineHeight: 1.8, marginBottom: 40, animation: 'fadeSlideUp 0.6s 0.3s ease both', opacity: 0 }}>
           {t('home.hero.desc')}
         </p>
+
+        {/* Launch Console Action Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.35 }}
+          className="mb-12 flex justify-center"
+        >
+          <button 
+            onClick={() => navigate('/toolkit/nmap')}
+            className="px-8 py-4 bg-gradient-to-r from-[#00bfff] to-blue-600 text-black font-display font-black text-xs uppercase tracking-[0.25em] rounded-xl hover:shadow-[0_0_35px_rgba(0,212,255,0.6)] hover:scale-105 transition-all duration-300 border border-[#00bfff]/30 flex items-center gap-3"
+          >
+            <span>🛡️</span> LAUNCH THREAT CONSOLE <span>→</span>
+          </button>
+        </motion.div>
 
         {/* CTA */}
         <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 56, animation: 'fadeSlideUp 0.6s 0.4s ease both', opacity: 0 }}>
@@ -599,45 +695,13 @@ export default function HomePage() {
                 key={mod.id}
                 {...mod}
                 delay={i * 80}
-                locked={!user}
+                locked={false}
                 onClick={() => navigate(mod.path)}
               />
             ))}
           </div>
 
-          {/* Preview workspace box */}
-          <div style={{
-            marginTop: 40,
-            background: 'rgba(0,30,60,0.5)',
-            border: '1px solid rgba(0,191,255,0.2)',
-            borderRadius: 14, padding: '28px 32px',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            flexWrap: 'wrap', gap: 20,
-            animation: 'borderGlow 4s ease-in-out infinite',
-          }}>
-            <div>
-              <p style={{ fontSize: 11, letterSpacing: 3, color: '#00bfff', margin: '0 0 8px' }}>{t('home.modules.previewTitle')}</p>
-              <h3 style={{ fontSize: 20, fontWeight: 700, color: '#e0e6ff', margin: '0 0 6px' }}>{t('home.modules.previewHeader')}</h3>
-              <p style={{ fontSize: 13, color: '#5a7fa8', margin: 0 }}>{t('home.modules.previewDesc')}</p>
-            </div>
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <button className="btn-primary" onClick={() => navigate('/signup')}>
-                {t('home.modules.unlockFullAccess')}
-              </button>
-              <button
-                onClick={handleDemoLogin}
-                style={{
-                  background: 'transparent', color: '#00d4ff', border: '1px solid #00d4ff',
-                  padding: '0 24px', borderRadius: 8, height: 48, fontWeight: 700, fontSize: 13,
-                  letterSpacing: 2, cursor: 'pointer', transition: 'all 0.3s'
-                }}
-                onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(0,212,255,0.1)'; }}
-                onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
-              >
-                {t('home.modules.launchDemo')}
-              </button>
-            </div>
-          </div>
+
         </div>
       </section>
 
@@ -822,37 +886,43 @@ export default function HomePage() {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
           <div style={{ fontSize: 8, color: '#334155', letterSpacing: 2, textTransform: 'uppercase', fontWeight: 800 }}>Nexus Command Core</div>
           
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', maxWidth: 900 }}>
-            {/* Founder Card - Small Size */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, width: '100%' }}>
+            {/* Founder Card - Parent (Slightly larger) */}
             <div 
               onClick={() => setSelectedMember(team.find(t => t.isFounder))}
               style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,
-                background: 'rgba(0,191,255,0.04)',
-                padding: '8px 16px', borderRadius: '8px 20px',
-                border: '1px solid rgba(0,191,255,0.2)',
-                cursor: 'pointer', transition: 'all 0.3s', minWidth: 130
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                background: 'rgba(0,191,255,0.06)',
+                padding: '12px 24px', borderRadius: '12px 24px',
+                border: '1px solid rgba(0,191,255,0.3)',
+                cursor: 'pointer', transition: 'all 0.3s', minWidth: 160
               }}
               onMouseEnter={e => {
-                e.currentTarget.style.background = 'rgba(0,191,255,0.08)';
-                e.currentTarget.style.borderColor = 'rgba(0,191,255,0.5)';
+                e.currentTarget.style.background = 'rgba(0,191,255,0.12)';
+                e.currentTarget.style.borderColor = 'rgba(0,191,255,0.6)';
                 e.currentTarget.style.transform = 'translateY(-2px)';
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.background = 'rgba(0,191,255,0.04)';
-                e.currentTarget.style.borderColor = 'rgba(0,191,255,0.2)';
+                e.currentTarget.style.background = 'rgba(0,191,255,0.06)';
+                e.currentTarget.style.borderColor = 'rgba(0,191,255,0.3)';
                 e.currentTarget.style.transform = 'none';
               }}
             >
               <div style={{ position: 'relative' }}>
-                <img src="https://ui-avatars.com/api/?name=Anil&background=00bfff&color=fff&rounded=true&bold=true" alt="Anil" style={{ width: 18, height: 18, borderRadius: '50%' }} />
-                <div style={{ position: 'absolute', inset: -3, borderRadius: '50%', border: '1px solid rgba(0,191,255,0.3)', animation: 'pulse-ring 2s infinite' }} />
+                <img src="https://ui-avatars.com/api/?name=Anil+Kumar&background=00bfff&color=fff&rounded=true&bold=true" alt="Anil Kumar" style={{ width: 22, height: 22, borderRadius: '50%' }} />
+                <div style={{ position: 'absolute', inset: -4, borderRadius: '50%', border: '1px solid rgba(0,191,255,0.4)', animation: 'pulse-ring 2s infinite' }} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <span style={{ fontSize: 10, color: '#fff', fontWeight: 800 }}>Anil</span>
-                <span style={{ fontSize: 7, color: '#00bfff', textTransform: 'uppercase', fontWeight: 700 }}>Founder</span>
+                <span style={{ fontSize: 11, color: '#fff', fontWeight: 900, letterSpacing: 0.5 }}>Anil Kumar</span>
+                <span style={{ fontSize: 8, color: '#00bfff', textTransform: 'uppercase', fontWeight: 800 }}>Founder & Cybersecurity Analyst</span>
               </div>
             </div>
+
+            {/* Visual connector (optional tree line) */}
+            <div style={{ width: 1, height: 12, background: 'rgba(255,255,255,0.1)' }} />
+
+            {/* Team Members - Children */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', maxWidth: 900 }}>
 
             {/* Team Members - Same Small Size */}
             {team.filter(t => !t.isFounder).map((member, i) => (
@@ -884,14 +954,20 @@ export default function HomePage() {
                 </div>
               </div>
             ))}
+            </div>
           </div>
         </div>
 
         <div style={{ width: '100%', maxWidth: 800, borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-          <div style={{ color: '#475569', fontSize: 9, textAlign: 'center', letterSpacing: 1 }}>
-            © {new Date().getFullYear()} CYBERSHIELD X. {t('home.footer.allRightsReserved')}
+          <div style={{ color: '#475569', fontSize: 9, textAlign: 'center', letterSpacing: 1, display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center' }}>
+            <span>© {new Date().getFullYear()} CYBERSHIELD X. {t('home.footer.allRightsReserved')}</span>
+            <div style={{ display: 'flex', gap: 10, marginTop: 2 }}>
+              <Link to="/privacy" style={{ color: '#00bfff', textDecoration: 'none' }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>Privacy Policy</Link>
+              <span style={{ color: '#334155' }}>|</span>
+              <Link to="/terms" style={{ color: '#00bfff', textDecoration: 'none' }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>Terms of Service</Link>
+            </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 8, color: '#334155', textTransform: 'uppercase', letterSpacing: 2 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 8, color: '#334155', textTransform: 'uppercase', letterSpacing: 2, marginTop: 4 }}>
             <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#00ff88', boxShadow: '0 0 5px #00ff88', animation: 'pulse-ring 2s infinite' }} />
             {t('home.footer.allSystemsOperational')}
           </div>

@@ -107,16 +107,19 @@ export default function Layout() {
       {/* MOBILE HEADER BAR */}
       <div className={`lg:hidden fixed top-0 left-0 right-0 h-16 backdrop-blur-xl border-b z-[60] flex items-center justify-between px-4 transition-colors ${isDark ? 'bg-[#020814]/80 border-white/5' : 'bg-white/80 border-black/5'}`}>
         <BrandLogo size={24} />
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-3 bg-cyber-accent/10 border border-cyber-accent/30 rounded-xl text-cyber-accent backdrop-blur-xl shadow-lg hover:bg-cyber-accent/20 transition-all"
-        >
-          <Icon d={mobileMenuOpen ? ICONS.close : ICONS.menu} size={24} />
-        </button>
+        {user && (
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-3 bg-cyber-accent/10 border border-cyber-accent/30 rounded-xl text-cyber-accent backdrop-blur-xl shadow-lg hover:bg-cyber-accent/20 transition-all"
+          >
+            <Icon d={mobileMenuOpen ? ICONS.close : ICONS.menu} size={24} />
+          </button>
+        )}
       </div>
 
-      {/* Persistent Sidebar */}
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-72 flex flex-col backdrop-blur-3xl border-r transition-all duration-500 ease-cyber ${isDark ? 'bg-[#020814]/90 border-white/5' : 'bg-white/90 border-black/5'} ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      {/* Persistent Sidebar (Hidden on Dashboard for AI-First Mode) */}
+      {user && !location.pathname.startsWith('/dashboard') && (
+        <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-72 flex flex-col backdrop-blur-3xl border-r transition-all duration-500 ease-cyber ${isDark ? 'bg-[#020814]/90 border-white/5' : 'bg-white/90 border-black/5'} ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         <div className="p-8 border-b border-white/5">
           <Link to="/" className="flex items-center gap-4 group">
             <div className="p-3 rounded-2xl bg-cyber-accent/10 border border-cyber-accent/20 group-hover:border-cyber-accent/50 transition-all shadow-[0_0_20px_rgba(0,212,255,0.2)]">
@@ -163,23 +166,36 @@ export default function Layout() {
           </div>
 
           {/* User Section */}
-          <div className="flex items-center gap-4 p-3 bg-white/[0.03] border border-white/5 rounded-2xl group hover:border-cyber-accent/30 transition-all">
-            <div className="w-10 h-10 rounded-xl overflow-hidden border border-white/10 group-hover:border-cyber-accent/50 transition-all">
-              <img src="/bot-avatar.png" alt="Profile" className="w-full h-full object-cover" />
+          {user ? (
+            <div className="flex items-center gap-4 p-3 bg-white/[0.03] border border-white/5 rounded-2xl group hover:border-cyber-accent/30 transition-all">
+              <div className="w-10 h-10 rounded-xl overflow-hidden border border-white/10 group-hover:border-cyber-accent/50 transition-all">
+                <img src="/bot-avatar.png" alt="Profile" className="w-full h-full object-cover" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-mono text-[11px] font-black text-white truncate uppercase">{user?.username}</p>
+                <p className="font-mono text-[8px] text-cyber-muted uppercase tracking-tighter">Level 4 Operator</p>
+              </div>
+              <button onClick={handleLogout} className="p-2 text-cyber-muted hover:text-cyber-red transition-colors">
+                <Icon d={ICONS.logout} size={18} />
+              </button>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-mono text-[11px] font-black text-white truncate uppercase">{user?.username}</p>
-              <p className="font-mono text-[8px] text-cyber-muted uppercase tracking-tighter">Level 4 Operator</p>
+          ) : (
+            <div className="flex flex-col gap-2 p-2 bg-[#00bfff]/5 border border-[#00bfff]/20 rounded-2xl">
+              <Link to="/login" className="text-center py-2.5 bg-cyber-accent text-[#020814] font-bold text-xs uppercase tracking-widest rounded-xl hover:scale-[1.02] transition-transform">
+                Operator Sign In
+              </Link>
+              <Link to="/signup" className="text-center py-2 bg-transparent text-cyber-accent font-bold text-[10px] uppercase tracking-widest rounded-xl hover:bg-white/5 transition-colors">
+                Create Account
+              </Link>
             </div>
-            <button onClick={handleLogout} className="p-2 text-cyber-muted hover:text-cyber-red transition-colors">
-              <Icon d={ICONS.logout} size={18} />
-            </button>
-          </div>
+          )}
         </div>
       </aside>
+      )}
 
       {/* Main Area */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
+        {!location.pathname.startsWith('/dashboard') && (
         <header className={`h-16 flex items-center justify-between px-6 border-b backdrop-blur-xl z-30 transition-colors ${isDark ? 'border-white/5 bg-black/20' : 'border-black/5 bg-white/40'}`}>
           <div className="flex-1 flex items-center gap-6 overflow-hidden">
             <div className="threat-ticker-track flex gap-8 whitespace-nowrap text-[10px] font-mono text-cyber-muted uppercase tracking-widest italic opacity-50">
@@ -192,40 +208,43 @@ export default function Layout() {
             <NetworkStatusHUD />
 
             {/* Profile Dropdown */}
-            <div className="relative" ref={profileRef}>
-              <button
-                onClick={() => setProfileOpen(!profileOpen)}
-                className="w-10 h-10 rounded-xl border border-white/10 overflow-hidden hover:border-cyber-accent/50 transition-all focus:ring-2 focus:ring-cyber-accent/20"
-              >
-                <img
-                  src={`https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${user?.username || 'Guest'}`}
-                  alt="Avatar"
-                />
-              </button>
+            {user && (
+              <div className="relative" ref={profileRef}>
+                <button
+                  onClick={() => setProfileOpen(!profileOpen)}
+                  className="w-10 h-10 rounded-xl border border-white/10 overflow-hidden hover:border-cyber-accent/50 transition-all focus:ring-2 focus:ring-cyber-accent/20"
+                >
+                  <img
+                    src={`https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${user.username}`}
+                    alt="Avatar"
+                  />
+                </button>
 
-              <AnimatePresence>
-                {profileOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className={`absolute top-full right-0 mt-3 w-64 bg-cyber-card border rounded-2xl shadow-2xl overflow-hidden backdrop-blur-2xl z-[100] transition-colors ${isDark ? 'border-white/10' : 'border-black/5'}`}
-                  >
-                    <div className={`p-4 border-b transition-colors ${isDark ? 'border-white/5 bg-white/5' : 'border-black/5 bg-black/5'}`}>
-                      <p className="text-xs font-bold text-cyber-accent uppercase tracking-widest">{user?.username}</p>
-                      <p className="text-[10px] text-cyber-muted truncate">{user?.email}</p>
-                    </div>
-                    <div className="p-2 flex flex-col gap-1">
-                      <Link to="/settings" className={`flex items-center gap-3 p-2 rounded-lg text-xs transition-colors ${isDark ? 'hover:bg-white/5' : 'hover:bg-black/5'}`}><Icon d={ICONS.user} /> {t('navigation.myProfile')}</Link>
-                      <Link to="/history" className={`flex items-center gap-3 p-2 rounded-lg text-xs transition-colors ${isDark ? 'hover:bg-white/5' : 'hover:bg-black/5'}`}><Icon d={ICONS.history} /> {t('navigation.scanHistory')}</Link>
-                      <button onClick={handleLogout} className="flex items-center gap-3 p-2 rounded-lg text-xs text-cyber-red/80 hover:bg-cyber-red/10 transition-colors w-full"><Icon d={ICONS.logout} /> {t('navigation.logout')}</button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                <AnimatePresence>
+                  {profileOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className={`absolute top-full right-0 mt-3 w-64 bg-cyber-card border rounded-2xl shadow-2xl overflow-hidden backdrop-blur-2xl z-[100] transition-colors ${isDark ? 'border-white/10' : 'border-black/5'}`}
+                    >
+                      <div className={`p-4 border-b transition-colors ${isDark ? 'border-white/5 bg-white/5' : 'border-black/5 bg-black/5'}`}>
+                        <p className="text-xs font-bold text-cyber-accent uppercase tracking-widest">{user.username}</p>
+                        <p className="text-[10px] text-cyber-muted truncate">{user.email}</p>
+                      </div>
+                      <div className="p-2 flex flex-col gap-1">
+                        <Link to="/settings" className={`flex items-center gap-3 p-2 rounded-lg text-xs transition-colors ${isDark ? 'hover:bg-white/5' : 'hover:bg-black/5'}`}><Icon d={ICONS.user} /> {t('navigation.myProfile')}</Link>
+                        <Link to="/history" className={`flex items-center gap-3 p-2 rounded-lg text-xs transition-colors ${isDark ? 'hover:bg-white/5' : 'hover:bg-black/5'}`}><Icon d={ICONS.history} /> {t('navigation.scanHistory')}</Link>
+                        <button onClick={handleLogout} className="flex items-center gap-3 p-2 rounded-lg text-xs text-cyber-red/80 hover:bg-cyber-red/10 transition-colors w-full"><Icon d={ICONS.logout} /> {t('navigation.logout')}</button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
           </div>
         </header>
+        )}
 
         <main className="flex-1 overflow-y-auto custom-scrollbar relative">
           <Outlet />

@@ -4,6 +4,8 @@ import api from '../services/api';
 import usePdfExport from '../hooks/usePdfExport';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const IntelligenceHUD = ({ status }) => {
     const { t } = useTranslation();
@@ -60,6 +62,7 @@ const BreachCheckerPage = () => {
     const [error, setError] = useState(null);
     const { user } = useAuth();
     const { exportBreachPdf, exporting } = usePdfExport();
+    const navigate = useNavigate();
 
     const handleCheck = async (e) => {
         e.preventDefault();
@@ -157,7 +160,14 @@ const BreachCheckerPage = () => {
                                                 <p className="font-mono text-xs text-cyber-muted uppercase tracking-widest">{result.methodology}</p>
                                             </div>
                                             <button
-                                                onClick={() => exportBreachPdf(result, target, user)}
+                                                onClick={() => {
+                                                    if (!user) {
+                                                        toast.error('Operator profile required to download PDF report. Redirecting to login...', { duration: 4000 });
+                                                        setTimeout(() => navigate('/login'), 2000);
+                                                        return;
+                                                    }
+                                                    exportBreachPdf(result, target, user);
+                                                }}
                                                 disabled={exporting}
                                                 className="absolute top-0 right-0 bg-cyber-accent text-cyber-bg px-4 py-2 rounded font-black text-[10px] uppercase tracking-widest hover:bg-white transition-colors disabled:opacity-50"
                                             >
@@ -263,7 +273,14 @@ const BreachCheckerPage = () => {
                                 ) : (
                                     <div className="cyber-card p-12 text-center border-cyber-green/50 relative">
                                         <button
-                                            onClick={() => exportBreachPdf(result, target, user)}
+                                            onClick={() => {
+                                                if (!user) {
+                                                    toast.error('Operator profile required to download PDF report. Redirecting to login...', { duration: 4000 });
+                                                    setTimeout(() => navigate('/login'), 2000);
+                                                    return;
+                                                }
+                                                exportBreachPdf(result, target, user);
+                                            }}
                                             disabled={exporting}
                                             className="absolute top-4 right-4 bg-cyber-green/20 text-cyber-green border border-cyber-green/50 px-4 py-2 rounded font-black text-[10px] uppercase tracking-widest hover:bg-cyber-green/40 transition-colors disabled:opacity-50"
                                         >

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
-
 import toast from 'react-hot-toast';
 
 const VaultAssetCard = ({ asset, onToggleLock, onDelete, onTakedown }) => (
@@ -74,6 +75,8 @@ const VaultAssetCard = ({ asset, onToggleLock, onDelete, onTakedown }) => (
 );
 
 const VaultPage = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
@@ -90,7 +93,66 @@ const VaultPage = () => {
     }
   };
 
-  useEffect(() => { fetchAssets(); }, []);
+  useEffect(() => {
+    if (user) {
+      fetchAssets();
+    } else {
+      setLoading(false);
+    }
+  }, [user]);
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-[#01060f] text-cyber-text font-tech relative overflow-hidden flex items-center justify-center px-4 py-24">
+        {/* Animated background lines */}
+        <div className="absolute inset-0 bg-gradient-to-b from-cyber-accent/[0.02] to-transparent pointer-events-none" />
+        <div className="absolute top-[20%] left-[10%] w-[400px] h-[400px] bg-cyber-accent/5 rounded-full blur-[100px] pointer-events-none" />
+        
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-xl w-full cyber-card p-8 md:p-12 text-center border-cyber-accent/30 relative"
+          style={{ boxShadow: '0 20px 50px rgba(0, 212, 255, 0.05)' }}
+        >
+          {/* Top glowing bar */}
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyber-accent to-transparent" />
+          
+          <div className="w-24 h-24 bg-cyber-accent/10 border border-cyber-accent/30 rounded-full flex items-center justify-center mx-auto mb-8 relative">
+            <span className="text-4xl text-cyber-accent select-none animate-pulse">🔒</span>
+            <div className="absolute inset-[-6px] rounded-full border border-cyber-accent/10 animate-ping" />
+          </div>
+
+          <h2 className="text-3xl font-black text-white tracking-tighter uppercase mb-4">
+            QUANTUM <span className="text-cyber-accent">VAULT</span> IS LOCKED
+          </h2>
+          
+          <p className="font-mono text-[9px] text-cyber-accent uppercase tracking-[0.2em] mb-6">
+            » Sovereign Zero-Knowledge Encryption Active
+          </p>
+
+          <p className="text-cyber-muted text-xs leading-relaxed mb-10 max-w-sm mx-auto font-mono uppercase tracking-wider leading-relaxed">
+            Quantum Vault is an advanced AES-256-GCM zero-trust storage reserved for registered operators. Create a free account to securely lock down, monitor, and shield your identities and credentials from dark web exfiltration in real-time.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button 
+              onClick={() => navigate('/signup')}
+              className="cyber-button-primary py-4 px-8 text-xs font-black tracking-widest uppercase hover:scale-105 transition-transform"
+            >
+              🚀 CREATE FREE ACCOUNT
+            </button>
+            <button 
+              onClick={() => navigate('/login')}
+              className="py-4 px-8 bg-white/5 border border-white/10 rounded-xl text-white font-mono text-xs font-bold uppercase tracking-widest hover:bg-white/10 hover:border-cyber-accent transition-all"
+            >
+              🔒 OPERATOR LOGIN
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   const handleAdd = async (e) => {
     e.preventDefault();

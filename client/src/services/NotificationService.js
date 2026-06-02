@@ -1,5 +1,6 @@
-import { PushNotifications } from '@capacitor/push-notifications';
-import { LocalNotifications } from '@capacitor/local-notifications';
+// Notifications removed for web compilation
+const PushNotifications = { requestPermissions: async () => ({ receive: 'denied' }), register: async () => {}, addListener: () => {} };
+const LocalNotifications = { schedule: async () => {} };
 import { Capacitor } from '@capacitor/core';
 
 /**

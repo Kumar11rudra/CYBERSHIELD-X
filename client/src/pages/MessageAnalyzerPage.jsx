@@ -233,7 +233,14 @@ export default function MessageAnalyzerPage() {
                   <div className="flex flex-col items-end gap-2">
                     <RiskBadge level={result.riskLevel} />
                     <button
-                      onClick={() => exportToolReportPdf('Message Analyzer', result.mode === 'sms' ? text.substring(0, 50) : emailAddr, result, user)}
+                      onClick={() => {
+                        if (!user) {
+                          toast.error('Operator profile required to download PDF report. Redirecting to login...', { duration: 4000 });
+                          setTimeout(() => navigate('/login'), 2000);
+                          return;
+                        }
+                        exportToolReportPdf('Message Analyzer', result.mode === 'sms' ? text.substring(0, 50) : emailAddr, result, user);
+                      }}
                       disabled={exporting}
                       className="text-[9px] font-mono uppercase tracking-widest bg-cyber-accent/10 border border-cyber-accent/30 text-cyber-accent px-3 py-1.5 rounded hover:bg-cyber-accent hover:text-black transition-colors disabled:opacity-50"
                     >

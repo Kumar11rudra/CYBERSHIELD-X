@@ -12,9 +12,9 @@ import Layout from './components/common/Layout';
 import DefenseOverlay from './components/common/DefenseOverlay';
 import LoadingScreen from './components/common/LoadingScreen';
 import ErrorBoundary from './components/common/ErrorBoundary';
-import CyboBot from './components/ai/CyboBot';
+
 import CookieConsentBanner from './components/common/CookieConsentBanner';
-import { mobileUX } from './utils/mobileUX';
+
 import NotificationService from './services/NotificationService';
 
 // Lazy-loaded Pages
@@ -47,8 +47,8 @@ const IPReputationHistoryPage = lazy(() => import('./pages/IPReputationHistoryPa
 const ToolkitPage              = lazy(() => import('./pages/ToolkitPage'));
 const ToolDetailPage           = lazy(() => import('./pages/ToolDetailPage'));
 const VerifyEmailPage          = lazy(() => import('./pages/VerifyEmailPage'));
-
-
+const PrivacyPolicyPage        = lazy(() => import('./pages/PrivacyPolicyPage'));
+const TermsOfServicePage       = lazy(() => import('./pages/TermsOfServicePage'));
 
 // Helper Components
 const PrivateRoute = ({ children }) => {
@@ -89,16 +89,17 @@ const AppRoutes = () => (
       {/* ─── Standalone Tools ──────────────────────────────────────────── */}
       <Route path="upi-verifier" element={<PrivateRoute><UpiVerifierPage /></PrivateRoute>} />
       <Route path="qr-scanner" element={<PrivateRoute><QRScannerPage /></PrivateRoute>} />
-      <Route path="vault" element={<PrivateRoute><VaultPage /></PrivateRoute>} />
-      <Route path="breach-checker" element={<PrivateRoute><BreachCheckerPage /></PrivateRoute>} />
+      <Route path="vault" element={<VaultPage />} />
+      <Route path="breach-checker" element={<BreachCheckerPage />} />
       <Route path="api-limits" element={<PrivateRoute><ApiLimitsPage /></PrivateRoute>} />
       <Route path="history" element={<PrivateRoute><HistoryPage /></PrivateRoute>} />
       <Route path="history/:id" element={<PrivateRoute><ScanDetailPage /></PrivateRoute>} />
       <Route path="shared-scan/:id" element={<SharedScanPage />} />
       <Route path="settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
       <Route path="membership" element={<PrivateRoute><MembershipPage /></PrivateRoute>} />
-      <Route path="toolkit" element={<PrivateRoute><ToolkitPage /></PrivateRoute>} />
-      <Route path="toolkit/:toolId" element={<PrivateRoute><ToolDetailPage /></PrivateRoute>} />
+      <Route path="toolkit" element={<ToolkitPage />} />
+      <Route path="privacy" element={<PrivacyPolicyPage />} />
+      <Route path="terms" element={<TermsOfServicePage />} />
 
 
       {/* ─── Legacy deep-link support (redirect old bookmarks) ────────── */}
@@ -111,6 +112,7 @@ const AppRoutes = () => (
       <Route path="ip-history" element={<PrivateRoute><IPReputationHistoryPage /></PrivateRoute>} />
     </Route>
 
+    <Route path="toolkit/:toolId" element={<ToolDetailPage />} />
     <Route path="/nexus-admin" element={<AdminLoginPage />} />
     <Route path="/nexus-admin/dashboard" element={<AdminRoute><AdminPage /></AdminRoute>} />
     <Route path="/security" element={<SecurityPosturePage />} />
@@ -148,7 +150,6 @@ export default function App() {
                     <AppRoutes />
                   </CyberSuspense>
                 </ErrorBoundary>
-                <CyboBot />
                 <CookieConsentBanner />
                 <Toaster position="top-right" toastOptions={{
                   style: { background: '#020814', color: '#fff', border: '1px solid rgba(0, 212, 255, 0.2)', fontSize: '12px' },

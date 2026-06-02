@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, SOCKET_URL } from '../config';
 
 const NEXUS_SESSION_KEY = 'cybershield.nexus.session';
 
@@ -94,5 +94,7 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const resolveRealtimeServerUrl = () => SOCKET_URL;
 
 export default api;

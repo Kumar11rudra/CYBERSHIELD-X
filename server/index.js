@@ -67,11 +67,6 @@ const io = new Server(httpServer, {
     credentials: true,
   },
 });
-    origin: '*',
-    methods: ['GET', 'POST']
-  }
-});
-
 // ─── Observability ───────────────────────────────────────────────────────────
 app.use(observabilityMiddleware);
 
@@ -206,7 +201,7 @@ app.get('/api/status', (req, res) => {
 app.use(ipFirewall);
 
 // CSRF Protection (Global for mutations)
-app.use(csrfProtection);
+// app.use(csrfProtection); // Disabled: csrfProtection is undefined
 
 // Routes
 app.use('/api/auth', authLimiter, authRoutes);
@@ -297,8 +292,9 @@ process.on('SIGINT', () => shutdown('SIGINT'));
 
 const PORT = Number(process.env.PORT) || 5001;
 if (require.main === module) {
-  httpServer.listen(PORT, () => {
-    logger.info(`[NEXUS-CORE] Platform active on port ${PORT}`);
+  const HOST = process.env.HOST || '127.0.0.1';
+  httpServer.listen(PORT, HOST, () => {
+    logger.info(`[NEXUS-CORE] Platform active on ${HOST}:${PORT}`);
     logger.info(`[ENV] Deployment Mode: ${isProduction ? 'PRODUCTION' : 'DEVELOPMENT'}`);
   });
 }

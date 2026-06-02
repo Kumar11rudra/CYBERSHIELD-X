@@ -10,7 +10,7 @@ const getApiBaseUrl = () => {
   }
   
   // Fallback for local development
-  return process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+  return process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
 };
 
 const getSocketUrl = () => {
@@ -20,7 +20,7 @@ const getSocketUrl = () => {
   }
   
   // Local development
-  return 'http://localhost:5001';
+  return 'http://localhost:3001';
 };
 
 export const API_BASE_URL = getApiBaseUrl();

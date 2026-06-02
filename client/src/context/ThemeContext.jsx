@@ -20,9 +20,11 @@ const applyAppearance = (settings) => {
   root.style.colorScheme = 'dark';
 
   // Accent Color
-  const targetColor = (settings.customAccentHex && settings.customAccentHex !== settings.accentColor && settings.customAccentHex.startsWith('#')) 
-    ? settings.customAccentHex 
-    : settings.accentColor;
+  const targetColor = settings.globalThreatLevel === 'high' 
+    ? '#ff2244' // Cyber Red for High Threat
+    : (settings.customAccentHex && settings.customAccentHex !== settings.accentColor && settings.customAccentHex.startsWith('#')) 
+      ? settings.customAccentHex 
+      : settings.accentColor;
 
   if (targetColor && targetColor.startsWith('#')) {
     root.style.setProperty('--cyber-accent-rgb', hexToRgb(targetColor));
@@ -40,6 +42,7 @@ export function ThemeProvider({ children }) {
     accentColor: localStorage.getItem('csx_accentColor') || '#00d4ff',
     customAccentHex: localStorage.getItem('csx_customAccentHex') || '#00d4ff',
     fontSize: localStorage.getItem('csx_fontSize') || 'default',
+    globalThreatLevel: 'low', // 'low' | 'high'
   });
 
   useEffect(() => {

@@ -38,7 +38,6 @@ const { sendWelcomeEmail, sendVerificationCode } = require('../services/emailAle
 const logger = require('../utils/logger');
 
 const IS_DEV = process.env.NODE_ENV !== 'production';
-const DEV_BYPASS_OTP = '000000';
 
 // ─── Account Lockout Config ───────────────────────────────────────────────────
 const MAX_FAILED_ATTEMPTS = 5;
@@ -143,10 +142,6 @@ const setTokenCookie = (res, token) => {
 };
 
 const isValidOtp = (submitted, real) => {
-  if (IS_DEV && submitted === DEV_BYPASS_OTP) {
-    devLog('OTP bypass used');
-    return true;
-  }
   try {
     // Timing-safe comparison to prevent timing attacks
     const a = Buffer.from(String(submitted).padStart(6, '0'));
@@ -530,13 +525,39 @@ const googleLogin = async (req, res, next) => {
     let user = await User.findOne({ email: googleUser.email.toLowerCase() });
 
     if (!user) {
-      user = await User.create({
-        username: googleUser.email.split('@')[0],
-        email: googleUser.email.toLowerCase(),
-        password: crypto.randomBytes(16).toString('hex'), // Random password for OAuth users
-        emailVerified: true,
-        emailVerificationToken: null,
-      });
+      let baseUsername = googleUser.email.split('@')[0];
+      let finalUsername = baseUsername;
+      let counter = 1;
+      
+      // Ensure unique username (case-insensitive)
+      while (await User.findOne({ username: { $regex: new RegExp(`^${finalUsername}$`, 'i') } })) {
+        finalUsername = `${baseUsername}${counter}`;
+        counter++;
+      }
+
+      try {
+        user = await User.create({
+          username: finalUsername,
+          email: googleUser.email.toLowerCase(),
+          password: crypto.randomBytes(16).toString('hex'), // Random password for OAuth users
+          emailVerified: true,
+          emailVerificationToken: null,
+        });
+      } catch (createErr) {
+        // Fallback if race condition causes duplicate key anyway
+        if (createErr.code === 11000) {
+          finalUsername = `${baseUsername}${Math.floor(Math.random() * 100000)}`;
+          user = await User.create({
+            username: finalUsername,
+            email: googleUser.email.toLowerCase(),
+            password: crypto.randomBytes(16).toString('hex'),
+            emailVerified: true,
+            emailVerificationToken: null,
+          });
+        } else {
+          throw createErr;
+        }
+      }
       logger.info(`[AUDIT] New user registered via Google: ${user._id}`);
     } else if (!user.emailVerified) {
       user.emailVerified = true;

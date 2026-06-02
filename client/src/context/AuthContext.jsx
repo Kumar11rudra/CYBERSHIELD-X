@@ -10,18 +10,6 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null); // Keep state if needed by UI, but don't persist
 
   const loadUser = useCallback(async () => {
-    if (localStorage.getItem('csx_demo_mode') === 'true') {
-      setUser({
-        _id: "demo_12345",
-        username: "Guest_Agent",
-        email: "demo@cybershield.local",
-        role: "demo",
-        avatar: null
-      });
-      setLoading(false);
-      return;
-    }
-
     try {
       const res = await api.get('/auth/me');
       setUser(res.data.user);
@@ -67,19 +55,6 @@ export const AuthProvider = ({ children }) => {
     return newUser;
   };
 
-  const demoLogin = async () => {
-    const demoUser = {
-      _id: "demo_12345",
-      username: "Guest_Agent",
-      email: "demo@cybershield.local",
-      role: "demo",
-      avatar: null
-    };
-    setUser(demoUser);
-    localStorage.setItem('csx_demo_mode', 'true');
-    return demoUser;
-  };
-
   const adminLogin = async (identity, password) => {
     const location = await captureBrowserLocation();
     const network = captureNetworkInfo();
@@ -114,7 +89,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async ({ redirectTo = '/' } = {}) => {
-    localStorage.removeItem('csx_demo_mode');
     try {
       await api.post('/auth/logout');
     } catch (err) {
@@ -129,7 +103,7 @@ export const AuthProvider = ({ children }) => {
   const updateUser = (updates) => setUser((prev) => ({ ...prev, ...updates }));
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, googleLogin, adminLogin, demoLogin, signup, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, token, loading, login, googleLogin, adminLogin, signup, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
