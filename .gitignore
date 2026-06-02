@@ -42,3 +42,7 @@ Thumbs.db
 coverage/
 .nyc_output/
 
+# ─── Vercel (NOT USED — Deployed on Google Cloud Run) ──────────────────────────
+.vercel/
+vercel.json
+.vercelignore

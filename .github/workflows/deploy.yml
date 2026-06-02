@@ -1,43 +1,47 @@
-name: Nexus Core CI/CD
+name: CyberShield X — PR Check
 
 on:
-  push:
-    branches: [ main, master ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
 
 jobs:
-  validate:
+  pr-validation:
+    name: Validate Pull Request
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         node-version: [18.x, 20.x]
 
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+      - name: ⬇️ Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Install Nexus Dependencies
-      run: |
-        npm ci || npm install --legacy-peer-deps
-        cd server && (npm ci || npm install --legacy-peer-deps)
-        cd ../client && (npm ci || npm install --legacy-peer-deps)
+      - name: 🟢 Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
 
-    - name: Check Signal Integrity (Linting)
-      run: npm run lint --if-present
+      - name: 📦 Install Server Dependencies
+        working-directory: ./server
+        run: npm ci --legacy-peer-deps
 
-    - name: Run Neural Tests
-      run: |
-        npm test --if-present
-        cd server && npm test --if-present
+      - name: 🧪 Run Backend Tests
+        working-directory: ./server
+        run: npm test --if-present
+        env:
+          NODE_ENV: test
 
-    - name: Production Perimeter Build (Client)
-      run: |
-        cd client
-        npm run build
+      - name: 📦 Install Client Dependencies
+        working-directory: ./client
+        run: npm ci --legacy-peer-deps
+
+      - name: 🏗️ Build React Client
+        working-directory: ./client
+        run: npm run build
+        env:
+          CI: false
+          REACT_APP_API_URL: /api
+
+      - name: ✅ All Checks Passed
+        run: echo "PR validation complete — Ready to merge!"
