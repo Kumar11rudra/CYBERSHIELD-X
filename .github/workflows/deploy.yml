@@ -25,14 +25,17 @@ jobs:
 
     - name: Install Nexus Dependencies
       run: |
-        npm install
-        cd client && npm install
+        npm ci || npm install --legacy-peer-deps
+        cd server && (npm ci || npm install --legacy-peer-deps)
+        cd ../client && (npm ci || npm install --legacy-peer-deps)
 
     - name: Check Signal Integrity (Linting)
       run: npm run lint --if-present
 
     - name: Run Neural Tests
-      run: npm test --if-present
+      run: |
+        npm test --if-present
+        cd server && npm test --if-present
 
     - name: Production Perimeter Build (Client)
       run: |
