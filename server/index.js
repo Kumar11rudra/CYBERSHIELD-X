@@ -273,12 +273,15 @@ app.use((err, req, res, next) => {
 const shutdown = async (signal) => {
   logger.info(`[SHUTDOWN] Signal ${signal} received. Powering down Nexus Core...`);
   
-  httpServer.close(() => {
+  httpServer.close(async () => {
     logger.info('[SHUTDOWN] HTTP/Socket.io gateways closed.');
-    mongoose.connection.close(false, () => {
+    try {
+      await mongoose.connection.close();
       logger.info('[SHUTDOWN] Database cluster disconnected. Termination complete.');
-      process.exit(0);
-    });
+    } catch (err) {
+      logger.error('[SHUTDOWN] Error closing database:', err.message);
+    }
+    process.exit(0);
   });
   
   setTimeout(() => {
@@ -292,7 +295,9 @@ process.on('SIGINT', () => shutdown('SIGINT'));
 
 const PORT = Number(process.env.PORT) || 5001;
 if (require.main === module) {
-  const HOST = process.env.HOST || '127.0.0.1';
+  // Bind to 0.0.0.0 for cloud platforms (Render, Railway, etc.)
+  // This allows external traffic to reach the server
+  const HOST = '0.0.0.0';
   httpServer.listen(PORT, HOST, () => {
     logger.info(`[NEXUS-CORE] Platform active on ${HOST}:${PORT}`);
     logger.info(`[ENV] Deployment Mode: ${isProduction ? 'PRODUCTION' : 'DEVELOPMENT'}`);
