@@ -24,110 +24,17 @@ const CATEGORIES = [
   { id: 'utility', label: 'toolkit.categories.utility' },
 ];
 
-const TOOLS = [
-  // 📡 Reconnaissance
-  { id: 'nmap', category: 'recon', icon: '📡', name: 'Nexus Port Sentinel', original: 'Nmap', status: 'active', color: '#00d4ff' },
-  { id: 'sherlock', category: 'recon', icon: '🕵️‍♂️', name: 'Aegis Username Hunter', original: 'Sherlock', status: 'active', color: '#00ff88' },
-  { id: 'whatweb', category: 'recon', icon: '🕸️', name: 'Nexus Tech Stack Profiler', original: 'WhatWeb', status: 'active', color: '#00d4ff' },
-  { id: 'harvester', category: 'recon', icon: '👤', name: 'Identity Harvester', original: 'theHarvester', status: 'coming_soon', color: '#00ff88' },
-  { id: 'shodan', category: 'recon', icon: '👁️', name: 'IoT Watchtower', original: 'Shodan', status: 'coming_soon', color: '#ff8c00' },
-  { id: 'maltego', category: 'recon', icon: '🕸️', name: 'Graph Intelligence', original: 'Maltego', status: 'coming_soon', color: '#b400ff' },
-  { id: 'recon-ng', category: 'recon', icon: '🔎', name: 'Nexus Recon OS', original: 'Recon-ng', status: 'coming_soon', color: '#00d4ff' },
-  { id: 'amass', category: 'recon', icon: '🌐', name: 'Domain Cartographer', original: 'Amass', status: 'coming_soon', color: '#00ff88' },
-  { id: 'subfinder', category: 'recon', icon: '🛰️', name: 'Subdomain Recon', original: 'Subfinder', status: 'coming_soon', color: '#ff2244' },
-  
-  // 🔍 Vulnerability Analysis
-  { id: 'openvas', category: 'vulnerability', icon: '🛡️', name: 'Vulnerability Radar', original: 'OpenVAS', status: 'coming_soon', color: '#ff2244' },
-  { id: 'nessus', category: 'vulnerability', icon: '⚡', name: 'Enterprise Auditor', original: 'Nessus', status: 'coming_soon', color: '#00d4ff' },
-  { id: 'qualys', category: 'vulnerability', icon: '☁️', name: 'Cloud Risk VMDR', original: 'Qualys VMDR', status: 'coming_soon', color: '#00ff88' },
-  { id: 'nikto', category: 'vulnerability', icon: '🧪', name: 'Web Config Auditor', original: 'Nikto', status: 'active', color: '#ff8c00' },
-  { id: 'acunetix', category: 'vulnerability', icon: '🔬', name: 'Deep Web Scanner', original: 'Acunetix', status: 'coming_soon', color: '#b400ff' },
-  
-  // 🌐 Web Security
-  { id: 'burp', category: 'web', icon: '🧤', name: 'Aegis Web Proxy', original: 'Burp Suite', status: 'coming_soon', color: '#ff8c00' },
-  { id: 'zap', category: 'web', icon: '⚡', name: 'Sentinel Web Proxy', original: 'OWASP ZAP', status: 'coming_soon', color: '#00ff88' },
-  { id: 'sqlmap', category: 'web', icon: '💉', name: 'Injection Defense Lab', original: 'SQLMap', status: 'active', color: '#ff2244' },
-  { id: 'xsstrike', category: 'web', icon: '💥', name: 'XSS Striker', original: 'XSStrike', status: 'coming_soon', color: '#00d4ff' },
-  { id: 'dirsearch', category: 'web', icon: '📂', name: 'Directory Hunter', original: 'Dirsearch', status: 'active', color: '#00ff88' },
-  
-  // 🔐 Passwords
-  { id: 'john', category: 'password', icon: '🔨', name: 'Aegis Password Hardener', original: 'John the Ripper', status: 'active', color: '#b400ff' },
-  { id: 'hashcat', category: 'password', icon: '🔥', name: 'Quantum Hash Cracker', original: 'Hashcat', status: 'active', color: '#ff2244' },
-  { id: 'hydra', category: 'password', icon: '🐉', name: 'Brute-Force Shield', original: 'Hydra', status: 'coming_soon', color: '#ff8c00' },
-  { id: 'medusa', category: 'password', icon: '🏺', name: 'Credential Medusa', original: 'Medusa', status: 'coming_soon', color: '#00ff88' },
-  
-  // 📶 Wireless
-  { id: 'aircrack', category: 'wireless', icon: '📶', name: 'Sky-Shield WiFi Audit', original: 'Aircrack-ng', status: 'coming_soon', color: '#00d4ff' },
-  { id: 'kismet', category: 'wireless', icon: '🛰️', name: 'Spectral Sniffer', original: 'Kismet', status: 'coming_soon', color: '#00ff88' },
-  { id: 'reaver', category: 'wireless', icon: '🔧', name: 'WPS Logic Auditor', original: 'Reaver', status: 'coming_soon', color: '#ff8c00' },
-  { id: 'wifite', category: 'wireless', icon: '⚡', name: 'Auto-WiFi Auditor', original: 'Wifite', status: 'coming_soon', color: '#ff2244' },
-  
-  // 🕵️ Packet Analysis
-  { id: 'wireshark', category: 'packet', icon: '🦈', name: 'Ghost Packet Analyzer', original: 'Wireshark', status: 'coming_soon', color: '#00d4ff' },
-  { id: 'tcpdump', category: 'packet', icon: '📜', name: 'CLI Stream Capture', original: 'tcpdump', status: 'coming_soon', color: '#00ff88' },
-  { id: 'ettercap', category: 'packet', icon: '🎭', name: 'MITM Intelligence', original: 'Ettercap', status: 'coming_soon', color: '#ff2244' },
+import { getAllTools } from '../components/toolkit/toolConfig';
 
-  // ⚔️ Exploitation
-  { id: 'metasploit', category: 'exploitation', icon: '💣', name: 'Exploit Simulation Hub', original: 'Metasploit', status: 'coming_soon', color: '#ff2244' },
-  { id: 'cobalt', category: 'exploitation', icon: '💎', name: 'Red Team Command', original: 'Cobalt Strike', status: 'coming_soon', color: '#00d4ff' },
-  { id: 'empire', category: 'exploitation', icon: '🏰', name: 'Post-Exploit Empire', original: 'Empire', status: 'coming_soon', color: '#ff8c00' },
-  { id: 'zerothreat', category: 'exploitation', icon: '🤖', name: 'AI Pentest Automator', original: 'ZeroThreat', status: 'active', color: '#00ff88' },
-  { id: 'kali', category: 'exploitation', icon: '🐉', name: 'Nexus OS Armory', original: 'Kali Linux', status: 'coming_soon', color: '#b400ff' },
-  { id: 'parrot', category: 'exploitation', icon: '🦜', name: 'Parrot Security OS', original: 'Parrot OS', status: 'coming_soon', color: '#00ff88' },
-
-  // 🏛️ SOC & SIEM
-  { id: 'splunk', category: 'soc', icon: '📊', name: 'Nexus Enterprise SOC', original: 'Splunk', status: 'active', color: '#ff8c00' },
-  { id: 'wazuh', category: 'soc', icon: '🐕', name: 'Sentinel Monitoring', original: 'Wazuh', status: 'active', color: '#00ff88' },
-  { id: 'qradar', category: 'soc', icon: '📡', name: 'Quantum Threat SIEM', original: 'IBM QRadar', status: 'coming_soon', color: '#b400ff' },
-  { id: 'sentinel', category: 'soc', icon: '💂', name: 'Microsoft Sentinel SIEM', original: 'MS Sentinel', status: 'coming_soon', color: '#00d4ff' },
-
-  // 🛡️ Endpoint Protection
-  { id: 'crowdstrike', category: 'endpoint', icon: '🦅', name: 'Endpoint Fortress EDR', original: 'CrowdStrike', status: 'coming_soon', color: '#ff2244' },
-  { id: 'sentinelone', category: 'endpoint', icon: '🎯', name: 'AI Endpoint Singularity', original: 'SentinelOne', status: 'coming_soon', color: '#00ff88' },
-  { id: 'defender', category: 'endpoint', icon: '🛡️', name: 'Defender for Endpoint', original: 'MS Defender', status: 'coming_soon', color: '#00d4ff' },
-
-  // ☁️ Cloud
-  { id: 'wiz', category: 'cloud', icon: '🧙', name: 'Nexus Cloud Guard', original: 'Wiz', status: 'active', color: '#00d4ff' },
-  { id: 'prisma', category: 'cloud', icon: '💎', name: 'Prisma Workload Shield', original: 'Prisma Cloud', status: 'coming_soon', color: '#00ff88' },
-  { id: 'lacework', category: 'cloud', icon: '🧶', name: 'Cloud Lacework Engine', original: 'Lacework', status: 'coming_soon', color: '#ff8c00' },
-
-  // 📱 Mobile
-  { id: 'mobsf', category: 'mobile', icon: '📱', name: 'Mobile Sentinel Hub', original: 'MobSF', status: 'active', color: '#ff2244' },
-  { id: 'frida', category: 'mobile', icon: '💉', name: 'Runtime App Injector', original: 'Frida', status: 'coming_soon', color: '#00d4ff' },
-  { id: 'apktool', category: 'mobile', icon: '📦', name: 'APK Binary Decompiler', original: 'APKTool', status: 'coming_soon', color: '#00ff88' },
-
-  // 🧬 DevSecOps
-  { id: 'slither', category: 'devsecops', icon: '🪙', name: 'Web3 Contract Auditor', original: 'Slither', status: 'active', color: '#b400ff' },
-  { id: 'snyk', category: 'devsecops', icon: '🐶', name: 'Nexus Dependency Guard', original: 'Snyk', status: 'coming_soon', color: '#b400ff' },
-  { id: 'trivy', category: 'devsecops', icon: '🐳', name: 'Container Integrity Radar', original: 'Trivy', status: 'coming_soon', color: '#00d4ff' },
-  { id: 'checkov', category: 'devsecops', icon: '🏗️', name: 'IaC Security Scanner', original: 'Checkov', status: 'coming_soon', color: '#00ff88' },
-  { id: 'sonarqube', category: 'devsecops', icon: '🎼', name: 'Secure Code Orchestrator', original: 'SonarQube', status: 'coming_soon', color: '#ff8c00' },
-
-  // 🕵️ Forensics
-  { id: 'autopsy', category: 'forensics', icon: '🔍', name: 'Ghost Forensics Lab', original: 'Autopsy', status: 'active', color: '#00d4ff' },
-  { id: 'ftk', category: 'forensics', icon: '📸', name: 'Evidence Imaging Lab', original: 'FTK Imager', status: 'active', color: '#00ff88' },
-  { id: 'volatility', category: 'forensics', icon: '🧠', name: 'Memory Intelligence', original: 'Volatility', status: 'active', color: '#ff2244' },
-  { id: 'stegano', category: 'forensics', icon: '🖼️', name: 'Steghide Secret Decoder', original: 'Steghide', status: 'active', color: '#ff8c00' },
-  { id: 'exiftool', category: 'forensics', icon: '🧹', name: 'Aegis Metadata Wiper', original: 'ExifTool', status: 'active', color: '#ff2244' },
-  { id: 'sleuthkit', category: 'forensics', icon: '🕵️', name: 'File System Sleuth', original: 'Sleuth Kit', status: 'coming_soon', color: '#ff8c00' },
-
-  // 🧠 Reverse Engineering
-  { id: 'ghidra', category: 'malware', icon: '🐉', name: 'Ghidra Reverse Engine', original: 'Ghidra', status: 'coming_soon', color: '#ff2244' },
-  { id: 'idapro', category: 'malware', icon: '🔬', name: 'IDA Pro Analyzer', original: 'IDA Pro', status: 'coming_soon', color: '#00d4ff' },
-  { id: 'radare2', category: 'malware', icon: '🔢', name: 'Radare2 Binary Suite', original: 'Radare2', status: 'coming_soon', color: '#00ff88' },
-  { id: 'cuckoo', category: 'malware', icon: '🐦', name: 'Cuckoo Malware Sandbox', original: 'Cuckoo', status: 'coming_soon', color: '#b400ff' },
-
-  // 🧠 Intelligence
-  { id: 'virustotal', category: 'intelligence', icon: '☣️', name: 'Global Threat Engine', original: 'VirusTotal', status: 'active', color: '#ff2244' },
-  { id: 'misp', category: 'intelligence', icon: '🤝', name: 'Threat Intelligence MISP', original: 'MISP', status: 'coming_soon', color: '#00ff88' },
-  { id: 'opencti', category: 'intelligence', icon: '📑', name: 'Open Threat Intelligence', original: 'OpenCTI', status: 'coming_soon', color: '#00d4ff' },
-
-  // 🛠️ Cyber Decoders (100% Client-Side Pure JS Utilities)
-  { id: 'jwt-parser', category: 'utility', icon: '🔑', name: 'Aegis JWT Parser', original: 'Pure Client-Side JS', status: 'active', color: '#00d4ff' },
-  { id: 'base64-decoder', category: 'utility', icon: '📝', name: 'Base64 Decoder-Encoder', original: 'Pure Client-Side JS', status: 'active', color: '#00ff88' },
-  { id: 'url-sanitizer', category: 'utility', icon: '🔗', name: 'URL Payload Sanitizer', original: 'Pure Client-Side JS', status: 'active', color: '#ff8c00' },
-];
-
+const TOOLS = getAllTools().map(t => ({
+  id: t.id,
+  category: t.category.toLowerCase(),
+  icon: t.icon,
+  name: t.name,
+  original: t.tagline || t.name,
+  status: t.status,
+  color: t.color || '#00d4ff',
+}));
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
@@ -136,6 +43,7 @@ const ToolCard = ({ tool, t }) => {
   const [hovered, setHovered] = React.useState(false);
 
   const rgb = tool.color.replace('#', '').match(/.{2}/g).map(h => parseInt(h, 16)).join(',');
+  const isComingSoon = tool.status === 'coming_soon';
 
   return (
     <motion.div
@@ -145,22 +53,23 @@ const ToolCard = ({ tool, t }) => {
       exit={{ opacity: 0, scale: 0.95 }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onClick={() => tool.status === 'active' && navigate(`/toolkit/${tool.id}`)}
-      className={`relative group cursor-pointer p-5 rounded-2xl border transition-all duration-300 ${
-        tool.status === 'active' 
-          ? 'bg-cyber-card/40 border-white/5 hover:border-cyber-accent/40' 
-          : 'bg-black/20 border-white/5 opacity-60 grayscale cursor-not-allowed'
-      }`}
+      onClick={() => navigate(`/toolkit/${tool.id}`)}
+      className="relative group cursor-pointer p-5 rounded-2xl border transition-all duration-300 bg-cyber-card/40 border-white/5 hover:border-cyber-accent/40"
       style={{
-        boxShadow: hovered && tool.status === 'active' ? `0 8px 30px rgba(${rgb}, 0.15)` : 'none'
+        boxShadow: hovered ? `0 8px 30px rgba(${rgb}, 0.15)` : 'none'
       }}
     >
       <div className="flex justify-between items-start mb-4">
         <div className="text-3xl">{tool.icon}</div>
         <span className={`text-[8px] font-mono font-bold px-1.5 py-0.5 rounded border ${
-          tool.status === 'active' ? 'bg-cyber-accent/10 border-cyber-accent/30 text-cyber-accent' : 'bg-white/5 border-white/10 text-white/40'
+          tool.status === 'live' ? 'bg-cyber-accent/10 border-cyber-accent/30 text-cyber-accent' :
+          tool.status === 'beta' ? 'bg-amber-500/10 border-amber-500/30 text-amber-500' :
+          tool.category === 'utility' ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' :
+          'bg-white/5 border-white/10 text-white/40'
         }`}>
-          {tool.status === 'active' ? 'SYSTEM.ACTIVE' : 'LOCKED.SYS'}
+          {tool.status === 'live' ? 'LIVE' :
+           tool.status === 'beta' ? 'BETA' :
+           tool.category === 'utility' ? 'UTILITY' : 'COMING SOON'}
         </span>
       </div>
 
@@ -168,18 +77,16 @@ const ToolCard = ({ tool, t }) => {
         {tool.name}
       </h3>
       <p className="text-[9px] font-mono text-cyber-muted uppercase tracking-widest mb-3">
-        Based on: <span className="text-white/40">{tool.original}</span>
+        {tool.original}
       </p>
 
-      {tool.status === 'coming_soon' && (
+      {isComingSoon ? (
         <div className="flex items-center gap-2 mt-2">
           <div className="flex-1 h-[1px] bg-white/5" />
-          <span className="text-[7px] font-mono text-cyber-accent/50 animate-pulse uppercase tracking-[0.2em]">Decrypting Data...</span>
+          <span className="text-[7px] font-mono text-cyber-accent/50 animate-pulse uppercase tracking-[0.2em]">Roadmap Details</span>
           <div className="flex-1 h-[1px] bg-white/5" />
         </div>
-      )}
-
-      {tool.status === 'active' && (
+      ) : (
         <div className="flex items-center gap-1.5 text-cyber-accent opacity-0 group-hover:opacity-100 transition-opacity">
           <span className="text-[9px] font-mono uppercase tracking-widest">Execute Module</span>
           <span className="text-xs">→</span>

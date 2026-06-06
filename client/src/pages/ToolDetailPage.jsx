@@ -8,6 +8,14 @@ import { io } from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
 import BrandLogo from '../components/common/BrandLogo';
 
+// ─── New Template System ─────────────────────────────────────────────────────
+import { getToolConfig, TOOL_STATUS, TOOL_TYPES } from '../components/toolkit/toolConfig';
+import ToolPageLayout from '../components/toolkit/ToolPageLayout';
+import ScannerToolView from '../components/toolkit/ScannerToolView';
+import AnalyzerToolView from '../components/toolkit/AnalyzerToolView';
+import ComingSoonView from '../components/toolkit/ComingSoonView';
+import UtilityToolView from '../components/toolkit/UtilityToolView';
+
 // ─── Console Output Component ────────────────────────────────────────────────
 const ConsoleOutput = ({ logs }) => {
   const containerRef = useRef(null);
@@ -56,7 +64,7 @@ const JwtParserView = () => {
   return (
     <div className="space-y-6 flex-1 text-left">
       <div className="cyber-bento-card p-6">
-        <h3 className="font-display text-xs font-bold text-white uppercase tracking-wider mb-4">🔑 Aegis JWT Parser Node</h3>
+        <h3 className="font-display text-xs font-bold text-white uppercase tracking-wider mb-4">🔑 JWT Parser</h3>
         <textarea
           value={token}
           onChange={(e) => setToken(e.target.value)}
@@ -251,7 +259,7 @@ const UtilitySidekick = ({ toolId }) => {
   useEffect(() => {
     let greeting = "";
     if (toolId === 'jwt-parser') {
-      greeting = "👋 **Aegis JWT sidekick active!** I am here to help you dissect JSON Web Tokens. Paste any JWT token in the input box on the left, and I will instantly split the Claims and Signatures. Did you know JWT signature tampering is a common vector?";
+      greeting = "👋 **JWT Parser sidekick active!** I am here to help you dissect JSON Web Tokens. Paste any JWT token in the input box on the left, and I will instantly split the Claims and Signatures. Did you know JWT signature tampering is a common vector?";
     } else if (toolId === 'base64-decoder') {
       greeting = "👋 **Base64 Translator sidekick active!** Paste base64 or plain text on the left to encode/decode in real-time. Feel free to ask me about common encoding standards!";
     } else {
@@ -270,7 +278,7 @@ const UtilitySidekick = ({ toolId }) => {
     setTimeout(() => {
       let botResponse = "";
       if (toolId === 'jwt-parser') {
-        botResponse = `🔍 **Aegis Intelligence**: I see you're working with JWTs! Always make sure the signature matches and verify the 'exp' (expiration) claim to prevent replay attacks.`;
+        botResponse = `🔍 **Intelligence**: I see you're working with JWTs! Always make sure the signature matches and verify the 'exp' (expiration) claim to prevent replay attacks.`;
       } else if (toolId === 'base64-decoder') {
         botResponse = `📝 **Base64 Tip**: Base64 encoding is NOT encryption! It simply formats binary data as ASCII text. Never store raw credentials in Base64 strings.`;
       } else {
@@ -316,197 +324,197 @@ const UtilitySidekick = ({ toolId }) => {
 const TOOL_AGENTS = {
   nmap: {
     id: 'nmap',
-    name: 'Nexus Port Sentinel (Nmap)',
+    name: 'Nmap',
     icon: '📡',
-    greeting: 'Greetings Operator! I am your Port Sentinel Coordinator. Ready to scan network ports and services. Please provide an IP or Domain target below to execute a real-time native TCP scan.',
+    greeting: 'Greetings Operator! I am your Nmap Coordinator. Ready to scan network ports and services. Please provide an IP or Domain target below to execute a real-time native TCP scan.',
     chips: ['127.0.0.1', 'localhost', 'scanme.nmap.org'],
     chain: [
-      { id: 'nikto', label: '🌐 Web Config Auditor (Nikto)' },
-      { id: 'whatweb', label: '🕸️ Tech Stack Profiler (WhatWeb)' }
+      { id: 'nikto', label: '🌐 Nikto' },
+      { id: 'whatweb', label: '🕸️ WhatWeb' }
     ]
   },
   sherlock: {
     id: 'sherlock',
-    name: 'Aegis Username Hunter (Sherlock)',
+    name: 'Sherlock',
     icon: '🕵️‍♂️',
-    greeting: 'Aegis Username Footprint Engine online. I will search across 300+ social and developer platforms to track any handle footprint. Enter the target username handle below:',
+    greeting: 'Sherlock Username Footprint Engine online. I will search across 300+ social and developer platforms to track any handle footprint. Enter the target username handle below:',
     chips: ['kumar11rudra', 'cyberanalyst', 'admin'],
     chain: [
-      { id: 'exiftool', label: '🧹 Metadata Wiper (ExifTool)' }
+      { id: 'exiftool', label: '🧹 ExifTool' }
     ]
   },
   whatweb: {
     id: 'whatweb',
-    name: 'Nexus Tech Stack Profiler (WhatWeb)',
+    name: 'WhatWeb',
     icon: '🕸️',
     greeting: 'Tech Stack Profiling node active. I can passively fingerprint web application stacks, servers, CMS plugins, and headers. Input the target domain name:',
     chips: ['localhost', 'example.com'],
     chain: [
-      { id: 'nikto', label: '🌐 Web Config Auditor (Nikto)' },
-      { id: 'dirsearch', label: '📂 Directory Hunter (Dirsearch)' }
+      { id: 'nikto', label: '🌐 Nikto' },
+      { id: 'dirsearch', label: '📂 Dirsearch' }
     ]
   },
   nikto: {
     id: 'nikto',
-    name: 'Web Config Auditor (Nikto)',
+    name: 'Nikto',
     icon: '🧪',
-    greeting: 'Web Configuration Auditor active. I will analyze target web servers for insecure header structures, default folders, and vulnerability factors. Enter target web server host:',
+    greeting: 'Nikto Web Auditor active. I will analyze target web servers for insecure header structures, default folders, and vulnerability factors. Enter target web server host:',
     chips: ['http://localhost:3000', 'http://127.0.0.1:3001'],
     chain: [
-      { id: 'sqlmap', label: '💉 Injection Lab (SQLMap)' },
-      { id: 'dirsearch', label: '📂 Directory Hunter (Dirsearch)' }
+      { id: 'sqlmap', label: '💉 SQLMap' },
+      { id: 'dirsearch', label: '📂 Dirsearch' }
     ]
   },
   sqlmap: {
     id: 'sqlmap',
-    name: 'Injection Defense Lab (SQLMap)',
+    name: 'SQLMap',
     icon: '💉',
-    greeting: 'Injection Defense Coordinator initialized. Ready to perform SQL Injection tests and database vulnerability audits. Input the target HTTP application request endpoint:',
+    greeting: 'SQLMap Coordinator initialized. Ready to perform SQL Injection tests and database vulnerability audits. Input the target HTTP application request endpoint:',
     chips: ['http://localhost:3001/api/auth', 'http://example.com/item?id=1'],
     chain: [
-      { id: 'nikto', label: '🌐 Web Config Auditor (Nikto)' }
+      { id: 'nikto', label: '🌐 Nikto' }
     ]
   },
   dirsearch: {
     id: 'dirsearch',
-    name: 'Directory Hunter (Dirsearch)',
+    name: 'Dirsearch',
     icon: '📂',
-    greeting: 'Directory Search sentinel active. I will perform recursive path discovery to find hidden panels, config dumps, or backup archives. Enter base URL path:',
+    greeting: 'Dirsearch sentinel active. I will perform recursive path discovery to find hidden panels, config dumps, or backup archives. Enter base URL path:',
     chips: ['http://localhost:3000', 'http://127.0.0.1:3001'],
     chain: [
-      { id: 'nikto', label: '🌐 Web Config Auditor (Nikto)' },
-      { id: 'splunk', label: '📊 Forward logs to Enterprise SOC' }
+      { id: 'nikto', label: '🌐 Nikto' },
+      { id: 'splunk', label: '📊 Forward logs to Splunk' }
     ]
   },
   john: {
     id: 'john',
-    name: 'Aegis Password Hardener (John the Ripper)',
+    name: 'John the Ripper',
     icon: '🔨',
-    greeting: 'Aegis Password Hardener node active. I can perform offline hash cracking and password entropy strength audits. Enter password hash string or list:',
+    greeting: 'John the Ripper node active. I can perform offline hash cracking and password entropy strength audits. Enter password hash string or list:',
     chips: ['e10adc3949ba59abbe56e057f20f883e', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'],
     chain: [
-      { id: 'hashcat', label: '🔥 Quantum Hash Cracker (Hashcat)' }
+      { id: 'hashcat', label: '🔥 Hashcat' }
     ]
   },
   hashcat: {
     id: 'hashcat',
-    name: 'Quantum Hash Cracker (Hashcat)',
+    name: 'Hashcat',
     icon: '🔥',
-    greeting: 'Quantum Hash Cracker active. Specialized in GPU-accelerated hash cracking. Enter hash payload to evaluate entropy strength:',
+    greeting: 'Hashcat active. Specialized in GPU-accelerated hash cracking. Enter hash payload to evaluate entropy strength:',
     chips: ['5d41402abc4b2a76b9719d911017c592', '098f6bcd4621d373cade4e832627b4f6'],
     chain: [
-      { id: 'john', label: '🔨 Aegis Password Hardener' }
+      { id: 'john', label: '🔨 John the Ripper' }
     ]
   },
   splunk: {
     id: 'splunk',
-    name: 'Nexus Enterprise SOC (Splunk)',
+    name: 'Splunk',
     icon: '📊',
-    greeting: 'Nexus Enterprise SOC SIEM agent live. I am listening for authentication failures, port scans, and forensic warnings. Enter target audit source identifier:',
+    greeting: 'Splunk SIEM agent live. I am listening for authentication failures, port scans, and forensic warnings. Enter target audit source identifier:',
     chips: ['system_audit_log', 'auth_failures_db'],
     chain: [
-      { id: 'wazuh', label: '🐕 Sentinel Monitoring (Wazuh)' }
+      { id: 'wazuh', label: '🐕 Wazuh' }
     ]
   },
   wazuh: {
     id: 'wazuh',
-    name: 'Sentinel Monitoring (Wazuh)',
+    name: 'Wazuh',
     icon: '🐕',
     greeting: 'Wazuh HIDS endpoint monitoring coordinator live. Monitoring hosts for rootkits, file integrity, and configuration faults. Input target host endpoint ID:',
     chips: ['host_operator_primary', 'soc_node_1'],
     chain: [
-      { id: 'splunk', label: '📊 Nexus Enterprise SOC' }
+      { id: 'splunk', label: '📊 Splunk' }
     ]
   },
   wiz: {
     id: 'wiz',
-    name: 'Nexus Cloud Guard (Wiz)',
+    name: 'Wiz',
     icon: '🧙',
-    greeting: 'Nexus Cloud Workload Shield active. Scans Kubernetes namespaces, AWS buckets, and API secrets. Provide the target Cloud resource ARN or identifier:',
+    greeting: 'Wiz Cloud Workload Shield active. Scans Kubernetes namespaces, AWS buckets, and API secrets. Provide the target Cloud resource ARN or identifier:',
     chips: ['arn:aws:s3:::soc-assets', 'kubernetes-cluster-primary'],
     chain: [
-      { id: 'slither', label: '🪙 Web3 Contract Auditor (Slither)' }
+      { id: 'slither', label: '🪙 Slither' }
     ]
   },
   mobsf: {
     id: 'mobsf',
-    name: 'Mobile Sentinel Hub (MobSF)',
+    name: 'MobSF',
     icon: '📱',
-    greeting: 'Mobile App Security Sentinel ready. Scans Android/iOS binaries for malware, insecure permissions, and embedded keys. Enter target mobile archive/file name:',
+    greeting: 'MobSF ready. Scans Android/iOS binaries for malware, insecure permissions, and embedded keys. Enter target mobile archive/file name:',
     chips: ['android_operator_v1.apk', 'ios_primary_operator.ipa'],
     chain: [
-      { id: 'exiftool', label: '🧹 ExifTool Metadata Wiper' }
+      { id: 'exiftool', label: '🧹 ExifTool' }
     ]
   },
   slither: {
     id: 'slither',
-    name: 'Web3 Contract Auditor (Slither)',
+    name: 'Slither',
     icon: '🪙',
     greeting: 'Web3 Solidity static compiler auditor ready. I will parse smart contract ASTs to isolate reentrancy traps, integer overflows, and administrative control risks. Enter target contract address or file:',
     chips: ['0x71C7656EC7ab88b098defB751B7401B5f6d8976F', 'PrimaryTokenContract.sol'],
     chain: [
-      { id: 'wiz', label: '🧙 Cloud Workload Guard (Wiz)' }
+      { id: 'wiz', label: '🧙 Wiz' }
     ]
   },
   autopsy: {
     id: 'autopsy',
-    name: 'Ghost Forensics Lab (Autopsy)',
+    name: 'Autopsy',
     icon: '🔎',
-    greeting: 'Ghost Digital Forensics coordinator online. I will parse raw disk images, extract browser databases, and index system metadata. Input forensic disk image target:',
+    greeting: 'Autopsy Digital Forensics coordinator online. I will parse raw disk images, extract browser databases, and index system metadata. Input forensic disk image target:',
     chips: ['forensic_image_usb.dd', 'operator_drive_mirror.img'],
     chain: [
-      { id: 'ftk', label: '📸 Evidence Imaging (FTK Imager)' },
-      { id: 'volatility', label: '🧠 Memory Intelligence (Volatility)' }
+      { id: 'ftk', label: '📸 FTK Imager' },
+      { id: 'volatility', label: '🧠 Volatility' }
     ]
   },
   ftk: {
     id: 'ftk',
-    name: 'Evidence Imaging Lab (FTK Imager)',
+    name: 'FTK Imager',
     icon: '📸',
-    greeting: 'Evidence Imaging Lab online. Ready to clone storage blocks and verify forensic hashes (MD5/SHA1) of source files. Input target folder or drive path:',
+    greeting: 'FTK Imager online. Ready to clone storage blocks and verify forensic hashes (MD5/SHA1) of source files. Input target folder or drive path:',
     chips: ['/dev/disk1s1', '/Users/anil/Documents/evidence'],
     chain: [
-      { id: 'autopsy', label: '🔎 Ghost Forensics Lab' }
+      { id: 'autopsy', label: '🔎 Autopsy' }
     ]
   },
   volatility: {
     id: 'volatility',
-    name: 'Memory Intelligence (Volatility)',
+    name: 'Volatility',
     icon: '🧠',
-    greeting: 'Memory Forensics Volatility core active. Ready to extract active network connections, active processes, and registry credentials from raw RAM dumps. Enter RAM dump target:',
+    greeting: 'Volatility core active. Ready to extract active network connections, active processes, and registry credentials from raw RAM dumps. Enter RAM dump target:',
     chips: ['memory_core_dump.raw', 'hiberfil.sys'],
     chain: [
-      { id: 'autopsy', label: '🔎 Ghost Forensics Lab' }
+      { id: 'autopsy', label: '🔎 Autopsy' }
     ]
   },
   stegano: {
     id: 'stegano',
-    name: 'Steghide Secret Decoder (Steghide)',
+    name: 'Steghide',
     icon: '🖼️',
-    greeting: 'Steghide Secret Decoder active. I will analyze visual payloads for LSB hidden watermarks, cryptographic file blocks, or hidden messages. Input target image payload name:',
+    greeting: 'Steghide active. I will analyze visual payloads for LSB hidden watermarks, cryptographic file blocks, or hidden messages. Input target image payload name:',
     chips: ['security_badge_stego.png', 'avatar_secret.jpg'],
     chain: [
-      { id: 'exiftool', label: '🧹 ExifTool Metadata Wiper' }
+      { id: 'exiftool', label: '🧹 ExifTool' }
     ]
   },
   exiftool: {
     id: 'exiftool',
-    name: 'Aegis Metadata Wiper (ExifTool)',
+    name: 'ExifTool',
     icon: '🧹',
-    greeting: 'Aegis Metadata Wiper online. I can extract and strip EXIF geolocation metadata, camera logs, and tracking tags from document and media payloads. Enter target payload file name:',
+    greeting: 'ExifTool online. I can extract and strip EXIF geolocation metadata, camera logs, and tracking tags from document and media payloads. Enter target payload file name:',
     chips: ['raw_photo_log.jpg', 'soc_confidential_briefing.pdf'],
     chain: [
-      { id: 'stegano', label: '🖼️ Steghide Secret Decoder' }
+      { id: 'stegano', label: '🖼️ Steghide' }
     ]
   },
   virustotal: {
     id: 'virustotal',
-    name: 'Global Threat Engine (VirusTotal)',
+    name: 'VirusTotal',
     icon: '☣️',
     greeting: 'Global Threat Intelligence coordinator active. I will cross-reference file hashes, domain reputation marks, and IP logs against 70+ security vendors. Input the target IP, domain, or malware hash:',
     chips: ['1.1.1.1', 'eicar_antivirus_test_signature', 'malicious-domain.com'],
     chain: [
-      { id: 'nmap', label: '📡 Port Sentinel (Nmap)' }
+      { id: 'nmap', label: '📡 Nmap' }
     ]
   },
   metasploit: {
@@ -516,7 +524,7 @@ const TOOL_AGENTS = {
     greeting: 'Metasploit Exploit Verification Node active. Scan target hosts for known CVEs and coordinate payload validation. Input target host or CVE string:',
     chips: ['127.0.0.1', 'CVE-2023-38606', 'CVE-2021-44228'],
     chain: [
-      { id: 'nmap', label: '📡 Port Sentinel (Nmap)' }
+      { id: 'nmap', label: '📡 Nmap' }
     ]
   },
   trivy: {
@@ -526,7 +534,7 @@ const TOOL_AGENTS = {
     greeting: 'Trivy Container & Kubernetes Auditor live. Scan Docker images, Kubernetes namespaces, and lockfiles for critical CVEs and secrets leaks. Enter target image name or namespace:',
     chips: ['postgres:15-alpine', 'nginx:latest', 'k8s-core-namespace'],
     chain: [
-      { id: 'wiz', label: '🧙 Cloud Workload Guard (Wiz)' }
+      { id: 'wiz', label: '🧙 Wiz' }
     ]
   },
   aircrack: {
@@ -536,7 +544,7 @@ const TOOL_AGENTS = {
     greeting: 'Aircrack Wireless Network Auditor active. Ready to monitor 802.11 packets, capture WPA handshakes, and run dictionary audits. Enter simulated SSID or BSSID target:',
     chips: ['Office_Secure_WiFi', '00:14:22:01:23:45'],
     chain: [
-      { id: 'nikto', label: '🌐 Web Config Auditor (Nikto)' }
+      { id: 'nikto', label: '🌐 Nikto' }
     ]
   }
 };
@@ -555,126 +563,126 @@ const localAIEngine = {
     // GREETINGS: hi, hello, hey, yo, etc.
     if (q === 'hi' || q === 'hello' || q === 'hey' || q.includes('greetings') || q.includes('namaste')) {
       if (toolId === 'nmap') {
-        return `📡 **Greetings Operator!** I am your **Nexus Port Sentinel** (Nmap) coordinator. 
+        return `📡 **Greetings Operator!** I am your **Nmap** coordinator. 
 
 I specialize in scanning network systems for open ports, vulnerable services, and active network connections. How can I assist you with your security audits today? 
 
 Please enter a target IP address or host (e.g., \`127.0.0.1\`) in the command bar below and let's run a native TCP scan together!`;
       }
       if (toolId === 'sherlock') {
-        return `🕵️‍♂️ **Greetings Operator!** I am your **Aegis Username Hunter** (Sherlock). 
+        return `🕵️‍♂️ **Greetings Operator!** I am your **Sherlock** coordinator. 
 
 I specialize in searching across 300+ social networks, developer registries, and web forums to locate the digital footprint of a username handle. How can I assist you with your footprint footprint analysis? 
 
 Please provide a target handle or username below, and let's track their digital footprint!`;
       }
       if (toolId === 'nikto') {
-        return `🧪 **Greetings Operator!** I am your **Web Config Auditor** (Nikto) coordinator. 
+        return `🧪 **Greetings Operator!** I am your **Nikto** coordinator. 
 
 I specialize in performing automated audits on web server configuration headers, checking for missing policies, outdated servers, and common exposure points. How can I help you audit your web applications? 
 
 Please specify a target host URL (e.g., \`http://localhost:3000\`) below, and let's audit its configuration headers!`;
       }
       if (toolId === 'sqlmap') {
-        return `💉 **Greetings Operator!** I am your **Injection Defense Lab** (SQLMap) coordinator. 
+        return `💉 **Greetings Operator!** I am your **SQLMap** coordinator. 
 
 I scan target endpoints for SQL Injection vulnerabilities, database exposures, and privilege escalation pathways. What database endpoints are we auditing today? 
 
 Provide a target web application URL below to start a diagnostic SQL injection assessment!`;
       }
       if (toolId === 'dirsearch') {
-        return `📂 **Greetings Operator!** I am your **Directory Hunter** (Dirsearch) coordinator. 
+        return `📂 **Greetings Operator!** I am your **Dirsearch** coordinator. 
 
 I perform high-speed recursive path audits on web servers to discover hidden admin panels, backup files, and system configuration dumps. What base URL are we auditing? 
 
 Please enter the target base URL below to start path discovery!`;
       }
       if (toolId === 'john') {
-        return `🔨 **Greetings Operator!** I am your **Aegis Password Hardener** (John the Ripper) partner. 
+        return `🔨 **Greetings Operator!** I am your **John the Ripper** partner. 
 
 I audit password hash complexity, perform dictionary attacks, and measure the cryptographic entropy strength of credential databases. What hashes are we cracking today? 
 
 Provide a target password hash (e.g., MD5/SHA256) below, and let's check its strength!`;
       }
       if (toolId === 'hashcat') {
-        return `🔥 **Greetings Operator!** I am your **Quantum Hash Cracker** (Hashcat) coordinator. 
+        return `🔥 **Greetings Operator!** I am your **Hashcat** coordinator. 
 
 I harness GPU-accelerated mathematical arrays to crack complex password hashes and verify enterprise credential robustness. What hashes do we need to check? 
 
 Paste your hash target below to launch a diagnostic hash audit!`;
       }
       if (toolId === 'splunk') {
-        return `📊 **Greetings Operator!** I am your **Nexus Enterprise SOC** (Splunk) advisor. 
+        return `📊 **Greetings Operator!** I am your **Splunk** advisor. 
 
 I ingest system logs, query index streams, and correlate security alerts to help you coordinate enterprise threat detection. What index or host are we auditing? 
 
 Enter your query string or target host below to generate enterprise SOC insight!`;
       }
       if (toolId === 'wazuh') {
-        return `🐕 **Greetings Operator!** I am your **Sentinel Monitoring** (Wazuh) coordinator. 
+        return `🐕 **Greetings Operator!** I am your **Wazuh** coordinator. 
 
 I specialize in endpoint monitoring, integrity validation, and active host audits across your operating systems. What node are we checking? 
 
 Provide the active Wazuh agent hostname or IP below to pull active endpoint telemetry!`;
       }
       if (toolId === 'wiz') {
-        return `🧙 **Greetings Operator!** I am your **Nexus Cloud Guard** (Wiz) coordinator. 
+        return `🧙 **Greetings Operator!** I am your **Wiz** coordinator. 
 
 I audit Kubernetes namespaces, cloud assets, container configurations, and access keys for active security risks. What cloud resources are we auditing? 
 
 Provide your target cloud ARN or namespace below, and let's check its posture!`;
       }
       if (toolId === 'mobsf') {
-        return `📱 **Greetings Operator!** I am your **Mobile Sentinel Hub** (MobSF) analyst. 
+        return `📱 **Greetings Operator!** I am your **MobSF** analyst. 
 
 I analyze Android APK and iOS IPA binaries for dangerous permissions, hardcoded API keys, and insecure network calls. What mobile application are we scanning? 
 
 Specify the mobile app file name below, and let's compile its security score!`;
       }
       if (toolId === 'slither') {
-        return `🪙 **Greetings Operator!** I am your **Web3 Contract Auditor** (Slither) specialist. 
+        return `🪙 **Greetings Operator!** I am your **Slither** specialist. 
 
 I audit Solidity smart contracts, scanning for reentrancy vectors, integer exceptions, and administrative control risks. What smart contract are we inspecting? 
 
 Provide your target contract address or file name below, and let's audit its blockchain integrity!`;
       }
       if (toolId === 'autopsy') {
-        return `🔎 **Greetings Operator!** I am your **Ghost Forensics Lab** (Autopsy) lead investigator. 
+        return `🔎 **Greetings Operator!** I am your **Autopsy** lead investigator. 
 
 I analyze raw disk images, extract system registry clusters, and index user activities to reconstruct a timeline of events. What evidence files are we indexing? 
 
 Enter your target raw image file name below, and let's begin digital forensics!`;
       }
       if (toolId === 'ftk') {
-        return `📸 **Greetings Operator!** I am your **Evidence Imaging Lab** (FTK Imager) coordinator. 
+        return `📸 **Greetings Operator!** I am your **FTK Imager** coordinator. 
 
 I clone physical drives, calculate MD5/SHA hashes, and ensure complete data preservation. What storage volumes are we imaging? 
 
 Specify the raw disk drive path below to capture a forensic evidence image!`;
       }
       if (toolId === 'volatility') {
-        return `🧠 **Greetings Operator!** I am your **Memory Intelligence** (Volatility) specialist. 
+        return `🧠 **Greetings Operator!** I am your **Volatility** specialist. 
 
 I extract network connections, kernel descriptors, and running processes directly from volatile RAM dumps. What RAM image are we auditing? 
 
 Enter your target RAM image name below to begin memory forensics!`;
       }
       if (toolId === 'stegano') {
-        return `🖼️ **Greetings Operator!** I am your **Steghide Secret Decoder** coordinator. 
+        return `🖼️ **Greetings Operator!** I am your **Steghide** coordinator. 
 
 I inspect visual payloads for LSB hidden watermarks, cryptographic files, or hidden messages. What image payload are we analyzing? 
 
 Enter the image name below, and let's decode its secrets!`;
       }
       if (toolId === 'exiftool') {
-        return `🧹 **Greetings Operator!** I am your **Aegis Metadata Wiper** (ExifTool) coordinator. 
+        return `🧹 **Greetings Operator!** I am your **ExifTool** coordinator. 
 
 I extract and strip EXIF tags, GPS locations, camera logs, and author metadata from visual and document payloads. What file are we cleaning? 
 
 Enter your target document or image name below, and let's scrub it!`;
       }
       if (toolId === 'virustotal') {
-        return `☣️ **Greetings Operator!** I am your **Global Threat Engine** (VirusTotal) partner. 
+        return `☣️ **Greetings Operator!** I am your **VirusTotal** partner. 
 
 I cross-reference file hashes, domain reputation marks, and IP logs against 70+ vendor feeds to resolve threat reputation scores. What payload are we querying? 
 
@@ -767,6 +775,41 @@ export default function ToolDetailPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user, logout } = useAuth();
+
+  // If tool exists in toolConfig, route to its dedicated template view
+  const toolConfig = getToolConfig(toolId);
+  if (toolConfig) {
+    if (toolConfig.status === TOOL_STATUS.COMING_SOON) {
+      return (
+        <ToolPageLayout toolId={toolId}>
+          <ComingSoonView toolId={toolId} />
+        </ToolPageLayout>
+      );
+    }
+    if (toolConfig.type === TOOL_TYPES.SCANNER) {
+      return (
+        <ToolPageLayout toolId={toolId}>
+          <ScannerToolView toolId={toolId} />
+        </ToolPageLayout>
+      );
+    }
+    if (toolConfig.type === TOOL_TYPES.ANALYZER) {
+      return (
+        <ToolPageLayout toolId={toolId}>
+          <AnalyzerToolView toolId={toolId} />
+        </ToolPageLayout>
+      );
+    }
+    if (toolConfig.type === TOOL_TYPES.UTILITY) {
+      return (
+        <ToolPageLayout toolId={toolId}>
+          <UtilityToolView toolId={toolId} />
+        </ToolPageLayout>
+      );
+    }
+  }
+
+  // ─── Chatbot Interface (for real working tools) ────────────────────────────
   const [loading, setLoading] = useState(false);
   const [target, setTarget] = useState('');
   const [logs, setLogs] = useState([]);

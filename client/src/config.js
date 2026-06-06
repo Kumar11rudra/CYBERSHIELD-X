@@ -4,19 +4,20 @@
  */
 
 const getApiBaseUrl = () => {
-  // If we are in production, we use relative paths (handled by Nginx)
-  if (process.env.NODE_ENV === 'production') {
-    return '/api';
+  // Use REACT_APP_API_URL if set (works in both dev and prod builds)
+  if (process.env.REACT_APP_API_URL) {
+    const base = process.env.REACT_APP_API_URL.replace(/\/+$/, '');
+    return base.endsWith('/api') ? base : `${base}/api`;
   }
-  
+
   // Fallback for local development
-  return process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+  return 'http://localhost:3001/api';
 };
 
 const getSocketUrl = () => {
-  // Production sockets are tunneled through the main domain
-  if (process.env.NODE_ENV === 'production') {
-    return window.location.origin;
+  // Use the backend URL for socket connections
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL.replace(/\/+$/, '');
   }
   
   // Local development

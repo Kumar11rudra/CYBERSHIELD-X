@@ -245,7 +245,7 @@ export default function HomePage() {
     {
       id: 'nmap',
       icon: '📡',
-      title: 'Nexus Port Sentinel',
+      title: 'Nmap',
       desc: 'Advanced network reconnaissance and port scanning engine.',
       engine: 'Nmap v7.94',
       intelCount: '65k+ Ports',
@@ -256,7 +256,7 @@ export default function HomePage() {
     {
       id: 'nikto',
       icon: '🧪',
-      title: 'Web Config Auditor',
+      title: 'Nikto',
       desc: 'Comprehensive web server security and configuration auditing.',
       engine: 'Nikto v2.1.6',
       intelCount: '6.7k+ Tests',
@@ -267,7 +267,7 @@ export default function HomePage() {
     {
       id: 'sqlmap',
       icon: '💉',
-      title: 'Injection Defense Lab',
+      title: 'SQLMap',
       desc: 'Automated SQL injection and database takeover engine.',
       engine: 'SQLMap v1.8',
       intelCount: 'DBMS Multi',
@@ -278,7 +278,7 @@ export default function HomePage() {
     {
       id: 'john',
       icon: '🔨',
-      title: 'Aegis Password Hardener',
+      title: 'John the Ripper',
       desc: 'Industrial-strength password auditing and hash cracking.',
       engine: 'John the Ripper',
       intelCount: 'Multi-Format',
@@ -289,7 +289,7 @@ export default function HomePage() {
     {
       id: 'autopsy',
       icon: '🔍',
-      title: 'Ghost Forensics Lab',
+      title: 'Autopsy',
       desc: 'Digital forensics and incident response investigation suite.',
       engine: 'Autopsy v4.21',
       intelCount: 'OS Artifacts',
@@ -300,7 +300,7 @@ export default function HomePage() {
     {
       id: 'splunk',
       icon: '📊',
-      title: 'Nexus Enterprise SOC',
+      title: 'Splunk',
       desc: 'Real-time security information and event management (SIEM).',
       engine: 'Splunk Core',
       intelCount: 'Real-time SIEM',
@@ -311,7 +311,7 @@ export default function HomePage() {
     {
       id: 'wiz',
       icon: '🧙',
-      title: 'Nexus Cloud Guard',
+      title: 'Wiz',
       desc: 'Cloud-native workload protection and risk assessment.',
       engine: 'Wiz Graph Engine',
       intelCount: 'Multi-Cloud',
@@ -322,7 +322,7 @@ export default function HomePage() {
     {
       id: 'virustotal',
       icon: '☣️',
-      title: 'Global Threat Engine',
+      title: 'VirusTotal',
       desc: 'Unified intelligence from 70+ global security vendors.',
       engine: 'VirusTotal API',
       intelCount: '74+ Engines',
@@ -333,7 +333,7 @@ export default function HomePage() {
     {
       id: 'breach',
       icon: '🛑',
-      title: 'Dark Web Monitor',
+      title: 'Have I Been Pwned',
       desc: 'Monitor data breaches and leaked credentials in real-time.',
       engine: 'HIBP / Breach-API',
       intelCount: '12B+ Records',
@@ -344,7 +344,7 @@ export default function HomePage() {
     {
       id: 'vault',
       icon: '🗄️',
-      title: 'Quantum Vault',
+      title: 'Vault',
       desc: 'Secure AES-256 encrypted storage for sensitive assets.',
       engine: 'AES-256-GCM',
       intelCount: 'Encrypted',
@@ -355,7 +355,7 @@ export default function HomePage() {
     {
       id: 'zerothreat',
       icon: '🤖',
-      title: 'AI Pentest Automator',
+      title: 'ZeroThreat',
       desc: 'Agentic AI driven penetration testing and reporting.',
       engine: 'GPT-4o Security',
       intelCount: 'Neural Intel',
@@ -366,7 +366,7 @@ export default function HomePage() {
     {
       id: 'mobsf',
       icon: '📱',
-      title: 'Mobile Sentinel Hub',
+      title: 'MobSF',
       desc: 'Automated mobile app security analysis (iOS/Android).',
       engine: 'MobSF Analyzer',
       intelCount: 'Static/Dynamic',
@@ -377,7 +377,7 @@ export default function HomePage() {
     {
       id: 'sherlock',
       icon: '🕵️‍♂️',
-      title: 'Aegis Username Hunter',
+      title: 'Sherlock',
       desc: 'Search username footprints across 300+ social platforms.',
       engine: 'Sherlock v0.14',
       intelCount: '300+ Targets',
@@ -388,7 +388,7 @@ export default function HomePage() {
     {
       id: 'stegano',
       icon: '🖼️',
-      title: 'Steghide Secret Decoder',
+      title: 'Steghide',
       desc: 'Extract hidden text and files embedded inside image payloads.',
       engine: 'Steghide v0.5',
       intelCount: 'JPG/BMP/WAV',
@@ -399,7 +399,7 @@ export default function HomePage() {
     {
       id: 'whatweb',
       icon: '🕸️',
-      title: 'Nexus Tech Stack Profiler',
+      title: 'WhatWeb',
       desc: 'Passive technology profiling of remote web servers.',
       engine: 'WhatWeb v0.5.5',
       intelCount: '1.8k+ Signatures',
@@ -410,7 +410,7 @@ export default function HomePage() {
     {
       id: 'exiftool',
       icon: '🧹',
-      title: 'Aegis Metadata Wiper',
+      title: 'ExifTool',
       desc: 'Analyze and strip tracking geolocation and EXIF metadata.',
       engine: 'ExifTool v12.76',
       intelCount: 'GPS/EXIF/Tags',
@@ -421,7 +421,7 @@ export default function HomePage() {
     {
       id: 'slither',
       icon: '🪙',
-      title: 'Web3 Contract Auditor',
+      title: 'Slither',
       desc: 'Static security analysis for Solidity smart contracts.',
       engine: 'Slither v0.10',
       intelCount: '30+ Checkers',
@@ -432,7 +432,7 @@ export default function HomePage() {
     {
       id: 'metasploit',
       icon: '🛡️',
-      title: 'Metasploit Coordinator',
+      title: 'Metasploit',
       desc: 'Scan target hosts for known CVEs and coordinate payload validation.',
       engine: 'Metasploit v6.3',
       intelCount: '2.3k+ Exploits',
@@ -443,7 +443,7 @@ export default function HomePage() {
     {
       id: 'trivy',
       icon: '🐳',
-      title: 'Trivy Container Auditor',
+      title: 'Trivy',
       desc: 'Scan container images, Kubernetes namespaces, and repositories for CVEs.',
       engine: 'Trivy v0.49',
       intelCount: 'Vulnerabilities',
@@ -454,7 +454,7 @@ export default function HomePage() {
     {
       id: 'aircrack',
       icon: '📶',
-      title: 'Aircrack Wireless Analyst',
+      title: 'Aircrack-ng',
       desc: 'Monitor 802.11 packets, capture WPA handshakes, and dictionary audits.',
       engine: 'Aircrack-ng v1.7',
       intelCount: '802.11 Auditing',

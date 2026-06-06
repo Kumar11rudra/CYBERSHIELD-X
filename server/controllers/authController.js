@@ -112,19 +112,21 @@ const authenticateWithLockout = async (req, res, identity, password) => {
 
 // Helper to set HttpOnly Cookies (access + refresh)
 const setAuthCookies = (res, accessToken, refreshToken) => {
+  // Cross-domain: sameSite must be 'none' when frontend and backend are on different domains
+  const cookieSameSite = IS_DEV ? 'strict' : 'none';
   // Access token — short lived (15 minutes)
   res.cookie('token', accessToken, {
     httpOnly: true,
-    secure: !IS_DEV,
-    sameSite: 'strict',
+    secure: true,
+    sameSite: cookieSameSite,
     maxAge: 15 * 60 * 1000, // 15 minutes
   });
   // Refresh token — long lived (7 days), scoped to refresh endpoint only
   if (refreshToken) {
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: !IS_DEV,
-      sameSite: 'strict',
+      secure: true,
+      sameSite: cookieSameSite,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       path: '/api/auth/refresh', // Only sent to this endpoint
     });
@@ -135,8 +137,8 @@ const setAuthCookies = (res, accessToken, refreshToken) => {
 const setTokenCookie = (res, token) => {
   res.cookie('token', token, {
     httpOnly: true,
-    secure: !IS_DEV,
-    sameSite: 'strict',
+    secure: true,
+    sameSite: IS_DEV ? 'strict' : 'none',
     maxAge: 15 * 60 * 1000,
   });
 };
