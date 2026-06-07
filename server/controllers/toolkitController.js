@@ -1,6 +1,8 @@
 const { spawn } = require('child_process');
 const path = require('path');
 const localEngine = require('../services/nexus-engine/LocalExecutor');
+const vtService = require('../services/virusTotal');
+const { checkIP: abuseCheckIP } = require('../services/abuseIPDB');
 
 // Helper to sanitize target
 const sanitizeTarget = (target) => {
@@ -53,6 +55,10 @@ const executeTool = async (req, res, next) => {
       executeWiz(cleanTarget, socketId, io, res);
     } else if (toolId === 'virustotal') {
       executeVirusTotal(cleanTarget, socketId, io, res);
+    } else if (toolId === 'abuseipdb') {
+      executeAbuseIPDB(cleanTarget, socketId, io, res);
+    } else if (toolId === 'whois') {
+      executeWhois(cleanTarget, socketId, io, res);
     } else if (toolId === 'upi-verifier') {
       executeUpiVerifier(cleanTarget, socketId, io, res);
     } else if (toolId === 'email-verifier') {
@@ -387,30 +393,207 @@ const executeVirusTotal = async (target, socketId, io, res) => {
     if (socketId && io) io.to(socketId).emit('tool_log', { message, type });
   };
 
-  sendLog(`[GLOBAL-THREAT] Initiating VirusTotal Intelligence Engine for ${target}...`, 'info');
+  sendLog(`[VIRUSTOTAL] Querying VirusTotal global threat intelligence for: ${target}...`, 'info');
 
-  const simulationSteps = [
-    `Querying global threat databases...`,
-    `[ENGINE] Kaspersky: CLEAN`,
-    `[ENGINE] CrowdStrike: MALICIOUS`,
-    `[ENGINE] Microsoft Defender: SUSPICIOUS`,
-    `[ENGINE] Symantec: MALICIOUS`,
-    `[ENGINE] FireEye: NO_DATA`,
-    `---`,
-    `Detected in 12/74 security vendors`,
-    `Reputation Score: -45 (High Risk)`,
-    `Common Labels: Trojan.Generic, Ransomware.LockBit`,
-    `Last Analysis Date: ${new Date().toISOString()}`,
-    `---`,
-    `Intelligence report retrieved from Nexus Global Hive.`
-  ];
+  try {
+    // Auto-detect target type: IP, domain, URL, or hash
+    const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
+    const hashRegex = /^[a-fA-F0-9]{32,64}$/;
+    const urlRegex = /^https?:\/\//i;
 
-  for (const step of simulationSteps) {
-    await new Promise(r => setTimeout(r, 500));
-    sendLog(step, step.includes('MALICIOUS') ? 'error' : step.includes('CLEAN') ? 'success' : 'info');
+    let result;
+    let targetType;
+
+    if (ipRegex.test(target)) {
+      targetType = 'IP Address';
+      sendLog(`[INFO] Detected target type: IP address`, 'info');
+      result = await vtService.scanIP(target);
+    } else if (hashRegex.test(target) && !target.includes('.')) {
+      targetType = 'File Hash';
+      sendLog(`[INFO] Detected target type: File hash`, 'info');
+      result = await vtService.scanHash(target);
+    } else if (urlRegex.test(target)) {
+      targetType = 'URL';
+      sendLog(`[INFO] Detected target type: URL`, 'info');
+      result = await vtService.scanURL(target);
+    } else {
+      targetType = 'Domain';
+      sendLog(`[INFO] Detected target type: Domain`, 'info');
+      result = await vtService.scanDomain(target);
+    }
+
+    if (result.error) {
+      sendLog(`[ERROR] VirusTotal: ${result.error}`, 'error');
+      return res.status(502).json({ error: result.error });
+    }
+
+    const malicious = result.malicious || 0;
+    const total = result.total || 0;
+    const riskScore = total > 0 ? Math.round((malicious / total) * 100) : 0;
+
+    sendLog(`[RESULT] Malicious detections: ${malicious}/${total} engines`, malicious > 0 ? 'error' : 'success');
+    sendLog(`[RESULT] Risk Score: ${riskScore}/100`, malicious > 5 ? 'error' : malicious > 0 ? 'warning' : 'success');
+    if (result.permalink) sendLog(`[INFO] Full report: ${result.permalink}`, 'info');
+    sendLog(`[SUCCESS] VirusTotal analysis complete. Source: Real API`, 'success');
+
+    // Build structured report for the analyzer view
+    const report = {
+      'Target Type': targetType,
+      'Malicious Engines': `${malicious} / ${total}`,
+      'Suspicious Engines': result.suspicious || 0,
+      'Harmless Engines': result.harmless || 0,
+      'Undetected': result.undetected || 0,
+      riskScore,
+    };
+
+    if (result.country) report['Country'] = result.country;
+    if (result.asOwner) report['AS Owner'] = result.asOwner;
+    if (result.network) report['Network'] = result.network;
+    if (result.reputation !== undefined) report['Reputation Score'] = result.reputation;
+    if (result.registrar) report['Registrar'] = result.registrar;
+    if (result.categories && Object.keys(result.categories).length > 0) {
+      report['Categories'] = Object.values(result.categories).join(', ');
+    }
+    if (result.note) report['Note'] = result.note;
+    if (result.fileType) report['File Type'] = result.fileType;
+    if (result.meaningfulName) report['File Name'] = result.meaningfulName;
+    if (result.permalink) report['Full Report'] = result.permalink;
+    if (result.scanDate) report['Last Scan'] = new Date(result.scanDate).toLocaleString();
+
+    res.json({ success: true, report, rawOutput: `VirusTotal result for ${target}:\nMalicious: ${malicious}/${total}\nRisk Score: ${riskScore}/100` });
+
+  } catch (err) {
+    sendLog(`[ERROR] VirusTotal engine error: ${err.message}`, 'error');
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// ── AbuseIPDB — Real API ─────────────────────────────────────────────────────
+const executeAbuseIPDB = async (target, socketId, io, res) => {
+  const sendLog = (message, type = 'info') => {
+    if (socketId && io) io.to(socketId).emit('tool_log', { message, type });
+  };
+
+  sendLog(`[ABUSEIPDB] Checking IP reputation for: ${target}...`, 'info');
+
+  // AbuseIPDB only accepts IP addresses
+  const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$|^([0-9a-fA-F:]+)$/;
+  if (!ipRegex.test(target)) {
+    sendLog(`[ERROR] AbuseIPDB requires an IP address (e.g. 1.1.1.1)`, 'error');
+    return res.status(400).json({ error: 'AbuseIPDB only accepts IP addresses. Please enter a valid IPv4 or IPv6 address.' });
   }
 
-  res.json({ success: true, rawOutput: simulationSteps.join('\n') });
+  try {
+    const result = await abuseCheckIP(target);
+
+    if (result.error) {
+      sendLog(`[ERROR] AbuseIPDB: ${result.error}`, 'error');
+      return res.status(502).json({ error: result.error });
+    }
+
+    const score = result.abuseConfidenceScore || 0;
+    const riskScore = score; // AbuseIPDB score is already 0–100
+
+    sendLog(`[RESULT] Abuse Confidence Score: ${score}/100`, score > 50 ? 'error' : score > 20 ? 'warning' : 'success');
+    sendLog(`[RESULT] Total Reports: ${result.totalReports} from ${result.numDistinctUsers} distinct users`, 'info');
+    if (result.isp) sendLog(`[INFO] ISP: ${result.isp}`, 'info');
+    if (result.countryCode) sendLog(`[INFO] Country: ${result.countryCode}`, 'info');
+    sendLog(`[SUCCESS] AbuseIPDB check complete. Source: Real API`, 'success');
+
+    // Build structured report
+    const report = {
+      'IP Address': result.ipAddress || target,
+      'Abuse Confidence Score': `${score}/100`,
+      riskScore: score,
+      'Total Reports': result.totalReports || 0,
+      'Distinct Reporters': result.numDistinctUsers || 0,
+      'Country': result.countryCode || '—',
+      'ISP': result.isp || '—',
+      'Usage Type': result.usageType || '—',
+      'Domain': result.domain || '—',
+      'Is Public': result.isPublic ? 'Yes' : 'No',
+      'Whitelisted': result.isWhitelisted ? 'Yes' : 'No',
+    };
+
+    if (result.lastReportedAt) {
+      report['Last Reported'] = new Date(result.lastReportedAt).toLocaleString();
+    }
+    if (result.hostnames && result.hostnames.length > 0) {
+      report['Hostnames'] = result.hostnames.join(', ');
+    }
+
+    res.json({ success: true, report });
+
+  } catch (err) {
+    sendLog(`[ERROR] AbuseIPDB engine error: ${err.message}`, 'error');
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// ── WHOIS Lookup — Free public API ────────────────────────────────────────────
+const executeWhois = async (target, socketId, io, res) => {
+  const sendLog = (message, type = 'info') => {
+    if (socketId && io) io.to(socketId).emit('tool_log', { message, type });
+  };
+
+  // Strip protocol prefix if present
+  const cleanDomain = target.replace(/^https?:\/\//i, '').split('/')[0].trim();
+  sendLog(`[WHOIS] Performing WHOIS lookup for: ${cleanDomain}...`, 'info');
+
+  try {
+    const axios = require('axios');
+
+    // Use the free whois.freeaiapi.xyz REST API
+    const response = await axios.get(`https://whois.freeaiapi.xyz/?name=${encodeURIComponent(cleanDomain)}`, {
+      timeout: 12000,
+      headers: { 'Accept': 'application/json', 'User-Agent': 'CyberShieldX/1.0' },
+    });
+
+    const data = response.data;
+    sendLog(`[INFO] WHOIS data retrieved for ${cleanDomain}`, 'info');
+
+    // Build the structured report
+    const report = {
+      'Domain': cleanDomain,
+      'Registrar': data.registrar || data.Registrar || '—',
+      'Registration Date': data.creation_date || data['Creation Date'] || data.created || '—',
+      'Expiry Date': data.expiration_date || data['Registry Expiry Date'] || data.expires || '—',
+      'Updated Date': data.updated_date || data['Updated Date'] || '—',
+      'Status': Array.isArray(data.status) ? data.status.join(', ') : (data.status || data.Status || '—'),
+      'Name Servers': Array.isArray(data.name_servers)
+        ? data.name_servers.join(', ')
+        : (data.name_servers || data['Name Server'] || '—'),
+      'Registrant Country': data.registrant_country || data['Registrant Country'] || '—',
+      'DNSSEC': data.dnssec || data.DNSSEC || '—',
+    };
+
+    if (data.registrant_name || data['Registrant Name']) {
+      report['Registrant'] = data.registrant_name || data['Registrant Name'];
+    }
+    if (data.registrant_email || data['Registrant Email']) {
+      report['Registrant Email'] = data.registrant_email || data['Registrant Email'];
+    }
+
+    sendLog(`[RESULT] Registrar: ${report['Registrar']}`, 'info');
+    sendLog(`[RESULT] Created: ${report['Registration Date']}`, 'info');
+    sendLog(`[RESULT] Expires: ${report['Expiry Date']}`, 'info');
+    sendLog(`[SUCCESS] WHOIS lookup complete.`, 'success');
+
+    res.json({ success: true, report });
+
+  } catch (err) {
+    sendLog(`[WARN] Free WHOIS API unavailable, trying fallback...`, 'warning');
+    // Fallback: provide basic DNS info
+    try {
+      const { execSync } = require('child_process');
+      const whoisOutput = execSync(`whois ${cleanDomain} 2>/dev/null || echo 'WHOIS lookup failed'`, { timeout: 15000 }).toString();
+      sendLog(`[INFO] System WHOIS fallback executed`, 'info');
+      res.json({ success: true, rawOutput: whoisOutput, report: { 'Domain': cleanDomain, 'Raw WHOIS': 'See output below' } });
+    } catch (fallbackErr) {
+      sendLog(`[ERROR] WHOIS lookup failed: ${err.message}`, 'error');
+      res.status(500).json({ error: 'WHOIS lookup failed. The domain may not exist or the service is temporarily unavailable.' });
+    }
+  }
 };
 
 const executeZeroThreat = async (target, socketId, io, res) => {
