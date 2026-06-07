@@ -102,17 +102,17 @@ const AppRoutes = () => (
       <Route path="terms" element={<TermsOfServicePage />} />
 
 
+      {/* ─── Toolkit — all tool pages share the same Layout shell ─────── */}
+      <Route path="toolkit/:toolId" element={<ToolDetailPage />} />
+
       {/* ─── Legacy deep-link support (redirect old bookmarks) ────────── */}
       <Route path="email-intel" element={<Navigate replace to="/message-analyzer" />} />
       <Route path="sms-analyzer" element={<Navigate replace to="/message-analyzer" />} />
-      <Route path="whois" element={<Navigate replace to="/web-forensics" />} />
       <Route path="ssl-checker" element={<Navigate replace to="/web-forensics" />} />
       <Route path="phishing-detector" element={<Navigate replace to="/web-forensics" />} />
       <Route path="hash-reputation" element={<Navigate replace to="/scan" />} />
       <Route path="ip-history" element={<PrivateRoute><IPReputationHistoryPage /></PrivateRoute>} />
     </Route>
-
-    <Route path="toolkit/:toolId" element={<ToolDetailPage />} />
     <Route path="/nexus-admin" element={<AdminLoginPage />} />
     <Route path="/nexus-admin/dashboard" element={<AdminRoute><AdminPage /></AdminRoute>} />
     <Route path="/security" element={<SecurityPosturePage />} />
