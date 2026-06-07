@@ -24,6 +24,14 @@ const verificationSchema = new mongoose.Schema({
   verified: {
     type: Boolean,
     default: false
+  },
+  verificationToken: {
+    type: String,
+    default: null
+  },
+  attemptsRemaining: {
+    type: Number,
+    default: 5
   }
 }, { timestamps: true });
 
