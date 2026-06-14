@@ -95,7 +95,7 @@ export default function SignupPage() {
   const [usernameAvailable, setUsernameAvailable] = useState(null);
   const [emailOtpSent, setEmailOtpSent] = useState(false);
   const [emailOtpVerifying, setEmailOtpVerifying] = useState(false);
-  const [emailOtpVerified, setEmailOtpVerified] = useState(false);
+  const [emailOtpVerified, setEmailOtpVerified] = useState(true);
   const [usernameSuggestions, setUsernameSuggestions] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -172,10 +172,6 @@ export default function SignupPage() {
           setLoading(false);
         }
       }
-    } else if (step === 2) {
-      if (!form.fullName.trim()) newErrors.fullName = t('auth.validation.fillProfile');
-      if (!form.age || parseInt(form.age) < 10) newErrors.age = 'Minimum age 10 required';
-      if (!form.gender) newErrors.gender = 'Gender is required';
     }
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -213,13 +209,25 @@ export default function SignupPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!emailOtpVerified) return toast.error('Please verify your email first');
+    const newErrors = {};
+    if (!form.fullName.trim()) newErrors.fullName = t('auth.validation.fillProfile');
+    if (!form.age || parseInt(form.age) < 10) newErrors.age = 'Minimum age 10 required';
+    if (!form.gender) newErrors.gender = 'Gender is required';
+    if (!termsAccepted) {
+      toast.error('Please accept the protocols to complete registration');
+      return;
+    }
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
     setLoading(true);
     const fullMobile = form.mobileNumber ? `${form.countryCode} ${form.mobileNumber}` : undefined;
     const finalAge = form.age ? parseInt(form.age) : undefined;
     
     try {
-      await signup(form.username, form.email, form.password, fullMobile, form.verificationToken, form.fullName, finalAge, form.country, form.gender);
+      await signup(form.username, form.email, form.password, fullMobile, undefined, form.fullName, finalAge, form.country, form.gender);
       toast.success('Welcome to the Nexus!');
       navigate('/dashboard');
     } catch (err) {
@@ -303,7 +311,7 @@ export default function SignupPage() {
           </div>
 
           <div className="space-y-8 w-full max-w-xs">
-            {[ { s: 1, l: 'Identity' }, { s: 2, l: 'Profile' }, { s: 3, l: 'Verify' } ].map(i => (
+            {[ { s: 1, l: 'Identity' }, { s: 2, l: 'Profile & Register' } ].map(i => (
               <div key={i.s} className={`flex items-center gap-6 transition-all duration-500 ${step === i.s ? 'opacity-100 translate-x-4' : 'opacity-30'}`}>
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center font-mono text-lg border-2 ${step === i.s ? 'bg-cyber-green text-black border-cyber-green shadow-[0_0_20px_rgba(0,255,136,0.5)]' : 'border-white/20 text-white'}`}>{i.s}</div>
                 <div>
@@ -358,7 +366,7 @@ export default function SignupPage() {
                           {usernameChecking && <div className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-cyber-green border-t-transparent rounded-full animate-spin" />}
                         </div>
                         {usernameAvailable === false && usernameSuggestions.length > 0 && (
-                          <div className="flex flex-wrap gap-2">{usernameSuggestions.map(s => <button key={s} type="button" onClick={() => updateForm('username', s)} className="px-2 py-1 bg-cyber-green/5 border border-cyber-green/20 rounded text-cyber-green font-mono text-[9px]">{s}</button>)}</div>
+                           <div className="flex flex-wrap gap-2">{usernameSuggestions.map(s => <button key={s} type="button" onClick={() => updateForm('username', s)} className="px-2 py-1 bg-cyber-green/5 border border-cyber-green/20 rounded text-cyber-green font-mono text-[9px]">{s}</button>)}</div>
                         )}
                       </div>
                       <div className="space-y-2">
@@ -460,40 +468,20 @@ export default function SignupPage() {
                           </div>
                         </div>
                       </div>
+
+                      <div className="space-y-2.5 pt-2">
+                        <label className="flex items-center gap-4 cursor-pointer select-none">
+                          <input type="checkbox" checked={termsAccepted} onChange={() => setTermsAccepted(!termsAccepted)} className="hidden" />
+                          <div className={`w-5 h-5 border rounded flex items-center justify-center transition-all ${termsAccepted ? 'bg-cyber-green border-cyber-green text-black font-bold' : 'border-white/20'}`}>
+                            {termsAccepted && "✓"}
+                          </div>
+                          <span className="font-mono text-[9px] text-cyber-muted uppercase">Accept Protocols & Privacy Policy</span>
+                        </label>
+                      </div>
                     </div>
                     <div className="flex gap-4 pt-4">
                       <button type="button" onClick={() => setStep(1)} className="flex-1 py-5 border border-white/10 text-white font-mono text-xs uppercase rounded-2xl">Back</button>
-                      <button type="button" onClick={handleNext} disabled={loading} className="flex-[2] py-5 bg-cyber-green text-black font-mono font-black uppercase rounded-2xl disabled:opacity-50">
-                        {loading && step === 2 ? 'Updating Registry...' : 'Proceed'}
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-                {step === 3 && (
-                  <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
-                    <h2 className="font-display text-2xl font-bold text-white">Final Verification</h2>
-                    <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl space-y-6">
-                      {!emailOtpVerified && (
-                        <div className="space-y-6">
-                          {!emailOtpSent ? (
-                            <button type="button" onClick={handleSendEmailOtp} className="w-full py-4 bg-white/5 border border-white/10 rounded-xl text-cyber-green font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-cyber-green/10">Send OTP to {form.email}</button>
-                          ) : (
-                            <div className="space-y-4">
-                              <input maxLength={6} value={form.emailOtp} onChange={e => setForm(prev => ({...prev, emailOtp: e.target.value}))} className="w-full bg-black/40 border border-cyber-green/30 rounded-2xl px-5 py-4 font-mono text-center tracking-[1em] text-cyber-green text-xl outline-none" placeholder="------" />
-                              <button type="button" onClick={handleVerifyEmailOtp} className="w-full py-4 bg-cyber-green text-black font-mono font-bold uppercase tracking-widest rounded-xl">Verify Code</button>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                      {emailOtpVerified && <div className="text-center text-cyber-green font-mono text-sm">✓ Email Authenticated</div>}
-                    </div>
-                    <div className="space-y-4">
-                      <label className="flex items-center gap-4 cursor-pointer">
-                        <input type="checkbox" checked={termsAccepted} onChange={() => setTermsAccepted(!termsAccepted)} className="hidden" />
-                        <div className={`w-5 h-5 border rounded ${termsAccepted ? 'bg-cyber-green border-cyber-green' : 'border-white/20'}`} />
-                        <span className="font-mono text-[9px] text-cyber-muted uppercase">Accept Protocols</span>
-                      </label>
-                      <button type="submit" disabled={!emailOtpVerified || !termsAccepted || loading} className="w-full py-5 bg-cyber-green text-black font-mono font-black uppercase rounded-2xl disabled:opacity-20">
+                      <button type="submit" disabled={!termsAccepted || loading} className="flex-[2] py-5 bg-cyber-green text-black font-mono font-black uppercase rounded-2xl disabled:opacity-20 transition-all">
                         {loading ? 'Finalizing Registry...' : 'Complete Registration'}
                       </button>
                     </div>

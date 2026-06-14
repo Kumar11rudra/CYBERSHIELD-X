@@ -1,6 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { getToolConfig } from './toolConfig';
 import api from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import usePdfExport from '../../hooks/usePdfExport';
+import toast from 'react-hot-toast';
 
 /**
  * ScannerToolView — Template for scanner-type tools (Nmap, Nikto).
@@ -19,6 +23,19 @@ const ScannerToolView = ({ toolId }) => {
   const [error, setError] = useState(null);
   const terminalRef = useRef(null);
   const wsRef = useRef(null);
+
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { exportToolReportPdf } = usePdfExport();
+
+  const handleExportPdf = () => {
+    if (!user) {
+      toast.error('You must login first to download the report.');
+      navigate('/login');
+      return;
+    }
+    exportToolReportPdf(tool.name, target, { rawAnalysis: results, riskLevel: 'safe', score: 0 }, user);
+  };
 
   // Auto-scroll terminal
   useEffect(() => {
@@ -44,7 +61,7 @@ const ScannerToolView = ({ toolId }) => {
   const executeScanHTTP = useCallback(
     async (scanTarget) => {
       try {
-        const response = await api.post('/api/toolkit/execute', {
+        const response = await api.post('/toolkit/execute', {
           toolId,
           target: scanTarget,
         });
@@ -57,6 +74,8 @@ const ScannerToolView = ({ toolId }) => {
               ? data.results
               : JSON.stringify(data.results, null, 2)
           );
+        } else if (data?.rawOutput) {
+          appendResult(data.rawOutput);
         } else {
           appendResult(JSON.stringify(data, null, 2));
         }
@@ -206,12 +225,22 @@ const ScannerToolView = ({ toolId }) => {
       {/* Terminal output */}
       <div style={styles.terminalSection}>
         <div style={styles.terminalHeader}>
-          <span style={styles.terminalDot('#ff5f57')} />
-          <span style={styles.terminalDot('#febc2e')} />
-          <span style={styles.terminalDot('#28c840')} />
-          <span style={styles.terminalTitle}>
-            {scanning ? `Scanning ${target}…` : results ? 'Scan Results' : 'Output'}
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+            <span style={styles.terminalDot('#ff5f57')} />
+            <span style={styles.terminalDot('#febc2e')} />
+            <span style={styles.terminalDot('#28c840')} />
+            <span style={styles.terminalTitle}>
+              {scanning ? `Scanning ${target}…` : results ? 'Scan Results' : 'Output'}
+            </span>
+          </div>
+          {results && !scanning && (
+            <button
+              onClick={handleExportPdf}
+              style={styles.exportButton}
+            >
+              📄 Export PDF
+            </button>
+          )}
         </div>
         <div ref={terminalRef} style={styles.terminal}>
           {results ? (
@@ -379,6 +408,18 @@ const styles = {
     fontSize: '13px',
     color: '#475569',
     fontStyle: 'italic',
+  },
+  exportButton: {
+    padding: '4px 12px',
+    borderRadius: '6px',
+    border: '1px solid rgba(0, 212, 255, 0.4)',
+    background: 'rgba(0, 212, 255, 0.15)',
+    color: '#00bfff',
+    fontSize: '11px',
+    fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
   },
 };
 

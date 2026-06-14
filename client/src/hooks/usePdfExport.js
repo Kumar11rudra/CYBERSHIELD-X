@@ -467,6 +467,38 @@ export default function usePdfExport() {
         doc.text(String(v), 60, y, { maxWidth: W - 74 });
       });
 
+      if (result.rawAnalysis) {
+        if (y > H - 55) { doc.addPage(); y = 20; }
+        y += 12;
+        doc.setTextColor(0, 120, 200);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.text('▶ TERMINAL EXECUTION LOGS', 14, y);
+        
+        y += 8;
+        doc.setFont('courier', 'normal');
+        doc.setFontSize(7.5);
+        doc.setTextColor(50, 50, 50);
+        
+        const lines = String(result.rawAnalysis).split('\n');
+        for (const line of lines) {
+          const cleanLine = line.replace(/\r/g, '');
+          const splitLines = doc.splitTextToSize(cleanLine, W - 28);
+          for (const sLine of splitLines) {
+            if (y > H - 25) {
+              doc.addPage();
+              y = 20;
+              // Reset font state on new page
+              doc.setFont('courier', 'normal');
+              doc.setFontSize(7.5);
+              doc.setTextColor(50, 50, 50);
+            }
+            doc.text(sLine, 14, y);
+            y += 4;
+          }
+        }
+      }
+
       // Footer
       doc.setFillColor(245, 246, 248);
       doc.rect(0, H - 20, W, 20, 'F');

@@ -142,22 +142,32 @@ const checkEmail = async (req, res, next) => {
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: 'Email address is required' });
 
-    const intel = await checkEmailBreaches(email);
-    const isLeaked = intel.breaches && intel.breaches.length > 0;
+    let leaks = [];
+    let source = "CyberShield-X Intel (Simulated)";
+
+    if (process.env.ENZOIC_API_KEY) {
+      const intel = await checkEmailBreaches(email);
+      leaks = intel.breaches || [];
+      source = intel.source;
+    } else {
+      leaks = getDeterministicLeaks(email, 'email');
+    }
+
+    const isLeaked = leaks.length > 0;
 
     await ActivityLog.create({
       userId: req.user?._id || null,
       action: 'BREACH_CHECK_EMAIL',
       status: isLeaked ? 'warning' : 'success',
-      metadata: { target: 'EMAIL_HIDDEN', count: intel.total || 0, source: intel.source }
+      metadata: { target: 'EMAIL_HIDDEN', count: leaks.length, source }
     });
 
     res.json({
       success: true,
       found: isLeaked,
-      count: intel.total || 0,
-      leaks: intel.breaches || [],
-      source: intel.source,
+      count: leaks.length,
+      leaks,
+      source,
       methodology: "CyberShield-X Hybrid Intel (HIBP + Regional)",
       scannedAt: new Date()
     });

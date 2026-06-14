@@ -25,11 +25,11 @@ services:
     container_name: nexus-server
     restart: always
     ports:
-      - "5001:5001"
+      - "3001:3001"
     environment:
       - NODE_ENV=production
       - MONGODB_URI=mongodb://nexus-db:27017/cybershield
-      - PORT=5001
+      - PORT=3001
       # JWT Secrets and API keys should be passed via .env file on host
     env_file:
       - ./server/.env
@@ -39,7 +39,7 @@ services:
     networks:
       - nexus-net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
       interval: 30s
       timeout: 10s
       retries: 3

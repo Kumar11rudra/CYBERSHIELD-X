@@ -199,13 +199,8 @@ const checkPasswordBreach = async (req, res) => {
 
 const signup = async (req, res, next) => {
   try {
-    const { username, email, password, mobileNumber, fullName, age, country, gender, verificationToken } = req.body;
+    const { username, email, password, mobileNumber, fullName, age, country, gender } = req.body;
     const normalizedEmail = normalizeEmail(email);
-
-    // ─── Verification Check ──────────────────────────────────────────────────
-    if (!(await isVerifiedEmailTokenValid(normalizedEmail, verificationToken))) {
-      return res.status(403).json({ error: 'Email verification required or token expired' });
-    }
 
     const normalizedMobileNumber = normalizeMobileNumber(mobileNumber);
 
@@ -240,9 +235,6 @@ const signup = async (req, res, next) => {
       ...(country && { country }),
       ...(gender && { gender }),
     });
-
-    // Consume the token so it cannot be reused
-    await consumeVerifiedEmailToken(normalizedEmail);
 
     // ─── #11: Session Fingerprinting (Anti-Hijacking) ─────────────────────────
     const nexusToken = req.headers['x-nexus-session-token'];

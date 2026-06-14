@@ -28,23 +28,6 @@ const executeTool = async (req, res, next) => {
 
     const cleanTarget = sanitizeTarget(target);
 
-    // ── Real Tools (keep execution) ──────────────────────────────────────────
-    // Module Router — only tools with REAL backend execution
-    const COMING_SOON_TOOLS = [
-      'sqlmap', 'john', 'hashcat', 'autopsy', 'ftk', 'volatility',
-      'splunk', 'malware-sandbox', 'zerothreat', 'mobsf', 'sherlock',
-      'stegano', 'whatweb', 'exiftool', 'slither', 'dirsearch',
-      'metasploit', 'trivy', 'aircrack'
-    ];
-
-    if (COMING_SOON_TOOLS.includes(toolId)) {
-      return res.json({
-        status: 'coming_soon',
-        tool: toolId,
-        message: `${toolId} integration is coming soon. Stay tuned for real scanning capabilities!`,
-      });
-    }
-
     if (toolId === 'nmap') {
       executeNmap(cleanTarget, socketId, io, res);
     } else if (toolId === 'nikto') {
@@ -63,8 +46,46 @@ const executeTool = async (req, res, next) => {
       executeUpiVerifier(cleanTarget, socketId, io, res);
     } else if (toolId === 'email-verifier') {
       executeEmailVerifier(cleanTarget, socketId, io, res);
+    } else if (toolId === 'sqlmap') {
+      executeSqlmap(cleanTarget, socketId, io, res);
+    } else if (toolId === 'splunk') {
+      executeSplunk(cleanTarget, socketId, io, res);
+    } else if (toolId === 'john') {
+      executeJohn(cleanTarget, socketId, io, res);
+    } else if (toolId === 'hashcat') {
+      executeHashcat(cleanTarget, socketId, io, res);
+    } else if (toolId === 'autopsy') {
+      executeAutopsy(cleanTarget, socketId, io, res);
+    } else if (toolId === 'zerothreat') {
+      executeZeroThreat(cleanTarget, socketId, io, res);
+    } else if (toolId === 'mobsf') {
+      executeMobSF(cleanTarget, socketId, io, res);
+    } else if (toolId === 'sherlock') {
+      executeSherlock(cleanTarget, socketId, io, res);
+    } else if (toolId === 'stegano') {
+      executeStegano(cleanTarget, socketId, io, res);
+    } else if (toolId === 'whatweb') {
+      executeWhatWeb(cleanTarget, socketId, io, res);
+    } else if (toolId === 'exiftool') {
+      executeExifTool(cleanTarget, socketId, io, res);
+    } else if (toolId === 'slither') {
+      executeSlither(cleanTarget, socketId, io, res);
+    } else if (toolId === 'metasploit') {
+      executeMetasploit(cleanTarget, socketId, io, res);
+    } else if (toolId === 'trivy') {
+      executeTrivy(cleanTarget, socketId, io, res);
+    } else if (toolId === 'aircrack') {
+      executeAircrack(cleanTarget, socketId, io, res);
+    } else if (toolId === 'dirsearch') {
+      executeDirsearch(cleanTarget, socketId, io, res);
+    } else if (toolId === 'ftk') {
+      executeFtk(cleanTarget, socketId, io, res);
+    } else if (toolId === 'volatility') {
+      executeVolatility(cleanTarget, socketId, io, res);
+    } else if (toolId === 'malware-sandbox') {
+      executeMalwareSandbox(cleanTarget, socketId, io, res);
     } else {
-      res.status(400).json({ error: 'Tool not available. Check back later!' });
+      res.status(400).json({ error: `Tool ${toolId} not available. Check back later!` });
     }
 
   } catch (error) {

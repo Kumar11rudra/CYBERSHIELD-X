@@ -293,7 +293,7 @@ const shutdown = async (signal) => {
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
 
-const PORT = Number(process.env.PORT) || 5001;
+const PORT = Number(process.env.PORT) || 3001;
 if (require.main === module) {
   // Bind to 0.0.0.0 for cloud platforms (Render, Railway, etc.)
   // This allows external traffic to reach the server

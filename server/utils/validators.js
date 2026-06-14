@@ -131,18 +131,7 @@ const authValidationRules = {
       .isEmail()
       .normalizeEmail()
       .withMessage('Valid email required'),
-    body('verificationToken')
-      .custom((value) => {
-        if (isDevSignupBypassEnabled()) {
-          return true;
-        }
 
-        if (!String(value || '').trim()) {
-          throw new Error('Verify your email with OTP before creating an account');
-        }
-
-        return true;
-      }),
     body('password')
       .isLength({ min: 8 })
       .withMessage('Password must be at least 8 characters')

@@ -40,11 +40,8 @@ const api = axios.create({
 
 // ─── Request Interceptor: Attach CSRF session header ──────────────────────────
 api.interceptors.request.use((config) => {
-  const method = (config.method || 'get').toLowerCase();
-  if (!['get', 'head', 'options'].includes(method)) {
-    config.headers = config.headers || {};
-    config.headers['x-nexus-session-token'] = getNexusSessionToken();
-  }
+  config.headers = config.headers || {};
+  config.headers['x-nexus-session-token'] = getNexusSessionToken();
   return config;
 });
 

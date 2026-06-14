@@ -1,45 +1,23 @@
-const axios = require('axios');
-
 /**
  * Email Intelligence Service
- * Uses Verifalia (Free Tier) or Truemail logic for deep email validation.
+ * 100% Local / Simulated Offline Version
  */
-
-const VERIFALIA_BASE = 'https://api.verifalia.com/v2.4';
-
 const verifyEmailIntegrity = async (email) => {
-  const apiKey = process.env.VERIFALIA_API_KEY; // Base64 encoded 'sid:secret'
+  const emailNorm = String(email || '').trim().toLowerCase();
+  const isDisposable = emailNorm.includes('temp') || emailNorm.includes('mailinator') || emailNorm.includes('yopmail');
+  const isRole = emailNorm.startsWith('admin@') || emailNorm.startsWith('support@') || emailNorm.startsWith('info@');
   
-  if (!apiKey) {
-    return {
-      source: 'CyberShield-X Email Lab',
-      status: 'simulated',
-      analysis: {
-        isValid: true,
-        isDisposable: false,
-        isRoleAccount: false,
-        riskScore: 5
-      },
-      note: 'Configure VERIFALIA_API_KEY for deep mailbox-level verification.'
-    };
-  }
-
-  try {
-    const response = await axios.post(`${VERIFALIA_BASE}/email-validations`, {
-      entries: [{ input: email }]
-    }, {
-      headers: { 'Authorization': `Basic ${apiKey}`, 'Content-Type': 'application/json' }
-    });
-
-    return {
-      source: 'Verifalia Intel',
-      status: 'success',
-      data: response.data
-    };
-  } catch (error) {
-    console.error('[EMAIL VERIFY ERROR]', error.message);
-    return { error: 'Email verification engine offline.', source: 'Verifalia' };
-  }
+  return {
+    source: 'CyberShield-X Email Lab (Local)',
+    status: 'simulated',
+    analysis: {
+      isValid: emailNorm.includes('@') && emailNorm.split('@')[1].includes('.'),
+      isDisposable,
+      isRoleAccount: isRole,
+      riskScore: isDisposable ? 85 : isRole ? 20 : 5
+    },
+    note: 'Offline email integrity scan completed.'
+  };
 };
 
 module.exports = { verifyEmailIntegrity };

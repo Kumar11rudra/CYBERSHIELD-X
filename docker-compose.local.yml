@@ -1,11 +1,10 @@
 services:
-  server:
+  nexus-server:
     ports:
-      - "5001:5000"
-  client:
+      - "3001:3001"
+  nexus-frontend:
     ports:
       - "8080:80"
-      - "8443:443"
-  mongo:
+  nexus-db:
     ports:
       - "27018:27017"

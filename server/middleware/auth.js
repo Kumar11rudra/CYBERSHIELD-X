@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const { verifyToken } = require('../utils/jwt');
 const User = require('../models/User');
 const SystemSettings = require('../models/SystemSettings');
@@ -22,15 +23,19 @@ const authenticate = async (req, res, next) => {
 
     // ─── #11: Session Fingerprinting (Anti-Hijacking) ─────────────────────────
     if (decoded.fingerprintHash) {
-      const crypto = require('crypto');
       const nexusToken = req.headers['x-nexus-session-token'];
-      if (!nexusToken) {
+      const isSafeMethod = ['get', 'head', 'options'].includes(req.method.toLowerCase());
+      
+      if (!nexusToken && !isSafeMethod) {
         return res.status(401).json({ error: 'Session fingerprint missing. Please re-authenticate.' });
       }
-      const currentHash = crypto.createHash('sha256').update(nexusToken).digest('hex');
-      if (currentHash !== decoded.fingerprintHash) {
-        console.warn(`[SECURITY] Session Hijacking Attempt? Token fingerprint mismatch for user ${decoded.id}`);
-        return res.status(401).json({ error: 'Session context mismatch. Please re-authenticate.' });
+      
+      if (nexusToken) {
+        const currentHash = crypto.createHash('sha256').update(nexusToken).digest('hex');
+        if (currentHash !== decoded.fingerprintHash) {
+          console.warn(`[SECURITY] Session Hijacking Attempt? Token fingerprint mismatch for user ${decoded.id}`);
+          return res.status(401).json({ error: 'Session context mismatch. Please re-authenticate.' });
+        }
       }
     }
 

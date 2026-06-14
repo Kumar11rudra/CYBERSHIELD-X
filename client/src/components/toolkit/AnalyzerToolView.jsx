@@ -1,6 +1,10 @@
 import React, { useState, useCallback } from 'react';
 import { getToolConfig } from './toolConfig';
 import api from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import usePdfExport from '../../hooks/usePdfExport';
+import toast from 'react-hot-toast';
 
 /**
  * AnalyzerToolView — Template for analysis tools (VirusTotal, WHOIS, SSL).
@@ -18,6 +22,19 @@ const AnalyzerToolView = ({ toolId }) => {
   const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState(null);
 
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { exportToolReportPdf } = usePdfExport();
+
+  const handleExportPdf = () => {
+    if (!user) {
+      toast.error('You must login first to download the report.');
+      navigate('/login');
+      return;
+    }
+    exportToolReportPdf(tool.name, target, results, user);
+  };
+
   const handleAnalyze = useCallback(async () => {
     const trimmed = target.trim();
     if (!trimmed) return;
@@ -27,7 +44,7 @@ const AnalyzerToolView = ({ toolId }) => {
     setAnalyzing(true);
 
     try {
-      const response = await api.post('/api/toolkit/execute', {
+      const response = await api.post('/toolkit/execute', {
         toolId,
         target: trimmed,
       });
@@ -233,9 +250,19 @@ const AnalyzerToolView = ({ toolId }) => {
 
       {/* Report section */}
       <div style={styles.reportSection}>
-        <h3 style={styles.reportTitle}>
-          {analyzing ? 'Analyzing…' : results ? 'Analysis Report' : 'Report'}
-        </h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h3 style={styles.reportTitle}>
+            {analyzing ? 'Analyzing…' : results ? 'Analysis Report' : 'Report'}
+          </h3>
+          {results && !analyzing && (
+            <button
+              onClick={handleExportPdf}
+              style={styles.exportButton}
+            >
+              📄 Export PDF
+            </button>
+          )}
+        </div>
         {analyzing && renderSkeletonCards()}
         {!analyzing && results && renderResultCards(results)}
         {!analyzing && !results && !error && (
@@ -479,6 +506,17 @@ const styles = {
     height: '12px',
     borderRadius: '4px',
     background: 'rgba(255,255,255,0.06)',
+  },
+  exportButton: {
+    padding: '6px 12px',
+    borderRadius: '8px',
+    border: '1px solid rgba(0, 212, 255, 0.4)',
+    background: 'rgba(0, 212, 255, 0.1)',
+    color: '#00bfff',
+    fontSize: '12px',
+    fontWeight: 600,
+    cursor: 'pointer',
+    transition: 'all 0.2s',
   },
 };
 

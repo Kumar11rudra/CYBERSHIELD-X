@@ -1,46 +1,39 @@
-const axios = require('axios');
-
 /**
  * Payment & Identity Intelligence Service
- * Uses SurePass / Paytm Sandbox for verifying payment entities and UPI risks.
+ * 100% Local / Simulated Offline Version
  */
-
-const SUREPASS_BASE = 'https://api.surepass.io/api/v1';
-
 const verifyPaymentEntity = async (vpa) => {
-  const apiKey = process.env.SUREPASS_API_KEY;
-
-  if (!apiKey) {
-    return {
-      source: 'Nexus-Finance Simulator',
-      status: 'simulated',
-      analysis: {
-        vpa,
-        name: 'Simulated User',
-        isVerified: true,
-        riskLevel: 'Low',
-        merchantType: 'Individual'
-      },
-      note: 'Configure SUREPASS_API_KEY for real-time UPI/Merchant verification.'
-    };
+  const normalized = String(vpa || '').trim().toLowerCase();
+  const parts = normalized.split('@');
+  const isMerchant = normalized.includes('merchant') || normalized.includes('store') || normalized.includes('billing');
+  const validBanks = ['okicici', 'okhdfcbank', 'sbi', 'paytm', 'ybl', 'ibl', 'axl', 'apl'];
+  
+  let riskLevel = 'Low';
+  let isVerified = true;
+  
+  if (parts.length === 2) {
+    const bank = parts[1];
+    if (!validBanks.includes(bank)) {
+      riskLevel = 'Medium';
+      isVerified = false;
+    }
+  } else {
+    riskLevel = 'High';
+    isVerified = false;
   }
 
-  try {
-    const response = await axios.post(`${SUREPASS_BASE}/bank-details/upi-verification`, {
-      vpa: vpa
-    }, {
-      headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' }
-    });
-
-    return {
-      source: 'SurePass Finance Intel',
-      status: 'success',
-      data: response.data
-    };
-  } catch (error) {
-    console.error('[PAYMENT VERIFY ERROR]', error.message);
-    return { error: 'Payment verification service unavailable.', source: 'SurePass' };
-  }
+  return {
+    source: 'Nexus-Finance Simulator (Local)',
+    status: 'simulated',
+    analysis: {
+      vpa,
+      name: isVerified ? 'Verified Operator Node' : 'Unrecognized Entity',
+      isVerified,
+      riskLevel,
+      merchantType: isMerchant ? 'Merchant / Business' : 'Individual'
+    },
+    note: 'Offline VPA scan completed.'
+  };
 };
 
 module.exports = { verifyPaymentEntity };

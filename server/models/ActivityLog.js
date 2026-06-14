@@ -28,7 +28,7 @@ const activityLogSchema = new mongoose.Schema(
       },
       network: {
         isp: String,      // e.g., Reliance Jio
-        type: String,     // e.g., 4G, 5G, WiFi
+        type: { type: String },     // e.g., 4G, 5G, WiFi
       },
       location: {
         city: String,
