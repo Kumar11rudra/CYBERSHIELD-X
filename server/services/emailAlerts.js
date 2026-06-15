@@ -100,6 +100,13 @@ const sendThreatAlert = async ({ to, username, scan }) => {
 };
 
 const sendVerificationCode = async ({ to, code, expiresInMinutes = 10, verifyLink = '' }) => {
+  const isPreviewMode = isEmailPreviewModeEnabled() || (!isEmailDeliveryConfigured() && IS_DEV);
+  if (isPreviewMode) {
+    console.log(`\n📧 [DEV] Verification email skipped — would send to: ${to}`);
+    console.log(`   Verification Code: ${code} | Link: ${verifyLink}\n`);
+    return { delivered: true, mode: 'preview' };
+  }
+
   if (!isEmailDeliveryConfigured()) {
     const error = new Error('Email configuration missing in .env (EMAIL_USER/EMAIL_PASS required).');
     error.status = 503;

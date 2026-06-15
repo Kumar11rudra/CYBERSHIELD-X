@@ -161,6 +161,14 @@ const authValidationRules = {
       .notEmpty()
       .withMessage('Country is required')
       .isLength({ max: 100 }),
+    body('verificationToken')
+      .custom((value, { req }) => {
+        if (isDevSignupBypassEnabled()) return true;
+        if (!value || !value.trim()) {
+          throw new Error('Email verification token is required');
+        }
+        return true;
+      }),
   ],
   login: [
     normalizeIdentityField,

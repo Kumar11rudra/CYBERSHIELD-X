@@ -95,7 +95,7 @@ export default function SignupPage() {
   const [usernameAvailable, setUsernameAvailable] = useState(null);
   const [emailOtpSent, setEmailOtpSent] = useState(false);
   const [emailOtpVerifying, setEmailOtpVerifying] = useState(false);
-  const [emailOtpVerified, setEmailOtpVerified] = useState(true);
+  const [emailOtpVerified, setEmailOtpVerified] = useState(false);
   const [usernameSuggestions, setUsernameSuggestions] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -104,6 +104,23 @@ export default function SignupPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const usernameRequestRef = useRef(0);
+
+  useEffect(() => {
+    const verifiedEmail = sessionStorage.getItem('csx_verified_email');
+    const verificationToken = sessionStorage.getItem('csx_verification_token');
+    if (verifiedEmail && verificationToken) {
+      setForm(prev => ({
+        ...prev,
+        email: verifiedEmail,
+        verificationToken: verificationToken
+      }));
+      setEmailOtpVerified(true);
+      setEmailOtpSent(true);
+      toast.success('Pre-verified email from Nexus connection!');
+      sessionStorage.removeItem('csx_verified_email');
+      sessionStorage.removeItem('csx_verification_token');
+    }
+  }, []);
 
   useEffect(() => {
     const value = form.username.trim().toLowerCase();
@@ -207,18 +224,26 @@ export default function SignupPage() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleNextStep2 = () => {
     const newErrors = {};
     if (!form.fullName.trim()) newErrors.fullName = t('auth.validation.fillProfile');
     if (!form.age || parseInt(form.age) < 10) newErrors.age = 'Minimum age 10 required';
     if (!form.gender) newErrors.gender = 'Gender is required';
-    if (!termsAccepted) {
-      toast.error('Please accept the protocols to complete registration');
-      return;
-    }
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      return;
+    }
+    setStep(3);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!emailOtpVerified) {
+      toast.error('Please verify your email address first');
+      return;
+    }
+    if (!termsAccepted) {
+      toast.error('Please accept the protocols to complete registration');
       return;
     }
 
@@ -227,7 +252,7 @@ export default function SignupPage() {
     const finalAge = form.age ? parseInt(form.age) : undefined;
     
     try {
-      await signup(form.username, form.email, form.password, fullMobile, undefined, form.fullName, finalAge, form.country, form.gender);
+      await signup(form.username, form.email, form.password, fullMobile, form.verificationToken, form.fullName, finalAge, form.country, form.gender);
       toast.success('Welcome to the Nexus!');
       navigate('/dashboard');
     } catch (err) {
@@ -311,7 +336,7 @@ export default function SignupPage() {
           </div>
 
           <div className="space-y-8 w-full max-w-xs">
-            {[ { s: 1, l: 'Identity' }, { s: 2, l: 'Profile & Register' } ].map(i => (
+            {[ { s: 1, l: 'Identity' }, { s: 2, l: 'Profile' }, { s: 3, l: 'Verification' } ].map(i => (
               <div key={i.s} className={`flex items-center gap-6 transition-all duration-500 ${step === i.s ? 'opacity-100 translate-x-4' : 'opacity-30'}`}>
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center font-mono text-lg border-2 ${step === i.s ? 'bg-cyber-green text-black border-cyber-green shadow-[0_0_20px_rgba(0,255,136,0.5)]' : 'border-white/20 text-white'}`}>{i.s}</div>
                 <div>
@@ -469,19 +494,51 @@ export default function SignupPage() {
                         </div>
                       </div>
 
-                      <div className="space-y-2.5 pt-2">
-                        <label className="flex items-center gap-4 cursor-pointer select-none">
-                          <input type="checkbox" checked={termsAccepted} onChange={() => setTermsAccepted(!termsAccepted)} className="hidden" />
-                          <div className={`w-5 h-5 border rounded flex items-center justify-center transition-all ${termsAccepted ? 'bg-cyber-green border-cyber-green text-black font-bold' : 'border-white/20'}`}>
-                            {termsAccepted && "✓"}
-                          </div>
-                          <span className="font-mono text-[9px] text-cyber-muted uppercase">Accept Protocols & Privacy Policy</span>
-                        </label>
-                      </div>
                     </div>
                     <div className="flex gap-4 pt-4">
                       <button type="button" onClick={() => setStep(1)} className="flex-1 py-5 border border-white/10 text-white font-mono text-xs uppercase rounded-2xl">Back</button>
-                      <button type="submit" disabled={!termsAccepted || loading} className="flex-[2] py-5 bg-cyber-green text-black font-mono font-black uppercase rounded-2xl disabled:opacity-20 transition-all">
+                      <button type="button" onClick={handleNextStep2} className="flex-[2] py-5 bg-cyber-green text-black font-mono font-black uppercase rounded-2xl transition-all">
+                        Proceed
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+                {step === 3 && (
+                  <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
+                    <h2 className="font-display text-2xl font-bold text-white">Security Verification</h2>
+                    <div className="p-6 bg-white/[0.02] border border-white/10 rounded-2xl space-y-6">
+                      {!emailOtpVerified && (
+                        <div className="space-y-6">
+                          {!emailOtpSent ? (
+                            <button type="button" onClick={handleSendEmailOtp} disabled={emailOtpVerifying} className="w-full py-4 bg-white/5 border border-white/10 rounded-xl text-cyber-green font-mono text-xs font-bold uppercase tracking-widest hover:bg-cyber-green/10 transition-colors">
+                              {emailOtpVerifying ? 'Generating OTP...' : `Send OTP to ${form.email}`}
+                            </button>
+                          ) : (
+                            <div className="space-y-4">
+                              <input maxLength={6} value={form.emailOtp} onChange={e => updateForm('emailOtp', e.target.value.replace(/\D/g, ''))} className="w-full bg-black/40 border border-cyber-green/30 rounded-2xl px-5 py-4 font-mono text-center tracking-[1em] text-cyber-green text-xl outline-none" placeholder="------" />
+                              <button type="button" onClick={handleVerifyEmailOtp} disabled={emailOtpVerifying} className="w-full py-4 bg-cyber-green text-black font-mono font-bold uppercase tracking-widest rounded-xl transition-all active:scale-95">
+                                {emailOtpVerifying ? 'Verifying...' : 'Verify Code'}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      {emailOtpVerified && <div className="text-center text-cyber-green font-mono text-sm">✓ Email Authenticated</div>}
+                    </div>
+
+                    <div className="space-y-2.5 pt-2">
+                      <label className="flex items-center gap-4 cursor-pointer select-none">
+                        <input type="checkbox" checked={termsAccepted} onChange={() => setTermsAccepted(!termsAccepted)} className="hidden" />
+                        <div className={`w-5 h-5 border rounded flex items-center justify-center transition-all ${termsAccepted ? 'bg-cyber-green border-cyber-green text-black font-bold' : 'border-white/20'}`}>
+                          {termsAccepted && "✓"}
+                        </div>
+                        <span className="font-mono text-[9px] text-cyber-muted uppercase">Accept Protocols & Privacy Policy</span>
+                      </label>
+                    </div>
+
+                    <div className="flex gap-4 pt-4">
+                      <button type="button" onClick={() => setStep(2)} className="flex-1 py-5 border border-white/10 text-white font-mono text-xs uppercase rounded-2xl">Back</button>
+                      <button type="submit" disabled={!emailOtpVerified || !termsAccepted || loading} className="flex-[2] py-5 bg-cyber-green text-black font-mono font-black uppercase rounded-2xl disabled:opacity-20 transition-all">
                         {loading ? 'Finalizing Registry...' : 'Complete Registration'}
                       </button>
                     </div>
