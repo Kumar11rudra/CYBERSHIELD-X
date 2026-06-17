@@ -27,6 +27,8 @@ const toolsRoutes = require('./routes/tools');
 const aiRoutes = require('./routes/ai');
 const breachRoutes = require('./routes/breach');
 const toolkitRoutes = require('./routes/toolkit');
+const iocRoutes = require('./routes/ioc');
+const reportRoutes = require('./routes/report');
 const { ipFirewall } = require('./middleware/auth');
 const logger = require('./utils/logger');
 const { observabilityMiddleware, getMetrics } = require('./middleware/observability');
@@ -123,9 +125,14 @@ const buildStatusPayload = () => {
   };
 };
 
+// Boot Queue Workers & Providers
+require('./workers/queueProvider');
+
 // DB Connection
 if (process.env.NODE_ENV !== 'test') {
   connectDB();
+  const { startScheduler } = require('./services/cronService');
+  startScheduler();
 }
 
 // ─── Production Hardening ─────────────────────────────────────────────────────
@@ -218,7 +225,18 @@ app.use('/api/breach', breachRoutes);
 app.use('/api/vault', require('./routes/vault'));
 app.use('/api/watchlist', require('./routes/watchlist'));
 app.use('/api/membership', require('./routes/membership'));
+app.use('/api/orgs', require('./routes/org'));
+app.use('/api/vulnerabilities', require('./routes/vulnerability'));
+app.use('/api/assets', require('./routes/asset'));
+app.use('/api/notifications', require('./routes/notification'));
+app.use('/api/schedules', require('./routes/schedule'));
 app.use('/api/toolkit', toolkitRoutes);
+app.use('/api/ioc', iocRoutes);
+app.use('/api/reports', reportRoutes);
+app.use('/api/playbooks', require('./routes/playbook'));
+app.use('/api/integrations', require('./routes/integration'));
+app.use('/api/remediations', require('./routes/remediation'));
+app.use('/api/health', require('./routes/health'));
 
 // ─── #15: CSP Violation Reporting Endpoint ───────────────────────────────────
 app.post('/api/security/csp-violation', (req, res) => {

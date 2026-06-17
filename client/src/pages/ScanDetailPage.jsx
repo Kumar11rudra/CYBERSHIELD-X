@@ -128,13 +128,83 @@ export default function ScanDetailPage() {
   const [scan, setScan] = useState(null);
   const [loading, setLoading] = useState(true);
   const { exportPdf, exporting } = usePdfExport();
+  const [downloadingBackend, setDownloadingBackend] = useState(false);
+  const [aiAnalysis, setAiAnalysis] = useState(null);
+  const [savedAsAsset, setSavedAsAsset] = useState(false);
+  const [savingAsset, setSavingAsset] = useState(false);
+
+  const handleDownloadBackendPdf = async () => {
+    if (!scan?._id) return;
+    setDownloadingBackend(true);
+    try {
+      const response = await api.get(`/reports/generate-pdf/${scan._id}`, {
+        responseType: 'blob',
+      });
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = `CyberShield_Enterprise_Report_${scan._id}.pdf`;
+      link.click();
+      toast.success('Enterprise PDF downloaded successfully.');
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to generate backend PDF report.');
+    } finally {
+      setDownloadingBackend(false);
+    }
+  };
 
   useEffect(() => {
     api.get(`/history/${id}`)
-      .then((res) => setScan(res.data.scan))
+      .then((res) => {
+        setScan(res.data.scan);
+        api.get('/assets')
+          .then((assetRes) => {
+            const cleanTarget = res.data.scan.target.trim().toLowerCase().replace(/^https?:\/\//, '').split('/')[0];
+            const exists = assetRes.data.assets?.some(
+              a => a.hostname.trim().toLowerCase().replace(/^https?:\/\//, '').split('/')[0] === cleanTarget
+            );
+            if (exists) {
+              setSavedAsAsset(true);
+            }
+          })
+          .catch(err => console.error('Error fetching assets:', err));
+      })
       .catch(() => { toast.error('Scan not found'); navigate('/history'); })
       .finally(() => setLoading(false));
   }, [id, navigate]);
+
+  const handleSaveAsAsset = async () => {
+    if (!scan) return;
+    setSavingAsset(true);
+    try {
+      const typeMap = {
+        ip: 'Server',
+        domain: 'Domain',
+        url: 'Website'
+      };
+      const assetType = typeMap[scan.targetType] || 'Website';
+      
+      await api.post('/assets', {
+        hostname: scan.target,
+        assetType,
+        criticality: 'Medium',
+        environment: 'Production',
+        status: 'active'
+      });
+      setSavedAsAsset(true);
+      toast.success('Asset saved successfully. Continuous monitoring activated.');
+    } catch (err) {
+      if (err.response?.status === 409) {
+        setSavedAsAsset(true);
+        toast.success('Asset added to managed inventory.');
+      } else {
+        toast.error('Failed to save asset.');
+      }
+    } finally {
+      setSavingAsset(false);
+    }
+  };
 
   const handleCopyTarget = async () => {
     try {
@@ -225,17 +295,33 @@ export default function ScanDetailPage() {
 
             <div className="flex items-center gap-3 mt-4 flex-wrap">
               <button
-                onClick={() => exportPdf(scan, user)}
+                onClick={() => exportPdf(scan, user, aiAnalysis)}
                 disabled={exporting}
                 className="cyber-button-primary text-xs py-2 px-3 disabled:opacity-50"
+                title="Generate PDF report inside browser sandbox (Fast)"
               >
-                {exporting ? 'Generating PDF…' : 'Download Report'}
+                {exporting ? 'Generating...' : '📄 Browser PDF'}
+              </button>
+              <button
+                onClick={handleDownloadBackendPdf}
+                disabled={downloadingBackend}
+                className="text-xs py-2 px-3 bg-gradient-to-r from-violet-600 to-indigo-600 border border-violet-500 hover:border-violet-400 text-white rounded-lg hover:shadow-[0_0_15px_rgba(139,92,246,0.3)] disabled:opacity-50 transition-all font-mono font-bold"
+                title="Compile enterprise-grade report on server (Recommended for mobile/large files)"
+              >
+                {downloadingBackend ? 'Compiling...' : '🏛️ Server PDF'}
               </button>
               <button
                 onClick={handleShareScan}
                 className={`text-xs py-2 px-3 border transition-colors ${scan.isPublic ? 'bg-cyber-accent/20 border-cyber-accent text-cyber-accent' : 'bg-transparent border-cyber-border text-cyber-muted hover:border-cyber-accent hover:text-cyber-accent'}`}
               >
                 {scan.isPublic ? '🔗 Shared (Click to Make Private)' : 'Share Scan'}
+              </button>
+              <button
+                onClick={handleSaveAsAsset}
+                disabled={savingAsset || savedAsAsset}
+                className={`text-xs py-2 px-3 border transition-all rounded-lg font-mono font-bold ${savedAsAsset ? 'bg-green-500/10 border-green-500/30 text-green-400 cursor-not-allowed font-semibold' : 'bg-transparent border-[#00bfff]/30 text-cyan-400 hover:bg-[#00bfff]/10 hover:border-cyan-400'}`}
+              >
+                {savingAsset ? 'Saving...' : (savedAsAsset ? '🛡️ Managed Asset' : '➕ Save as Managed Asset')}
               </button>
               <button onClick={handleCopyTarget} className="font-mono text-xs text-cyber-accent hover:underline uppercase tracking-widest">
                 Copy Target
@@ -248,7 +334,7 @@ export default function ScanDetailPage() {
         </div>
       </div>
 
-      <AISummary scan={scan} />
+      <AISummary scan={scan} onAnalysisLoaded={setAiAnalysis} />
 
       <ScanGuidance scan={scan} />
       

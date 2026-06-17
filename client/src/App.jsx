@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
+import { OrganizationProvider } from './context/OrganizationContext';
 import './i18n/config';
 import { I18nProvider } from './i18n/provider';
 
@@ -39,9 +40,9 @@ const ApiLimitsPage        = lazy(() => import('./pages/ApiLimitsPage'));
 const UpiVerifierPage      = lazy(() => import('./pages/UpiVerifierPage'));
 const VaultPage            = lazy(() => import('./pages/VaultPage'));
 const MembershipPage       = lazy(() => import('./pages/MembershipPage'));
-// ─── Combined Pages ────────────────────────────────────────────────────────────
 const MessageAnalyzerPage  = lazy(() => import('./pages/MessageAnalyzerPage'));
 const WebForensicsPage     = lazy(() => import('./pages/WebForensicsPage'));
+const ThreatIntelligencePage = lazy(() => import('./pages/ThreatIntelligencePage'));
 // ─── Legacy deep link components ──────────────────────────────────────────────
 const IPReputationHistoryPage = lazy(() => import('./pages/IPReputationHistoryPage'));
 const ToolkitPage              = lazy(() => import('./pages/ToolkitPage'));
@@ -49,6 +50,12 @@ const ToolDetailPage           = lazy(() => import('./pages/ToolDetailPage'));
 const VerifyEmailPage          = lazy(() => import('./pages/VerifyEmailPage'));
 const PrivacyPolicyPage        = lazy(() => import('./pages/PrivacyPolicyPage'));
 const TermsOfServicePage       = lazy(() => import('./pages/TermsOfServicePage'));
+const AssetsPage               = lazy(() => import('./pages/AssetsPage'));
+const SOCPage                  = lazy(() => import('./pages/SOCPage'));
+const VulnerabilityPage        = lazy(() => import('./pages/VulnerabilityPage'));
+const IntegrationsPage         = lazy(() => import('./pages/IntegrationsPage'));
+const RemediationPage          = lazy(() => import('./pages/RemediationPage'));
+const SystemHealthPage         = lazy(() => import('./pages/SystemHealthPage'));
 
 // Helper Components
 const PrivateRoute = ({ children }) => {
@@ -97,7 +104,14 @@ const AppRoutes = () => (
       <Route path="shared-scan/:id" element={<SharedScanPage />} />
       <Route path="settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
       <Route path="membership" element={<PrivateRoute><MembershipPage /></PrivateRoute>} />
+      <Route path="assets" element={<PrivateRoute><AssetsPage /></PrivateRoute>} />
+      <Route path="soc" element={<PrivateRoute><SOCPage /></PrivateRoute>} />
+      <Route path="vulnerabilities" element={<PrivateRoute><VulnerabilityPage /></PrivateRoute>} />
+      <Route path="integrations" element={<PrivateRoute><IntegrationsPage /></PrivateRoute>} />
+      <Route path="remediation" element={<PrivateRoute><RemediationPage /></PrivateRoute>} />
+      <Route path="system-health" element={<PrivateRoute><SystemHealthPage /></PrivateRoute>} />
       <Route path="toolkit" element={<ToolkitPage />} />
+      <Route path="threat-intel" element={<PrivateRoute><ThreatIntelligencePage /></PrivateRoute>} />
       <Route path="privacy" element={<PrivacyPolicyPage />} />
       <Route path="terms" element={<TermsOfServicePage />} />
 
@@ -143,6 +157,7 @@ export default function App() {
         <LanguageProvider>
           <ThemeProvider>
             <AuthProvider>
+              <OrganizationProvider>
               <div className="relative min-h-screen bg-cyber-bg text-cyber-text selection:bg-cyber-accent/30 selection:text-white">
                 <DefenseOverlay />
                 <ErrorBoundary>
@@ -155,6 +170,7 @@ export default function App() {
                   style: { background: '#020814', color: '#fff', border: '1px solid rgba(0, 212, 255, 0.2)', fontSize: '12px' },
                 }} />
               </div>
+              </OrganizationProvider>
             </AuthProvider>
           </ThemeProvider>
         </LanguageProvider>

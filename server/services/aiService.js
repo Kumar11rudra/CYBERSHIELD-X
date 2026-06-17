@@ -1,9 +1,34 @@
-/**
- * Neural Intelligence Service - 100% Offline Zero-API FOSS Edition
- * Powers AI Pentest Automator locally with zero external network calls or API costs.
- */
+const axios = require('axios');
 
-const generateSecurityGuidance = async (tool, target, context) => {
+const generateSecurityGuidance = async (tool, target, context, selectedModel = 'llama3') => {
+  const ollamaUrl = process.env.OLLAMA_URL || 'http://127.0.0.1:11434';
+  
+  try {
+    const systemPrompt = `You are CyberShield X AI, a professional cybersecurity copilot.
+Context: ${context}
+Provide a clear, brief, and actionable cybersecurity report or answer for the target "${target}" scanned via the tool "${tool}".
+Focus on real hazards, recommendations, and mitigation strategies. Keep formatting clean and markdown-based.`;
+
+    const response = await axios.post(`${ollamaUrl}/api/chat`, {
+      model: selectedModel,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: `Analyze the security implications of target: ${target} scanned with tool: ${tool}.` }
+      ],
+      stream: false
+    }, { timeout: 8000 });
+
+    if (response.data && response.data.message && response.data.message.content) {
+      return {
+        source: `Ollama (${selectedModel})`,
+        guidance: response.data.message.content.trim()
+      };
+    }
+  } catch (err) {
+    // Suppress verbose logs to keep server console clean in dev mode
+  }
+
+  // Fallback signature-based templates
   let guidance = "";
   const t = (target || '').toLowerCase();
   
@@ -25,7 +50,7 @@ Completed security evaluation on target: "${target}" under tool: "${tool}".
   }
 
   return {
-    source: 'Nexus-AI (Local)',
+    source: 'Nexus-AI (Local Fallback)',
     guidance
   };
 };

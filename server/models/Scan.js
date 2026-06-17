@@ -8,6 +8,18 @@ const scanSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    organizationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Organization',
+      index: true,
+      required: false,
+    },
+    teamId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Team',
+      index: true,
+      required: false,
+    },
     target: {
       type: String,
       required: true,
@@ -22,13 +34,23 @@ const scanSchema = new mongoose.Schema(
       type: Number,
       min: 0,
       max: 100,
-      required: true,
+      default: 0,
     },
     riskLevel: {
       type: String,
       enum: ['safe', 'low', 'medium', 'dangerous'],
-      required: true,
+      default: 'safe',
     },
+    status: {
+      type: String,
+      enum: ['pending', 'completed', 'failed'],
+      default: 'completed',
+    },
+    scanType: {
+      type: String,
+      default: 'general',
+    },
+    options: mongoose.Schema.Types.Mixed,
     incidentTier: {
       type: String, // CRITICAL, HIGH, MEDIUM, LOW
       index: true,

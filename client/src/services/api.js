@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_BASE_URL, SOCKET_URL } from '../config';
+import { getActiveOrgId } from '../context/OrganizationContext';
 
 const NEXUS_SESSION_KEY = 'cybershield.nexus.session';
 
@@ -38,10 +39,17 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// ─── Request Interceptor: Attach CSRF session header ──────────────────────────
+// ─── Request Interceptor: Attach CSRF session + Organization tenant header ────
 api.interceptors.request.use((config) => {
   config.headers = config.headers || {};
   config.headers['x-nexus-session-token'] = getNexusSessionToken();
+
+  // Attach active organization scope for multi-tenant requests
+  const activeOrgId = getActiveOrgId();
+  if (activeOrgId) {
+    config.headers['x-organization-id'] = activeOrgId;
+  }
+
   return config;
 });
 

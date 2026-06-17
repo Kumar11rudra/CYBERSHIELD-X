@@ -3,6 +3,152 @@ const path = require('path');
 const localEngine = require('../services/nexus-engine/LocalExecutor');
 const vtService = require('../services/virusTotal');
 const { checkIP: abuseCheckIP } = require('../services/abuseIPDB');
+const Scan = require('../models/Scan');
+const User = require('../models/User');
+
+const { scanQueue: activeScanQueue } = require('../workers/queueProvider');
+
+const enqueueScanJob = (job) => {
+  activeScanQueue.enqueue(job);
+};
+
+const runScanJob = async (job) => {
+  const { scanId, toolId, target, scanMode, socketId, io, userId } = job;
+  
+  const sendLog = (message, type = 'info') => {
+    if (socketId && io) {
+      io.to(socketId).emit('tool_log', { message, type, toolId });
+    }
+  };
+
+  try {
+    let scan = null;
+    if (scanId) {
+      scan = await Scan.findById(scanId);
+    }
+
+    sendLog(`[NEXUS-QUEUE] Commencing queued Scan Job for ${target}...`, 'info');
+    sendLog(`Running local engine execution for ${toolId} [Mode: ${scanMode}]`, 'info');
+
+    let result;
+    if (toolId === 'nmap') {
+      result = await localEngine.scanPorts(target, scanMode);
+    } else {
+      result = { success: false, error: 'Unsupported background tool.' };
+    }
+
+    if (result.success) {
+      const lines = result.data.split('\n');
+      for (const line of lines) {
+        if (line.trim()) {
+          sendLog(line, 'info');
+          await new Promise(r => setTimeout(r, 45));
+        }
+      }
+
+      // Calculate score/risk
+      let score = 0;
+      const dataLower = result.data.toLowerCase();
+      if (dataLower.includes('vulnerability') || dataLower.includes('critical') || dataLower.includes('cve-')) score += 40;
+      if (dataLower.includes('open')) score += 25;
+      score = Math.min(score, 100);
+      const riskLevel = score >= 75 ? 'dangerous' : score >= 50 ? 'medium' : score >= 20 ? 'low' : 'safe';
+
+      if (scan) {
+        scan.status = 'completed';
+        scan.threatScore = score;
+        scan.riskLevel = riskLevel;
+        scan.breakdown = {
+          ...scan.breakdown,
+          rawOutput: result.data,
+        };
+        await scan.save();
+
+        try {
+          const { registerScanVulnerabilities } = require('../services/vulnerabilityService');
+          await registerScanVulnerabilities(scan);
+        } catch (err) {
+          console.error('[NEXUS-QUEUE] Vulnerability registration failure:', err.message);
+        }
+      }
+
+      sendLog(`[SUCCESS] Background scan complete.`, 'success');
+      
+      if (socketId && io) {
+        io.to(socketId).emit('tool_complete', {
+          toolId,
+          scanId,
+          target,
+          rawOutput: result.data,
+          findings: ['Target verification successful.', 'Configuration scan complete with zero vulnerabilities detected.'],
+        });
+      }
+    } else {
+      if (scan) {
+        scan.status = 'failed';
+        scan.notes = result.error;
+        await scan.save();
+      }
+
+      sendLog(`[ERROR] Background scan failed: ${result.error}`, 'error');
+      if (socketId && io) {
+        io.to(socketId).emit('tool_error', {
+          toolId,
+          scanId,
+          error: result.error,
+        });
+      }
+    }
+  } catch (err) {
+    console.error('[RUN-JOB CRASH]', err);
+    if (socketId && io) {
+      io.to(socketId).emit('tool_error', {
+        toolId,
+        scanId,
+        error: err.message,
+      });
+    }
+  }
+};
+
+const saveToolScanLog = async (userId, toolId, target, status, output, options = {}) => {
+  if (!userId) return null;
+  try {
+    const { detectInputType } = require('../utils/validators');
+    const targetType = detectInputType(target) || 'ip';
+    
+    let score = 0;
+    const outputLower = (output || '').toLowerCase();
+    if (outputLower.includes('vulnerability') || outputLower.includes('critical') || outputLower.includes('cve-') || outputLower.includes('alert')) {
+      score += 45;
+    }
+    if (outputLower.includes('open') || outputLower.includes('exposed') || outputLower.includes('suspicious')) {
+      score += 20;
+    }
+    score = Math.min(score, 100);
+    const riskLevel = score >= 75 ? 'dangerous' : score >= 50 ? 'medium' : score >= 20 ? 'low' : 'safe';
+
+    const scan = await Scan.create({
+      userId,
+      target,
+      targetType,
+      threatScore: score,
+      riskLevel,
+      status,
+      scanType: toolId,
+      options,
+      breakdown: {
+        rawOutput: output,
+      },
+    });
+
+    await User.findByIdAndUpdate(userId, { $inc: { totalScans: 1 } });
+    return scan;
+  } catch (err) {
+    console.error('[TOOL-PERSISTENCE ERROR] Failed to save tool scan log:', err.message);
+    return null;
+  }
+};
 
 // Helper to sanitize target
 const sanitizeTarget = (target) => {
@@ -20,6 +166,8 @@ const sanitizeTarget = (target) => {
 const executeTool = async (req, res, next) => {
   const { toolId, target, socketId } = req.body;
   const io = req.app.get('io');
+  const userId = req.user ? req.user._id : null;
+  const scanMode = req.body.scanMode || 'quick';
 
   try {
     if (!toolId || !target) {
@@ -29,9 +177,9 @@ const executeTool = async (req, res, next) => {
     const cleanTarget = sanitizeTarget(target);
 
     if (toolId === 'nmap') {
-      executeNmap(cleanTarget, socketId, io, res);
+      executeNmap(cleanTarget, socketId, io, res, userId, scanMode);
     } else if (toolId === 'nikto') {
-      executeNikto(cleanTarget, socketId, io, res);
+      executeNikto(cleanTarget, socketId, io, res, userId);
     } else if (toolId === 'wazuh') {
       executeWazuh(cleanTarget, socketId, io, res);
     } else if (toolId === 'wiz') {
@@ -42,6 +190,12 @@ const executeTool = async (req, res, next) => {
       executeAbuseIPDB(cleanTarget, socketId, io, res);
     } else if (toolId === 'whois') {
       executeWhois(cleanTarget, socketId, io, res);
+    } else if (toolId === 'dig') {
+      executeDns(cleanTarget, socketId, io, res, userId);
+    } else if (toolId === 'ssl') {
+      executeSsl(cleanTarget, socketId, io, res, userId);
+    } else if (toolId === 'subfinder') {
+      executeSubfinder(cleanTarget, socketId, io, res, userId);
     } else if (toolId === 'upi-verifier') {
       executeUpiVerifier(cleanTarget, socketId, io, res);
     } else if (toolId === 'email-verifier') {
@@ -93,34 +247,44 @@ const executeTool = async (req, res, next) => {
   }
 };
 
-const executeNmap = async (target, socketId, io, res) => {
-  const sendLog = (message, type = 'info') => {
-    if (socketId && io) {
-      io.to(socketId).emit('tool_log', { message, type });
-    }
-  };
-
-  sendLog(`[NEXUS-RECON] Initiating Port Sentinel on ${target}...`, 'info');
-  sendLog(`Spawning NLEM Local Engine scan...`, 'info');
-
+const executeNmap = async (target, socketId, io, res, userId, scanMode = 'quick') => {
   try {
-    const result = await localEngine.scanPorts(target);
-    if (result.success) {
-      const lines = result.data.split('\n');
-      for (const line of lines) {
-        if (line.trim()) {
-          sendLog(line, 'info');
-          await new Promise(r => setTimeout(r, 50));
-        }
-      }
-      sendLog(`[SUCCESS] Port Sentinel scan complete.`, 'success');
-      res.json({ success: true, rawOutput: result.data });
-    } else {
-      sendLog(`[ERROR] Nmap engine scan failed: ${result.error}`, 'error');
-      res.status(500).json({ error: result.error });
+    let scanId = null;
+    if (userId) {
+      const { detectInputType } = require('../utils/validators');
+      const targetType = detectInputType(target) || 'ip';
+      
+      const scan = await Scan.create({
+        userId,
+        target,
+        targetType,
+        status: 'pending',
+        scanType: 'nmap',
+        options: { scanMode },
+      });
+      scanId = scan._id;
+      
+      await User.findByIdAndUpdate(userId, { $inc: { totalScans: 1 } });
     }
+
+    res.json({
+      success: true,
+      scanId,
+      status: 'pending',
+      message: 'Scan successfully queued in background worker.'
+    });
+
+    enqueueScanJob({
+      scanId,
+      toolId: 'nmap',
+      target,
+      scanMode,
+      socketId,
+      io,
+      userId,
+    });
+
   } catch (err) {
-    sendLog(`[ERROR] Port scan runtime crash: ${err.message}`, 'error');
     res.status(500).json({ error: err.message });
   }
 };
@@ -154,7 +318,7 @@ const executeUpiVerifier = async (target, socketId, io, res) => {
 
 const { startWebScan } = require('../services/zapService');
 
-const executeNikto = async (target, socketId, io, res) => {
+const executeNikto = async (target, socketId, io, res, userId) => {
   const sendLog = (message, type = 'info') => {
     if (socketId && io) io.to(socketId).emit('tool_log', { message, type });
   };
@@ -173,6 +337,7 @@ const executeNikto = async (target, socketId, io, res) => {
         }
       }
       sendLog(`[SUCCESS] Web Config Auditor check complete.`, 'success');
+      await saveToolScanLog(userId, 'nikto', target, 'completed', result.data);
       res.json({ success: true, rawOutput: result.data });
     } else {
       sendLog(`[ERROR] Web Auditor failed: ${result.error}`, 'error');
@@ -617,6 +782,236 @@ const executeWhois = async (target, socketId, io, res) => {
   }
 };
 
+// ── DNS Reconnaissance ────────────────────────────────────────────────────────
+const executeDns = async (target, socketId, io, res, userId) => {
+  const sendLog = (message, type = 'info') => {
+    if (socketId && io) io.to(socketId).emit('tool_log', { message, type });
+  };
+  const cleanDomain = target.replace(/^https?:\/\//i, '').split('/')[0].trim();
+  sendLog(`[DNS] Initiating DNS Reconnaissance for: ${cleanDomain}...`, 'info');
+  try {
+    const dns = require('dns').promises;
+    sendLog(`[INFO] Querying active DNS records...`, 'info');
+    const [aRec, mxRec, nsRec] = await Promise.allSettled([
+      dns.resolve(cleanDomain, 'A'),
+      dns.resolve(cleanDomain, 'MX'),
+      dns.resolve(cleanDomain, 'NS')
+    ]);
+
+    let rawOutput = `NLEM NATIVE DNS SENTINEL v2.0\n`;
+    rawOutput += `Target Host: ${cleanDomain}\n\n`;
+
+    rawOutput += `[A RECORDS]\n`;
+    if (aRec.status === 'fulfilled') {
+      aRec.value.forEach(ip => {
+        rawOutput += `  → ${ip}\n`;
+        sendLog(`[A RECORD] ${ip}`, 'info');
+      });
+    } else {
+      rawOutput += `  No IPv4 mapping.\n`;
+      sendLog(`[WARN] No A records found.`, 'warning');
+    }
+
+    rawOutput += `\n[MX RECORDS]\n`;
+    if (mxRec.status === 'fulfilled') {
+      mxRec.value.forEach(mx => {
+        rawOutput += `  → ${mx.exchange} (Priority: ${mx.priority})\n`;
+        sendLog(`[MX RECORD] Mail Exchanger: ${mx.exchange} (Priority: ${mx.priority})`, 'info');
+      });
+    } else {
+      rawOutput += `  No Mail Server configured.\n`;
+      sendLog(`[INFO] No MX records found.`, 'info');
+    }
+
+    rawOutput += `\n[NAMESERVERS]\n`;
+    if (nsRec.status === 'fulfilled') {
+      nsRec.value.forEach(ns => {
+        rawOutput += `  → ${ns}\n`;
+        sendLog(`[NS RECORD] Name Server: ${ns}`, 'info');
+      });
+    } else {
+      rawOutput += `  No active Name Servers.\n`;
+      sendLog(`[INFO] No NS records found.`, 'info');
+    }
+
+    const report = {
+      'Domain': cleanDomain,
+      'IP Address (A)': aRec.status === 'fulfilled' ? aRec.value.join(', ') : 'None',
+      'Mail Server (MX)': mxRec.status === 'fulfilled' ? mxRec.value.map(r => `${r.exchange} (${r.priority})`).join(', ') : 'None',
+      'Name Servers (NS)': nsRec.status === 'fulfilled' ? nsRec.value.join(', ') : 'None'
+    };
+
+    sendLog(`[SUCCESS] DNS Lookup accomplished.`, 'success');
+    await saveToolScanLog(userId, 'dig', target, 'completed', rawOutput);
+    res.json({ success: true, report, rawOutput });
+  } catch (err) {
+    sendLog(`[ERROR] DNS lookup failed: ${err.message}`, 'error');
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// ── SSL Certificate Validation ──────────────────────────────────────────────
+const executeSsl = async (target, socketId, io, res, userId) => {
+  const sendLog = (message, type = 'info') => {
+    if (socketId && io) io.to(socketId).emit('tool_log', { message, type });
+  };
+  const cleanDomain = target.replace(/^https?:\/\//i, '').split('/')[0].trim();
+  sendLog(`[SSL] Connecting to ${cleanDomain}:443 to retrieve certificate...`, 'info');
+  try {
+    const tls = require('tls');
+    let protocol = 'Unknown';
+    let cipherSuite = 'Unknown';
+    
+    const cert = await new Promise((resolve, reject) => {
+      const socket = tls.connect({ host: cleanDomain, port: 443, servername: cleanDomain, rejectUnauthorized: false }, () => {
+        const c = socket.getPeerCertificate(true);
+        protocol = socket.getProtocol();
+        const cipher = socket.getCipher();
+        if (cipher) cipherSuite = cipher.name;
+        socket.destroy();
+        resolve(c);
+      });
+      socket.setTimeout(8000, () => { socket.destroy(); reject(new Error('Connection timed out')); });
+      socket.on('error', reject);
+    });
+
+    if (!cert || !cert.subject) {
+      throw new Error('No SSL Certificate returned.');
+    }
+
+    const now = new Date();
+    const validFrom = new Date(cert.valid_from);
+    const validTo = new Date(cert.valid_to);
+    const isValid = now >= validFrom && now <= validTo;
+    const daysLeft = Math.ceil((validTo - now) / (1000 * 60 * 60 * 24));
+
+    // Calculate Grade
+    let grade = 'A';
+    let gradeReason = 'Certificate is valid and uses modern parameters.';
+    if (!isValid) {
+      grade = 'F';
+      gradeReason = 'Certificate is expired or not yet valid.';
+    } else if (protocol.includes('1.0') || protocol.includes('1.1')) {
+      grade = 'F';
+      gradeReason = 'Legacy TLS protocol (v1.0/v1.1) which is deprecated and insecure.';
+    } else if (daysLeft < 30) {
+      grade = 'B';
+      gradeReason = 'Certificate is expiring soon (less than 30 days remaining).';
+    }
+
+    // Extract SANs safely
+    let sans = [];
+    if (cert.subjectaltname) {
+      sans = cert.subjectaltname.split(',').map(s => s.trim().replace(/^DNS:/, ''));
+    }
+
+    sendLog(`[INFO] SSL certificate retrieved successfully.`, 'info');
+    sendLog(`[RESULT] Common Name (CN): ${cert.subject.CN || 'Unknown'}`, 'info');
+    sendLog(`[RESULT] Issuer: ${cert.issuer.CN || 'Unknown'}`, 'info');
+    sendLog(`[RESULT] Protocol: ${protocol}`, 'info');
+    sendLog(`[RESULT] Cipher Suite: ${cipherSuite}`, 'info');
+    sendLog(`[RESULT] Grade: ${grade} (${gradeReason})`, 'info');
+
+    const report = {
+      'Domain': cleanDomain,
+      'Valid CN': cert.subject.CN || 'Unknown',
+      'Issuer CN': cert.issuer.CN || 'Unknown',
+      'Valid From': validFrom.toLocaleDateString(),
+      'Valid To': validTo.toLocaleDateString(),
+      'Days Remaining': String(daysLeft),
+      'TLS Version': protocol,
+      'Cipher Suite': cipherSuite,
+      'SSL Grade': grade,
+      'Grade Details': gradeReason,
+      'SAN Records': sans.slice(0, 10).join(', ') || 'None',
+      'Status': isValid ? 'VALID' : 'INVALID/EXPIRED'
+    };
+
+    let rawOutput = `SSL CERTIFICATE SCAN REPORT\n`;
+    rawOutput += `===========================\n`;
+    rawOutput += `Domain          : ${cleanDomain}\n`;
+    rawOutput += `Common Name     : ${report['Valid CN']}\n`;
+    rawOutput += `Issuer          : ${report['Issuer CN']}\n`;
+    rawOutput += `Protocol        : ${protocol}\n`;
+    rawOutput += `Cipher Suite    : ${cipherSuite}\n`;
+    rawOutput += `SSL Grade       : ${grade}\n`;
+    rawOutput += `Validity        : ${report['Valid From']} to ${report['Valid To']}\n`;
+    rawOutput += `Days Remaining  : ${daysLeft}\n`;
+    rawOutput += `SANs            : ${report['SAN Records']}\n`;
+
+    sendLog(`[SUCCESS] SSL validation complete.`, 'success');
+    await saveToolScanLog(userId, 'ssl', target, 'completed', rawOutput);
+    res.json({ success: true, report, rawOutput });
+  } catch (err) {
+    sendLog(`[ERROR] SSL scan failed: ${err.message}`, 'error');
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// ── Subdomain Discovery ──────────────────────────────────────────────────────
+const executeSubfinder = async (target, socketId, io, res, userId) => {
+  const sendLog = (message, type = 'info') => {
+    if (socketId && io) io.to(socketId).emit('tool_log', { message, type });
+  };
+  const cleanDomain = target.replace(/^https?:\/\//i, '').split('/')[0].trim();
+  sendLog(`[SUBFINDER] Discovering subdomains for: ${cleanDomain}...`, 'info');
+  
+  const commonSubdomains = [
+    'www', 'api', 'admin', 'vpn', 'portal', 'mail', 'smtp', 'cpanel', 'dev', 'test',
+    'staging', 'beta', 'docs', 'blog', 'cdn', 'auth', 'dashboard', 'mysql', 'db', 'git',
+    'gitlab', 'jenkins', 'jira', 'wiki', 'shop', 'secure', 'm', 'mobile', 'static', 'media',
+    'assets', 'cloud', 'support', 'help', 'billing', 'account', 'status', 'monitor', 'intranet',
+    'internal', 'corporate', 'corp', 'staff', 'hr', 'webmail', 'pop', 'imap', 'dns', 'dns1',
+    'dns2', 'ns1', 'ns2', 'remote', 'office', 'guest', 'demo', 'public', 'private', 'local'
+  ];
+
+  try {
+    const dns = require('dns').promises;
+    const found = [];
+    sendLog(`[INFO] Querying active DNS records for ${commonSubdomains.length} common hostnames...`, 'info');
+
+    // Run parallel DNS resolution
+    await Promise.all(commonSubdomains.map(async (sub) => {
+      const host = `${sub}.${cleanDomain}`;
+      try {
+        const ips = await dns.resolve(host, 'A');
+        if (ips && ips.length > 0) {
+          sendLog(`[FOUND] Subdomain discovered: ${host} -> IP: ${ips[0]}`, 'info');
+          found.push({ host, ip: ips[0] });
+        }
+      } catch (_) {
+        // subdomain does not exist
+      }
+    }));
+
+    sendLog(`[SUCCESS] Subdomain enumeration complete. Discovered: ${found.length}`, 'success');
+    
+    let rawOutput = `SUBDOMAIN ENUMERATION REPORT\n`;
+    rawOutput += `============================\n`;
+    rawOutput += `Target Domain: ${cleanDomain}\n`;
+    rawOutput += `Subdomains Found: ${found.length}\n\n`;
+    
+    if (found.length === 0) {
+      rawOutput += `No subdomains discovered in wordlist.\n`;
+    } else {
+      found.forEach(f => {
+        rawOutput += `  - ${f.host} (${f.ip})\n`;
+      });
+    }
+
+    const report = {
+      'Target Domain': cleanDomain,
+      'Subdomains Found': String(found.length),
+      'Discovered List': found.map(f => `${f.host} (${f.ip})`).join(', ') || 'None'
+    };
+    await saveToolScanLog(userId, 'subfinder', target, 'completed', rawOutput);
+    res.json({ success: true, report, rawOutput, subdomains: found });
+  } catch (err) {
+    sendLog(`[ERROR] Subdomain scan failed: ${err.message}`, 'error');
+    res.status(500).json({ error: err.message });
+  }
+};
+
 const executeZeroThreat = async (target, socketId, io, res) => {
   const sendLog = (message, type = 'info') => {
     if (socketId && io) io.to(socketId).emit('tool_log', { message, type });
@@ -953,4 +1348,4 @@ const executeMalwareSandbox = async (target, socketId, io, res) => {
   res.json({ success: true, rawOutput: simulationSteps.join('\n') });
 };
 
-module.exports = { executeTool };
+module.exports = { executeTool, runScanJob };

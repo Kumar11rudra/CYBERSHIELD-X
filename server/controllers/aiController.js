@@ -2,7 +2,7 @@ const { generateSecurityGuidance } = require('../services/aiService');
 
 const processChat = async (req, res, next) => {
   try {
-    const { message, context, tool } = req.body;
+    const { message, context, tool, model } = req.body;
     const user = req.user;
 
     if (!message) return res.status(400).json({ error: 'Message is required' });
@@ -10,7 +10,8 @@ const processChat = async (req, res, next) => {
     const currentName = user?.preferredNickname || user?.username || 'Explorer Dost';
     const aiContext = `User: ${currentName}, Path: ${context?.currentPath || 'Dashboard'}, LoggedIn: ${context?.isLoggedIn ? 'Yes' : 'No'}`;
 
-    const intel = await generateSecurityGuidance(tool || 'General Chat', message, aiContext);
+    const selectedModel = model || 'llama3';
+    const intel = await generateSecurityGuidance(tool || 'General Chat', message, aiContext, selectedModel);
 
     if (intel.error) {
       return res.status(503).json({ error: intel.error });

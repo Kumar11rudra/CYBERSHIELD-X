@@ -117,6 +117,39 @@ const TOOL_CONFIG = {
     capabilities: ['Registrar info', 'Expiry dates', 'Name servers', 'DNSSEC status'],
   },
 
+  dig: {
+    id: 'dig',
+    name: 'DNS Lookup & Domain Auditor',
+    tagline: 'Query active DNS records for target mapping resolution [Powered by DNS]',
+    description: 'Lookup primary DNS records (A, MX, NS) to map infrastructure configurations.',
+    category: 'Recon',
+    type: TOOL_TYPES.SCANNER,
+    status: TOOL_STATUS.LIVE,
+    inputType: INPUT_TYPES.DOMAIN,
+    inputPlaceholder: 'Enter domain name (e.g., google.com)',
+    apiEndpoint: '/toolkit/execute',
+    icon: '🌐',
+    color: '#0ea5e9',
+    capabilities: ['A record lookup', 'MX mail servers check', 'NS nameserver mapping'],
+  },
+
+  ssl: {
+    id: 'ssl',
+    name: 'SSL/TLS Certificate Security Auditor',
+    tagline: 'Inspect active TLS protocols and calculate certificate trust grades',
+    description: 'Connect directly to port 443 to retrieve certificate common names, issuers, TLS protocol version, cipher suites, SAN records, and calculate an overall trust grade.',
+    category: 'Vulnerability',
+    type: TOOL_TYPES.SCANNER,
+    status: TOOL_STATUS.LIVE,
+    inputType: INPUT_TYPES.DOMAIN,
+    inputPlaceholder: 'Enter domain name (e.g., google.com)',
+    apiEndpoint: '/toolkit/execute',
+    icon: '🔒',
+    color: '#10b981',
+    capabilities: ['TLS version detection', 'Cipher suite check', 'Expiry date checks', 'SSL grade calculation'],
+  },
+
+
   // ══════════════════════════════════════════════════════════
   //  UTILITY TOOLS — 100% Client-side
   // ══════════════════════════════════════════════════════════
@@ -520,9 +553,19 @@ const TOOL_CONFIG = {
     icon: '🗺️', color: '#14b8a6',
   },
   subfinder: {
-    id: 'subfinder', name: 'Subfinder Subdomain Discovery', tagline: 'Subdomain Discovery',
-    category: 'Recon', type: TOOL_TYPES.SCANNER, status: TOOL_STATUS.LIVE,
-    icon: '🔎', color: '#f59e0b',
+    id: 'subfinder',
+    name: 'Subdomain Discovery & Node Enumeration',
+    tagline: 'Expose hidden assets with parallel DNS queries [Powered by Subfinder]',
+    description: 'Discovers active subdomains by scanning 60+ common hostnames in parallel.',
+    category: 'Recon',
+    type: TOOL_TYPES.SCANNER,
+    status: TOOL_STATUS.LIVE,
+    inputType: INPUT_TYPES.DOMAIN,
+    inputPlaceholder: 'Enter domain name (e.g., target.com)',
+    apiEndpoint: '/toolkit/execute',
+    icon: '🔎',
+    color: '#f59e0b',
+    capabilities: ['Parallel brute-force queries', 'Host exposure detection', 'Zone enumeration'],
   },
   openvas: {
     id: 'openvas', name: 'OpenVAS Vulnerability Assessment', tagline: 'Vulnerability Assessment',

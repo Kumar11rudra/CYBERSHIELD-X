@@ -331,6 +331,62 @@ const sendPasswordChangeNotification = async ({ to, username }) => {
   return { delivered: true, mode: 'email' };
 };
 
+const sendGenericAlertEmail = async ({ to, username, title, message, severity, category, source }) => {
+  const subject = `🚨 [CyberShield X] ${title} [${severity.toUpperCase()}]`;
+  const colors = { critical: '#ff2244', high: '#ff8c00', warning: '#ffdd00', info: '#00ff88' };
+  const color = colors[severity.toLowerCase()] || '#00ff88';
+
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#0a0e1a;font-family:'Courier New',monospace;color:#e0e6ff;">
+<table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:40px 16px;">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;border:1px solid #1e2d4a;border-radius:8px;overflow:hidden;">
+<tr><td style="background:#0d1117;padding:24px 28px;border-bottom:2px solid ${color};">
+  <h1 style="margin:0;color:${color};font-size:20px;letter-spacing:2px;">🛡️ CYBERSHIELD X — SECURITY EVENT</h1>
+</td></tr>
+<tr><td style="padding:24px 28px;">
+  <p style="color:#8892b0;">Hello <strong style="color:#e0e6ff;">${username}</strong>, a new security alert was triggered:</p>
+  <div style="background:#0d1117;border:1px solid #1e2d4a;border-left:4px solid ${color};padding:20px;border-radius:4px;">
+    <h3 style="margin-top:0;color:${color};">${title}</h3>
+    <p style="color:#e0e6ff;font-size:13px;line-height:1.6;white-space:pre-wrap;">${message}</p>
+    <table width="100%" style="margin-top:12px;border-top:1px solid #1e2d4a;padding-top:12px;">
+      <tr><td style="color:#8892b0;font-size:12px;">Category</td>
+          <td style="color:#e0e6ff;text-align:right;font-size:12px;">${category.toUpperCase()}</td></tr>
+      <tr><td style="color:#8892b0;font-size:12px;">Source</td>
+          <td style="color:#e0e6ff;text-align:right;font-size:12px;">${source}</td></tr>
+      <tr><td style="color:#8892b0;font-size:12px;">Severity</td>
+          <td style="text-align:right;"><span style="background:${color}22;color:${color};border:1px solid ${color}55;padding:2px 10px;border-radius:4px;font-size:11px;font-weight:bold;">${severity.toUpperCase()}</span></td></tr>
+    </table>
+  </div>
+</td></tr>
+<tr><td style="background:#0d1117;padding:14px 28px;text-align:center;border-top:1px solid #1e2d4a;color:#4a5568;font-size:11px;">
+  CyberShield X — Continuous Monitoring Intelligence
+</td></tr>
+</table></td></tr></table></body></html>`;
+
+  if (IS_DEV || isEmailPreviewModeEnabled()) {
+    console.log(`\n📧 [DEV ALERT EMAIL] To: ${to} | Subject: ${subject}`);
+    console.log(`   Message: ${message}\n`);
+    return { delivered: true, mode: 'preview' };
+  }
+
+  if (!isEmailDeliveryConfigured()) {
+    return { delivered: false, reason: 'not-configured' };
+  }
+
+  try {
+    await getTransporter().sendMail({
+      from: process.env.EMAIL_FROM || `CyberShield X <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      html,
+    });
+    return { delivered: true, mode: 'email' };
+  } catch (err) {
+    console.error('[emailAlerts] Failed to send generic alert email:', err.message);
+    return { delivered: false, reason: err.message };
+  }
+};
+
 module.exports = {
   isEmailDeliveryConfigured,
   isEmailPreviewModeEnabled,
@@ -341,6 +397,7 @@ module.exports = {
   sendPasswordResetOtp,
   sendWelcomeEmail,
   sendPasswordChangeNotification,
+  sendGenericAlertEmail,
   sendSignupOtpEmail: async ({ to, otp }) => {
     const transporter = getTransporter();
     const mailOptions = {

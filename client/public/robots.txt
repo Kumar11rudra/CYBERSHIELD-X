@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Allow: /login
+Allow: /signup
+Allow: /security
+Allow: /privacy
+Allow: /terms
+Disallow: /dashboard/*
+Disallow: /settings/*
+Disallow: /history/*
+Disallow: /toolkit/*
+Disallow: /api/*
+
+Sitemap: https://cybershieldx.com/sitemap.xml

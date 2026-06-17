@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
+import GlobalThreatMap from '../components/dashboard/GlobalThreatMap';
 
 // ─── Matrix Rain Canvas ───────────────────────────────────────────────────────
 function MatrixRain() {
@@ -223,6 +224,32 @@ export default function HomePage() {
   const fullText = t('home.hero.subtitle');
   const [selectedMember, setSelectedMember] = useState(null);
 
+  const [copilotQuery, setCopilotQuery] = useState('');
+  const [copilotLogs, setCopilotLogs] = useState([]);
+  const [isCopilotTyping, setIsCopilotTyping] = useState(false);
+
+  const handleCopilotDemo = async (queryText) => {
+    if (isCopilotTyping) return;
+    setCopilotQuery(queryText);
+    setIsCopilotTyping(true);
+    setCopilotLogs([]);
+    
+    const logs = [
+      `[AI-COPILOT] Connecting neural agent to target signature feeds...`,
+      `[INTEL-LOOKUP] Querying global vulnerability repository (CVE)...`,
+      `[DNS-RESOLVER] Looking up A/MX/NS mapping records...`,
+      `[RISK-EVAL] Threat analysis completed: 2 vulnerabilities identified.`,
+      `[RECOMMENDATION] Expiry warning: SSL expires soon. Subdomains exposed.`,
+      `[SYSTEM] Authentication required. Sign Up to access complete mitigation commands.`
+    ];
+
+    for (let index = 0; index < logs.length; index++) {
+      await new Promise(r => setTimeout(r, 600));
+      setCopilotLogs(prev => [...prev, logs[index]]);
+    }
+    setIsCopilotTyping(false);
+  };
+
   const team = [
     { name: 'Anil Kumar', role: 'Founder & Cybersecurity Analyst', color: '00bfff', email: 'official.cybershieldx@gmail.com', phone: '+919351636193', isFounder: true },
     { name: 'Suryansh Pandey', role: 'Data Analyst', color: '00ff88', email: 'pandeysuryansh560@gmail.com', phone: '+917565813054' },
@@ -242,6 +269,39 @@ export default function HomePage() {
   }, []);
 
   const modules = [
+    {
+      id: 'dig',
+      icon: '🌐',
+      title: 'DNS Lookup & Domain Auditor',
+      desc: 'Query primary DNS records (A, MX, NS) to map remote hosting architecture.',
+      engine: 'Nexus DNS Resolve',
+      intelCount: 'Query A/MX/NS',
+      tag: 'RECON',
+      color: 'blue',
+      path: '/toolkit/dig',
+    },
+    {
+      id: 'ssl',
+      icon: '🔒',
+      title: 'SSL/TLS Certificate Security Auditor',
+      desc: 'Audit TLS protocols, cipher suites, validity periods, and calculate trust grades.',
+      engine: 'Node-TLS Connection',
+      intelCount: 'Grade A-F',
+      tag: 'VULNERABILITY',
+      color: 'green',
+      path: '/toolkit/ssl',
+    },
+    {
+      id: 'subfinder',
+      icon: '🔎',
+      title: 'Subdomain Discovery & Enumeration',
+      desc: 'Enumerate exposed subdomain nodes using parallel DNS resolution.',
+      engine: 'Nexus Subfinder',
+      intelCount: '60+ Subdomains',
+      tag: 'RECON',
+      color: 'orange',
+      path: '/toolkit/subfinder',
+    },
     {
       id: 'nmap',
       icon: '📡',
@@ -585,8 +645,17 @@ export default function HomePage() {
       </AnimatePresence>
 
       {/* ── HERO ── */}
-      <section style={{ position: 'relative', zIndex: 2, minHeight: '85vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px 20px', textAlign: 'center' }}>
-
+      <section style={{ 
+        position: 'relative', 
+        zIndex: 2, 
+        minHeight: '90vh', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        padding: '100px 24px 60px', 
+        maxWidth: 1200,
+        margin: '0 auto'
+      }}>
         {/* Grid background */}
         <div style={{
           position: 'absolute', inset: 0,
@@ -599,76 +668,162 @@ export default function HomePage() {
         <div style={{ position: 'absolute', top: '20%', left: '15%', width: 300, height: 300, background: 'radial-gradient(circle,rgba(0,191,255,0.06),transparent 70%)', borderRadius: '50%', animation: 'float 8s ease-in-out infinite', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: '20%', right: '10%', width: 240, height: 240, background: 'radial-gradient(circle,rgba(0,255,136,0.05),transparent 70%)', borderRadius: '50%', animation: 'float 10s ease-in-out infinite reverse', pointerEvents: 'none' }} />
 
-        {/* Badge */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: '1px solid rgba(0,255,136,0.3)', background: 'rgba(0,255,136,0.05)', borderRadius: 20, padding: '6px 16px', marginBottom: 28, animation: 'fadeSlideUp 0.5s ease both' }}>
-          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#00ff88', display: 'inline-block', boxShadow: '0 0 8px #00ff88' }} />
-          <span style={{ fontSize: 11, letterSpacing: 3, color: '#00ff88', fontWeight: 600 }}>{t('home.hero.badge')}</span>
-          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#00ff88', display: 'inline-block', animation: 'pulse-ring 1.5s infinite' }} />
-        </div>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '40px',
+          width: '100%',
+          alignItems: 'center',
+          textAlign: 'left'
+        }}>
+          {/* Left Column: Info & AI Copilot Demo */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            {/* Badge */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: '1px solid rgba(0,255,136,0.3)', background: 'rgba(0,255,136,0.05)', borderRadius: 20, padding: '6px 16px', marginBottom: 20, animation: 'fadeSlideUp 0.5s ease both' }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#00ff88', display: 'inline-block', boxShadow: '0 0 8px #00ff88' }} />
+              <span style={{ fontSize: 11, letterSpacing: 3, color: '#00ff88', fontWeight: 600 }}>{t('home.hero.badge')}</span>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#00ff88', display: 'inline-block', animation: 'pulse-ring 1.5s infinite' }} />
+            </div>
 
-        {/* Main title */}
-        <h1 className="hero-title" style={{ fontSize: 'clamp(42px,8vw,88px)', fontWeight: 900, lineHeight: 1, margin: '0 0 16px', animation: 'fadeSlideUp 0.6s 0.1s ease both', opacity: 0 }}>
-          <GlitchText text="CYBER" color="#e0e6ff" />
-          <span className="glow-text" style={{ color: '#00bfff' }}>SHIELD</span>
-          <span style={{ color: '#00ff88', fontSize: '0.6em' }}>X</span>
-        </h1>
+            {/* Main title */}
+            <h1 className="hero-title" style={{ fontSize: 'clamp(38px,6vw,64px)', fontWeight: 900, lineHeight: 1.1, margin: '0 0 16px', animation: 'fadeSlideUp 0.6s 0.1s ease both' }}>
+              <GlitchText text="CYBER" color="#e0e6ff" />
+              <span className="glow-text" style={{ color: '#00bfff', marginLeft: '10px' }}>SHIELD</span>
+              <span style={{ color: '#00ff88', fontSize: '0.6em', marginLeft: '10px' }}>X</span>
+            </h1>
 
-        {/* Typewriter */}
-        <p style={{ fontSize: 14, color: '#3b7a9e', letterSpacing: 2, marginBottom: 32, minHeight: 22, animation: 'fadeSlideUp 0.6s 0.2s ease both', opacity: 0 }}>
-          {typedText}<span style={{ animation: 'pulse-ring 1s infinite', color: '#00bfff' }}>|</span>
-        </p>
+            {/* Typewriter */}
+            <p style={{ fontSize: 14, color: '#3b7a9e', letterSpacing: 2, marginBottom: 20, minHeight: 22, animation: 'fadeSlideUp 0.6s 0.2s ease both' }}>
+              {typedText}<span style={{ animation: 'pulse-ring 1s infinite', color: '#00bfff' }}>|</span>
+            </p>
 
-        {/* Description */}
-        <p style={{ maxWidth: 580, fontSize: 14, color: '#5a7fa8', lineHeight: 1.8, marginBottom: 40, animation: 'fadeSlideUp 0.6s 0.3s ease both', opacity: 0 }}>
-          {t('home.hero.desc')}
-        </p>
+            {/* Description */}
+            <p style={{ fontSize: 14, color: '#5a7fa8', lineHeight: 1.8, marginBottom: 30, animation: 'fadeSlideUp 0.6s 0.3s ease both' }}>
+              {t('home.hero.desc')}
+            </p>
 
-        {/* Launch Console Action Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.35 }}
-          className="mb-12 flex justify-center"
-        >
-          <button 
-            onClick={() => navigate('/toolkit/nmap')}
-            className="px-8 py-4 bg-gradient-to-r from-[#00bfff] to-blue-600 text-black font-display font-black text-xs uppercase tracking-[0.25em] rounded-xl hover:shadow-[0_0_35px_rgba(0,212,255,0.6)] hover:scale-105 transition-all duration-300 border border-[#00bfff]/30 flex items-center gap-3"
-          >
-            <span>🛡️</span> LAUNCH THREAT CONSOLE <span>→</span>
-          </button>
-        </motion.div>
+            {/* CTA */}
+            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 32, animation: 'fadeSlideUp 0.6s 0.4s ease both' }}>
+              <button className="btn-primary" onClick={() => navigate('/signup')}>{t('home.hero.ctaCreate')}</button>
+              <button className="btn-secondary" onClick={() => navigate('/login')}>{t('home.hero.ctaSignIn')}</button>
+            </div>
 
-        {/* CTA */}
-        <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 56, animation: 'fadeSlideUp 0.6s 0.4s ease both', opacity: 0 }}>
-          <button className="btn-primary" onClick={() => navigate('/signup')}>{t('home.hero.ctaCreate')}</button>
-          <button className="btn-secondary" onClick={() => navigate('/login')}>{t('home.hero.ctaSignIn')}</button>
-        </div>
-
-        {/* Stats row */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 16, maxWidth: 720, width: '100%' }}
-        >
-          {stats.map((s, i) => (
-            <motion.div 
-              key={i} 
-              whileHover={{ scale: 1.05, borderColor: s.color, boxShadow: `0 0 20px ${s.color}25` }}
-              style={{
-                background: 'rgba(10,18,35,0.8)', border: '1px solid rgba(0,191,255,0.12)',
-                borderRadius: 10, padding: '18px 12px', textAlign: 'center',
-                transition: 'border-color 0.25s', cursor: 'default',
-              }}
-            >
-              <div style={{ fontSize: 26, fontWeight: 900, color: s.color, fontFamily: 'Orbitron,monospace' }}>
-                {String(s.label).toLowerCase().includes('time') ? `<${s.value}${s.suffix}` : <Counter to={s.value} suffix={s.suffix} />}
+            {/* AI Copilot Interactive Demo */}
+            <div style={{
+              width: '100%',
+              background: 'rgba(10,18,35,0.85)',
+              border: '1px solid rgba(0,191,255,0.2)',
+              borderRadius: 14,
+              padding: 20,
+              boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                <span style={{ fontSize: 18 }}>🤖</span>
+                <span style={{ fontSize: 12, fontWeight: 800, color: '#e0e6ff', letterSpacing: 1 }}>AI SECURITY COPILOT DEMO</span>
               </div>
-              <div style={{ fontSize: 10, letterSpacing: 2, color: '#3b5a7a', marginTop: 4 }}>{s.label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
+              <p style={{ fontSize: 11, color: '#5a7fa8', margin: '0 0 12px' }}>
+                Select a vulnerability prompt to test our neural triage engine:
+              </p>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+                {[
+                  'Scan example.com for SSL issues',
+                  'Simulate dark web credential leak check',
+                  'Explain port vulnerability mitigation'
+                ].map((txt, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleCopilotDemo(txt)}
+                    disabled={isCopilotTyping}
+                    style={{
+                      background: 'rgba(0,191,255,0.08)',
+                      border: '1px solid rgba(0,191,255,0.2)',
+                      borderRadius: 6,
+                      padding: '6px 12px',
+                      fontSize: 10,
+                      color: '#00bfff',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,191,255,0.15)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(0,191,255,0.08)'}
+                  >
+                    {txt}
+                  </button>
+                ))}
+              </div>
+              <div style={{
+                background: '#02050b',
+                borderRadius: 8,
+                padding: '12px 16px',
+                fontFamily: 'monospace',
+                fontSize: 11,
+                minHeight: 120,
+                border: '1px solid rgba(255,255,255,0.05)',
+                color: '#00ff88',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 6,
+                overflowY: 'auto'
+              }}>
+                {copilotQuery && <div style={{ color: '#00bfff', borderBottom: '1px solid rgba(0,191,255,0.1)', paddingBottom: 4 }}>&gt; {copilotQuery}</div>}
+                {copilotLogs.length === 0 && !isCopilotTyping && (
+                  <div style={{ color: '#475569', fontStyle: 'italic' }}>Terminal idle. Choose a prompt above to simulate scan response...</div>
+                )}
+                {copilotLogs.map((log, idx) => {
+                  let logColor = '#00ff88';
+                  if (log.includes('[AI-COPILOT]')) logColor = '#e0e6ff';
+                  if (log.includes('[INTEL-LOOKUP]')) logColor = '#b400ff';
+                  if (log.includes('[DNS-RESOLVER]')) logColor = '#00bfff';
+                  if (log.includes('[RISK-EVAL]')) logColor = '#ff8c00';
+                  if (log.includes('[RECOMMENDATION]')) logColor = '#ff2244';
+                  if (log.includes('[SYSTEM]')) logColor = '#ffc83b';
+                  return (
+                    <div key={idx} style={{ color: logColor }}>{log}</div>
+                  );
+                })}
+                {isCopilotTyping && <div style={{ color: '#00bfff', animation: 'pulse-ring 1s infinite' }}>█ Analyzing security vector...</div>}
+              </div>
+              {!isCopilotTyping && copilotLogs.length > 0 && (
+                <button
+                  onClick={() => navigate('/signup')}
+                  style={{
+                    width: '100%',
+                    marginTop: 12,
+                    background: 'linear-gradient(90deg, #ff2244, #ff8c00)',
+                    border: 'none',
+                    borderRadius: 8,
+                    padding: '8px 16px',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: '#fff',
+                    cursor: 'pointer',
+                    textTransform: 'uppercase',
+                    letterSpacing: 1,
+                    transition: 'opacity 0.2s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = 0.9}
+                  onMouseLeave={e => e.currentTarget.style.opacity = 1}
+                >
+                  Create Account to run real scans &gt;
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Right Column: Global Threat Map */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+            <div style={{
+              width: '100%',
+              maxWidth: 550,
+              border: '1px solid rgba(0,191,255,0.2)',
+              borderRadius: 20,
+              overflow: 'hidden',
+              boxShadow: '0 20px 50px rgba(0,0,0,0.6), 0 0 30px rgba(0,191,255,0.1)'
+            }}>
+              <GlobalThreatMap />
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* ── MODULES SECTION ── */}
