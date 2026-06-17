@@ -64,7 +64,10 @@ app.use(ipFirewall);
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL || '*',
+    origin: process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',') : (origin, callback) => {
+      // Dynamically echo the origin back to the client to support credentials verification
+      callback(null, origin || '*');
+    },
     methods: ['GET', 'POST'],
     credentials: true,
   },
