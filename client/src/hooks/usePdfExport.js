@@ -24,10 +24,10 @@ export default function usePdfExport() {
       const H = doc.internal.pageSize.getHeight();
       const color = riskHex(scan.riskLevel);
       const [r, g, b] = hexToRgb(color);
-      const vt = scan.breakdown?.virusTotal;
-      const abuse = scan.breakdown?.abuseIPDB;
-      const domainIntel = scan.breakdown?.domainIntel;
-      const hashlookup = scan.breakdown?.hashlookup;
+      const vt = scan.breakdown?.UrlEngine;
+      const abuse = scan.breakdown?.UrlEngine;
+      const DnsEngine = scan.breakdown?.DnsEngine;
+      const UrlEngine = scan.breakdown?.UrlEngine;
 
       // ── PAGE 1: COVER PAGE ──────────────────────────────────────────────────
       // Dark theme cover page for cyber aesthetic
@@ -141,11 +141,11 @@ export default function usePdfExport() {
 
       y += 40;
 
-      // VirusTotal Breakdown
+      // UrlEngine Breakdown
       doc.setTextColor(0, 120, 200);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(10);
-      doc.text('▶ VIRUSTOTAL TELEMETRY', 15, y);
+      doc.text('▶ UrlEngine TELEMETRY', 15, y);
       
       y += 4;
       doc.setFillColor(255, 255, 255);
@@ -171,16 +171,16 @@ export default function usePdfExport() {
         doc.setTextColor(100, 116, 139);
         doc.setFontSize(8.5);
         doc.setFont('helvetica', 'italic');
-        doc.text('No VirusTotal threat signatures detected for this entity type.', 22, y + 18);
+        doc.text('No UrlEngine threat signatures detected for this entity type.', 22, y + 18);
       }
 
       y += 48;
 
-      // AbuseIPDB Breakdown
+      // UrlEngine Breakdown
       doc.setTextColor(0, 120, 200);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(10);
-      doc.text('▶ ABUSEIPDB NETWORK INTELLIGENCE', 15, y);
+      doc.text('▶ UrlEngine NETWORK INTELLIGENCE', 15, y);
       
       y += 4;
       doc.setFillColor(255, 255, 255);
@@ -194,13 +194,13 @@ export default function usePdfExport() {
         doc.setTextColor(100, 116, 139);
         doc.setFontSize(8.5);
         doc.setFont('helvetica', 'italic');
-        doc.text('No AbuseIPDB routing report data available for this target.', 22, y + 18);
+        doc.text('No UrlEngine routing report data available for this target.', 22, y + 18);
       }
 
       y += 48;
 
       // Domain / Hash intelligence (if present)
-      if ((domainIntel && !domainIntel.notApplicable) || (hashlookup && !hashlookup.notApplicable)) {
+      if ((DnsEngine && !DnsEngine.notApplicable) || (UrlEngine && !UrlEngine.notApplicable)) {
         doc.setTextColor(0, 120, 200);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(10);
@@ -210,12 +210,12 @@ export default function usePdfExport() {
         doc.setFillColor(255, 255, 255);
         doc.roundedRect(15, y, W - 30, 26, 2, 2, 'FD');
 
-        if (domainIntel && !domainIntel.notApplicable) {
-          row('Domain Registered Age', domainIntel.ageDays ? `${domainIntel.ageDays} days` : 'N/A', y + 10);
-          row('SPF / DMARC Security Records', `SPF: ${domainIntel.hasSpf ? 'YES' : 'NO'} | DMARC: ${domainIntel.hasDmarc ? 'YES' : 'NO'}`, y + 18);
-        } else if (hashlookup && !hashlookup.notApplicable) {
-          row('Known File Name', hashlookup.fileName || 'N/A', y + 10);
-          row('Trusted Source Database', hashlookup.database || 'N/A', y + 18);
+        if (DnsEngine && !DnsEngine.notApplicable) {
+          row('Domain Registered Age', DnsEngine.ageDays ? `${DnsEngine.ageDays} days` : 'N/A', y + 10);
+          row('SPF / DMARC Security Records', `SPF: ${DnsEngine.hasSpf ? 'YES' : 'NO'} | DMARC: ${DnsEngine.hasDmarc ? 'YES' : 'NO'}`, y + 18);
+        } else if (UrlEngine && !UrlEngine.notApplicable) {
+          row('Known File Name', UrlEngine.fileName || 'N/A', y + 10);
+          row('Trusted Source Database', UrlEngine.database || 'N/A', y + 18);
         }
       }
 

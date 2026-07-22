@@ -2,23 +2,38 @@ const mongoose = require('mongoose');
 
 const assetSchema = new mongoose.Schema(
   {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-      index: true,
-    },
     organizationId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Organization',
       index: true,
+      required: true,
+    },
+    // Legacy support for older systems assuming userId ownership
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: false,
+    },
+    ownerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: false,
+      index: true,
     },
     teamId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Team',
       index: true,
       required: false,
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    updatedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
     },
     hostname: {
       type: String,
@@ -29,13 +44,30 @@ const assetSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    domain: {
+      type: String,
+      trim: true,
+    },
+    url: {
+      type: String,
+      trim: true,
+    },
     tags: [String],
+    labels: {
+      type: Map,
+      of: String,
+      default: {},
+    },
+    notes: {
+      type: String,
+      default: '',
+    },
     environment: {
       type: String,
       enum: ['Production', 'Staging', 'Development'],
       default: 'Production',
     },
-    owner: {
+    owner: { // Legacy human-readable owner, preserving for compat
       type: String,
       default: 'System',
     },
@@ -58,8 +90,12 @@ const assetSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['active', 'inactive', 'maintenance'],
+      enum: ['active', 'archived', 'deleted'],
       default: 'active',
+    },
+    metadata: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
     },
   },
   {
@@ -67,7 +103,17 @@ const assetSchema = new mongoose.Schema(
   }
 );
 
-// Enforce compound uniqueness for assets scoped to each user account
-assetSchema.index({ userId: 1, hostname: 1 }, { unique: true });
+// New Organization-centric Indexes
+assetSchema.index({ organizationId: 1, hostname: 1 }, { unique: true });
+assetSchema.index({ organizationId: 1, domain: 1 });
+assetSchema.index({ organizationId: 1, ip: 1 });
+assetSchema.index({ organizationId: 1, status: 1 });
+assetSchema.index({ organizationId: 1, criticality: 1 });
+assetSchema.index({ organizationId: 1, tags: 1 });
+assetSchema.index({ organizationId: 1, teamId: 1 });
+assetSchema.index({ organizationId: 1, ownerId: 1 });
+
+// Full-text search index for generic query
+assetSchema.index({ hostname: 'text', ip: 'text', domain: 'text', url: 'text', tags: 'text' });
 
 module.exports = mongoose.model('Asset', assetSchema);

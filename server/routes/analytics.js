@@ -1,19 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const { authenticate, requireAdmin } = require('../middleware/auth');
+const { authenticate } = require('../middleware/auth');
 const {
-  getAnalyticsOverview,
   getDailyActivity,
-  getScanTypes,
-  getSecurityEvents,
+  getRiskTrends,
+  getSeverityTrends,
+  getTopVulnerableAssets,
+  getCommonCVEs,
+  getSLABreaches
 } = require('../controllers/analyticsController');
 
-// All analytics routes require admin authentication
-router.use(authenticate, requireAdmin);
+router.use(authenticate);
 
-router.get('/overview', getAnalyticsOverview);
 router.get('/daily-activity', getDailyActivity);
-router.get('/scan-types', getScanTypes);
-router.get('/security-events', getSecurityEvents);
+router.get('/trends/risk', getRiskTrends);
+router.get('/trends/severity', getSeverityTrends);
+router.get('/top-assets', getTopVulnerableAssets);
+router.get('/top-cves', getCommonCVEs);
+router.get('/sla', getSLABreaches);
 
 module.exports = router;

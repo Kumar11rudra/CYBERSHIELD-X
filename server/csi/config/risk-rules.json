@@ -1,0 +1,124 @@
+{
+    "schemaVersion": "1.0.0",
+    "rules": [
+        {
+            "ruleId": "DNS_FAST_FLUX",
+            "findingType": "fast_flux_a_record",
+            "weight": 50,
+            "category": "DNS",
+            "severity": "HIGH"
+        },
+        {
+            "ruleId": "DNS_MISSING_AAAA",
+            "findingType": "missing_aaaa",
+            "weight": 5,
+            "category": "DNS",
+            "severity": "INFO"
+        },
+        {
+            "ruleId": "DNS_MISSING_DMARC",
+            "findingType": "missing_dmarc",
+            "weight": 35,
+            "category": "DNS",
+            "severity": "MEDIUM"
+        },
+        {
+            "ruleId": "DNS_NO_MX",
+            "findingType": "no_mx_record",
+            "weight": 10,
+            "category": "DNS",
+            "severity": "INFO"
+        },
+        {
+            "ruleId": "DNS_MISSING_SPF",
+            "findingType": "missing_spf",
+            "weight": 30,
+            "category": "DNS",
+            "severity": "MEDIUM"
+        },
+        {
+            "ruleId": "DNS_NO_NS",
+            "findingType": "no_ns_records",
+            "weight": 40,
+            "category": "DNS",
+            "severity": "HIGH"
+        },
+        {
+            "ruleId": "WHOIS_NEW_DOMAIN",
+            "findingType": "newly_registered_domain",
+            "weight": 55,
+            "category": "WHOIS",
+            "severity": "HIGH"
+        },
+        {
+            "ruleId": "WHOIS_EXPIRING",
+            "findingType": "expiring_domain",
+            "weight": 30,
+            "category": "WHOIS",
+            "severity": "MEDIUM"
+        },
+        {
+            "ruleId": "WHOIS_PRIVACY",
+            "findingType": "privacy_protected_registration",
+            "weight": 15,
+            "category": "WHOIS",
+            "severity": "LOW"
+        },
+        {
+            "ruleId": "WHOIS_UNAVAILABLE",
+            "findingType": "whois_data_unavailable",
+            "weight": 5,
+            "category": "WHOIS",
+            "severity": "INFO"
+        },
+        {
+            "ruleId": "SSL_EXPIRED",
+            "findingType": "expired_ssl_certificate",
+            "weight": 90,
+            "category": "TLS",
+            "severity": "CRITICAL"
+        },
+        {
+            "ruleId": "SSL_EXPIRING_SOON",
+            "findingType": "cert_expiring_soon",
+            "weight": 55,
+            "category": "TLS",
+            "severity": "HIGH"
+        },
+        {
+            "ruleId": "SSL_SELF_SIGNED",
+            "findingType": "self_signed_certificate",
+            "weight": 60,
+            "category": "TLS",
+            "severity": "HIGH"
+        },
+        {
+            "ruleId": "SSL_TLS_DEPRECATED",
+            "findingType": "tls_version_deprecated",
+            "weight": 40,
+            "category": "TLS",
+            "severity": "MEDIUM"
+        },
+        {
+            "ruleId": "SSL_WEAK_CIPHER",
+            "findingType": "weak_cipher",
+            "weight": 70,
+            "category": "TLS",
+            "severity": "HIGH"
+        },
+        {
+            "ruleId": "SSL_SAN_MISMATCH",
+            "findingType": "san_mismatch",
+            "weight": 80,
+            "category": "TLS",
+            "severity": "CRITICAL"
+        },
+        {
+            "ruleId": "SSL_NO_CERT",
+            "findingType": "no_ssl_certificate",
+            "weight": 95,
+            "category": "TLS",
+            "severity": "CRITICAL"
+        }
+    ]
+}

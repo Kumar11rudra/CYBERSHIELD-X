@@ -5,10 +5,10 @@
  */
 
 const THREAT_TEMPLATES = [
-  { type: 'MALWARE', severity: 'CRITICAL', source: 'VirusTotal Intel', message: 'New polymorphic rootkit detected — SHA256: a4f3...c891', region: 'Global' },
+  { type: 'MALWARE', severity: 'CRITICAL', source: 'UrlEngine Intel', message: 'New polymorphic rootkit detected — SHA256: a4f3...c891', region: 'Global' },
   { type: 'PHISHING', severity: 'HIGH', source: 'CERT-In Advisory', message: 'Active phishing campaign targeting Indian banking users via SMS', region: 'India' },
   { type: 'BREACH', severity: 'HIGH', source: 'DarkWeb Monitor', message: 'Credential dump detected: 52,000 records from e-commerce sector on RaidForums', region: 'Asia-Pacific' },
-  { type: 'DDoS', severity: 'MEDIUM', source: 'AbuseIPDB', message: 'Botnet C2 traffic spike detected — Source ASN: 45899 (VNPT-AS)', region: 'Southeast Asia' },
+  { type: 'DDoS', severity: 'MEDIUM', source: 'UrlEngine', message: 'Botnet C2 traffic spike detected — Source ASN: 45899 (VNPT-AS)', region: 'Southeast Asia' },
   { type: 'EXPLOIT', severity: 'CRITICAL', source: 'CISA KEV', message: 'CVE-2024-3094 (XZ backdoor) exploitation confirmed in the wild', region: 'North America' },
   { type: 'RANSOMWARE', severity: 'HIGH', source: 'NCIIPC', message: 'LockBit 3.0 variant targeting MSME sector in Maharashtra', region: 'India' },
   { type: 'IOC', severity: 'MEDIUM', source: 'Threat Intel Feed', message: 'New C2 infrastructure: 185.220.101.x range flagged for Cobalt Strike beacons', region: 'Eastern Europe' },
@@ -16,7 +16,7 @@ const THREAT_TEMPLATES = [
   { type: 'BREACH', severity: 'CRITICAL', source: 'HaveIBeenPwned', message: 'New database added: 8.3M email addresses from Indian EdTech platform', region: 'India' },
   { type: 'MALWARE', severity: 'HIGH', source: 'DRDO Advisory', message: 'DarkComet RAT sample targeting defense contractors via spear-phishing', region: 'India' },
   { type: 'EXPLOIT', severity: 'HIGH', source: 'NVD', message: 'Critical RCE in Apache Struts (CVE-2024-53677) — Patch immediately', region: 'Global' },
-  { type: 'IOC', severity: 'LOW', source: 'Shodan Monitor', message: '1,240 exposed MongoDB instances found with no authentication (Port 27017)', region: 'Global' },
+  { type: 'IOC', severity: 'LOW', source: 'PortEngine Monitor', message: '1,240 exposed MongoDB instances found with no authentication (Port 27017)', region: 'Global' },
 ];
 
 const SEVERITY_COLORS = {

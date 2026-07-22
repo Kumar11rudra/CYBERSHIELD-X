@@ -5,14 +5,14 @@ const scanSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: false,
       index: true,
     },
     organizationId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Organization',
       index: true,
-      required: false,
+      required: true,
     },
     teamId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -56,17 +56,25 @@ const scanSchema = new mongoose.Schema(
       index: true,
     },
     sourceScores: {
-      virusTotal: Number,
-      abuseIPDB: Number,
-      domainIntel: Number,
-      hashlookup: Number,
+      dns: Number,
+      http: Number,
+      port: Number,
+      service_fingerprint: Number,
+      ssl: Number,
+      tech_detection: Number,
+      url: Number,
+      whois: Number,
       synthetic: Number,
     },
     breakdown: {
-      virusTotal: mongoose.Schema.Types.Mixed,
-      abuseIPDB: mongoose.Schema.Types.Mixed,
-      domainIntel: mongoose.Schema.Types.Mixed,
-      hashlookup: mongoose.Schema.Types.Mixed,
+      dns: mongoose.Schema.Types.Mixed,
+      http: mongoose.Schema.Types.Mixed,
+      port: mongoose.Schema.Types.Mixed,
+      service_fingerprint: mongoose.Schema.Types.Mixed,
+      ssl: mongoose.Schema.Types.Mixed,
+      tech_detection: mongoose.Schema.Types.Mixed,
+      url: mongoose.Schema.Types.Mixed,
+      whois: mongoose.Schema.Types.Mixed,
       synthetic: mongoose.Schema.Types.Mixed,
     },
     alertSent: {
@@ -93,6 +101,7 @@ const scanSchema = new mongoose.Schema(
 );
 
 // Index for efficient queries
+scanSchema.index({ organizationId: 1, createdAt: -1 });
 scanSchema.index({ userId: 1, createdAt: -1 });
 scanSchema.index({ threatScore: -1 });
 scanSchema.index({ riskLevel: 1 });

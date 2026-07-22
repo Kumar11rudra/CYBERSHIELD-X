@@ -18,17 +18,17 @@ import AIReportModal from './AIReportModal';
 import { mobileUX } from '../../utils/mobileUX';
 
 const SOURCE_LABELS = {
-  virusTotal: 'VirusTotal',
-  abuseIPDB: 'AbuseIPDB',
-  domainIntel: 'Domain Intel',
-  hashlookup: 'CIRCL Hashlookup',
+  UrlEngine: 'UrlEngine',
+  UrlEngine: 'UrlEngine',
+  DnsEngine: 'DnsEngine',
+  UrlEngine: 'CIRCL UrlEngine',
 };
 
 const SOURCE_MAP_BY_TYPE = {
-  url: ['VirusTotal URL', 'Domain Intel', 'Threat Scoring Engine'],
-  ip: ['VirusTotal IP', 'AbuseIPDB', 'Threat Scoring Engine'],
-  domain: ['Domain Intel', 'VirusTotal Domain', 'Threat Scoring Engine'],
-  hash: ['VirusTotal Hash', 'CIRCL Hashlookup', 'Threat Scoring Engine'],
+  url: ['UrlEngine URL', 'DnsEngine', 'Threat Scoring Engine'],
+  ip: ['UrlEngine IP', 'UrlEngine', 'Threat Scoring Engine'],
+  domain: ['DnsEngine', 'UrlEngine Domain', 'Threat Scoring Engine'],
+  hash: ['UrlEngine Hash', 'CIRCL UrlEngine', 'Threat Scoring Engine'],
 };
 
 export default function ScannerInput({ onResult }) {

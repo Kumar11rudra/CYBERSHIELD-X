@@ -1,0 +1,44 @@
+{
+    "schemaVersion": "1.0.0",
+    "normalization": {
+        "minScore": 0,
+        "maxScore": 100,
+        "capLogic": "HARD_CAP_100",
+        "floorLogic": "HARD_FLOOR_0"
+    },
+    "severities": [
+        {
+            "severity": "INFO",
+            "minScore": 0,
+            "maxScore": 9
+        },
+        {
+            "severity": "LOW",
+            "minScore": 10,
+            "maxScore": 39
+        },
+        {
+            "severity": "MEDIUM",
+            "minScore": 40,
+            "maxScore": 69
+        },
+        {
+            "severity": "HIGH",
+            "minScore": 70,
+            "maxScore": 89
+        },
+        {
+            "severity": "CRITICAL",
+            "minScore": 90,
+            "maxScore": 100
+        }
+    ],
+    "categories": [
+        "DNS",
+        "WHOIS",
+        "TLS",
+        "HTTP",
+        "APPSEC",
+        "NETWORK"
+    ]
+}

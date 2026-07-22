@@ -1,151 +1,169 @@
-const Asset = require('../models/Asset');
-const Scan = require('../models/Scan');
-const logger = require('../utils/logger');
+const AssetService = require('../services/asset/AssetService');
 
-// Recalculates an asset's risk score by looking up the latest completed scan for its hostname
-const recalculateAssetRisk = async (userId, hostname, organizationId) => {
-  try {
-    const scanQuery = organizationId
-      ? { organizationId, target: { $regex: new RegExp(hostname.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i') }, status: 'completed' }
-      : { userId, organizationId: { $exists: false }, target: { $regex: new RegExp(hostname.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i') }, status: 'completed' };
-
-    const latestScan = await Scan.findOne(scanQuery).sort({ createdAt: -1 });
-
-    if (latestScan) {
-      const assetQuery = organizationId
-        ? { organizationId, hostname }
-        : { userId, hostname, organizationId: { $exists: false } };
-
-      await Asset.findOneAndUpdate(
-        assetQuery,
-        {
-          lastRiskScore: latestScan.threatScore,
-          lastScanAt: latestScan.createdAt
-        }
-      );
-    }
-  } catch (err) {
-    logger.error(`[ASSETS] Risk recalculation failed for ${hostname}: ${err.message}`);
-  }
+const getOrgId = (req) => {
+    const orgId = getOrgId(req) || req.query.orgId || req.headers['x-organization-id'];
+    if (!orgId) throw new Error('organizationId is required');
+    return orgId;
 };
 
-const getAssets = async (req, res, next) => {
-  try {
-    const query = req.organizationId
-      ? { organizationId: req.organizationId }
-      : { userId: req.user._id, organizationId: { $exists: false } };
-
-    const assets = await Asset.find(query).sort({ createdAt: -1 });
-    res.json({ success: true, assets });
-  } catch (error) {
-    next(error);
-  }
+exports.createAsset = async (req, res, next) => {
+    try {
+        const result = await AssetService.createAsset(getOrgId(req), req.user._id, req.body);
+        res.status(201).json(result);
+    } catch (error) {
+        next(error);
+    }
 };
 
-const createAsset = async (req, res, next) => {
-  try {
-    const { hostname, ip, tags, environment, owner, assetType, criticality, status, teamId } = req.body;
-
-    if (!hostname || !assetType) {
-      return res.status(400).json({ error: 'Hostname and Asset Type are required.' });
+exports.getAssets = async (req, res, next) => {
+    try {
+        const result = await AssetService.getAssets(getOrgId(req), req.user._id, req.query);
+        res.json(result);
+    } catch (error) {
+        next(error);
     }
-
-    const cleanHostname = hostname.trim().toLowerCase().replace(/^https?:\/\//, '').split('/')[0];
-
-    // Check duplicate
-    const checkQuery = req.organizationId
-      ? { organizationId: req.organizationId, hostname: cleanHostname }
-      : { userId: req.user._id, hostname: cleanHostname, organizationId: { $exists: false } };
-
-    const exists = await Asset.findOne(checkQuery);
-    if (exists) {
-      return res.status(409).json({ error: 'An asset with this hostname already exists.' });
-    }
-
-    const asset = await Asset.create({
-      userId: req.user._id,
-      organizationId: req.organizationId || undefined,
-      teamId: teamId || undefined,
-      hostname: cleanHostname,
-      ip,
-      tags: tags || [],
-      environment: environment || 'Production',
-      owner: owner || 'System',
-      assetType,
-      criticality: criticality || 'Medium',
-      status: status || 'active'
-    });
-
-    // Attempt initial risk mapping
-    await recalculateAssetRisk(req.user._id, cleanHostname, req.organizationId);
-    const updatedAsset = await Asset.findById(asset._id);
-
-    logger.info(`[ASSETS] Created new asset: ${cleanHostname} [${assetType}]`);
-    res.status(201).json({ success: true, asset: updatedAsset });
-  } catch (error) {
-    next(error);
-  }
 };
 
-const updateAsset = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const { ip, tags, environment, owner, criticality, status, teamId } = req.body;
-
-    const query = req.organizationId
-      ? { _id: id, organizationId: req.organizationId }
-      : { _id: id, userId: req.user._id, organizationId: { $exists: false } };
-
-    const asset = await Asset.findOne(query);
-    if (!asset) {
-      return res.status(404).json({ error: 'Asset not found or access denied.' });
+exports.getAssetById = async (req, res, next) => {
+    try {
+        const result = await AssetService.getAssetById(getOrgId(req), req.user._id, req.params.assetId);
+        res.json(result);
+    } catch (error) {
+        next(error);
     }
-
-    if (ip !== undefined) asset.ip = ip;
-    if (tags !== undefined) asset.tags = tags;
-    if (environment !== undefined) asset.environment = environment;
-    if (owner !== undefined) asset.owner = owner;
-    if (criticality !== undefined) asset.criticality = criticality;
-    if (status !== undefined) asset.status = status;
-    if (teamId !== undefined) asset.teamId = teamId || null;
-
-    await asset.save();
-    
-    // Recalculate risk on updates
-    await recalculateAssetRisk(req.user._id, asset.hostname, req.organizationId);
-    const updatedAsset = await Asset.findById(id);
-
-    res.json({ success: true, asset: updatedAsset });
-  } catch (error) {
-    next(error);
-  }
 };
 
-const deleteAsset = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-
-    const query = req.organizationId
-      ? { _id: id, organizationId: req.organizationId }
-      : { _id: id, userId: req.user._id, organizationId: { $exists: false } };
-
-    const asset = await Asset.findOneAndDelete(query);
-    
-    if (!asset) {
-      return res.status(404).json({ error: 'Asset not found or access denied.' });
+exports.updateAsset = async (req, res, next) => {
+    try {
+        const result = await AssetService.updateAsset(getOrgId(req), req.user._id, req.params.assetId, req.body);
+        res.json(result);
+    } catch (error) {
+        next(error);
     }
-
-    logger.info(`[ASSETS] Removed asset: ${asset.hostname}`);
-    res.json({ success: true, message: 'Asset successfully deleted.' });
-  } catch (error) {
-    next(error);
-  }
 };
 
-module.exports = {
-  getAssets,
-  createAsset,
-  updateAsset,
-  deleteAsset,
-  recalculateAssetRisk
+exports.deleteAsset = async (req, res, next) => {
+    try {
+        const result = await AssetService.deleteAsset(getOrgId(req), req.user._id, req.params.assetId);
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.archiveAsset = async (req, res, next) => {
+    try {
+        const result = await AssetService.archiveAsset(getOrgId(req), req.user._id, req.params.assetId);
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.restoreAsset = async (req, res, next) => {
+    try {
+        const result = await AssetService.restoreAsset(getOrgId(req), req.user._id, req.params.assetId);
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.bulkCreateAssets = async (req, res, next) => {
+    try {
+        const result = await AssetService.bulkCreateAssets(getOrgId(req), req.user._id, req.body.assets);
+        res.status(201).json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.bulkDeleteAssets = async (req, res, next) => {
+    try {
+        const result = await AssetService.bulkDeleteAssets(getOrgId(req), req.user._id, req.body.assetIds);
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.bulkArchiveAssets = async (req, res, next) => {
+    try {
+        const result = await AssetService.bulkArchiveAssets(getOrgId(req), req.user._id, req.body.assetIds);
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.searchAssets = async (req, res, next) => {
+    try {
+        const result = await AssetService.searchAssets(getOrgId(req), req.user._id, req.query);
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.filterAssets = async (req, res, next) => {
+    try {
+        const result = await AssetService.filterAssets(getOrgId(req), req.user._id, req.query);
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.assignOwner = async (req, res, next) => {
+    try {
+        const result = await AssetService.assignOwner(getOrgId(req), req.user._id, req.params.assetId, req.body.ownerId);
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.removeOwner = async (req, res, next) => {
+    try {
+        const result = await AssetService.removeOwner(getOrgId(req), req.user._id, req.params.assetId);
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.assignTeam = async (req, res, next) => {
+    try {
+        const result = await AssetService.assignTeam(getOrgId(req), req.user._id, req.params.assetId, req.body.teamId);
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.removeTeam = async (req, res, next) => {
+    try {
+        const result = await AssetService.removeTeam(getOrgId(req), req.user._id, req.params.assetId);
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getAssetHistory = async (req, res, next) => {
+    try {
+        const result = await AssetService.getAssetHistory(getOrgId(req), req.user._id, req.params.assetId);
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getAssetStatistics = async (req, res, next) => {
+    try {
+        const result = await AssetService.getAssetStatistics(getOrgId(req), req.user._id);
+        res.json(result);
+    } catch (error) {
+        next(error);
+    }
 };

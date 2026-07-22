@@ -5,14 +5,14 @@ const scheduledScanSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: false,
       index: true,
     },
     organizationId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Organization',
       index: true,
-      required: false,
+      required: true,
     },
     teamId: {
       type: mongoose.Schema.Types.ObjectId,

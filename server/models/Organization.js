@@ -7,6 +7,22 @@ const organizationSchema = new mongoose.Schema(
       required: [true, 'Organization name is required'],
       trim: true,
     },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
+    status: {
+      type: String,
+      enum: ['active', 'deleted'],
+      default: 'active'
+    },
+    plan: {
+      type: String,
+      enum: ['free', 'pro', 'enterprise'],
+      default: 'free'
+    },
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

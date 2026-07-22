@@ -1,0 +1,22 @@
+[
+    {
+        "port": 21,
+        "payload": null
+    },
+    {
+        "port": 22,
+        "payload": null
+    },
+    {
+        "port": 80,
+        "payload": "HEAD / HTTP/1.0\r\n\r\n"
+    },
+    {
+        "port": 3306,
+        "payload": null
+    },
+    {
+        "port": 5432,
+        "payload": null
+    }
+]

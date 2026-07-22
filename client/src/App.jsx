@@ -15,6 +15,7 @@ import LoadingScreen from './components/common/LoadingScreen';
 import ErrorBoundary from './components/common/ErrorBoundary';
 
 import CookieConsentBanner from './components/common/CookieConsentBanner';
+import SecurityCopilot from './components/chatbot/SecurityCopilot';
 
 import NotificationService from './services/NotificationService';
 
@@ -166,6 +167,7 @@ export default function App() {
                   </CyberSuspense>
                 </ErrorBoundary>
                 <CookieConsentBanner />
+                <SecurityCopilot />
                 <Toaster position="top-right" toastOptions={{
                   style: { background: '#020814', color: '#fff', border: '1px solid rgba(0, 212, 255, 0.2)', fontSize: '12px' },
                 }} />

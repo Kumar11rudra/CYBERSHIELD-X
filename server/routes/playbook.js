@@ -13,7 +13,5 @@ router.post('/', playbookController.createPlaybook);
 router.put('/:id', playbookController.updatePlaybook);
 router.delete('/:id', playbookController.deletePlaybook);
 router.post('/:id/trigger', playbookController.triggerPlaybookManually);
-router.get('/runs', playbookController.getAutomationRuns);
-router.post('/seed-templates', playbookController.seedTemplates);
 
 module.exports = router;

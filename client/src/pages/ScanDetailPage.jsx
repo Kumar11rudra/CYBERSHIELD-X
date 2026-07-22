@@ -234,10 +234,10 @@ export default function ScanDetailPage() {
   if (loading) return <LoadingScreen />;
   if (!scan) return null;
 
-  const vt = scan.breakdown?.virusTotal;
-  const abuse = scan.breakdown?.abuseIPDB;
-  const domainIntel = scan.breakdown?.domainIntel;
-  const hashlookup = scan.breakdown?.hashlookup;
+  const vt = scan.breakdown?.UrlEngine;
+  const abuse = scan.breakdown?.UrlEngine;
+  const DnsEngine = scan.breakdown?.DnsEngine;
+  const UrlEngine = scan.breakdown?.UrlEngine;
   const isDangerous = scan.riskLevel === 'dangerous';
 
   return (
@@ -348,17 +348,17 @@ export default function ScanDetailPage() {
 
       {/* Source scores */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* VirusTotal */}
+        {/* UrlEngine */}
         {vt && (
           <div className="cyber-card p-5">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-2 h-2 rounded-full bg-cyber-accent" />
-              <h3 className="font-mono text-xs uppercase tracking-wider text-cyber-text font-bold">VirusTotal</h3>
-              {scan.sourceScores?.virusTotal !== undefined && (
+              <h3 className="font-mono text-xs uppercase tracking-wider text-cyber-text font-bold">UrlEngine</h3>
+              {scan.sourceScores?.UrlEngine !== undefined && (
                 <span className="ml-auto font-display text-xl font-bold" style={{
-                  color: scan.sourceScores.virusTotal > 75 ? '#ff2244' : scan.sourceScores.virusTotal > 50 ? '#ff8c00' : scan.sourceScores.virusTotal > 20 ? '#ffdd00' : '#00ff88'
+                  color: scan.sourceScores.UrlEngine > 75 ? '#ff2244' : scan.sourceScores.UrlEngine > 50 ? '#ff8c00' : scan.sourceScores.UrlEngine > 20 ? '#ffdd00' : '#00ff88'
                 }}>
-                  {scan.sourceScores.virusTotal}
+                  {scan.sourceScores.UrlEngine}
                 </span>
               )}
             </div>
@@ -398,7 +398,7 @@ export default function ScanDetailPage() {
                 {vt.permalink && (
                   <a href={vt.permalink} target="_blank" rel="noopener noreferrer"
                     className="font-mono text-xs text-cyber-accent hover:underline mt-2 inline-block">
-                    View on VirusTotal →
+                    View on UrlEngine →
                   </a>
                 )}
                 {vt.names?.length > 0 && (
@@ -442,17 +442,17 @@ export default function ScanDetailPage() {
           </div>
         )}
 
-        {/* AbuseIPDB */}
+        {/* UrlEngine */}
         {abuse && (
           <div className="cyber-card p-5">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-2 h-2 rounded-full bg-cyber-orange" />
-              <h3 className="font-mono text-xs uppercase tracking-wider text-cyber-text font-bold">AbuseIPDB</h3>
-              {scan.sourceScores?.abuseIPDB !== undefined && (
+              <h3 className="font-mono text-xs uppercase tracking-wider text-cyber-text font-bold">UrlEngine</h3>
+              {scan.sourceScores?.UrlEngine !== undefined && (
                 <span className="ml-auto font-display text-xl font-bold" style={{
-                  color: scan.sourceScores.abuseIPDB > 75 ? '#ff2244' : scan.sourceScores.abuseIPDB > 50 ? '#ff8c00' : scan.sourceScores.abuseIPDB > 20 ? '#ffdd00' : '#00ff88'
+                  color: scan.sourceScores.UrlEngine > 75 ? '#ff2244' : scan.sourceScores.UrlEngine > 50 ? '#ff8c00' : scan.sourceScores.UrlEngine > 20 ? '#ffdd00' : '#00ff88'
                 }}>
-                  {scan.sourceScores.abuseIPDB}
+                  {scan.sourceScores.UrlEngine}
                 </span>
               )}
             </div>
@@ -495,49 +495,49 @@ export default function ScanDetailPage() {
           </div>
         )}
 
-        {domainIntel && !domainIntel.notApplicable && (
+        {DnsEngine && !DnsEngine.notApplicable && (
           <div className="cyber-card p-5">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-2 h-2 rounded-full bg-cyber-green" />
-              <h3 className="font-mono text-xs uppercase tracking-wider text-cyber-text font-bold">Domain Intel</h3>
-              {scan.sourceScores?.domainIntel !== undefined && (
+              <h3 className="font-mono text-xs uppercase tracking-wider text-cyber-text font-bold">DnsEngine</h3>
+              {scan.sourceScores?.DnsEngine !== undefined && (
                 <span className="ml-auto font-display text-xl font-bold" style={{
-                  color: scan.sourceScores.domainIntel > 75 ? '#ff2244' : scan.sourceScores.domainIntel > 50 ? '#ff8c00' : scan.sourceScores.domainIntel > 20 ? '#ffdd00' : '#00ff88'
+                  color: scan.sourceScores.DnsEngine > 75 ? '#ff2244' : scan.sourceScores.DnsEngine > 50 ? '#ff8c00' : scan.sourceScores.DnsEngine > 20 ? '#ffdd00' : '#00ff88'
                 }}>
-                  {scan.sourceScores.domainIntel}
+                  {scan.sourceScores.DnsEngine}
                 </span>
               )}
             </div>
-            {domainIntel.error ? (
-              <p className="font-mono text-cyber-muted text-xs">{domainIntel.error}</p>
+            {DnsEngine.error ? (
+              <p className="font-mono text-cyber-muted text-xs">{DnsEngine.error}</p>
             ) : (
               <>
-                <InfoRow label="Domain" value={domainIntel.domain} />
-                <InfoRow label="Registrar" value={domainIntel.registrar} />
-                <InfoRow label="Age" value={domainIntel.ageDays !== null ? `${domainIntel.ageDays} days` : 'Unknown'} />
-                <InfoRow label="Registered" value={domainIntel.registrationDate ? new Date(domainIntel.registrationDate).toLocaleDateString() : 'Unknown'} />
-                <InfoRow label="Last Changed" value={domainIntel.lastChangedDate ? new Date(domainIntel.lastChangedDate).toLocaleDateString() : 'Unknown'} />
-                <InfoRow label="DNSSEC" value={domainIntel.dnssecSigned === null ? 'Unknown' : domainIntel.dnssecSigned ? 'Enabled' : 'Not enabled'} />
-                <InfoRow label="SPF" value={domainIntel.hasSpf ? 'Present' : 'Missing'} />
-                <InfoRow label="DMARC" value={domainIntel.hasDmarc ? 'Present' : 'Missing'} />
-                <InfoRow label="Parked" value={domainIntel.parked ? 'Likely parked' : 'No'} />
-                <InfoRow label="A Records" value={domainIntel.aRecords?.length || 0} />
-                <InfoRow label="MX Records" value={domainIntel.mxRecords?.length || 0} />
-                {domainIntel.nameservers?.length > 0 && (
+                <InfoRow label="Domain" value={DnsEngine.domain} />
+                <InfoRow label="Registrar" value={DnsEngine.registrar} />
+                <InfoRow label="Age" value={DnsEngine.ageDays !== null ? `${DnsEngine.ageDays} days` : 'Unknown'} />
+                <InfoRow label="Registered" value={DnsEngine.registrationDate ? new Date(DnsEngine.registrationDate).toLocaleDateString() : 'Unknown'} />
+                <InfoRow label="Last Changed" value={DnsEngine.lastChangedDate ? new Date(DnsEngine.lastChangedDate).toLocaleDateString() : 'Unknown'} />
+                <InfoRow label="DNSSEC" value={DnsEngine.dnssecSigned === null ? 'Unknown' : DnsEngine.dnssecSigned ? 'Enabled' : 'Not enabled'} />
+                <InfoRow label="SPF" value={DnsEngine.hasSpf ? 'Present' : 'Missing'} />
+                <InfoRow label="DMARC" value={DnsEngine.hasDmarc ? 'Present' : 'Missing'} />
+                <InfoRow label="Parked" value={DnsEngine.parked ? 'Likely parked' : 'No'} />
+                <InfoRow label="A Records" value={DnsEngine.aRecords?.length || 0} />
+                <InfoRow label="MX Records" value={DnsEngine.mxRecords?.length || 0} />
+                {DnsEngine.nameservers?.length > 0 && (
                   <div className="mt-3">
                     <p className="font-mono text-cyber-muted text-xs mb-2 uppercase tracking-wider">Nameservers</p>
                     <div className="space-y-1">
-                      {domainIntel.nameservers.slice(0, 5).map((server) => (
+                      {DnsEngine.nameservers.slice(0, 5).map((server) => (
                         <div key={server} className="font-mono text-xs text-cyber-text break-all">{server}</div>
                       ))}
                     </div>
                   </div>
                 )}
-                {domainIntel.riskFactors?.length > 0 && (
+                {DnsEngine.riskFactors?.length > 0 && (
                   <div className="mt-3">
                     <p className="font-mono text-cyber-muted text-xs mb-2 uppercase tracking-wider">Risk Factors</p>
                     <div className="space-y-2">
-                      {domainIntel.riskFactors.map((reason) => (
+                      {DnsEngine.riskFactors.map((reason) => (
                         <div key={reason} className="bg-cyber-surface border border-cyber-border/30 rounded p-2">
                           <p className="font-mono text-xs text-cyber-text">{reason}</p>
                         </div>
@@ -550,32 +550,32 @@ export default function ScanDetailPage() {
           </div>
         )}
 
-        {hashlookup && !hashlookup.notApplicable && (
+        {UrlEngine && !UrlEngine.notApplicable && (
           <div className="cyber-card p-5">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-2 h-2 rounded-full bg-cyber-accent" />
-              <h3 className="font-mono text-xs uppercase tracking-wider text-cyber-text font-bold">CIRCL Hashlookup</h3>
-              {scan.sourceScores?.hashlookup !== undefined && (
+              <h3 className="font-mono text-xs uppercase tracking-wider text-cyber-text font-bold">CIRCL UrlEngine</h3>
+              {scan.sourceScores?.UrlEngine !== undefined && (
                 <span className="ml-auto font-display text-xl font-bold" style={{
-                  color: scan.sourceScores.hashlookup > 75 ? '#ff2244' : scan.sourceScores.hashlookup > 50 ? '#ff8c00' : scan.sourceScores.hashlookup > 20 ? '#ffdd00' : '#00ff88'
+                  color: scan.sourceScores.UrlEngine > 75 ? '#ff2244' : scan.sourceScores.UrlEngine > 50 ? '#ff8c00' : scan.sourceScores.UrlEngine > 20 ? '#ffdd00' : '#00ff88'
                 }}>
-                  {scan.sourceScores.hashlookup}
+                  {scan.sourceScores.UrlEngine}
                 </span>
               )}
             </div>
-            {hashlookup.error ? (
-              <p className="font-mono text-cyber-muted text-xs">{hashlookup.error}</p>
+            {UrlEngine.error ? (
+              <p className="font-mono text-cyber-muted text-xs">{UrlEngine.error}</p>
             ) : (
               <>
-                <InfoRow label="Hash Type" value={hashlookup.hashType?.toUpperCase()} />
-                <InfoRow label="Found in Trusted Sets" value={hashlookup.found ? 'Yes' : 'No'} />
-                <InfoRow label="Trust" value={hashlookup.trust !== undefined ? `${hashlookup.trust}/100` : 'Unknown'} />
-                <InfoRow label="File Name" value={hashlookup.fileName || hashlookup.note || 'Unknown'} />
-                <InfoRow label="Database" value={hashlookup.database} />
-                <InfoRow label="Source" value={hashlookup.sourceName} />
-                <InfoRow label="Product" value={hashlookup.productName} />
-                <InfoRow label="App Type" value={hashlookup.applicationType} />
-                {hashlookup.fileSize && <InfoRow label="File Size" value={`${hashlookup.fileSize} bytes`} />}
+                <InfoRow label="Hash Type" value={UrlEngine.hashType?.toUpperCase()} />
+                <InfoRow label="Found in Trusted Sets" value={UrlEngine.found ? 'Yes' : 'No'} />
+                <InfoRow label="Trust" value={UrlEngine.trust !== undefined ? `${UrlEngine.trust}/100` : 'Unknown'} />
+                <InfoRow label="File Name" value={UrlEngine.fileName || UrlEngine.note || 'Unknown'} />
+                <InfoRow label="Database" value={UrlEngine.database} />
+                <InfoRow label="Source" value={UrlEngine.sourceName} />
+                <InfoRow label="Product" value={UrlEngine.productName} />
+                <InfoRow label="App Type" value={UrlEngine.applicationType} />
+                {UrlEngine.fileSize && <InfoRow label="File Size" value={`${UrlEngine.fileSize} bytes`} />}
               </>
             )}
           </div>

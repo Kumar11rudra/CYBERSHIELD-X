@@ -14,8 +14,8 @@ import { useTranslation } from 'react-i18next';
 const TICKER = [
   '⚠ CISA KEV: Critical RCE in Ivanti Connect Secure',
   '🔴 ALERT: New Lumma Stealer campaign targeting Indian banks',
-  '⚡ VirusTotal: 2.3M new IOCs detected in last 24h',
-  '🛡 AbuseIPDB: 14,000+ IPs reported for DDoS activity today',
+  '⚡ UrlEngine: 2.3M new IOCs detected in last 24h',
+  '🛡 UrlEngine: 14,000+ IPs reported for DDoS activity today',
   '⚠ NCIIPC Advisory: Phishing attacks targeting UPI users',
   '🔴 CERT-In: Ransomware targeting MSME sector in India',
 ];

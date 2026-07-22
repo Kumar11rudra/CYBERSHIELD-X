@@ -7,8 +7,6 @@ router.use(authenticate);
 
 router.get('/', vaultController.getAssets);
 router.post('/add', vaultController.addAsset);
-router.patch('/lockdown/:id', vaultController.toggleLockdown);
-router.post('/:id/takedown', vaultController.initiateTakedown);
 router.delete('/:id', vaultController.deleteAsset);
 
 module.exports = router;

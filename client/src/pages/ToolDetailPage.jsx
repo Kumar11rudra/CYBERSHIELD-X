@@ -507,9 +507,9 @@ const TOOL_AGENTS = {
       { id: 'stegano', label: '🖼️ Steghide' }
     ]
   },
-  virustotal: {
-    id: 'virustotal',
-    name: 'VirusTotal',
+  UrlEngine: {
+    id: 'UrlEngine',
+    name: 'UrlEngine',
     icon: '☣️',
     greeting: 'Global Threat Intelligence coordinator active. I will cross-reference file hashes, domain reputation marks, and IP logs against 70+ security vendors. Input the target IP, domain, or malware hash:',
     chips: ['1.1.1.1', 'eicar_antivirus_test_signature', 'malicious-domain.com'],
@@ -681,8 +681,8 @@ I extract and strip EXIF tags, GPS locations, camera logs, and author metadata f
 
 Enter your target document or image name below, and let's scrub it!`;
       }
-      if (toolId === 'virustotal') {
-        return `☣️ **Greetings Operator!** I am your **VirusTotal** partner. 
+      if (toolId === 'UrlEngine') {
+        return `☣️ **Greetings Operator!** I am your **UrlEngine** partner. 
 
 I cross-reference file hashes, domain reputation marks, and IP logs against 70+ vendor feeds to resolve threat reputation scores. What payload are we querying? 
 
@@ -986,7 +986,7 @@ export default function ToolDetailPage() {
       '🏛️ Enterprise SOC & Cloud': active.filter(t => ['splunk', 'wazuh', 'wiz', 'trivy'].includes(t.id)),
       '🕵️ Digital Forensics': active.filter(t => ['autopsy', 'ftk', 'volatility', 'stegano', 'exiftool'].includes(t.id)),
       '🪙 DevSecOps': active.filter(t => ['slither'].includes(t.id)),
-      '☣️ Global Intelligence': active.filter(t => ['virustotal'].includes(t.id))
+      '☣️ Global Intelligence': active.filter(t => ['UrlEngine'].includes(t.id))
     };
   }, []);
 

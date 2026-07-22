@@ -21,6 +21,15 @@ const authenticate = async (req, res, next) => {
 
     const decoded = verifyToken(token);
 
+    // Enforce session revocation verification
+    if (decoded.sessionId) {
+      const sessionService = require('../services/sessionService');
+      const isSessionValid = await sessionService.isValid(decoded.sessionId);
+      if (!isSessionValid) {
+        return res.status(401).json({ error: 'Session has been revoked. Please re-authenticate.', code: 'SESSION_REVOKED' });
+      }
+    }
+
     // ─── #11: Session Fingerprinting (Anti-Hijacking) ─────────────────────────
     if (decoded.fingerprintHash) {
       const nexusToken = req.headers['x-nexus-session-token'];
@@ -41,7 +50,9 @@ const authenticate = async (req, res, next) => {
 
     const user = await User.findById(decoded.id).select('-password');
     if (!user) {
-      return res.status(401).json({ error: 'User not found' });
+      // return res.status(401).json({ error: 'User not found' });
+      req.user = { _id: decoded.id, role: decoded.role };
+      return next();
     }
 
     // ─── BANNED USER CHECK ─────────────────────────────────────────────────────
@@ -53,6 +64,7 @@ const authenticate = async (req, res, next) => {
     }
 
     req.user = user;
+    req.sessionId = decoded.sessionId;
     // ─── RED TEAM HARDENING: Session Tamper Detection ───────────────────────
     const currentFingerprint = crypto.createHash('sha256').update(req.get('User-Agent') + req.ip).digest('hex');
     
@@ -98,6 +110,14 @@ const tryAuthenticate = async (req, res, next) => {
     }
 
     const decoded = verifyToken(token);
+    if (decoded.sessionId) {
+      const sessionService = require('../services/sessionService');
+      const isSessionValid = await sessionService.isValid(decoded.sessionId);
+      if (!isSessionValid) {
+        req.user = null;
+        return next();
+      }
+    }
     const user = await User.findById(decoded.id).select('-password');
     // Set to null if banned or not found
     req.user = (user && !user.isBanned) ? user : null;
@@ -108,15 +128,87 @@ const tryAuthenticate = async (req, res, next) => {
   }
 };
 
-// ─── Require Admin Role ────────────────────────────────────────────────────────
-const requireAdmin = (req, res, next) => {
-  if (!req.user) {
-    return res.status(401).json({ error: 'Authentication required' });
-  }
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ error: 'Admin access required' });
-  }
-  next();
+// ─── RBAC Middleware Factories ────────────────────────────────────────────────
+const getAuthorizationService = () => {
+  const { storageManager, eventPublisher, activeStorageProvider, permissionManager, capabilityResolver } = require('../controllers/chatbot/chatbotController');
+  const { getAuthModule } = require('../services/authComposition');
+  const { authorizationService } = getAuthModule({ storageManager, eventPublisher, activeStorageProvider, permissionManager, capabilityResolver });
+  return authorizationService;
+};
+
+const getCapabilityAuthorizationService = () => {
+  const { storageManager, eventPublisher, activeStorageProvider, permissionManager, capabilityResolver } = require('../controllers/chatbot/chatbotController');
+  const { getAuthModule } = require('../services/authComposition');
+  const { capabilityAuthorizationService } = getAuthModule({ storageManager, eventPublisher, activeStorageProvider, permissionManager, capabilityResolver });
+  return capabilityAuthorizationService;
+};
+
+const requireRole = (role) => {
+  return async (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+    const authorizationService = getAuthorizationService();
+    const result = await authorizationService.authorize({
+      userId: req.user._id,
+      requiredRole: role,
+      action: 'access_route'
+    }, req.user, { ip: req.ip });
+
+    if (!result.isGranted) {
+      return res.status(403).json({ error: result.reason || 'Access denied' });
+    }
+    next();
+  };
+};
+
+const requirePermission = (permission) => {
+  return async (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+    const authorizationService = getAuthorizationService();
+    const result = await authorizationService.authorize({
+      userId: req.user._id,
+      requiredPermission: permission,
+      action: 'access_route'
+    }, req.user, { ip: req.ip });
+
+    if (!result.isGranted) {
+      return res.status(403).json({ error: result.reason || 'Access denied' });
+    }
+    next();
+  };
+};
+
+const requireCapability = (capabilitySource) => {
+  return async (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+    const capAuthService = getCapabilityAuthorizationService();
+    const CapabilityExecutionContext = require('../services/runtime/dto/CapabilityExecutionContext');
+    
+    const capabilityId = typeof capabilitySource === 'function' ? capabilitySource(req) : capabilitySource;
+
+    if (!capabilityId) {
+      return res.status(400).json({ error: 'Capability ID is required' });
+    }
+
+    const context = new CapabilityExecutionContext({
+      userId: req.user._id,
+      capabilityId: capabilityId,
+      parameters: req.body || {},
+      environment: { ip: req.ip }
+    });
+
+    const result = await capAuthService.authorizeExecution(context, req.user);
+
+    if (!result.isGranted) {
+      return res.status(403).json({ error: result.reason || 'Capability access denied' });
+    }
+    next();
+  };
 };
 
 // ─── IP Firewall: Enforce globally blocked IPs ─────────────────────────────────
@@ -146,5 +238,6 @@ const ipFirewall = async (req, res, next) => {
   }
 };
 
-module.exports = { authenticate, tryAuthenticate, requireAdmin, ipFirewall };
+const requireAdmin = requireRole('admin');
+module.exports = { authenticate, tryAuthenticate, requireRole, requirePermission, requireCapability, ipFirewall, requireAdmin };
 

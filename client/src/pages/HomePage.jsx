@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import GlobalThreatMap from '../components/dashboard/GlobalThreatMap';
 
 // ─── Matrix Rain Canvas ───────────────────────────────────────────────────────
 function MatrixRain() {
@@ -190,8 +189,8 @@ function ModuleCard({ icon, title, desc, tag, color, delay, onClick, locked, eng
 const TICKER = [
   '⚠ CISA KEV: Critical RCE in Ivanti Connect Secure',
   '🔴 ALERT: New Lumma Stealer campaign targeting Indian banks',
-  '⚡ VirusTotal: 2.3M new IOCs detected in last 24h',
-  '🛡 AbuseIPDB: 14,000+ IPs reported for DDoS activity today',
+  '⚡ UrlEngine: 2.3M new IOCs detected in last 24h',
+  '🛡 UrlEngine: 14,000+ IPs reported for DDoS activity today',
   '⚠ NCIIPC Advisory: Phishing attacks targeting UPI users',
   '🔴 CERT-In: Ransomware targeting MSME sector in India',
 ];
@@ -270,263 +269,98 @@ export default function HomePage() {
 
   const modules = [
     {
-      id: 'dig',
+      id: 'dns',
       icon: '🌐',
-      title: 'DNS Lookup & Domain Auditor',
-      desc: 'Query primary DNS records (A, MX, NS) to map remote hosting architecture.',
-      engine: 'Nexus DNS Resolve',
-      intelCount: 'Query A/MX/NS',
+      title: 'DNS Enumeration Engine',
+      desc: 'Query primary DNS records and discover subdomains to map remote hosting architecture.',
+      engine: 'dns',
+      intelCount: 'DNS Zones',
       tag: 'RECON',
       color: 'blue',
-      path: '/toolkit/dig',
+      path: '/toolkit/dns',
+    },
+    {
+      id: 'http',
+      icon: '🌍',
+      title: 'HTTP Security Engine',
+      desc: 'Perform deep HTTP analysis, header inspection, and check for misconfigurations.',
+      engine: 'http',
+      intelCount: 'Headers & Config',
+      tag: 'WEB',
+      color: 'orange',
+      path: '/toolkit/http',
+    },
+    {
+      id: 'port',
+      icon: '📡',
+      title: 'Port & Service Engine',
+      desc: 'Scan open ports and discover network services running on target hosts.',
+      engine: 'port',
+      intelCount: 'Open Ports',
+      tag: 'RECON',
+      color: 'green',
+      path: '/toolkit/port',
+    },
+    {
+      id: 'service_fingerprint',
+      icon: '🧪',
+      title: 'Service Fingerprint Engine',
+      desc: 'Analyze network responses to fingerprint operating systems and specific service versions.',
+      engine: 'service_fingerprint',
+      intelCount: 'OS & Versions',
+      tag: 'VULNERABILITY',
+      color: 'red',
+      path: '/toolkit/service_fingerprint',
     },
     {
       id: 'ssl',
       icon: '🔒',
-      title: 'SSL/TLS Certificate Security Auditor',
-      desc: 'Audit TLS protocols, cipher suites, validity periods, and calculate trust grades.',
-      engine: 'Node-TLS Connection',
+      title: 'SSL/TLS Security Engine',
+      desc: 'Connect directly to retrieve certificate details, TLS protocol version, and calculate a trust grade.',
+      engine: 'ssl',
       intelCount: 'Grade A-F',
       tag: 'VULNERABILITY',
       color: 'green',
       path: '/toolkit/ssl',
     },
     {
-      id: 'subfinder',
-      icon: '🔎',
-      title: 'Subdomain Discovery & Enumeration',
-      desc: 'Enumerate exposed subdomain nodes using parallel DNS resolution.',
-      engine: 'Nexus Subfinder',
-      intelCount: '60+ Subdomains',
+      id: 'tech_detection',
+      icon: '🕸️',
+      title: 'Technology Detection Engine',
+      desc: 'Fingerprint remote web applications to identify frameworks, CMS, and analytics tools.',
+      engine: 'tech_detection',
+      intelCount: 'Tech Stack',
       tag: 'RECON',
-      color: 'orange',
-      path: '/toolkit/subfinder',
-    },
-    {
-      id: 'nmap',
-      icon: '📡',
-      title: 'Network Port & Device Scanner',
-      desc: 'Scan open ports and discover running services on any IP address or hostname.',
-      engine: 'Nmap v7.94',
-      intelCount: '65k+ Ports',
-      tag: 'RECON',
-      color: 'blue',
-      path: '/toolkit/nmap',
-    },
-    {
-      id: 'nikto',
-      icon: '🧪',
-      title: 'Web Server Vulnerability Scanner',
-      desc: 'Audit web server configurations, security headers, and common vulnerabilities.',
-      engine: 'Nikto v2.1.6',
-      intelCount: '6.7k+ Tests',
-      tag: 'VULNERABILITY',
-      color: 'orange',
-      path: '/toolkit/nikto',
-    },
-    {
-      id: 'sqlmap',
-      icon: '💉',
-      title: 'Database SQL Injection Scanner',
-      desc: 'Automated SQL injection detection and database takeover testing.',
-      engine: 'SQLMap v1.8',
-      intelCount: 'DBMS Multi',
-      tag: 'WEB',
-      color: 'red',
-      path: '/toolkit/sqlmap',
-    },
-    {
-      id: 'john',
-      icon: '🔨',
-      title: 'Password Strength & Hash Auditor',
-      desc: 'Industrial-strength offline password hash strength auditing and verification.',
-      engine: 'John the Ripper',
-      intelCount: 'Multi-Format',
-      tag: 'PASSWORD',
       color: 'purple',
-      path: '/toolkit/john',
+      path: '/toolkit/tech_detection',
     },
     {
-      id: 'autopsy',
-      icon: '🔍',
-      title: 'Digital Cyber Forensics Investigator',
-      desc: 'Digital forensics timeline recovery and system incident investigation.',
-      engine: 'Autopsy v4.21',
-      intelCount: 'OS Artifacts',
-      tag: 'FORENSICS',
-      color: 'blue',
-      path: '/toolkit/autopsy',
-    },
-    {
-      id: 'splunk',
-      icon: '📊',
-      title: 'Enterprise Logs & Event Monitor',
-      desc: 'Ingest and query real-time event logs for threat detection.',
-      engine: 'Splunk Core',
-      intelCount: 'Real-time SIEM',
-      tag: 'SOC',
-      color: 'orange',
-      path: '/toolkit/splunk',
-    },
-    {
-      id: 'wiz',
-      icon: '🧙',
-      title: 'Cloud Infrastructure Posture Scanner',
-      desc: 'Cloud-native workload protection and misconfiguration auditing.',
-      engine: 'Wiz Graph Engine',
-      intelCount: 'Multi-Cloud',
-      tag: 'CLOUD',
-      color: 'blue',
-      path: '/toolkit/wiz',
-    },
-    {
-      id: 'virustotal',
+      id: 'url',
       icon: '☣️',
-      title: 'Threat Intelligence & File Scanner',
-      desc: 'Scan files, URLs, domains, and IPs against 70+ global security vendors.',
-      engine: 'VirusTotal API',
-      intelCount: '74+ Engines',
+      title: 'URL & Threat Intel Engine',
+      desc: 'Scan URLs and IPs against threat intelligence databases to identify malware and abuse.',
+      engine: 'url',
+      intelCount: 'Threat Score',
       tag: 'INTEL',
       color: 'red',
-      path: '/toolkit/virustotal',
+      path: '/toolkit/url',
     },
     {
-      id: 'breach',
-      icon: '🛑',
-      title: 'Data Breach & Leaks Scanner',
-      desc: 'Check any email address against public database data leaks and breaches.',
-      engine: 'HIBP / Breach-API',
-      intelCount: '12B+ Records',
-      tag: 'DARK WEB',
-      color: 'red',
-      path: '/breach-checker',
-    },
-    {
-      id: 'vault',
-      icon: '🗄️',
-      title: 'AES-256 Encrypted Safe Vault',
-      desc: 'Secure digital storage locker using locally-processed AES-256 keying.',
-      engine: 'AES-256-GCM',
-      intelCount: 'Encrypted',
-      tag: 'ENCRYPTED',
-      color: 'purple',
-      path: '/vault',
-    },
-    {
-      id: 'zerothreat',
-      icon: '🤖',
-      title: 'Autonomous AI Penetration Tester',
-      desc: 'Agentic AI-driven automated penetration testing and reporting.',
-      engine: 'GPT-4o Security',
-      intelCount: 'Neural Intel',
-      tag: 'AI',
-      color: 'green',
-      path: '/toolkit/zerothreat',
-    },
-    {
-      id: 'mobsf',
-      icon: '📱',
-      title: 'Mobile App Security Scanner',
-      desc: 'Static and dynamic analysis of Android APK and iOS IPA binaries.',
-      engine: 'MobSF Analyzer',
-      intelCount: 'Static/Dynamic',
-      tag: 'MOBILE',
-      color: 'red',
-      path: '/toolkit/mobsf',
-    },
-    {
-      id: 'sherlock',
-      icon: '🕵️‍♂️',
-      title: 'OSINT Username Footprint Tracker',
-      desc: 'Search username handle footprints across 300+ social platforms.',
-      engine: 'Sherlock v0.14',
-      intelCount: '300+ Targets',
-      tag: 'OSINT',
-      color: 'green',
-      path: '/toolkit/sherlock',
-    },
-    {
-      id: 'stegano',
-      icon: '🖼️',
-      title: 'Steganography Hidden File Extractor',
-      desc: 'Detect and extract hidden text payloads embedded inside image files.',
-      engine: 'Steghide v0.5',
-      intelCount: 'JPG/BMP/WAV',
-      tag: 'FORENSICS',
-      color: 'orange',
-      path: '/toolkit/stegano',
-    },
-    {
-      id: 'whatweb',
-      icon: '🕸️',
-      title: 'Website Tech Stack Fingerprinter',
-      desc: 'Identify tech stacks, frameworks, CMS, and servers on remote sites.',
-      engine: 'WhatWeb v0.5.5',
-      intelCount: '1.8k+ Signatures',
+      id: 'whois',
+      icon: '🌐',
+      title: 'WHOIS Record Engine',
+      desc: 'Look up registration details, registrar, creation date, and name servers.',
+      engine: 'whois',
+      intelCount: 'Registry Info',
       tag: 'RECON',
       color: 'blue',
-      path: '/toolkit/whatweb',
-    },
-    {
-      id: 'exiftool',
-      icon: '🧹',
-      title: 'Metadata Geolocation Wiped Guard',
-      desc: 'Analyze, edit, and wipe EXIF geolocation tags and media metadata.',
-      engine: 'ExifTool v12.76',
-      intelCount: 'GPS/EXIF/Tags',
-      tag: 'PRIVACY',
-      color: 'red',
-      path: '/toolkit/exiftool',
-    },
-    {
-      id: 'slither',
-      icon: '🪙',
-      title: 'Web3 Smart Contract Auditor',
-      desc: 'Static security analysis and reentrancy audits for Solidity contracts.',
-      engine: 'Slither v0.10',
-      intelCount: '30+ Checkers',
-      tag: 'WEB3',
-      color: 'purple',
-      path: '/toolkit/slither',
-    },
-    {
-      id: 'metasploit',
-      icon: '🛡️',
-      title: 'Exploit Verification & CVE Auditor',
-      desc: 'Scan target hosts for active vulnerabilities and verify CVE exploit vectors.',
-      engine: 'Metasploit v6.3',
-      intelCount: '2.3k+ Exploits',
-      tag: 'EXPLOIT',
-      color: 'red',
-      path: '/toolkit/metasploit',
-    },
-    {
-      id: 'trivy',
-      icon: '🐳',
-      title: 'Docker Container Image Auditor',
-      desc: 'Scan container layers, lockfiles, and Kubernetes configs for leaks and CVEs.',
-      engine: 'Trivy v0.49',
-      intelCount: 'Vulnerabilities',
-      tag: 'CONTAINER',
-      color: 'blue',
-      path: '/toolkit/trivy',
-    },
-    {
-      id: 'aircrack',
-      icon: '📶',
-      title: 'WiFi Network Security Auditor',
-      desc: 'Monitor 802.11 packets, capture WPA handshakes, and run key dictionary audits.',
-      engine: 'Aircrack-ng v1.7',
-      intelCount: '802.11 Auditing',
-      tag: 'WIRELESS',
-      color: 'orange',
-      path: '/toolkit/aircrack',
-    },
+      path: '/toolkit/whois',
+    }
   ];
 
   const stats = [
-    { label: t('home.stats.threatModules'), value: 20, suffix: '', color: '#00bfff' },
-    { label: t('home.stats.intelSources'), value: 24, suffix: '+', color: '#00ff88' },
+    { label: t('home.stats.threatModules'), value: 23, suffix: '', color: '#00bfff' },
+    { label: t('home.stats.intelSources'), value: 35, suffix: '+', color: '#00ff88' },
     { label: t('home.stats.riskTiers'), value: 5, suffix: '', color: '#ff2244' },
     { label: t('home.stats.responseTime'), value: 15, suffix: 's', color: '#e0e6ff' },
   ];
@@ -648,15 +482,15 @@ export default function HomePage() {
       <section style={{ 
         position: 'relative', 
         zIndex: 2, 
-        minHeight: '90vh', 
+        minHeight: '92vh', 
         display: 'flex', 
+        flexDirection: 'column',
         alignItems: 'center', 
         justifyContent: 'center', 
-        padding: '100px 24px 60px', 
-        maxWidth: 1200,
-        margin: '0 auto'
+        padding: '110px 24px 70px', 
+        textAlign: 'center',
       }}>
-        {/* Grid background */}
+        {/* Animated Grid background */}
         <div style={{
           position: 'absolute', inset: 0,
           backgroundImage: 'linear-gradient(rgba(0,191,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,191,255,0.04) 1px,transparent 1px)',
@@ -665,165 +499,92 @@ export default function HomePage() {
         }} />
 
         {/* Glow orbs */}
-        <div style={{ position: 'absolute', top: '20%', left: '15%', width: 300, height: 300, background: 'radial-gradient(circle,rgba(0,191,255,0.06),transparent 70%)', borderRadius: '50%', animation: 'float 8s ease-in-out infinite', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: '20%', right: '10%', width: 240, height: 240, background: 'radial-gradient(circle,rgba(0,255,136,0.05),transparent 70%)', borderRadius: '50%', animation: 'float 10s ease-in-out infinite reverse', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: '15%', left: '8%', width: 400, height: 400, background: 'radial-gradient(circle,rgba(0,191,255,0.07),transparent 70%)', borderRadius: '50%', animation: 'float 8s ease-in-out infinite', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '15%', right: '8%', width: 320, height: 320, background: 'radial-gradient(circle,rgba(0,255,136,0.06),transparent 70%)', borderRadius: '50%', animation: 'float 10s ease-in-out infinite reverse', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 700, height: 700, background: 'radial-gradient(circle,rgba(0,191,255,0.04),transparent 65%)', borderRadius: '50%', animation: 'float 14s ease-in-out infinite', pointerEvents: 'none' }} />
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '40px',
-          width: '100%',
-          alignItems: 'center',
-          textAlign: 'left'
-        }}>
-          {/* Left Column: Info & AI Copilot Demo */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            {/* Badge */}
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: '1px solid rgba(0,255,136,0.3)', background: 'rgba(0,255,136,0.05)', borderRadius: 20, padding: '6px 16px', marginBottom: 20, animation: 'fadeSlideUp 0.5s ease both' }}>
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#00ff88', display: 'inline-block', boxShadow: '0 0 8px #00ff88' }} />
-              <span style={{ fontSize: 11, letterSpacing: 3, color: '#00ff88', fontWeight: 600 }}>{t('home.hero.badge')}</span>
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#00ff88', display: 'inline-block', animation: 'pulse-ring 1.5s infinite' }} />
-            </div>
+        {/* Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: '1px solid rgba(0,255,136,0.3)', background: 'rgba(0,255,136,0.05)', borderRadius: 20, padding: '7px 18px', marginBottom: 28 }}
+        >
+          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#00ff88', display: 'inline-block', boxShadow: '0 0 8px #00ff88' }} />
+          <span style={{ fontSize: 11, letterSpacing: 3, color: '#00ff88', fontWeight: 600 }}>{t('home.hero.badge')}</span>
+          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#00ff88', display: 'inline-block', animation: 'pulse-ring 1.5s infinite' }} />
+        </motion.div>
 
-            {/* Main title */}
-            <h1 className="hero-title" style={{ fontSize: 'clamp(38px,6vw,64px)', fontWeight: 900, lineHeight: 1.1, margin: '0 0 16px', animation: 'fadeSlideUp 0.6s 0.1s ease both' }}>
-              <GlitchText text="CYBER" color="#e0e6ff" />
-              <span className="glow-text" style={{ color: '#00bfff', marginLeft: '10px' }}>SHIELD</span>
-              <span style={{ color: '#00ff88', fontSize: '0.6em', marginLeft: '10px' }}>X</span>
-            </h1>
+        {/* Main CYBER SHIELD X title — one line, screen-fitting */}
+        <motion.h1
+          className="hero-title"
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.1 }}
+          style={{
+            fontSize: 'clamp(28px, 6vw, 72px)',
+            fontWeight: 900,
+            lineHeight: 1.1,
+            margin: '0 0 18px',
+            letterSpacing: '-1px',
+            position: 'relative',
+            zIndex: 2,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          <GlitchText text="CYBER" color="#e0e6ff" />
+          <span className="glow-text" style={{ color: '#00bfff', marginLeft: '0.18em', textShadow: '0 0 40px rgba(0,191,255,0.8), 0 0 80px rgba(0,191,255,0.4)' }}> SHIELD</span>
+          <span style={{ color: '#00ff88', fontSize: '0.6em', marginLeft: '0.2em', verticalAlign: 'middle', textShadow: '0 0 20px rgba(0,255,136,0.8)' }}>X</span>
+        </motion.h1>
 
-            {/* Typewriter */}
-            <p style={{ fontSize: 14, color: '#3b7a9e', letterSpacing: 2, marginBottom: 20, minHeight: 22, animation: 'fadeSlideUp 0.6s 0.2s ease both' }}>
-              {typedText}<span style={{ animation: 'pulse-ring 1s infinite', color: '#00bfff' }}>|</span>
-            </p>
+        {/* Typewriter subtitle */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          style={{ fontSize: 13, color: '#3b7a9e', letterSpacing: 3, marginBottom: 16, minHeight: 22 }}
+        >
+          {typedText}<span style={{ animation: 'pulse-ring 1s infinite', color: '#00bfff' }}>|</span>
+        </motion.p>
 
-            {/* Description */}
-            <p style={{ fontSize: 14, color: '#5a7fa8', lineHeight: 1.8, marginBottom: 30, animation: 'fadeSlideUp 0.6s 0.3s ease both' }}>
-              {t('home.hero.desc')}
-            </p>
+        {/* Description */}
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+          style={{ fontSize: 14, color: '#5a7fa8', lineHeight: 1.8, marginBottom: 38, maxWidth: 600 }}
+        >
+          {t('home.hero.desc')}
+        </motion.p>
 
-            {/* CTA */}
-            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 32, animation: 'fadeSlideUp 0.6s 0.4s ease both' }}>
-              <button className="btn-primary" onClick={() => navigate('/signup')}>{t('home.hero.ctaCreate')}</button>
-              <button className="btn-secondary" onClick={() => navigate('/login')}>{t('home.hero.ctaSignIn')}</button>
-            </div>
+        {/* CTA Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.65 }}
+          style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 52 }}
+        >
+          <button className="btn-primary" onClick={() => navigate('/signup')} style={{ fontSize: 14, padding: '14px 36px' }}>{t('home.hero.ctaCreate')}</button>
+          <button className="btn-secondary" onClick={() => navigate('/login')} style={{ fontSize: 14, padding: '14px 36px' }}>{t('home.hero.ctaSignIn')}</button>
+        </motion.div>
 
-            {/* AI Copilot Interactive Demo */}
-            <div style={{
-              width: '100%',
-              background: 'rgba(10,18,35,0.85)',
-              border: '1px solid rgba(0,191,255,0.2)',
-              borderRadius: 14,
-              padding: 20,
-              boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <span style={{ fontSize: 18 }}>🤖</span>
-                <span style={{ fontSize: 12, fontWeight: 800, color: '#e0e6ff', letterSpacing: 1 }}>AI SECURITY COPILOT DEMO</span>
+        {/* Stats Row */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.85 }}
+          style={{ display: 'flex', gap: 32, flexWrap: 'wrap', justifyContent: 'center', position: 'relative', zIndex: 2 }}
+        >
+          {stats.map((s, i) => (
+            <div key={i} style={{ textAlign: 'center', minWidth: 90 }}>
+              <div style={{ fontSize: 'clamp(26px,4vw,40px)', fontWeight: 900, color: s.color, fontFamily: 'Orbitron,monospace', textShadow: `0 0 20px ${s.color}66` }}>
+                <Counter to={s.value} suffix={s.suffix} />
               </div>
-              <p style={{ fontSize: 11, color: '#5a7fa8', margin: '0 0 12px' }}>
-                Select a vulnerability prompt to test our neural triage engine:
-              </p>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
-                {[
-                  'Scan example.com for SSL issues',
-                  'Simulate dark web credential leak check',
-                  'Explain port vulnerability mitigation'
-                ].map((txt, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleCopilotDemo(txt)}
-                    disabled={isCopilotTyping}
-                    style={{
-                      background: 'rgba(0,191,255,0.08)',
-                      border: '1px solid rgba(0,191,255,0.2)',
-                      borderRadius: 6,
-                      padding: '6px 12px',
-                      fontSize: 10,
-                      color: '#00bfff',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,191,255,0.15)'}
-                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(0,191,255,0.08)'}
-                  >
-                    {txt}
-                  </button>
-                ))}
-              </div>
-              <div style={{
-                background: '#02050b',
-                borderRadius: 8,
-                padding: '12px 16px',
-                fontFamily: 'monospace',
-                fontSize: 11,
-                minHeight: 120,
-                border: '1px solid rgba(255,255,255,0.05)',
-                color: '#00ff88',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 6,
-                overflowY: 'auto'
-              }}>
-                {copilotQuery && <div style={{ color: '#00bfff', borderBottom: '1px solid rgba(0,191,255,0.1)', paddingBottom: 4 }}>&gt; {copilotQuery}</div>}
-                {copilotLogs.length === 0 && !isCopilotTyping && (
-                  <div style={{ color: '#475569', fontStyle: 'italic' }}>Terminal idle. Choose a prompt above to simulate scan response...</div>
-                )}
-                {copilotLogs.map((log, idx) => {
-                  let logColor = '#00ff88';
-                  if (log.includes('[AI-COPILOT]')) logColor = '#e0e6ff';
-                  if (log.includes('[INTEL-LOOKUP]')) logColor = '#b400ff';
-                  if (log.includes('[DNS-RESOLVER]')) logColor = '#00bfff';
-                  if (log.includes('[RISK-EVAL]')) logColor = '#ff8c00';
-                  if (log.includes('[RECOMMENDATION]')) logColor = '#ff2244';
-                  if (log.includes('[SYSTEM]')) logColor = '#ffc83b';
-                  return (
-                    <div key={idx} style={{ color: logColor }}>{log}</div>
-                  );
-                })}
-                {isCopilotTyping && <div style={{ color: '#00bfff', animation: 'pulse-ring 1s infinite' }}>█ Analyzing security vector...</div>}
-              </div>
-              {!isCopilotTyping && copilotLogs.length > 0 && (
-                <button
-                  onClick={() => navigate('/signup')}
-                  style={{
-                    width: '100%',
-                    marginTop: 12,
-                    background: 'linear-gradient(90deg, #ff2244, #ff8c00)',
-                    border: 'none',
-                    borderRadius: 8,
-                    padding: '8px 16px',
-                    fontSize: 11,
-                    fontWeight: 700,
-                    color: '#fff',
-                    cursor: 'pointer',
-                    textTransform: 'uppercase',
-                    letterSpacing: 1,
-                    transition: 'opacity 0.2s'
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.opacity = 0.9}
-                  onMouseLeave={e => e.currentTarget.style.opacity = 1}
-                >
-                  Create Account to run real scans &gt;
-                </button>
-              )}
+              <div style={{ fontSize: 10, color: '#5a7fa8', letterSpacing: 2, marginTop: 4, textTransform: 'uppercase' }}>{s.label}</div>
             </div>
-          </div>
+          ))}
+        </motion.div>
 
-          {/* Right Column: Global Threat Map */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-            <div style={{
-              width: '100%',
-              maxWidth: 550,
-              border: '1px solid rgba(0,191,255,0.2)',
-              borderRadius: 20,
-              overflow: 'hidden',
-              boxShadow: '0 20px 50px rgba(0,0,0,0.6), 0 0 30px rgba(0,191,255,0.1)'
-            }}>
-              <GlobalThreatMap />
-            </div>
-          </div>
-        </div>
       </section>
 
       {/* ── MODULES SECTION ── */}
@@ -911,12 +672,12 @@ export default function HomePage() {
           <p style={{ fontSize: 11, letterSpacing: 4, color: '#5a7fa8', marginBottom: 28 }}>{t('home.intelSources.subtitle')}</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'center' }}>
             {[
-              { name: 'VirusTotal', desc: t('home.intelSources.vtDesc'), color: '#00bfff' },
-              { name: 'AbuseIPDB', desc: t('home.intelSources.abuseDesc'), color: '#ff8c00' },
+              { name: 'UrlEngine', desc: t('home.intelSources.vtDesc'), color: '#00bfff' },
+              { name: 'UrlEngine', desc: t('home.intelSources.abuseDesc'), color: '#ff8c00' },
               { name: 'Pulsedive', desc: 'Real-time threat feeds & risk scoring', color: '#00ff88' },
               { name: 'AlienVault OTX', desc: 'World largest open threat community', color: '#b400ff' },
               { name: 'GreyNoise', desc: 'Analyzing global internet scanning noise', color: '#ff2244' },
-              { name: 'Shodan', desc: 'Deep device & network discovery intel', color: '#00d4ff' },
+              { name: 'PortEngine', desc: 'Deep device & network discovery intel', color: '#00d4ff' },
               { name: 'Cisco Talos', desc: 'Industry-leading threat intelligence', color: '#ffffff' },
               { name: 'HIBP (Breach)', desc: t('home.intelSources.hibpDesc'), color: '#ff2244' },
               { name: 'TLS / OpenSSL', desc: t('home.intelSources.tlsDesc'), color: '#00ff88' },
@@ -928,7 +689,7 @@ export default function HomePage() {
                 whileHover={{ scale: 1.05, borderColor: src.color, boxShadow: `0 0 20px ${src.color}30` }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                onClick={() => navigate(user ? '/toolkit/virustotal' : '/signup')}
+                onClick={() => navigate(user ? '/toolkit/UrlEngine' : '/signup')}
                 style={{
                   background: 'rgba(10,18,35,0.9)', border: `1px solid ${src.color}25`,
                   borderRadius: 10, padding: '16px 22px', minWidth: 180,

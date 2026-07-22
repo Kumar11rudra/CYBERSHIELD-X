@@ -3,10 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const PHASES = (target) => [
   { text: `$ Initializing CyberShield X engine...`,    delay: 0 },
-  { text: `$ Connecting to VirusTotal API...`,         delay: 420 },
+  { text: `$ Connecting to UrlEngine API...`,         delay: 420 },
   { text: `$ Submitting target: ${target || '...'}`,   delay: 900 },
   { text: `$ Fetching reputation data...`,             delay: 1500 },
-  { text: `$ Querying AbuseIPDB threat database...`,   delay: 2200 },
+  { text: `$ Querying UrlEngine threat database...`,   delay: 2200 },
   { text: `$ Analyzing DNS / WHOIS records...`,        delay: 2900 },
   { text: `$ Running threat-scoring algorithm...`,     delay: 3600 },
   { text: `$ Generating report...`,                    delay: 4200 },

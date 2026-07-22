@@ -1,10 +1,10 @@
 const PDFDocument = require('pdfkit');
 
 const SOURCE_LABELS = {
-  virusTotal: 'VirusTotal',
-  abuseIPDB: 'AbuseIPDB',
-  domainIntel: 'Domain Intel',
-  hashlookup: 'CIRCL Hashlookup',
+  UrlEngine: 'UrlEngine',
+  UrlEngine: 'UrlEngine',
+  DnsEngine: 'DnsEngine',
+  UrlEngine: 'CIRCL UrlEngine',
 };
 
 const generateScanReport = (scan, user) => {

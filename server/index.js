@@ -15,12 +15,17 @@ const cookieParser = require('cookie-parser');
 
 const { isEmailDeliveryConfigured, isEmailPreviewModeEnabled } = require('./services/emailAlerts');
 
+const { activeStorageProvider } = require('./controllers/chatbot/chatbotController');
+const { getSecurityModule } = require('./services/securityComposition');
+getSecurityModule({ activeStorageProvider });
+
 const authRoutes = require('./routes/auth');
 const scanRoutes = require('./routes/scan');
 const historyRoutes = require('./routes/history');
 const dashboardRoutes = require('./routes/dashboard');
 const adminRoutes = require('./routes/admin');
 const analyticsRoutes = require('./routes/analytics');
+const auditRoutes = require('./routes/audit');
 const threatFeedRoutes = require('./routes/threatFeed');
 const communityRoutes = require('./routes/community');
 const toolsRoutes = require('./routes/tools');
@@ -29,6 +34,7 @@ const breachRoutes = require('./routes/breach');
 const toolkitRoutes = require('./routes/toolkit');
 const iocRoutes = require('./routes/ioc');
 const reportRoutes = require('./routes/report');
+const capabilityRoutes = require('./routes/capabilities');
 const { ipFirewall } = require('./middleware/auth');
 const logger = require('./utils/logger');
 const { observabilityMiddleware, getMetrics } = require('./middleware/observability');
@@ -83,7 +89,7 @@ const buildStatusPayload = () => {
   const databaseOnline = mongoose.connection.readyState === 1;
   const emailConfigured = isEmailDeliveryConfigured();
   const emailPreview = isEmailPreviewModeEnabled() || (!emailConfigured && !isProduction);
-  const threatIntelConfigured = Boolean(process.env.VIRUSTOTAL_API_KEY || process.env.ABUSEIPDB_API_KEY);
+  const threatIntelConfigured = Boolean(process.env.UrlEngine_API_KEY || process.env.UrlEngine_API_KEY);
 
   const services = [
     {
@@ -167,32 +173,35 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 app.use(morgan(isProduction ? 'combined' : 'dev'));
 
+const { createRateLimitHandler } = require('./middleware/rateLimitAnalytics');
+
 // Rate Limiting
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
-  message: { error: 'Too many requests from this IP, please try again after 15 minutes.' }
+  message: { error: 'Too many requests from this IP, please try again after 15 minutes.' },
+  handler: createRateLimitHandler('global')
 });
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20, // Strict for auth
-  message: { error: 'Too many login/signup attempts. Try again later.' }
+  message: { error: 'Too many login/signup attempts. Try again later.' },
+  handler: createRateLimitHandler('auth')
 });
 
 const scanLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 10, // Max 10 scans per hour for free tier
-  message: { error: 'Scan limit reached for this hour.' }
+  message: { error: 'Scan limit reached for this hour.' },
+  handler: createRateLimitHandler('scan')
 });
 
 // Debug Logger to track all incoming requests
 app.use((req, res, next) => {
-  if (req.path.startsWith('/api')) {
-    console.log(`[API REQUEST] ${req.method} ${req.path}`);
-  }
   next();
 });
+
 
 // Health/Status check
 app.get('/health', (req, res) => {
@@ -220,6 +229,7 @@ app.use('/api/history', historyRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/audit', auditRoutes);
 app.use('/api/threat-feed', threatFeedRoutes);
 app.use('/api/community', communityRoutes);
 app.use('/api/tools', toolsRoutes);
@@ -240,6 +250,40 @@ app.use('/api/playbooks', require('./routes/playbook'));
 app.use('/api/integrations', require('./routes/integration'));
 app.use('/api/remediations', require('./routes/remediation'));
 app.use('/api/health', require('./routes/health'));
+app.use('/api/chatbot', require('./routes/chatbot')); // Added Chatbot route
+
+const {
+    capabilityResolver,
+    scanExecutionService,
+    jobManager,
+    jobCancellationService
+} = require('./controllers/chatbot/chatbotController');
+
+const ExecutionController = require('./controllers/ExecutionController');
+const executionController = new ExecutionController({
+    scanExecutionService,
+    jobManager,
+    jobCancellationService,
+    capabilityResolver
+});
+app.use('/api/execution', require('./routes/execution')(executionController));
+
+// Capability Catalog
+app.use('/api/capabilities', capabilityRoutes);
+
+// RBAC & User Profile Aliases mapping to authRoutes
+app.use('/api/users/me/profile', (req, res, next) => {
+  req.url = '/me';
+  authRoutes(req, res, next);
+});
+app.use('/api/roles', (req, res, next) => {
+  req.url = '/roles';
+  authRoutes(req, res, next);
+});
+app.use('/api/permissions', (req, res, next) => {
+  req.url = '/permissions';
+  authRoutes(req, res, next);
+});
 
 // ─── #15: CSP Violation Reporting Endpoint ───────────────────────────────────
 app.post('/api/security/csp-violation', (req, res) => {

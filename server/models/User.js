@@ -64,9 +64,14 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['user', 'admin'],
+      enum: ['user', 'admin', 'analyst'],
       default: 'user',
     },
+    isDeleted: { type: Boolean, default: false },
+    isBanned: { type: Boolean, default: false },
+    banReason: { type: String, default: null },
+    bannedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+    bannedAt: { type: Date, default: null },
     emailAlerts: {
       type: Boolean,
       default: true,

@@ -7,7 +7,7 @@ import usePdfExport from '../../hooks/usePdfExport';
 import toast from 'react-hot-toast';
 
 /**
- * AnalyzerToolView — Template for analysis tools (VirusTotal, WHOIS, SSL).
+ * AnalyzerToolView — Template for analysis tools (UrlEngine, WHOIS, SSL).
  *
  * Features:
  *  • Target input + "Analyze" button

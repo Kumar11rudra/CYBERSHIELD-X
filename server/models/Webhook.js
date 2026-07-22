@@ -18,8 +18,8 @@ const webhookSchema = new mongoose.Schema(
       required: [true, 'Webhook URL is required'],
       trim: true,
       validate: {
-        validator: (v) => /^https?:\/\//i.test(v),
-        message: 'Webhook URL must start with http:// or https://',
+        validator: (v) => /^https:\/\//i.test(v),
+        message: 'Webhook URL must start with https://',
       },
     },
     type: {

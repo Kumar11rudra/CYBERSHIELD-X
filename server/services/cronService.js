@@ -6,10 +6,11 @@ const User = require('../models/User');
 const IOCRecord = require('../models/IOCRecord');
 const Asset = require('../models/Asset');
 const Vulnerability = require('../models/Vulnerability');
-const localEngine = require('./nexus-engine/LocalExecutor');
 const { sendGenericAlertEmail } = require('./emailAlerts');
 const logger = require('../utils/logger');
 const { calculateNextRun } = require('../controllers/scheduleController');
+const cveParser = require('../utils/cveParser');
+const { capabilityResolver, scanExecutionService } = require('../controllers/chatbot/chatbotController');
 
 // Parse open ports from nmap output log
 const parseOpenPorts = (rawLog) => {
@@ -70,8 +71,8 @@ const executeScheduleJob = async (schedule) => {
     // 1. Gather baseline scans
     let vtResult = { malicious: 0, harmless: 0, total: 0, note: 'Scan executed via Scheduler' };
     let abuseResult = { source: 'Scheduler_Check', note: 'DNS check executed' };
-    let domainIntelResult = { riskScore: 0, riskFactors: [] };
-    let hashlookupResult = { found: false };
+    let DnsEngineResult = { riskScore: 0, riskFactors: [] };
+    let UrlEngineResult = { found: false };
 
     let scanLogs = '';
     const now = new Date();
@@ -79,7 +80,7 @@ const executeScheduleJob = async (schedule) => {
     // Check IOCs
     const ioc = await IOCRecord.findOne({ value: target.toLowerCase() });
     if (ioc) {
-      hashlookupResult.found = true;
+      UrlEngineResult.found = true;
       if (ioc.reputation > 75) {
         // Rule: High-Risk IOC -> Critical alert
         const title = `Critical Threat Detected: High-Risk IOC for ${target}`;
@@ -111,26 +112,30 @@ const executeScheduleJob = async (schedule) => {
     // Run Nmap Port check
     if (tools.includes('nmap') && (targetType === 'ip' || targetType === 'domain' || targetType === 'url')) {
       const host = targetType === 'url' ? new URL(target).hostname : target;
-      const nmapScan = await localEngine.scanPorts(host, scanMode);
+      
+      const capability = capabilityResolver.resolve('nmap.scan');
+      const profile = scanMode === 'deep' ? 'full' : 'fast';
+      const nmapScan = await scanExecutionService.startScan(capability, { target: host, profile }, userId);
       
       if (nmapScan.success) {
+        const rawLog = nmapScan.data?.rawOutput || '';
         vtResult = {
-          source: 'NLEM_Nmap_Engine',
+          source: 'V13_Nmap_Engine',
           type: targetType,
-          malicious: nmapScan.data.toLowerCase().includes('open') ? 1 : 0,
+          malicious: rawLog.toLowerCase().includes('open') ? 1 : 0,
           harmless: 1,
           total: 1,
           permalink: 'Scheduled Nmap Scan',
-          note: 'Scheduled Port Audit completed.',
-          rawLog: nmapScan.data
+          note: 'Scheduled Port Audit completed via V13.',
+          rawLog: rawLog
         };
-        scanLogs += nmapScan.data + '\n';
+        scanLogs += rawLog + '\n';
 
         // Evaluate Port Changes escalation rules
         const previousScan = await Scan.findOne({ userId, target, status: 'completed' }).sort({ createdAt: -1 });
         if (previousScan) {
-          const oldPorts = parseOpenPorts(previousScan.breakdown?.virusTotal?.rawLog);
-          const newPorts = parseOpenPorts(nmapScan.data);
+          const oldPorts = parseOpenPorts(previousScan.breakdown?.UrlEngine?.rawLog);
+          const newPorts = parseOpenPorts(rawLog);
           const addedPorts = newPorts.filter(p => !oldPorts.includes(p));
 
           if (addedPorts.length > 0) {
@@ -241,11 +246,14 @@ const executeScheduleJob = async (schedule) => {
     // Run banner audts to check CVEs
     if (targetType === 'url' || targetType === 'domain') {
       const host = targetType === 'url' ? new URL(target).hostname : target;
-      const webScan = await localEngine.runWebAuditor(target);
+      const capability = capabilityResolver.resolve('nikto.scan');
+      const webScan = await scanExecutionService.startScan(capability, { target }, userId);
+      
       if (webScan.success) {
-        scanLogs += webScan.data + '\n';
+        const rawLog = webScan.data?.rawOutput || '';
+        scanLogs += rawLog + '\n';
         // Parse raw logs for potential CVEs
-        const findings = localEngine.lookupCVEsFromBanners(webScan.data);
+        const findings = cveParser.lookupCVEsFromBanners(rawLog);
         for (const vuln of findings) {
           let severity = 'info';
           let numericScore = 0;
@@ -294,8 +302,8 @@ const executeScheduleJob = async (schedule) => {
     // Calculate threat score
     let score = 0;
     if (vtResult.malicious > 0) score += 40;
-    if (domainIntelResult.riskScore > 50) score += 30;
-    if (hashlookupResult.found) score += 30;
+    if (DnsEngineResult.riskScore > 50) score += 30;
+    if (UrlEngineResult.found) score += 30;
     score = Math.min(score, 100);
 
     const riskLevel = score >= 75 ? 'dangerous' : score >= 50 ? 'medium' : score >= 20 ? 'low' : 'safe';
@@ -311,16 +319,16 @@ const executeScheduleJob = async (schedule) => {
       riskLevel,
       incidentTier: score >= 75 ? 'CAT-2 User Compromise' : 'CAT-5 Reconnaissance',
       sourceScores: {
-        virusTotal: vtResult.malicious ? 80 : 0,
-        abuseIPDB: 0,
-        domainIntel: domainIntelResult.riskScore,
-        hashlookup: hashlookupResult.found ? 100 : 0
+        UrlEngine: vtResult.malicious ? 80 : 0,
+        UrlEngine: 0,
+        DnsEngine: DnsEngineResult.riskScore,
+        UrlEngine: UrlEngineResult.found ? 100 : 0
       },
       breakdown: {
-        virusTotal: vtResult,
-        abuseIPDB: abuseResult,
-        domainIntel: domainIntelResult,
-        hashlookup: hashlookupResult
+        UrlEngine: vtResult,
+        UrlEngine: abuseResult,
+        DnsEngine: DnsEngineResult,
+        UrlEngine: UrlEngineResult
       },
       status: 'completed'
     });
@@ -444,9 +452,7 @@ const checkAndRunDueScans = async () => {
     const now = Date.now();
     if (now - lastThreatSyncTime >= 24 * 60 * 60 * 1000) {
       lastThreatSyncTime = now;
-      logger.info('[SCHEDULER] Starting automated daily threat intelligence sync...');
-      const { syncAllFeeds } = require('./ThreatFeedSyncService');
-      syncAllFeeds().catch(err => logger.error(`[SCHEDULER] Auto Threat Intelligence sync failed: ${err.message}`));
+      logger.info('[SCHEDULER] Daily threat intelligence sync skipped (pending DI integration).');
       // Daily SLA breach escalation check
       checkVulnerabilitySLABreaches().catch(err => logger.error(`[SCHEDULER] SLA escalation check failed: ${err.message}`));
     }

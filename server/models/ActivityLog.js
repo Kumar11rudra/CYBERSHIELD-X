@@ -38,6 +38,10 @@ const activityLogSchema = new mongoose.Schema(
       target: String, // For scans
       details: String, // General purpose
       adminId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Who viewed the user
+      organizationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization' },
+      assetId: { type: mongoose.Schema.Types.ObjectId, ref: 'Asset' },
+      oldValues: mongoose.Schema.Types.Mixed,
+      newValues: mongoose.Schema.Types.Mixed,
     },
     timestamp: {
       type: Date,

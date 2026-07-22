@@ -1,8 +1,8 @@
 const SOURCE_LABELS = {
-  virusTotal: 'VirusTotal',
-  abuseIPDB: 'AbuseIPDB',
-  domainIntel: 'Domain Intel',
-  hashlookup: 'CIRCL Hashlookup',
+  UrlEngine: 'UrlEngine',
+  UrlEngine: 'UrlEngine',
+  DnsEngine: 'DnsEngine',
+  UrlEngine: 'CIRCL UrlEngine',
 };
 
 const joinLabels = (items) => {
@@ -34,21 +34,21 @@ const getPrimaryDrivers = (sourceScores = {}) => {
 
 const collectReasons = (scan) => {
   const reasons = [];
-  const vt = scan?.breakdown?.virusTotal;
-  const abuse = scan?.breakdown?.abuseIPDB;
-  const domainIntel = scan?.breakdown?.domainIntel;
-  const hashlookup = scan?.breakdown?.hashlookup;
+  const vt = scan?.breakdown?.UrlEngine;
+  const abuse = scan?.breakdown?.UrlEngine;
+  const DnsEngine = scan?.breakdown?.DnsEngine;
+  const UrlEngine = scan?.breakdown?.UrlEngine;
 
   if (vt && !vt.error) {
     if ((vt.malicious || 0) > 0) {
       pushReason(
         reasons,
-        `${vt.malicious} security engines marked this ${getTargetTypeLabel(scan.targetType)} as malicious on VirusTotal${vt.suspicious ? `, and ${vt.suspicious} more marked it suspicious` : ''}.`
+        `${vt.malicious} security engines marked this ${getTargetTypeLabel(scan.targetType)} as malicious on UrlEngine${vt.suspicious ? `, and ${vt.suspicious} more marked it suspicious` : ''}.`
       );
     } else if ((vt.suspicious || 0) > 0) {
-      pushReason(reasons, `${vt.suspicious} VirusTotal engines marked this ${getTargetTypeLabel(scan.targetType)} as suspicious.`);
+      pushReason(reasons, `${vt.suspicious} UrlEngine engines marked this ${getTargetTypeLabel(scan.targetType)} as suspicious.`);
     } else if (vt.total) {
-      pushReason(reasons, `VirusTotal did not report malicious detections across ${vt.total} engines.`);
+      pushReason(reasons, `UrlEngine did not report malicious detections across ${vt.total} engines.`);
     }
   }
 
@@ -56,35 +56,35 @@ const collectReasons = (scan) => {
     if (abuse.abuseConfidenceScore >= 50 || abuse.totalReports > 0) {
       pushReason(
         reasons,
-        `AbuseIPDB shows ${abuse.abuseConfidenceScore}% abuse confidence with ${abuse.totalReports || 0} community reports for this IP.`
+        `UrlEngine shows ${abuse.abuseConfidenceScore}% abuse confidence with ${abuse.totalReports || 0} community reports for this IP.`
       );
     } else if (abuse.isWhitelisted) {
-      pushReason(reasons, 'AbuseIPDB indicates this IP is whitelisted, which lowers immediate concern.');
+      pushReason(reasons, 'UrlEngine indicates this IP is whitelisted, which lowers immediate concern.');
     }
   }
 
-  if (domainIntel && !domainIntel.error) {
-    if (Array.isArray(domainIntel.riskFactors) && domainIntel.riskFactors.length > 0) {
-      domainIntel.riskFactors.slice(0, 2).forEach((factor) => pushReason(reasons, factor));
-    } else if (domainIntel.ageDays !== null && domainIntel.ageDays >= 180) {
-      pushReason(reasons, `The domain appears mature at roughly ${domainIntel.ageDays} days old, which reduces suspicion.`);
+  if (DnsEngine && !DnsEngine.error) {
+    if (Array.isArray(DnsEngine.riskFactors) && DnsEngine.riskFactors.length > 0) {
+      DnsEngine.riskFactors.slice(0, 2).forEach((factor) => pushReason(reasons, factor));
+    } else if (DnsEngine.ageDays !== null && DnsEngine.ageDays >= 180) {
+      pushReason(reasons, `The domain appears mature at roughly ${DnsEngine.ageDays} days old, which reduces suspicion.`);
     }
 
-    if ((domainIntel.mxRecords?.length || 0) > 0 && !domainIntel.hasDmarc) {
+    if ((DnsEngine.mxRecords?.length || 0) > 0 && !DnsEngine.hasDmarc) {
       pushReason(reasons, 'The domain accepts email but DMARC protection was not found.');
     }
   }
 
-  if (hashlookup && !hashlookup.error) {
-    if (hashlookup.found === false) {
+  if (UrlEngine && !UrlEngine.error) {
+    if (UrlEngine.found === false) {
       pushReason(reasons, 'The hash was not found in CIRCL trusted file datasets, so trust could not be confirmed.');
-    } else if (typeof hashlookup.trust === 'number') {
-      if (hashlookup.trust >= 80) {
-        pushReason(reasons, `CIRCL Hashlookup reports strong trust for this file hash (${hashlookup.trust}/100).`);
-      } else if (hashlookup.trust < 50) {
-        pushReason(reasons, `CIRCL Hashlookup trust is only ${hashlookup.trust}/100, which increases caution.`);
+    } else if (typeof UrlEngine.trust === 'number') {
+      if (UrlEngine.trust >= 80) {
+        pushReason(reasons, `CIRCL UrlEngine reports strong trust for this file hash (${UrlEngine.trust}/100).`);
+      } else if (UrlEngine.trust < 50) {
+        pushReason(reasons, `CIRCL UrlEngine trust is only ${UrlEngine.trust}/100, which increases caution.`);
       } else {
-        pushReason(reasons, `CIRCL Hashlookup reports moderate trust for this file hash (${hashlookup.trust}/100).`);
+        pushReason(reasons, `CIRCL UrlEngine reports moderate trust for this file hash (${UrlEngine.trust}/100).`);
       }
     }
   }

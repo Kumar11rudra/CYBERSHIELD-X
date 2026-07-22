@@ -55,7 +55,7 @@ const sections = [
     title: '5. API & Third-Party Services',
     icon: '🔌',
     content: [
-      'When you submit a target (URL, IP, domain, hash) for scanning, that data may be sent to third-party threat intelligence APIs including VirusTotal, AbuseIPDB, and CIRCL Hashlookup.',
+      'When you submit a target (URL, IP, domain, hash) for scanning, that data may be sent to third-party threat intelligence APIs including UrlEngine, UrlEngine, and CIRCL UrlEngine.',
       'By using our scanning features, you consent to this data sharing for the purpose of threat analysis.',
       'Our AI analysis features use Google Gemini AI. Security queries may be processed by Google\'s infrastructure.',
       'We are not responsible for the accuracy or availability of third-party threat intelligence data.',

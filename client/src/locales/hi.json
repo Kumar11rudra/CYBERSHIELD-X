@@ -289,7 +289,7 @@
       "guidance": "मार्गदर्शन"
     },
     "scanner": {
-      "description": "VirusTotal और AbuseIPDB सहित कई खतरे खुफिया स्रोतों के खिलाफ वास्तविक समय में किसी भी URL, डोमेन, IP पते या फ़ाइल हैश को स्कैन करें।",
+      "description": "UrlEngine और UrlEngine सहित कई खतरे खुफिया स्रोतों के खिलाफ वास्तविक समय में किसी भी URL, डोमेन, IP पते या फ़ाइल हैश को स्कैन करें।",
       "enterTarget": "लक्ष्य दर्ज करें",
       "realtimeAnalysis": "वास्तविक समय विश्लेषण",
       "realtimeAnalysisDesc": "कई थ्रेट सेवाओं और डेटाबेस का उपयोग करके त्वरित खतरे का पता लगाना।",
@@ -360,7 +360,7 @@
     "hero": {
       "badge": "थ्रेट इंटेलिजेंस सक्रिय",
       "subtitle": "वास्तविक समय साइबर थ्रेट इंटेलिजेंस प्लेटफॉर्म",
-      "desc": "VirusTotal, AbuseIPDB, RDAP/DNS, और CIRCL Hashlookup का उपयोग करके URL, IP, डोमेन, फ़ाइल हैश, QR कोड, UPI लिंक, SSL प्रमाणपत्र, WHOIS रिकॉर्ड, SMS स्कैम और संदिग्ध ईमेल को स्कैन करें — एक स्कोर, एक कार्रवाई में विलय।",
+      "desc": "UrlEngine, UrlEngine, RDAP/DNS, और CIRCL UrlEngine का उपयोग करके URL, IP, डोमेन, फ़ाइल हैश, QR कोड, UPI लिंक, SSL प्रमाणपत्र, WHOIS रिकॉर्ड, SMS स्कैम और संदिग्ध ईमेल को स्कैन करें — एक स्कोर, एक कार्रवाई में विलय।",
       "ctaCreate": "🚀 मुफ़्त खाता बनाएं",
       "ctaSignIn": "साइन इन करें →",
       "ctaLaunch": "🚀 कार्यक्षेत्र शुरू करें"
@@ -381,7 +381,7 @@
       "unlockFullAccess": "🔓 पूर्ण पहुंच अनलॉक करें",
       "launchDemo": "डेमो शुरू करें",
       "scanTitle": "URL / IP / डोमेन स्कैनर",
-      "scanDesc": "VirusTotal + AbuseIPDB + DomainIntel के खिलाफ किसी भी URL, IP या डोमेन को स्कैन करें और तुरंत एक एकीकृत थ्रेट स्कोर प्राप्त करें।",
+      "scanDesc": "UrlEngine + UrlEngine + DnsEngine के खिलाफ किसी भी URL, IP या डोमेन को स्कैन करें और तुरंत एक एकीकृत थ्रेट स्कोर प्राप्त करें।",
       "breachTitle": "डार्क वेब ब्रीच मॉनिटर",
       "breachDesc": "जांचें कि क्या आपका ईमेल या फोन नंबर डार्क वेब डेटाबेस ब्रीच में उजागर हुआ था — पूर्ण ब्रीच विवरण और प्रमाण के साथ।",
       "messageTitle": "संदेश विश्लेषक",
@@ -664,7 +664,7 @@
     "neutralizedThreats": "बेअसर खतरे",
     "globalConfidence": "वैश्विक आत्मविश्वास",
     "mappingNeuralNodes": "न्यूरल नोड्स की मैपिंग...",
-    "syncingFeeds": "वैश्विक थ्रेट फीड्स (VirusTotal, AbuseIPDB) के साथ सिंक हो रहा है",
+    "syncingFeeds": "वैश्विक थ्रेट फीड्स (UrlEngine, UrlEngine) के साथ सिंक हो रहा है",
     "apiPerformance": "API लोड प्रदर्शन",
     "neuralEngineSync": "न्यूरल इंजन सिंक",
     "liveIntegrityTicker": "लाइव इंटीग्रिटी टिकर",

@@ -10,20 +10,20 @@ const LOG_TEMPLATES = {
   url: [
     { cmd: 'resolver.init', msg: 'Initializing secure DNS resolver context' },
     { cmd: 'tls.verify', msg: 'Validating certificate chain and cipher suites' },
-    { cmd: 'vt.scan', msg: 'Querying VirusTotal URL reputation engine' },
+    { cmd: 'vt.scan', msg: 'Querying UrlEngine URL reputation engine' },
     { cmd: 'heuristics.check', msg: 'Analyzing hostname entropy and typosquatting signals' },
     { cmd: 'sandbox.run', msg: 'Emulating browser-based execution in secure container' },
   ],
   ip: [
     { cmd: 'net.whois', msg: 'Fetching registrar and ASN infrastructure data' },
-    { cmd: 'abuse.db', msg: 'Checking AbuseIPDB reported confidence scores' },
+    { cmd: 'abuse.db', msg: 'Checking UrlEngine reported confidence scores' },
     { cmd: 'geo.lookup', msg: 'Locating infrastructure origin and datacenter signals' },
     { cmd: 'port.scan', msg: 'Checking for known suspicious open services' },
   ],
   hash: [
     { cmd: 'sig.calc', msg: 'Calculating cryptographic hash checksums' },
     { cmd: 'circl.lookup', msg: 'Comparing against CIRCL known-good datasets' },
-    { cmd: 'vt.file', msg: 'Querying VirusTotal malware intelligence' },
+    { cmd: 'vt.file', msg: 'Querying UrlEngine malware intelligence' },
   ],
   sms: [
     { cmd: 'nlp.parser', msg: 'Analyzing message intent and social engineering markers' },

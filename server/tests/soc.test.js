@@ -230,7 +230,7 @@ describe('SOC Platform integration tests', () => {
         threatScore: 10,
         riskLevel: 'low',
         breakdown: {
-          virusTotal: {
+          UrlEngine: {
             rawLog: 'PORT     STATE  SERVICE\n80/tcp   open   http'
           }
         },

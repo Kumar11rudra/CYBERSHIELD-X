@@ -8,8 +8,8 @@ const Scan = require('../models/Scan');
 class ThreatIntelEngine {
   constructor() {
     this.feeds = {
-      abuseIPDB: process.env.ABUSEIPDB_API_KEY,
-      virusTotal: process.env.VIRUSTOTAL_API_KEY,
+      UrlEngine: process.env.UrlEngine_API_KEY,
+      UrlEngine: process.env.UrlEngine_API_KEY,
       alienVault: process.env.ALIENVAULT_API_KEY, // Optional
     };
   }
@@ -28,13 +28,13 @@ class ThreatIntelEngine {
     };
 
     try {
-      // 1. AbuseIPDB (High Fidelity for IPs)
-      if (type === 'ip' && this.feeds.abuseIPDB) {
-        const abuseRes = await axios.get('https://api.abuseipdb.com/api/v2/check', {
+      // 1. UrlEngine (High Fidelity for IPs)
+      if (type === 'ip' && this.feeds.UrlEngine) {
+        const abuseRes = await axios.get('https://api.UrlEngine.com/api/v2/check', {
           params: { ipAddress: target, maxAgeInDays: 90 },
-          headers: { Key: this.feeds.abuseIPDB, Accept: 'application/json' },
+          headers: { Key: this.feeds.UrlEngine, Accept: 'application/json' },
         });
-        results.providers.abuseIPDB = {
+        results.providers.UrlEngine = {
           score: abuseRes.data.data.abuseConfidenceScore,
           reports: abuseRes.data.data.totalReports,
           isp: abuseRes.data.data.isp,

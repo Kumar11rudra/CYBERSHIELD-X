@@ -1,0 +1,36 @@
+{
+    "schemaVersion": "1.0.0",
+    "categories": [
+        "TLS_CHAIN",
+        "EMAIL_SECURITY_CHAIN",
+        "DATABASE_EXPOSURE",
+        "DNS_HIJACK_RISK",
+        "DOMAIN_TAKEOVER"
+    ],
+    "rules": [
+        {
+            "ruleId": "CORR_TLS_WEAK_EXPIRED",
+            "requiredFindings": ["expired_ssl_certificate", "weak_cipher"],
+            "weight": 20,
+            "category": "TLS_CHAIN",
+            "edgeType": "strengthens",
+            "reasonCode": "TLS_COMPOUND_VULNERABILITY"
+        },
+        {
+            "ruleId": "CORR_EMAIL_NO_PROTECTION",
+            "requiredFindings": ["missing_dmarc", "missing_spf"],
+            "weight": 15,
+            "category": "EMAIL_SECURITY_CHAIN",
+            "edgeType": "supports",
+            "reasonCode": "SPOOFING_HIGH_RISK"
+        },
+        {
+            "ruleId": "CORR_DNS_TAKEOVER",
+            "requiredFindings": ["no_ns_records", "no_mx_record", "expiring_domain"],
+            "weight": 40,
+            "category": "DOMAIN_TAKEOVER",
+            "edgeType": "depends_on",
+            "reasonCode": "ABANDONED_DOMAIN_TAKEOVER"
+        }
+    ]
+}

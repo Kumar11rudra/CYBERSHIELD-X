@@ -1,0 +1,23 @@
+[
+    {
+        "name": "WordPress",
+        "type": "cms",
+        "regex": "<meta\\s+name=[\"']generator[\"']\\s+content=[\"']WordPress\\s+([0-9\\.]+)[\"']"
+    },
+    {
+        "name": "Drupal",
+        "type": "cms",
+        "regex": "<meta\\s+name=[\"']Generator[\"']\\s+content=[\"']Drupal\\s+([0-9]+)\\s"
+    },
+    {
+        "name": "React",
+        "type": "framework",
+        "regex": "<div[^>]+id=[\"']root[\"'][^>]*>",
+        "versionRegex": "react@([0-9\\.]+)"
+    },
+    {
+        "name": "jQuery",
+        "type": "framework",
+        "regex": "jquery[-.]([0-9\\.]+)\\.min\\.js"
+    }
+]

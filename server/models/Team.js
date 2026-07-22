@@ -13,6 +13,11 @@ const teamSchema = new mongoose.Schema(
       required: [true, 'Team name is required'],
       trim: true,
     },
+    status: {
+      type: String,
+      enum: ['active', 'deleted'],
+      default: 'active'
+    },
   },
   {
     timestamps: true,

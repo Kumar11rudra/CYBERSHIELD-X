@@ -357,7 +357,7 @@ describe('Threat Intelligence and Correlation Engine Tests (Phase 5)', () => {
         riskLevel: 'safe',
         status: 'completed',
         breakdown: {
-          virusTotal: {
+          UrlEngine: {
             rawLog: [
               'PORT     STATE  SERVICE',
               '80/tcp   open   http',
@@ -410,7 +410,7 @@ describe('Threat Intelligence and Correlation Engine Tests (Phase 5)', () => {
         riskLevel: 'dangerous',
         status: 'completed',
         breakdown: {
-          virusTotal: {
+          UrlEngine: {
             rawLog: [
               '80/tcp open http',
               'nginx/1.18.0'

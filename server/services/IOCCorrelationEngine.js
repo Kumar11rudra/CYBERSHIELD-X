@@ -1,14 +1,7 @@
-const IOCRecord = require('../models/IOCRecord');
-const ThreatFeedRecord = require('../models/ThreatFeedRecord');
-const Asset = require('../models/Asset');
-const Scan = require('../models/Scan');
-const CorrelationRecord = require('../models/CorrelationRecord');
-const { checkSSLCertificate } = require('./cronService');
-const localEngine = require('./nexus-engine/LocalExecutor');
-const logger = require('../utils/logger');
+const cveParser = require('../../utils/cveParser');
 
 /**
- * IOC Correlation Engine (Phase 5)
+ * IOC Correlation Engine (Phase 5) - PURE COMPUTATIONAL MODULE
  * Combines feed intelligence, asset criticality parameters, port profiles, SSL health, and CVE vulnerabilities.
  * 
  * Formula:
@@ -18,90 +11,82 @@ const logger = require('../utils/logger');
  * - SSL Status: 10%
  * - CVE Findings: 15%
  */
-const correlateTarget = async (target, targetType, userId) => {
-  try {
+const computeCorrelation = (target, targetType, intelData) => {
     const cleanTarget = target.trim().toLowerCase().replace(/^https?:\/\//, '').split('/')[0];
     const findings = [];
     let score = 0;
 
     // 1. IOC Threat Feed Match (40%)
-    const iocMatch = await IOCRecord.findOne({ value: target.toLowerCase() });
-    const feedMatch = await ThreatFeedRecord.findOne({ indicator: target.toLowerCase() });
-    
-    if (iocMatch || feedMatch) {
-      score += 40;
-      const sourceFeed = iocMatch?.source || feedMatch?.source || 'Public Feed';
-      findings.push(`[THREAT-FEED] Match detected in Threat Intelligence indicators (Source: ${sourceFeed}) (+40 risk weight).`);
+    if (intelData.iocMatch || intelData.feedMatch) {
+        score += 40;
+        const sourceFeed = intelData.iocMatch?.source || intelData.feedMatch?.source || 'Public Feed';
+        findings.push(`[THREAT-FEED] Match detected in Threat Intelligence indicators (Source: ${sourceFeed}) (+40 risk weight).`);
     } else {
-      findings.push('[THREAT-FEED] Target is clean; no matching indicators in Threat Intelligence feeds.');
+        findings.push('[THREAT-FEED] Target is clean; no matching indicators in Threat Intelligence feeds.');
     }
 
     // 2. Asset Criticality (20%)
-    const asset = await Asset.findOne({ userId, hostname: cleanTarget });
-    if (asset) {
-      const criticalityWeights = { Critical: 20, High: 15, Medium: 10, Low: 5 };
-      const weight = criticalityWeights[asset.criticality] || 10;
-      score += weight;
-      findings.push(`[ASSETS] Target mapped to managed asset inventory (Criticality: ${asset.criticality}) (+${weight} risk weight).`);
+    if (intelData.asset) {
+        const criticalityWeights = { Critical: 20, High: 15, Medium: 10, Low: 5 };
+        const weight = criticalityWeights[intelData.asset.criticality] || 10;
+        score += weight;
+        findings.push(`[ASSETS] Target mapped to managed asset inventory (Criticality: ${intelData.asset.criticality}) (+${weight} risk weight).`);
     } else {
-      findings.push('[ASSETS] Target is not currently provisioned in your managed asset inventory.');
+        findings.push('[ASSETS] Target is not currently provisioned in your managed asset inventory.');
     }
 
-    // Lookup latest scan for port changes and CVEs
-    const latestScan = await Scan.findOne({ 
-      userId, 
-      target: { $regex: new RegExp(cleanTarget, 'i') }, 
-      status: 'completed' 
-    }).sort({ createdAt: -1 });
-
     // 3. Open Ports (15%) & 5. CVE Findings (15%)
-    if (latestScan) {
-      const rawLog = latestScan.breakdown?.virusTotal?.rawLog || '';
-      
-      // Parse open ports
-      const openPorts = [];
-      const lines = rawLog.split('\n');
-      for (const line of lines) {
-        if (line.match(/^(\d+)\/tcp\s+open/i)) {
-          openPorts.push(line.trim());
+    if (intelData.latestScan) {
+        const rawLog = intelData.latestScan.breakdown?.UrlEngine?.rawLog || '';
+        
+        // Parse open ports
+        const openPorts = [];
+        const lines = rawLog.split('\n');
+        for (const line of lines) {
+            if (line.match(/^(\d+)\/tcp\s+open/i)) {
+                openPorts.push(line.trim());
+            }
         }
-      }
 
-      if (openPorts.length > 0) {
-        score += 15;
-        findings.push(`[PORTS] Recent scan exposed ${openPorts.length} open TCP ports (+15 risk weight).`);
-      } else {
-        findings.push('[PORTS] No exposed ports detected in recent scan profiles.');
-      }
+        if (openPorts.length > 0) {
+            score += 15;
+            findings.push(`[PORTS] Recent scan exposed ${openPorts.length} open TCP ports (+15 risk weight).`);
+        } else {
+            findings.push('[PORTS] No exposed ports detected in recent scan profiles.');
+        }
 
-      // Parse CVEs
-      const bannerFindings = localEngine.lookupCVEsFromBanners(rawLog);
-      if (bannerFindings.length > 0) {
-        score += 15;
-        const cveIds = bannerFindings.map(f => f.cve);
-        findings.push(`[VULNERABILITIES] Discovered banner software CVE indicators: ${cveIds.join(', ')} (+15 risk weight).`);
-      } else {
-        findings.push('[VULNERABILITIES] Banner software versions appear updated; zero CVE matches.');
-      }
+        // Parse CVEs
+        const bannerFindings = cveParser.lookupCVEsFromBanners(rawLog);
+        if (bannerFindings.length > 0) {
+            score += 15;
+            const cveIds = bannerFindings.map(f => f.cve);
+            findings.push(`[VULNERABILITIES] Discovered banner software CVE indicators: ${cveIds.join(', ')} (+15 risk weight).`);
+        } else {
+            findings.push('[VULNERABILITIES] Banner software versions appear updated; zero CVE matches.');
+        }
     } else {
-      findings.push('[PORTS] No ports scanned; historical logs missing.');
-      findings.push('[VULNERABILITIES] No vulnerability scans found; banners audit skipped.');
+        findings.push('[PORTS] No ports scanned; historical logs missing.');
+        findings.push('[VULNERABILITIES] No vulnerability scans found; banners audit skipped.');
     }
 
     // 4. SSL Status (10%)
     if (targetType === 'domain' || targetType === 'url') {
-      const sslRes = await checkSSLCertificate(cleanTarget);
-      if (!sslRes.success || sslRes.daysLeft <= 30) {
-        score += 10;
-        const msg = sslRes.success 
-          ? `SSL certificate expires soon in ${sslRes.daysLeft} days`
-          : `SSL/TLS securing check failed: ${sslRes.error || 'Connection failed'}`;
-        findings.push(`[SSL] ${msg} (+10 risk weight).`);
-      } else {
-        findings.push(`[SSL] SSL certificate is valid and healthy (${sslRes.daysLeft} days remaining).`);
-      }
+        const sslRes = intelData.sslRes;
+        if (sslRes) {
+            if (!sslRes.success || sslRes.daysLeft <= 30) {
+                score += 10;
+                const msg = sslRes.success 
+                    ? `SSL certificate expires soon in ${sslRes.daysLeft} days`
+                    : `SSL/TLS securing check failed: ${sslRes.error || 'Connection failed'}`;
+                findings.push(`[SSL] ${msg} (+10 risk weight).`);
+            } else {
+                findings.push(`[SSL] SSL certificate is valid and healthy (${sslRes.daysLeft} days remaining).`);
+            }
+        } else {
+            findings.push('[SSL] Target SSL information not provided.');
+        }
     } else {
-      findings.push('[SSL] Target is an IP address; SSL certificate audits skipped.');
+        findings.push('[SSL] Target is an IP address; SSL certificate audits skipped.');
     }
 
     // Upgrade risk levels per Enterprise V5 requirements
@@ -111,27 +96,13 @@ const correlateTarget = async (target, targetType, userId) => {
     else if (score >= 30) riskLevel = 'Medium';
     else if (score >= 15) riskLevel = 'Low';
 
-    // Persist result in database for trend tracing
-    const correlation = await CorrelationRecord.create({
-      userId,
-      target,
-      riskScore: score,
-      riskLevel,
-      findings
-    });
-
-    logger.info(`[CORRELATION] Correlated target ${target}: Score ${score} [${riskLevel}]`);
-
     return {
-      success: true,
-      correlation
+        score,
+        riskLevel,
+        findings
     };
-  } catch (error) {
-    logger.error(`[CORRELATION] Engine processing failed for ${target}: ${error.message}`);
-    throw error;
-  }
 };
 
 module.exports = {
-  correlateTarget
+    computeCorrelation
 };

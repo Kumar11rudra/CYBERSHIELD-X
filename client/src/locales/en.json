@@ -281,7 +281,7 @@
       "guidance": "Guidance"
     },
     "scanner": {
-      "description": "Scan any URL, domain, IP address, or file hash in real-time against multiple threat intelligence sources including VirusTotal and AbuseIPDB.",
+      "description": "Scan any URL, domain, IP address, or file hash in real-time against multiple threat intelligence sources including UrlEngine and UrlEngine.",
       "enterTarget": "Enter Target",
       "realtimeAnalysis": "Real-time Analysis",
       "realtimeAnalysisDesc": "Instant threat detection using multiple threat services and databases.",
@@ -352,7 +352,7 @@
     "hero": {
       "badge": "THREAT INTELLIGENCE ACTIVE",
       "subtitle": "Real-time cyber threat intelligence platform",
-      "desc": "Scan URLs, IPs, domains, file hashes, QR codes, UPI links, SSL certificates, WHOIS records, SMS scams, and suspicious emails using VirusTotal, AbuseIPDB, RDAP/DNS, and CIRCL Hashlookup — merged into one score, one action.",
+      "desc": "Scan URLs, IPs, domains, file hashes, QR codes, UPI links, SSL certificates, WHOIS records, SMS scams, and suspicious emails using UrlEngine, UrlEngine, RDAP/DNS, and CIRCL UrlEngine — merged into one score, one action.",
       "ctaCreate": "🚀 CREATE FREE ACCOUNT",
       "ctaSignIn": "SIGN IN →",
       "ctaLaunch": "🚀 LAUNCH WORKSPACE"
@@ -373,7 +373,7 @@
       "unlockFullAccess": "🔓 UNLOCK FULL ACCESS",
       "launchDemo": "LAUNCH DEMO",
       "scanTitle": "URL / IP / Domain Scanner",
-      "scanDesc": "Scan any URL, IP, or domain against VirusTotal + AbuseIPDB + DomainIntel and get a unified threat score instantly.",
+      "scanDesc": "Scan any URL, IP, or domain against UrlEngine + UrlEngine + DnsEngine and get a unified threat score instantly.",
       "breachTitle": "Dark Web Breach Monitor",
       "breachDesc": "Check if your email or phone number was exposed in dark web database breaches — with full breach details and proof.",
       "messageTitle": "Message Analyzer",
@@ -657,7 +657,7 @@
     "neutralizedThreats": "Neutralized Threats",
     "globalConfidence": "Global Confidence",
     "mappingNeuralNodes": "Mapping Neural Nodes...",
-    "syncingFeeds": "Syncing with global threat feeds (VirusTotal, AbuseIPDB)",
+    "syncingFeeds": "Syncing with global threat feeds (UrlEngine, UrlEngine)",
     "apiPerformance": "API Load Performance",
     "neuralEngineSync": "Neural Engine Sync",
     "liveIntegrityTicker": "Live Integrity Ticker",
