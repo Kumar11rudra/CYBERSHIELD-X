@@ -1,0 +1,40 @@
+/**
+ * CyberShield X Routes
+ * Central route dictionary for internal frontend navigation.
+ */
+export const ROUTES = {
+  HOME: '/',
+  LOGIN: '/login',
+  SIGNUP: '/signup',
+  VERIFY_EMAIL: '/verify-email',
+  FORGOT_PASSWORD: '/forgot-password',
+  DASHBOARD: '/dashboard',
+  SCAN: '/scan',
+  BULK_SCAN: '/bulk-scan',
+  MESSAGE_ANALYZER: '/message-analyzer',
+  WEB_FORENSICS: '/web-forensics',
+  UPI_VERIFIER: '/upi-verifier',
+  QR_SCANNER: '/qr-scanner',
+  VAULT: '/vault',
+  BREACH_CHECKER: '/breach-checker',
+  API_LIMITS: '/api-limits',
+  HISTORY: '/history',
+  SHARED_SCAN: '/shared-scan',
+  SETTINGS: '/settings',
+  MEMBERSHIP: '/membership',
+  ASSETS: '/assets',
+  SOC: '/soc',
+  VULNERABILITIES: '/vulnerabilities',
+  INTEGRATIONS: '/integrations',
+  REMEDIATION: '/remediation',
+  SYSTEM_HEALTH: '/system-health',
+  TOOLKIT: '/toolkit',
+  THREAT_INTEL: '/threat-intel',
+  PRIVACY: '/privacy',
+  TERMS: '/terms',
+  ADMIN_LOGIN: '/nexus-admin',
+  ADMIN_DASHBOARD: '/nexus-admin/dashboard',
+  SECURITY_POSTURE: '/security',
+  IP_HISTORY: '/ip-history',
+};
+export default ROUTES;
