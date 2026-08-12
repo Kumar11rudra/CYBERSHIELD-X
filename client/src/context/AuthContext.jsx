@@ -41,20 +41,6 @@ export const AuthProvider = ({ children }) => {
     return newUser;
   };
 
-  const googleLogin = async (googleAccessToken) => {
-    const location = await captureBrowserLocation();
-    const network = captureNetworkInfo();
-
-    const res = await api.post('/auth/google', {
-      access_token: googleAccessToken,
-      clientIntel: { location, network }
-    });
-    const { token: newToken, user: newUser } = res.data;
-    setToken(newToken);
-    setUser(newUser);
-    return newUser;
-  };
-
   const adminLogin = async (identity, password) => {
     const location = await captureBrowserLocation();
     const network = captureNetworkInfo();
@@ -66,7 +52,7 @@ export const AuthProvider = ({ children }) => {
     return newUser;
   };
 
-  const signup = async (username, email, password, mobileNumber, verificationToken, fullName, age, country, gender) => {
+  const signup = async (username, email, password, mobileNumber, fullName) => {
     const location = await captureBrowserLocation();
     const network = captureNetworkInfo();
 
@@ -75,11 +61,7 @@ export const AuthProvider = ({ children }) => {
       email,
       password,
       mobileNumber,
-      verificationToken,
       fullName,
-      age,
-      country,
-      gender,
       clientIntel: { location, network }
     });
     const { token: newToken, user: newUser } = res.data;
@@ -103,7 +85,7 @@ export const AuthProvider = ({ children }) => {
   const updateUser = (updates) => setUser((prev) => ({ ...prev, ...updates }));
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, googleLogin, adminLogin, signup, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, token, loading, login, adminLogin, signup, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

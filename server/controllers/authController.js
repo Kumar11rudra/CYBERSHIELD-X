@@ -17,10 +17,47 @@ class AuthController {
     
     register = async (req, res) => {
         try {
+            const { username, email, password, mobileNumber, fullName } = req.body;
+            if (!username || !email || !password || !mobileNumber) {
+                return res.status(400).json({ success: false, error: 'Username, email, password, and mobile number are required' });
+            }
+
+            // Create active user record directly (handled in AuthService)
             const user = await this.authService.register(req.body);
-            res.status(201).json({ success: true, message: 'Account created successfully', user });
+
+            // Generate authentication session tokens
+            const { generateToken, generateRefreshToken } = require('../utils/jwt');
+            const tokenPayload = { id: user.id, role: user.role };
+            const accessToken = generateToken(tokenPayload);
+            const refreshToken = generateRefreshToken(tokenPayload);
+
+            const cookieSameSite = process.env.NODE_ENV === 'production' ? 'none' : 'strict';
+            res.cookie('token', accessToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: cookieSameSite,
+                maxAge: 15 * 60 * 1000
+            });
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: cookieSameSite,
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+                path: '/api/auth/refresh'
+            });
+
+            res.status(201).json({
+                success: true,
+                authenticated: true,
+                user: { id: user.id, username: user.username, email: user.email, role: user.role, status: user.status },
+                token: accessToken
+            });
         } catch (err) {
-            res.status(400).json({ success: false, error: err.message });
+            // Normalize duplicate database key errors/validation blocks generics to prevent account enumeration
+            const errMsg = (err.message.includes('already registered') || err.message.includes('duplicate') || err.code === 11000)
+                ? 'Username, email, or mobile number is already registered.'
+                : 'Registration failed. Please verify your inputs.';
+            res.status(400).json({ success: false, error: errMsg });
         }
     }
 
@@ -54,13 +91,57 @@ class AuthController {
         }
     }
 
+    adminLogin = async (req, res) => {
+        try {
+            const { email, identity, password } = req.body;
+            const loginIdentifier = email || identity;
+            const ip = req.ip;
+            const userAgent = req.get('User-Agent');
+
+            const { user, accessToken, refreshToken } = await this.authService.login({ email: loginIdentifier, password, ip, userAgent });
+
+            if (user.role !== 'admin') {
+                return res.status(403).json({ success: false, error: 'Admin access required' });
+            }
+
+            const cookieSameSite = process.env.NODE_ENV === 'production' ? 'none' : 'strict';
+            res.cookie('token', accessToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: cookieSameSite,
+                maxAge: 15 * 60 * 1000
+            });
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: cookieSameSite,
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+                path: '/api/auth/refresh'
+            });
+
+            res.json({ success: true, message: 'Admin login successful', user, token: accessToken });
+        } catch (err) {
+            res.status(401).json({ success: false, error: err.message });
+        }
+    }
+
     logout = async (req, res) => {
         try {
             const userId = req.user ? req.user.id : 'unknown';
             await this.authService.logout(userId);
             
-            res.clearCookie('token');
-            res.clearCookie('refreshToken', { path: '/api/auth/refresh' });
+            const cookieSameSite = process.env.NODE_ENV === 'production' ? 'none' : 'strict';
+            res.clearCookie('token', {
+                httpOnly: true,
+                secure: true,
+                sameSite: cookieSameSite
+            });
+            res.clearCookie('refreshToken', {
+                httpOnly: true,
+                secure: true,
+                sameSite: cookieSameSite,
+                path: '/api/auth/refresh'
+            });
             res.json({ success: true, message: 'Logged out successfully' });
         } catch (err) {
             res.status(500).json({ success: false, error: 'Logout failed' });
@@ -143,6 +224,63 @@ class AuthController {
             res.json({ success: true, permissions });
         } catch (err) {
             res.status(500).json({ success: false, error: 'Failed to retrieve permissions' });
+        }
+    }
+
+    /**
+     * Email risk check — analyse an email address for disposability, MX validity,
+     * and known risk indicators using the EmailRisk service.
+     * Route: POST /api/auth/email-check  (authenticated)
+     */
+    emailCheck = async (req, res) => {
+        try {
+            const { analyzeEmailRisk } = require('../services/emailRisk');
+            const result = await analyzeEmailRisk(req.body.email);
+            res.json({ success: true, analysis: result });
+        } catch (err) {
+            res.status(400).json({ success: false, error: err.message });
+        }
+    }
+
+    checkUsername = async (req, res) => {
+        try {
+            const { username } = req.body;
+            if (!username) return res.status(400).json({ success: false, error: 'Username is required' });
+            const normalized = username.trim().toLowerCase();
+            
+            // Check if user exists using the user repo
+            const exists = await this.authService.userRepo.exists({ username: normalized });
+            if (exists) {
+                const suggestions = [
+                    `${normalized}${Math.floor(10 + Math.random() * 90)}`,
+                    `${normalized}_nx`,
+                    `op_${normalized}`
+                ];
+                return res.json({ success: true, available: false, suggestions });
+            }
+            return res.json({ success: true, available: true });
+        } catch (err) {
+            return res.status(400).json({ success: false, error: err.message });
+        }
+    }
+
+    requestEmailOtp = async (req, res) => {
+        try {
+            const { requestEmailOtp } = require('../services/emailVerification');
+            const result = await requestEmailOtp(req.body.email);
+            res.json(result);
+        } catch (err) {
+            res.status(err.status || 400).json({ error: err.message });
+        }
+    }
+
+    verifyEmailOtp = async (req, res) => {
+        try {
+            const { verifyEmailOtp } = require('../services/emailVerification');
+            const result = await verifyEmailOtp(req.body.email, req.body.otp);
+            res.json(result);
+        } catch (err) {
+            res.status(err.status || 400).json({ error: err.message });
         }
     }
 }

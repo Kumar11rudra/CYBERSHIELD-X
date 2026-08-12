@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -57,6 +57,11 @@ const VulnerabilityPage        = lazy(() => import('./pages/VulnerabilityPage'))
 const IntegrationsPage         = lazy(() => import('./pages/IntegrationsPage'));
 const RemediationPage          = lazy(() => import('./pages/RemediationPage'));
 const SystemHealthPage         = lazy(() => import('./pages/SystemHealthPage'));
+const CookiePolicyPage         = lazy(() => import('./pages/CookiePolicyPage'));
+const AcceptableUsePolicyPage  = lazy(() => import('./pages/AcceptableUsePolicyPage'));
+const SecurityInformationPage  = lazy(() => import('./pages/SecurityInformationPage'));
+const ContactPage              = lazy(() => import('./pages/ContactPage'));
+const TeamPage                 = lazy(() => import('./pages/TeamPage'));
 
 // Helper Components
 const PrivateRoute = ({ children }) => {
@@ -115,6 +120,11 @@ const AppRoutes = () => (
       <Route path="threat-intel" element={<PrivateRoute><ThreatIntelligencePage /></PrivateRoute>} />
       <Route path="privacy" element={<PrivacyPolicyPage />} />
       <Route path="terms" element={<TermsOfServicePage />} />
+      <Route path="cookie-policy" element={<CookiePolicyPage />} />
+      <Route path="acceptable-use" element={<AcceptableUsePolicyPage />} />
+      <Route path="security-info" element={<SecurityInformationPage />} />
+      <Route path="contact" element={<ContactPage />} />
+      <Route path="team" element={<TeamPage />} />
 
 
       {/* ─── Toolkit — all tool pages share the same Layout shell ─────── */}
@@ -135,6 +145,33 @@ const AppRoutes = () => (
   </Routes>
 );
 
+const ROUTE_TITLES = {
+  '/': 'CyberShield X • CyberNexus',
+  '/team': 'Team • CyberShield X',
+  '/threat-intel': 'Threat Intelligence • CyberShield X',
+  '/toolkit': 'Toolkit • CyberShield X',
+  '/dashboard': 'Dashboard • CyberShield X',
+  '/scan': 'Scanner • CyberShield X',
+  '/nexus-admin': 'Nexus Command • CyberShield X',
+  '/nexus-admin/dashboard': 'Nexus Command • CyberShield X',
+  '/security': 'Security Posture • CyberShield X',
+  '/login': 'Sign In • CyberShield X',
+  '/signup': 'Create Account • CyberShield X',
+};
+
+function PageTitleController() {
+  const location = useLocation();
+  useEffect(() => {
+    const title = ROUTE_TITLES[location.pathname] || (
+      location.pathname.startsWith('/toolkit/')
+        ? 'Tool • CyberShield X'
+        : 'CyberShield X • CyberNexus'
+    );
+    document.title = title;
+  }, [location.pathname]);
+  return null;
+}
+
 export default function App() {
   useEffect(() => {
     // Session Hard Reset for Fresh Launch
@@ -154,6 +191,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <PageTitleController />
       <I18nProvider>
         <LanguageProvider>
           <ThemeProvider>

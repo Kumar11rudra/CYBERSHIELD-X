@@ -12,7 +12,9 @@
     "build:all": "npm run build:client",
     "start:server": "cd server && npm start",
     "production": "cd server && NODE_ENV=production node index.js",
-    "seed:admin": "cd server && npm run seed:admin"
+    "seed:admin": "cd server && npm run seed:admin",
+    "verify:staging": "cd server && npm run verify:staging",
+    "verify:release": "cd server && npm run verify:release"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

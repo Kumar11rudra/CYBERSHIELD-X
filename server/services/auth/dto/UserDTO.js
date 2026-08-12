@@ -23,6 +23,7 @@ class UserDTO {
         this.avatar = data.avatar;
         this.emailVerified = data.emailVerified;
         this.emailVerifiedAt = data.emailVerifiedAt;
+        this.status = data.status;
         this.totalScans = data.totalScans;
         this.lastLoginAt = data.lastLoginAt;
         this.lastLogoutAt = data.lastLogoutAt;

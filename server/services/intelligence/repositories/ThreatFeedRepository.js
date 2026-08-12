@@ -1,4 +1,4 @@
-const IRepository = require('../../shared/IRepository');
+const IRepository = require('../../../shared/IRepository');
 const ThreatFeedDTO = require('../dto/ThreatFeedDTO');
 
 class ThreatFeedRepository extends IRepository {

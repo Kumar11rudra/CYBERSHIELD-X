@@ -32,7 +32,11 @@ class ExecutiveReportEngine {
 
         // 1. Map to deterministic sections in strict order
         // Sort findings deterministically
-        const sortedFindings = [...findings].sort((a, b) => a.deterministicSortKey.localeCompare(b.deterministicSortKey));
+        const sortedFindings = [...findings].sort((a, b) => {
+            const keyA = a.deterministicSortKey || a.findingId || '';
+            const keyB = b.deterministicSortKey || b.findingId || '';
+            return keyA.localeCompare(keyB);
+        });
 
         const sections = [
             new ExecutiveSectionDTO({ order: 1, title: 'Cover', content: { executionId } }),

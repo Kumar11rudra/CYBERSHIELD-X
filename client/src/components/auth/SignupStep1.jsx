@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import UsernameField from './UsernameField';
 import PasswordFields from './PasswordFields';
-import GoogleAuthButton from '../common/GoogleAuthButton';
 import AuthDivider from '../common/AuthDivider';
 
 export default function SignupStep1({
@@ -20,7 +19,6 @@ export default function SignupStep1({
   setShowConfirmPassword,
   loading,
   handleNext,
-  handleGoogleLogin,
 }) {
   return (
     <motion.div
@@ -76,14 +74,6 @@ export default function SignupStep1({
       >
         {loading ? 'Analyzing Protocols...' : 'Next Step'}
       </button>
-
-      <AuthDivider label={`${t('common.or') || 'OR'} SIGNUP WITH`} />
-
-      <GoogleAuthButton
-        label={t('auth.login.continueWithGoogle') || 'Continue with Google'}
-        onClick={handleGoogleLogin}
-        size="md"
-      />
 
       <div className="mt-8 pt-4 border-t border-white/10 text-center relative z-10">
         <p className="font-mono text-[10px] text-cyber-muted">

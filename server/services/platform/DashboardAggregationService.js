@@ -8,7 +8,12 @@ const mongoose = require('mongoose');
 class DashboardAggregationService {
     static async getStats(orgId, userId) {
         await RBACService.requirePermission(orgId, userId, 'canView');
-        const matchOrg = { organizationId: new mongoose.Types.ObjectId(orgId) };
+        const matchQuery = orgId 
+            ? { organizationId: new mongoose.Types.ObjectId(orgId) }
+            : { userId: new mongoose.Types.ObjectId(userId) };
+        const matchVuln = orgId 
+            ? { organizationId: new mongoose.Types.ObjectId(orgId) }
+            : { createdBy: new mongoose.Types.ObjectId(userId) };
 
         const [
             totalScans,
@@ -18,12 +23,12 @@ class DashboardAggregationService {
             vulnStats,
             recentScans
         ] = await Promise.all([
-            Scan.countDocuments(matchOrg),
-            Scan.countDocuments({ ...matchOrg, status: 'failed' }),
-            Asset.countDocuments(matchOrg),
-            Asset.countDocuments({ ...matchOrg, status: 'active' }),
+            Scan.countDocuments(matchQuery),
+            Scan.countDocuments({ ...matchQuery, status: 'failed' }),
+            Asset.countDocuments(matchQuery),
+            Asset.countDocuments({ ...matchQuery, status: 'active' }),
             Vulnerability.aggregate([
-                { $match: { ...matchOrg, status: { $in: ['Open', 'In Progress'] } } },
+                { $match: { ...matchVuln, status: { $in: ['Open', 'In Progress'] } } },
                 { $group: { 
                     _id: null, 
                     total: { $sum: 1 },
@@ -33,7 +38,7 @@ class DashboardAggregationService {
                     low: { $sum: { $cond: [{ $eq: ["$severity", "Low"] }, 1, 0] } }
                 }}
             ]),
-            Scan.find(matchOrg).sort({ createdAt: -1 }).limit(5).lean()
+            Scan.find(matchQuery).sort({ createdAt: -1 }).limit(5).lean()
         ]);
 
         const vulns = vulnStats[0] || { total: 0, critical: 0, high: 0, medium: 0, low: 0 };

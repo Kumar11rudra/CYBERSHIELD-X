@@ -1,5 +1,12 @@
 const axios = require('axios');
 const crypto = require('crypto');
+const { secureHttpAgent, secureHttpsAgent } = require('../utils/ssrfValidator');
+
+const secureAxios = axios.create({
+  httpAgent: secureHttpAgent,
+  httpsAgent: secureHttpsAgent,
+  timeout: 8000
+});
 
 const sendGenericPayload = async (config, context) => {
   const { url, secret, signatureEnabled } = config;
@@ -23,7 +30,7 @@ const sendGenericPayload = async (config, context) => {
     headers['X-CyberShield-Signature'] = signature;
   }
 
-  const response = await axios.post(url, body, { headers, timeout: 8000 });
+  const response = await secureAxios.post(url, body, { headers, timeout: 8000 });
   return { status: response.status, data: response.data };
 };
 
@@ -35,7 +42,7 @@ const testWebhookConnection = async (config) => {
     timestamp: new Date(),
     data: { message: 'Connection Test from CyberShield X' },
   });
-  const response = await axios.post(url, body, {
+  const response = await secureAxios.post(url, body, {
     headers: { 'Content-Type': 'application/json' },
     timeout: 8000,
   });

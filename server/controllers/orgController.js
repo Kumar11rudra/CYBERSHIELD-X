@@ -3,16 +3,14 @@ const orgService = require('../services/org/OrganizationService');
 exports.createOrg = async (req, res, next) => {
     try {
         const org = await orgService.createOrganization(req.user._id, req.body);
-        res.status(201).json({ success: true, organization: org });
+        res.status(201).json({ success: true, org });
     } catch (err) { next(err); }
 };
 
 exports.getOrganizations = async (req, res, next) => {
     try {
-        // Alias for admin to get all orgs vs get user orgs, for simplicity we use getUserOrgs logic here
-        // or just map both to getUserOrganizations if it's the primary list.
         const orgs = await orgService.getUserOrganizations(req.user._id);
-        res.json({ organizations: orgs });
+        res.json({ success: true, orgs });
     } catch (err) { next(err); }
 };
 
@@ -21,14 +19,16 @@ exports.getUserOrgs = exports.getOrganizations; // alias
 exports.getOrgDetails = async (req, res, next) => {
     try {
         const org = await orgService.getOrganization(req.params.orgId, req.user._id);
-        res.json({ organization: org });
+        const { membershipRepository } = require('../repositories/OrgRepositories');
+        const members = await membershipRepository.find({ organizationId: req.params.orgId });
+        res.json({ success: true, org, members });
     } catch (err) { next(err); }
 };
 
 exports.updateOrgSettings = async (req, res, next) => {
     try {
-        const org = await orgService.updateOrganization(req.params.orgId, req.user._id, req.body);
-        res.json({ success: true, organization: org });
+        const result = await orgService.updateOrganization(req.params.orgId, req.user._id, req.body);
+        res.json({ success: true, org: result.org, settings: result.settings });
     } catch (err) { next(err); }
 };
 

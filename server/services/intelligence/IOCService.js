@@ -1,5 +1,5 @@
-const logger = require('../../../utils/logger');
-const { detectInputType, normalizeScanTarget } = require('../../../utils/validators');
+const logger = require('../../utils/logger');
+const { detectInputType, normalizeScanTarget } = require('../../utils/validators');
 
 class IOCService {
     constructor(deps) {

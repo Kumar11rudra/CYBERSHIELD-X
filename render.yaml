@@ -1,0 +1,45 @@
+# CyberShield X — Render Web Service Infrastructure Blueprint
+# Documentation: https://render.com/docs/yaml-spec
+
+services:
+  - type: web
+    name: cybershield-x-backend
+    env: node
+    region: oregon
+    plan: starter
+    rootDir: server
+    buildCommand: npm install --legacy-peer-deps
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: VAULT_ENCRYPTION_KEY
+        generateValue: true
+      - key: CLIENT_URL
+        value: https://cybershieldx.pages.dev
+      - key: ALT_CLIENT_URL
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: GITHUB_OWNER
+        value: Kumar11rudra
+      - key: GITHUB_REPO
+        value: CYBERSHIELD-X
+      - key: VERCEL_TOKEN
+        sync: false
+      - key: VERCEL_PROJECT_ID
+        sync: false
+      - key: RENDER_API_KEY
+        sync: false
+      - key: RENDER_SERVICE_ID
+        sync: false

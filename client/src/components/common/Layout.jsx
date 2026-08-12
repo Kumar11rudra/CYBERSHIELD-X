@@ -79,6 +79,7 @@ const getNavItems = (t) => [
   { to: '/history', label: t('navigation.scanHistory'), icon: 'history' },
   { to: '/security', label: t('navigation.securityPosture'), icon: 'shield' },
   { to: '/membership', label: t('navigation.membership'), icon: 'shield' },
+  { to: '/team', label: 'Core Team', icon: 'user' },
 ];
 
 export default function Layout() {

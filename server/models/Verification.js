@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 const verificationSchema = new mongoose.Schema({
   email: {
     type: String,
-    required: true,
     lowercase: true,
-    trim: true
+    trim: true,
+    required: false
   },
   otp: {
     type: String,
@@ -13,8 +13,23 @@ const verificationSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['email_signup', 'phone_signup'],
+    enum: ['email_signup', 'phone_signup', 'whatsapp_signup', 'password_reset'],
     default: 'email_signup'
+  },
+  purpose: {
+    type: String,
+    enum: ['email_signup', 'phone_signup', 'whatsapp_signup', 'password_reset'],
+    default: 'email_signup'
+  },
+  destination: {
+    type: String,
+    lowercase: true,
+    trim: true
+  },
+  channel: {
+    type: String,
+    enum: ['email', 'sms', 'whatsapp'],
+    default: 'email'
   },
   expiresAt: {
     type: Date,
@@ -25,6 +40,11 @@ const verificationSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  status: {
+    type: String,
+    enum: ['pending', 'verified', 'expired', 'consumed'],
+    default: 'pending'
+  },
   verificationToken: {
     type: String,
     default: null
@@ -32,10 +52,33 @@ const verificationSchema = new mongoose.Schema({
   attemptsRemaining: {
     type: Number,
     default: 5
+  },
+  cooldownUntil: {
+    type: Date,
+    default: null
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
   }
 }, { timestamps: true });
 
-verificationSchema.index({ email: 1, type: 1 }, { unique: true });
+// Pre-save to populate destination and purpose automatically
+verificationSchema.pre('save', function (next) {
+  if (this.email && !this.destination) {
+    this.destination = this.email;
+  }
+  if (this.type && !this.purpose) {
+    this.purpose = this.type;
+  }
+  if (this.verified) {
+    this.status = 'verified';
+  }
+  next();
+});
+
+verificationSchema.index({ destination: 1, type: 1 }, { unique: true, sparse: true });
 
 const Verification = mongoose.model('Verification', verificationSchema);
 module.exports = Verification;

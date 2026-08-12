@@ -39,4 +39,11 @@ const organizationSchema = new mongoose.Schema(
   }
 );
 
+organizationSchema.pre('validate', function (next) {
+  if (this.name && !this.slug) {
+    this.slug = this.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Math.floor(Math.random() * 100000);
+  }
+  next();
+});
+
 module.exports = mongoose.model('Organization', organizationSchema);

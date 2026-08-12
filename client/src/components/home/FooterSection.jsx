@@ -140,10 +140,20 @@ export default function FooterSection({
         <div className="w-full max-w-3xl border-t border-cyber-border/10 pt-6 flex flex-col items-center gap-4">
           <div className="text-[10px] text-cyber-muted text-center font-body flex flex-col gap-2 items-center">
             <span>© {new Date().getFullYear()} CYBERSHIELD X. All rights reserved.</span>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap justify-center gap-4 text-center">
               <Link to="/privacy" className="text-cyber-accent hover:underline">Privacy Policy</Link>
               <span className="text-cyber-border/20">|</span>
               <Link to="/terms" className="text-cyber-accent hover:underline">Terms of Service</Link>
+              <span className="text-cyber-border/20">|</span>
+              <Link to="/cookie-policy" className="text-cyber-accent hover:underline">Cookie Policy</Link>
+              <span className="text-cyber-border/20">|</span>
+              <Link to="/acceptable-use" className="text-cyber-accent hover:underline">Acceptable Use Policy</Link>
+              <span className="text-cyber-border/20">|</span>
+              <Link to="/security-info" className="text-cyber-accent hover:underline">Security Information</Link>
+              <span className="text-cyber-border/20">|</span>
+              <Link to="/contact" className="text-cyber-accent hover:underline">Contact Page</Link>
+              <span className="text-cyber-border/20">|</span>
+              <Link to="/team" className="text-cyber-accent hover:underline">Team</Link>
             </div>
           </div>
           <div className="flex items-center gap-4">

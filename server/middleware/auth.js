@@ -1,7 +1,20 @@
 const crypto = require('crypto');
+const mongoose = require('mongoose');
 const { verifyToken } = require('../utils/jwt');
 const User = require('../models/User');
 const SystemSettings = require('../models/SystemSettings');
+
+const resolveUser = async (id) => {
+  try {
+    const { getAuthModule } = require('../services/authComposition');
+    const authModule = getAuthModule();
+    if (authModule && authModule.userRepo) {
+      const user = await authModule.userRepo.findById(id);
+      if (user) return user;
+    }
+  } catch {}
+  return await User.findById(id).select('-password');
+};
 
 // ─── Authenticate: Verify token + check banned status ─────────────────────────
 const authenticate = async (req, res, next) => {
@@ -48,11 +61,9 @@ const authenticate = async (req, res, next) => {
       }
     }
 
-    const user = await User.findById(decoded.id).select('-password');
+    const user = await resolveUser(decoded.id);
     if (!user) {
-      // return res.status(401).json({ error: 'User not found' });
-      req.user = { _id: decoded.id, role: decoded.role };
-      return next();
+      return res.status(401).json({ error: 'User not found or no longer exists' });
     }
 
     // ─── BANNED USER CHECK ─────────────────────────────────────────────────────
@@ -118,7 +129,7 @@ const tryAuthenticate = async (req, res, next) => {
         return next();
       }
     }
-    const user = await User.findById(decoded.id).select('-password');
+    const user = await resolveUser(decoded.id);
     // Set to null if banned or not found
     req.user = (user && !user.isBanned) ? user : null;
     next();
@@ -150,13 +161,14 @@ const requireRole = (role) => {
     }
     const authorizationService = getAuthorizationService();
     const result = await authorizationService.authorize({
-      userId: req.user._id,
+      userId: req.user._id || req.user.id,
       requiredRole: role,
       action: 'access_route'
     }, req.user, { ip: req.ip });
 
     if (!result.isGranted) {
-      return res.status(403).json({ error: result.reason || 'Access denied' });
+      const errorMsg = role === 'admin' ? 'Admin access required' : (result.reason || 'Access denied');
+      return res.status(403).json({ error: errorMsg });
     }
     next();
   };
@@ -169,7 +181,7 @@ const requirePermission = (permission) => {
     }
     const authorizationService = getAuthorizationService();
     const result = await authorizationService.authorize({
-      userId: req.user._id,
+      userId: req.user._id || req.user.id,
       requiredPermission: permission,
       action: 'access_route'
     }, req.user, { ip: req.ip });
@@ -196,7 +208,7 @@ const requireCapability = (capabilitySource) => {
     }
 
     const context = new CapabilityExecutionContext({
-      userId: req.user._id,
+      userId: req.user._id || req.user.id,
       capabilityId: capabilityId,
       parameters: req.body || {},
       environment: { ip: req.ip }
@@ -218,7 +230,8 @@ const ipFirewall = async (req, res, next) => {
     const clientIP = req.ip || req.connection?.remoteAddress || '';
     
     // Skip for health check and status (avoid DB call on monitoring pings)
-    if (req.path === '/health' || req.path === '/api/status') return next();
+    if (req.path === '/health' || req.path === '/api/status' || req.path === '/api/admin/system-health' || req.path.startsWith('/api/admin/deployments')) return next();
+    if (mongoose.connection.readyState !== 1) return next();
 
     const settings = await SystemSettings.findById('global').select('blockedIPs').lean();
     const blockedIPs = settings?.blockedIPs || [];

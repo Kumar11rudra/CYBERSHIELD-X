@@ -30,6 +30,7 @@ router.get('/', authenticate, getOrganizations);
 
 // Scoped Tenant routes
 router.get('/:orgId', authenticate, requireOrgContext, enforcePermission(PERMISSIONS.ORG_VIEW_MEMBERS), getOrgDetails);
+router.put('/:orgId/settings', authenticate, requireOrgContext, enforcePermission(PERMISSIONS.ORG_UPDATE_SETTINGS), updateOrgSettings);
 router.put('/:orgId', authenticate, requireOrgContext, enforcePermission(PERMISSIONS.ORG_UPDATE_SETTINGS), updateOrgSettings);
 router.delete('/:orgId', authenticate, requireOrgContext, enforcePermission(PERMISSIONS.ORG_UPDATE_SETTINGS), deleteOrganization);
 

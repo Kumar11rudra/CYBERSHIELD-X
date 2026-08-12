@@ -30,7 +30,6 @@ export default function SignupFormContainer({
   handleSendEmailOtp,
   handleVerifyEmailOtp,
   handleSubmit,
-  handleGoogleLogin,
   COUNTRY_CODES,
 }) {
   return (
@@ -71,7 +70,6 @@ export default function SignupFormContainer({
                   setShowConfirmPassword={setShowConfirmPassword}
                   loading={loading}
                   handleNext={handleNext}
-                  handleGoogleLogin={handleGoogleLogin}
                 />
               )}
               {step === 2 && (

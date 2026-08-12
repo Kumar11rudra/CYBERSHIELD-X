@@ -105,3 +105,24 @@ exports.getProductionTelemetry = async (req, res, next) => {
         res.json(telemetry);
     } catch (err) { next(err); }
 };
+
+exports.getSystemHealth = async (req, res, next) => {
+    try {
+        const health = await adminService.getSystemHealth();
+        res.json(health);
+    } catch (err) { next(err); }
+};
+
+exports.getDeployments = async (req, res, next) => {
+    try {
+        const deployments = await adminService.getDeployments();
+        res.json(deployments);
+    } catch (err) { next(err); }
+};
+
+exports.getDeploymentCorrelation = async (req, res, next) => {
+    try {
+        const correlation = await adminService.getDeploymentCorrelation();
+        res.json(correlation);
+    } catch (err) { next(err); }
+};

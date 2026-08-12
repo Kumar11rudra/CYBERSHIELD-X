@@ -1,14 +1,16 @@
 User-agent: *
 Allow: /
+Allow: /team
 Allow: /login
 Allow: /signup
 Allow: /security
 Allow: /privacy
 Allow: /terms
 Disallow: /dashboard/*
+Disallow: /nexus-admin/*
 Disallow: /settings/*
 Disallow: /history/*
 Disallow: /toolkit/*
 Disallow: /api/*
 
-Sitemap: https://cybershieldx.com/sitemap.xml
+Sitemap: https://cybershieldx.pages.dev/sitemap.xml

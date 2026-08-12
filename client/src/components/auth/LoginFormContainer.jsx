@@ -15,7 +15,6 @@ export default function LoginFormContainer({
   setShowPw,
   loading,
   doLogin,
-  handleGoogleLogin,
 }) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-6 relative z-10 bg-gradient-to-l from-black/80 to-transparent w-full">
@@ -54,7 +53,6 @@ export default function LoginFormContainer({
             setShowPw={setShowPw}
             loading={loading}
             doLogin={doLogin}
-            handleGoogleLogin={handleGoogleLogin}
           />
         </GlassCard>
       </motion.div>

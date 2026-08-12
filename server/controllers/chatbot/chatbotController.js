@@ -140,7 +140,7 @@ const isProduction = configProvider.get('NODE_ENV') === 'production';
 const mongoConnectionString = configProvider.get('MONGO_URI', 'mongodb://localhost:27017/cybershield');
 
 // Provider Selection Mechanism
-const activeStorageProvider = isProduction 
+const activeStorageProvider = (isProduction || process.env.NODE_ENV === 'test')
     ? new MongoStorageProvider(mongoConnectionString)
     : new MockStorageProvider();
 

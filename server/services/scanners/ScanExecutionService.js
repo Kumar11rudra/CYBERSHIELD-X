@@ -44,10 +44,10 @@ class ScanExecutionService {
         }
 
         // 1. Validate Input
-        const safeParameters = provider.validateInput(parameters);
+        const safeParameters = typeof provider.validateInput === 'function' ? provider.validateInput(parameters) : parameters;
         
         // 2. Build Execution Plan
-        const scanProfile = provider.buildExecutionPlan(safeParameters);
+        const scanProfile = typeof provider.buildExecutionPlan === 'function' ? provider.buildExecutionPlan(safeParameters) : safeParameters;
 
         // 3. Dispatch to Execution Orchestrator
         // We pass the ScanProfileDTO to the orchestrator as the `plan`.
@@ -59,7 +59,7 @@ class ScanExecutionService {
         // Wait, does response contain executionId? Yes, ExecutionResponse metadata contains it.
         const executionId = response.metadata ? response.metadata.executionId : null;
         if (executionId) {
-            const normalizedResult = provider.normalizeOutput(response);
+            const normalizedResult = typeof provider.normalizeOutput === 'function' ? provider.normalizeOutput(response) : response;
             await this._overwriteTerminalJobResult(executionId, response, normalizedResult);
             // Replace response data with normalized
             response.data = normalizedResult;

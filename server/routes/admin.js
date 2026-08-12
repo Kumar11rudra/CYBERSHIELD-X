@@ -16,6 +16,9 @@ const {
   injectTestThreat,
   getSecurityMetrics,
   getProductionTelemetry,
+  getSystemHealth,
+  getDeployments,
+  getDeploymentCorrelation,
 } = require('../controllers/adminController');
 const { getMetrics } = require('../middleware/observability');
 const { authenticate, requireAdmin } = require('../middleware/auth');
@@ -25,6 +28,9 @@ router.use(authenticate, requireAdmin);
 
 // ─── Observability & Metrics ──────────────────────────────────────────────────
 router.get('/metrics', (req, res) => res.json(getMetrics()));
+router.get('/system-health', getSystemHealth);
+router.get('/deployments', getDeployments);
+router.get('/deployments/correlation', getDeploymentCorrelation);
 
 // ─── Existing Routes ──────────────────────────────────────────────────────────
 router.get('/stats', getPlatformStats);

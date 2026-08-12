@@ -1,6 +1,7 @@
 class NotificationDTO {
     constructor(data) {
         this.id = data._id;
+        this._id = data._id;
         this.userId = data.userId;
         this.organizationId = data.organizationId;
         this.type = data.type;

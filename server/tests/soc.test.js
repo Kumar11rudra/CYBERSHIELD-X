@@ -38,14 +38,22 @@ beforeAll(async () => {
   });
 
   authToken = generateToken({ id: testUserId, username: 'testsoc', role: 'admin' });
+
+  // Clear legacy data
+  await Asset.deleteMany({ $or: [{ userId: testUserId }, { createdBy: testUserId }, { hostname: 'soc-monitor.local' }] });
+  await ScheduledScan.deleteMany({ $or: [{ userId: testUserId }, { createdBy: testUserId }, { target: 'soc-monitor.local' }] });
+  await Notification.deleteMany({ userId: testUserId });
+  await Scan.deleteMany({ userId: testUserId });
+  await IOCRecord.deleteMany({});
 });
 
 afterAll(async () => {
   await User.deleteMany({ _id: testUserId });
-  await Asset.deleteMany({ userId: testUserId });
-  await ScheduledScan.deleteMany({ userId: testUserId });
+  await Asset.deleteMany({ $or: [{ userId: testUserId }, { createdBy: testUserId }, { hostname: 'soc-monitor.local' }] });
+  await ScheduledScan.deleteMany({ $or: [{ userId: testUserId }, { createdBy: testUserId }, { target: 'soc-monitor.local' }] });
   await Notification.deleteMany({ userId: testUserId });
   await Scan.deleteMany({ userId: testUserId });
+  await IOCRecord.deleteMany({});
   await mongoose.disconnect();
 });
 

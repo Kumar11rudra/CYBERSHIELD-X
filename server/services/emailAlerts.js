@@ -401,7 +401,7 @@ module.exports = {
   sendSignupOtpEmail: async ({ to, otp }) => {
     const transporter = getTransporter();
     const mailOptions = {
-      from: process.env.EMAIL_FROM || 'CyberShield X <noreply@cybershieldx.com>',
+      from: process.env.EMAIL_FROM || 'CyberShield X <noreply@YOUR-DOMAIN.com>',
       to,
       subject: `🔐 ${otp} is your CyberShield X verification code`,
       html: `

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useLocation } from 'react-router-dom';
 import { getToolConfig, getStatusBadge } from './toolConfig';
 
 /**
@@ -12,8 +12,13 @@ import { getToolConfig, getStatusBadge } from './toolConfig';
  */
 const ToolPageLayout = ({ toolId: toolIdProp, children }) => {
   const params = useParams();
+  const location = useLocation();
   const toolId = toolIdProp || params.toolId;
   const tool = getToolConfig(toolId);
+
+  const backTarget = location.state?.fromCategory 
+    ? `/toolkit?category=${encodeURIComponent(location.state.fromCategory)}` 
+    : '/toolkit';
 
   if (!tool) {
     return (
@@ -23,7 +28,7 @@ const ToolPageLayout = ({ toolId: toolIdProp, children }) => {
         <p style={styles.errorText}>
           No tool with ID <code style={styles.code}>{toolId}</code> exists.
         </p>
-        <Link to="/toolkit" style={styles.backLink}>
+        <Link to={backTarget} style={styles.backLink}>
           ← Back to Toolkit
         </Link>
       </div>
@@ -37,7 +42,7 @@ const ToolPageLayout = ({ toolId: toolIdProp, children }) => {
     <div style={styles.page}>
       {/* ── Back navigation ── */}
       <div style={styles.backBar}>
-        <Link to="/toolkit" style={styles.backLink}>
+        <Link to={backTarget} style={styles.backLink}>
           <span style={styles.backArrow}>←</span> Back to Toolkit
         </Link>
       </div>
@@ -94,6 +99,18 @@ const ToolPageLayout = ({ toolId: toolIdProp, children }) => {
           </span>
         )}
       </header>
+
+      {tool.status === 'partial' && (
+        <div style={styles.partialBanner}>
+          <span style={styles.partialIcon}>⚠️</span>
+          <div style={styles.partialTextContent}>
+            <strong style={{ fontSize: '12px', color: '#f59e0b', letterSpacing: '0.5px' }}>PARTIAL CAPABILITY INTEGRATION</strong>
+            <p style={styles.partialSubtext}>
+              {tool.configRequiredMessage || "Available, but requires configured external provider credentials."}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* ── Main content ── */}
       <main style={styles.main}>{children}</main>
@@ -203,6 +220,33 @@ const styles = {
     background: 'transparent',
     alignSelf: 'center',
     whiteSpace: 'nowrap',
+  },
+  partialBanner: {
+    background: 'rgba(245,158,11,0.06)',
+    border: '1px solid rgba(245,158,11,0.25)',
+    borderRadius: '12px',
+    padding: '16px 20px',
+    margin: '24px auto 0 auto',
+    maxWidth: '912px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+    fontFamily: '"JetBrains Mono", Courier, monospace',
+  },
+  partialIcon: {
+    fontSize: '24px',
+  },
+  partialTextContent: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+  },
+  partialSubtext: {
+    margin: 0,
+    fontSize: '10px',
+    color: '#94a3b8',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
   },
 
   /* Main */

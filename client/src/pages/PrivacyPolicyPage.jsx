@@ -95,7 +95,7 @@ const sections = [
       '**Right to Object**: Opt out of non-essential data processing (e.g., disable email alerts).',
       '**Right to Restriction**: Request temporary suspension of processing while disputes are resolved.',
     ],
-    note: 'To exercise any of these rights, use the account settings or contact us at privacy@cybershieldx.com',
+    note: 'To exercise any of these rights, use the account settings or contact us at privacy@YOUR-DOMAIN.com',
   },
   {
     id: 'third-party',
@@ -128,7 +128,7 @@ const sections = [
     icon: '👶',
     content: [
       'CyberShield X is intended for users aged 16 and above. We do not knowingly collect personal data from children under the age of 16.',
-      'If you believe a child has registered on our platform, please contact us immediately at privacy@cybershieldx.com and we will delete the account.',
+      'If you believe a child has registered on our platform, please contact us immediately at privacy@YOUR-DOMAIN.com and we will delete the account.',
     ],
   },
   {
@@ -137,8 +137,8 @@ const sections = [
     icon: '📧',
     content: [
       'For privacy concerns, data requests, or to report a data breach:',
-      'Email: privacy@cybershieldx.com',
-      'Grievance Officer (India): grievance@cybershieldx.com',
+      'Email: privacy@YOUR-DOMAIN.com',
+      'Grievance Officer (India): grievance@YOUR-DOMAIN.com',
       'Response Time: Within 72 hours for standard requests, 24 hours for breach notifications.',
     ],
   },
@@ -264,7 +264,7 @@ export default function PrivacyPolicyPage() {
           Last Updated: April 2026 · CyberShield X v2.0 · Governed under Indian IT Act 2000 & DPDP Act 2023
         </p>
         <p className="text-[10px] font-mono text-cyber-muted mt-1">
-          Questions? Contact us at <span className="text-cyber-accent">privacy@cybershieldx.com</span>
+          Questions? Contact us at <span className="text-cyber-accent">privacy@YOUR-DOMAIN.com</span>
         </p>
       </motion.div>
     </div>

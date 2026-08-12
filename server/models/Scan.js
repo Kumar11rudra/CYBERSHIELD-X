@@ -12,7 +12,7 @@ const scanSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Organization',
       index: true,
-      required: true,
+      required: false,
     },
     teamId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -66,17 +66,7 @@ const scanSchema = new mongoose.Schema(
       whois: Number,
       synthetic: Number,
     },
-    breakdown: {
-      dns: mongoose.Schema.Types.Mixed,
-      http: mongoose.Schema.Types.Mixed,
-      port: mongoose.Schema.Types.Mixed,
-      service_fingerprint: mongoose.Schema.Types.Mixed,
-      ssl: mongoose.Schema.Types.Mixed,
-      tech_detection: mongoose.Schema.Types.Mixed,
-      url: mongoose.Schema.Types.Mixed,
-      whois: mongoose.Schema.Types.Mixed,
-      synthetic: mongoose.Schema.Types.Mixed,
-    },
+    breakdown: mongoose.Schema.Types.Mixed,
     alertSent: {
       type: Boolean,
       default: false,

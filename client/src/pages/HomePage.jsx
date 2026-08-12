@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getAllTools } from '../components/toolkit/toolConfig';
+import NexusCategoryGrid from '../components/home/NexusCategoryGrid';
 
 // ─── Matrix Rain Canvas ───────────────────────────────────────────────────────
 function MatrixRain() {
@@ -102,87 +104,7 @@ const COLOR_MAP = {
   purple: { rgb: '180,0,255', hex: '#b400ff', rgba30: 'rgba(180,0,255,0.3)' },
 };
 
-// ─── Module card ──────────────────────────────────────────────────────────────
-function ModuleCard({ icon, title, desc, tag, color, delay, onClick, locked, engine, intelCount }) {
-  const { t } = useTranslation();
-  const [hovered, setHovered] = useState(false);
 
-  const c = COLOR_MAP[color] || COLOR_MAP.blue;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: delay / 1000 }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onClick={onClick}
-      style={{
-        background: hovered ? `rgba(${c.rgb},0.08)` : 'rgba(10,18,35,0.85)',
-        border: `1px solid ${hovered ? c.hex : 'rgba(0,191,255,0.15)'}`,
-        borderRadius: 14,
-        padding: '24px 20px',
-        cursor: locked ? 'default' : 'pointer',
-        transition: 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
-        transform: hovered ? 'translateY(-10px) scale(1.03)' : 'none',
-        boxShadow: hovered ? `0 20px 40px rgba(${c.rgb},0.25)` : 'none',
-        position: 'relative', overflow: 'hidden',
-      }}
-    >
-      {/* Dynamic Glow Background */}
-      <AnimatePresence>
-        {hovered && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.1 }}
-            exit={{ opacity: 0 }}
-            style={{ position: 'absolute', inset: 0, background: `radial-gradient(circle at center, ${c.hex}, transparent 70%)` }}
-          />
-        )}
-      </AnimatePresence>
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16, position: 'relative', zIndex: 1 }}>
-        <motion.span 
-          animate={hovered ? { scale: 1.2, rotate: [0, -10, 10, 0] } : {}}
-          style={{ fontSize: 28 }}
-        >
-          {icon}
-        </motion.span>
-        <span style={{
-          fontSize: 9, letterSpacing: 1.5, fontWeight: 800,
-          padding: '4px 10px', borderRadius: 4,
-          background: `rgba(${c.rgb},0.15)`,
-          color: c.hex,
-          border: `1px solid ${c.rgba30}`,
-          textTransform: 'uppercase'
-        }}>{tag}</span>
-      </div>
-
-      <h3 style={{ fontSize: 16, fontWeight: 800, color: '#e0e6ff', margin: '0 0 10px', letterSpacing: 0.5, position: 'relative', zIndex: 1 }}>{title}</h3>
-      <p style={{ fontSize: 12, color: '#5a7fa8', lineHeight: 1.6, margin: '0 0 16px', position: 'relative', zIndex: 1 }}>{desc}</p>
-      
-      {/* Advanced Engine & Intel Footer */}
-      <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 1 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span style={{ width: 4, height: 4, borderRadius: '50%', background: c.hex, boxShadow: `0 0 5px ${c.hex}`, animation: 'pulse-ring 2s infinite' }} />
-            <span style={{ fontSize: 9, color: c.hex, fontWeight: 800, letterSpacing: 1 }}>ENGINE</span>
-          </div>
-          <span style={{ fontSize: 10, color: '#e0e6ff', fontFamily: 'monospace' }}>{engine}</span>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'flex-end' }}>
-          <span style={{ fontSize: 9, color: '#00ff88', fontWeight: 800, letterSpacing: 1 }}>INTEL</span>
-          <span style={{ fontSize: 10, color: '#00ff88', fontFamily: 'monospace' }}>{intelCount}</span>
-        </div>
-      </div>
-
-      {locked && (
-        <div style={{ marginTop: 12, fontSize: 10, color: '#ff2244', letterSpacing: 1, fontWeight: 700 }}>{t('home.modules.loginRequired')}</div>
-      )}
-    </motion.div>
-  );
-}
 
 
 // ─── Threat ticker ────────────────────────────────────────────────────────────
@@ -221,41 +143,11 @@ export default function HomePage() {
   const navigate = useNavigate();
   const [typedText, setTypedText] = useState('');
   const fullText = t('home.hero.subtitle');
-  const [selectedMember, setSelectedMember] = useState(null);
 
-  const [copilotQuery, setCopilotQuery] = useState('');
-  const [copilotLogs, setCopilotLogs] = useState([]);
-  const [isCopilotTyping, setIsCopilotTyping] = useState(false);
 
-  const handleCopilotDemo = async (queryText) => {
-    if (isCopilotTyping) return;
-    setCopilotQuery(queryText);
-    setIsCopilotTyping(true);
-    setCopilotLogs([]);
-    
-    const logs = [
-      `[AI-COPILOT] Connecting neural agent to target signature feeds...`,
-      `[INTEL-LOOKUP] Querying global vulnerability repository (CVE)...`,
-      `[DNS-RESOLVER] Looking up A/MX/NS mapping records...`,
-      `[RISK-EVAL] Threat analysis completed: 2 vulnerabilities identified.`,
-      `[RECOMMENDATION] Expiry warning: SSL expires soon. Subdomains exposed.`,
-      `[SYSTEM] Authentication required. Sign Up to access complete mitigation commands.`
-    ];
 
-    for (let index = 0; index < logs.length; index++) {
-      await new Promise(r => setTimeout(r, 600));
-      setCopilotLogs(prev => [...prev, logs[index]]);
-    }
-    setIsCopilotTyping(false);
-  };
 
-  const team = [
-    { name: 'Anil Kumar', role: 'Founder & Cybersecurity Analyst', color: '00bfff', email: 'official.cybershieldx@gmail.com', phone: '+919351636193', isFounder: true },
-    { name: 'Suryansh Pandey', role: 'Data Analyst', color: '00ff88', email: 'pandeysuryansh560@gmail.com', phone: '+917565813054' },
-    { name: 'Aryan Patel', role: 'AI & Machine Learning', color: 'ff8c00', email: 'aryanpatel9171235114@gmail.com', phone: '+919827035235' },
-    { name: 'Pranav Kumar', role: 'Data Analyst', color: 'b400ff', email: 'Parmarpranav57@gmail.com', phone: '+918529395855' },
-    { name: 'Ankita', role: 'Network Analyst', color: 'ff2244', email: 'pinksigar@gmail.com', phone: '' }
-  ];
+
 
   // Typewriter effect
   useEffect(() => {
@@ -267,99 +159,10 @@ export default function HomePage() {
     return () => clearInterval(id);
   }, []);
 
-  const modules = [
-    {
-      id: 'dns',
-      icon: '🌐',
-      title: 'DNS Enumeration Engine',
-      desc: 'Query primary DNS records and discover subdomains to map remote hosting architecture.',
-      engine: 'dns',
-      intelCount: 'DNS Zones',
-      tag: 'RECON',
-      color: 'blue',
-      path: '/toolkit/dns',
-    },
-    {
-      id: 'http',
-      icon: '🌍',
-      title: 'HTTP Security Engine',
-      desc: 'Perform deep HTTP analysis, header inspection, and check for misconfigurations.',
-      engine: 'http',
-      intelCount: 'Headers & Config',
-      tag: 'WEB',
-      color: 'orange',
-      path: '/toolkit/http',
-    },
-    {
-      id: 'port',
-      icon: '📡',
-      title: 'Port & Service Engine',
-      desc: 'Scan open ports and discover network services running on target hosts.',
-      engine: 'port',
-      intelCount: 'Open Ports',
-      tag: 'RECON',
-      color: 'green',
-      path: '/toolkit/port',
-    },
-    {
-      id: 'service_fingerprint',
-      icon: '🧪',
-      title: 'Service Fingerprint Engine',
-      desc: 'Analyze network responses to fingerprint operating systems and specific service versions.',
-      engine: 'service_fingerprint',
-      intelCount: 'OS & Versions',
-      tag: 'VULNERABILITY',
-      color: 'red',
-      path: '/toolkit/service_fingerprint',
-    },
-    {
-      id: 'ssl',
-      icon: '🔒',
-      title: 'SSL/TLS Security Engine',
-      desc: 'Connect directly to retrieve certificate details, TLS protocol version, and calculate a trust grade.',
-      engine: 'ssl',
-      intelCount: 'Grade A-F',
-      tag: 'VULNERABILITY',
-      color: 'green',
-      path: '/toolkit/ssl',
-    },
-    {
-      id: 'tech_detection',
-      icon: '🕸️',
-      title: 'Technology Detection Engine',
-      desc: 'Fingerprint remote web applications to identify frameworks, CMS, and analytics tools.',
-      engine: 'tech_detection',
-      intelCount: 'Tech Stack',
-      tag: 'RECON',
-      color: 'purple',
-      path: '/toolkit/tech_detection',
-    },
-    {
-      id: 'url',
-      icon: '☣️',
-      title: 'URL & Threat Intel Engine',
-      desc: 'Scan URLs and IPs against threat intelligence databases to identify malware and abuse.',
-      engine: 'url',
-      intelCount: 'Threat Score',
-      tag: 'INTEL',
-      color: 'red',
-      path: '/toolkit/url',
-    },
-    {
-      id: 'whois',
-      icon: '🌐',
-      title: 'WHOIS Record Engine',
-      desc: 'Look up registration details, registrar, creation date, and name servers.',
-      engine: 'whois',
-      intelCount: 'Registry Info',
-      tag: 'RECON',
-      color: 'blue',
-      path: '/toolkit/whois',
-    }
-  ];
+
 
   const stats = [
-    { label: t('home.stats.threatModules'), value: 23, suffix: '', color: '#00bfff' },
+    { label: t('home.stats.threatModules'), value: getAllTools().length, suffix: '', color: '#00bfff' },
     { label: t('home.stats.intelSources'), value: 35, suffix: '+', color: '#00ff88' },
     { label: t('home.stats.riskTiers'), value: 5, suffix: '', color: '#ff2244' },
     { label: t('home.stats.responseTime'), value: 15, suffix: 's', color: '#e0e6ff' },
@@ -416,78 +219,18 @@ export default function HomePage() {
       <ScanLine />
       <LiveTicker />
 
-      {/* Team Modal Popup */}
-      <AnimatePresence>
-        {selectedMember && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelectedMember(null)}
-            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', padding: 20 }}
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 20, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.9, y: 20, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                background: 'rgba(10,18,35,0.95)',
-                border: `1px solid #${selectedMember.color}55`,
-                borderRadius: 20, padding: 32, maxWidth: 360, width: '100%',
-                position: 'relative', overflow: 'hidden', textAlign: 'center',
-                boxShadow: `0 20px 60px rgba(0,0,0,0.5), 0 0 30px #${selectedMember.color}15`
-              }}
-            >
-              <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 4, background: `#${selectedMember.color}` }} />
-              <button onClick={() => setSelectedMember(null)} style={{ position: 'absolute', top: 12, right: 16, background: 'transparent', border: 'none', color: '#5a7fa8', cursor: 'pointer', fontSize: 18 }}>×</button>
 
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
-                <img 
-                  src={`https://ui-avatars.com/api/?name=${encodeURIComponent(selectedMember.name)}&background=${selectedMember.color}&color=fff&rounded=true&bold=true&size=128`} 
-                  style={{ width: 70, height: 70, borderRadius: '50%', border: `2px solid #${selectedMember.color}`, boxShadow: `0 0 15px #${selectedMember.color}33` }} 
-                  alt="" 
-                />
-              </div>
-              
-              <h3 style={{ fontSize: 18, fontWeight: 800, color: '#fff', margin: '0 0 4px' }}>{selectedMember.name}</h3>
-              <p style={{ fontSize: 9, color: `#${selectedMember.color}`, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 20 }}>{selectedMember.role}</p>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, textAlign: 'left' }}>
-                {selectedMember.email && (
-                  <a href={`mailto:${selectedMember.email}`} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.03)', padding: '12px 16px', borderRadius: 12, textDecoration: 'none', color: '#e0e6ff', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <span style={{ fontSize: 16 }}>✉</span>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span style={{ fontSize: 8, color: '#5a7fa8', textTransform: 'uppercase' }}>Email Address</span>
-                      <span style={{ fontSize: 11, fontFamily: 'monospace' }}>{selectedMember.email}</span>
-                    </div>
-                  </a>
-                )}
-                {selectedMember.phone && (
-                  <a href={`tel:${selectedMember.phone}`} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.03)', padding: '12px 16px', borderRadius: 12, textDecoration: 'none', color: '#e0e6ff', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <span style={{ fontSize: 16 }}>📞</span>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span style={{ fontSize: 8, color: '#5a7fa8', textTransform: 'uppercase' }}>Direct Contact</span>
-                      <span style={{ fontSize: 11, fontFamily: 'monospace' }}>{selectedMember.phone}</span>
-                    </div>
-                  </a>
-                )}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* ── HERO ── */}
       <section style={{ 
         position: 'relative', 
         zIndex: 2, 
-        minHeight: '92vh', 
+        minHeight: '88vh', 
         display: 'flex', 
         flexDirection: 'column',
         alignItems: 'center', 
         justifyContent: 'center', 
-        padding: '110px 24px 70px', 
+        padding: '95px 24px 55px', 
         textAlign: 'center',
       }}>
         {/* Animated Grid background */}
@@ -503,39 +246,87 @@ export default function HomePage() {
         <div style={{ position: 'absolute', bottom: '15%', right: '8%', width: 320, height: 320, background: 'radial-gradient(circle,rgba(0,255,136,0.06),transparent 70%)', borderRadius: '50%', animation: 'float 10s ease-in-out infinite reverse', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 700, height: 700, background: 'radial-gradient(circle,rgba(0,191,255,0.04),transparent 65%)', borderRadius: '50%', animation: 'float 14s ease-in-out infinite', pointerEvents: 'none' }} />
 
-        {/* Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: '1px solid rgba(0,255,136,0.3)', background: 'rgba(0,255,136,0.05)', borderRadius: 20, padding: '7px 18px', marginBottom: 28 }}
-        >
-          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#00ff88', display: 'inline-block', boxShadow: '0 0 8px #00ff88' }} />
-          <span style={{ fontSize: 11, letterSpacing: 3, color: '#00ff88', fontWeight: 600 }}>{t('home.hero.badge')}</span>
-          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#00ff88', display: 'inline-block', animation: 'pulse-ring 1.5s infinite' }} />
-        </motion.div>
+        {/* Main Brand Lockup Wrapper — X-Aligned CyberNexus Platform Branding */}
+        <div style={{ position: 'relative', display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-end', zIndex: 2, marginBottom: 18 }}>
+          {/* Main CYBER SHIELD X title */}
+          <motion.h1
+            className="hero-title"
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            style={{
+              fontSize: 'clamp(28px, 6vw, 72px)',
+              fontWeight: 900,
+              lineHeight: 1.1,
+              margin: 0,
+              letterSpacing: '-1px',
+              position: 'relative',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <GlitchText text="CYBER" color="#e0e6ff" />
+            <span className="glow-text" style={{ color: '#00bfff', marginLeft: '0.18em', textShadow: '0 0 40px rgba(0,191,255,0.8), 0 0 80px rgba(0,191,255,0.4)' }}> SHIELD</span>
+            <span style={{ color: '#00ff88', fontSize: '0.6em', marginLeft: '0.2em', verticalAlign: 'middle', textShadow: '0 0 20px rgba(0,255,136,0.8)' }}>X</span>
+          </motion.h1>
 
-        {/* Main CYBER SHIELD X title — one line, screen-fitting */}
-        <motion.h1
-          className="hero-title"
-          initial={{ opacity: 0, scale: 0.85 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-          style={{
-            fontSize: 'clamp(28px, 6vw, 72px)',
-            fontWeight: 900,
-            lineHeight: 1.1,
-            margin: '0 0 18px',
-            letterSpacing: '-1px',
-            position: 'relative',
-            zIndex: 2,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          <GlitchText text="CYBER" color="#e0e6ff" />
-          <span className="glow-text" style={{ color: '#00bfff', marginLeft: '0.18em', textShadow: '0 0 40px rgba(0,191,255,0.8), 0 0 80px rgba(0,191,255,0.4)' }}> SHIELD</span>
-          <span style={{ color: '#00ff88', fontSize: '0.6em', marginLeft: '0.2em', verticalAlign: 'middle', textShadow: '0 0 20px rgba(0,255,136,0.8)' }}>X</span>
-        </motion.h1>
+          {/* Phase 18 Platform Sub-Branding: Powered by CYBERNEXUS (X-Aligned Lockup) */}
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.35 }}
+            whileHover={{ scale: 1.02 }}
+            style={{
+              fontSize: 'clamp(10px, 1.2vw, 13px)',
+              fontFamily: '"JetBrains Mono", monospace',
+              letterSpacing: '2.5px',
+              textTransform: 'uppercase',
+              marginTop: 4,
+              fontWeight: 600,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              cursor: 'default',
+              position: 'relative',
+              paddingRight: '0.1em'
+            }}
+          >
+            <span style={{ color: 'rgba(224, 230, 255, 0.55)', fontWeight: 500 }}>POWERED BY</span>
+            <motion.span 
+              animate={{ 
+                textShadow: [
+                  '0 0 10px rgba(0,191,255,0.4)', 
+                  '0 0 20px rgba(0,191,255,0.85)', 
+                  '0 0 10px rgba(0,191,255,0.4)'
+                ] 
+              }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+              style={{
+                color: '#00bfff',
+                fontWeight: 700,
+                letterSpacing: '3px',
+                position: 'relative',
+                display: 'inline-block'
+              }}
+            >
+              CYBERNEXUS
+              {/* Subtle Cyan Scanning Highlight Underline */}
+              <motion.span
+                initial={{ scaleX: 0, opacity: 0 }}
+                animate={{ scaleX: 1, opacity: [0, 1, 0.7] }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+                style={{
+                  position: 'absolute',
+                  bottom: -2,
+                  left: 0,
+                  right: 0,
+                  height: '1px',
+                  background: 'linear-gradient(90deg, transparent, #00bfff, #00ff88, transparent)',
+                  transformOrigin: 'left'
+                }}
+              />
+            </motion.span>
+          </motion.div>
+        </div>
 
         {/* Typewriter subtitle */}
         <motion.p
@@ -587,36 +378,56 @@ export default function HomePage() {
 
       </section>
 
-      {/* ── MODULES SECTION ── */}
+      {/* ── NEXUS TOOLKIT SECTION ── */}
       <section style={{ position: 'relative', zIndex: 2, padding: '60px 24px', background: 'linear-gradient(180deg,transparent,rgba(0,10,25,0.95) 15%,rgba(0,10,25,0.95) 85%,transparent)' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
 
           {/* Section header */}
           <div style={{ textAlign: 'center', marginBottom: 52 }}>
-            <p style={{ fontSize: 11, letterSpacing: 4, color: '#00bfff', marginBottom: 12 }}>{t('home.modules.subtitle')}</p>
+            <p style={{ fontSize: 11, letterSpacing: 4, color: '#00bfff', marginBottom: 12 }}>SECURE DOMAIN ORCHESTRATION</p>
             <h2 className="hero-title" style={{ fontSize: 'clamp(28px,4vw,42px)', fontWeight: 900, color: '#e0e6ff', margin: 0 }}>
-              {t('home.modules.title')}
+              NEXUS SECURITY TOOLKIT
             </h2>
             <div style={{ width: 60, height: 2, background: 'linear-gradient(90deg,transparent,#00bfff,transparent)', margin: '20px auto 0' }} />
+            <p style={{ fontSize: 12, color: '#5a7fa8', maxWidth: 600, margin: '16px auto 0', lineHeight: 1.6 }}>
+              Deploy specialized threat intelligence, passive vulnerability mapping, and cryptographic diagnostic modules across 7 custom cybersecurity categories.
+            </p>
           </div>
 
-          {/* Module grid */}
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', 
-            gap: '16px' 
-          }}>
-            {modules.map((mod, i) => (
-              <ModuleCard
-                key={mod.id}
-                {...mod}
-                delay={i * 80}
-                locked={false}
-                onClick={() => navigate(mod.path)}
-              />
-            ))}
-          </div>
+          {/* Nexus Category Grid Selector */}
+          <NexusCategoryGrid />
 
+          {/* Explore Button */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 40 }}>
+            <button 
+              onClick={() => navigate('/toolkit')}
+              style={{
+                background: 'rgba(0,191,255,0.06)',
+                border: '1px solid rgba(0,191,255,0.3)',
+                padding: '12px 32px',
+                borderRadius: '8px',
+                color: '#fff',
+                fontSize: '11px',
+                textTransform: 'uppercase',
+                letterSpacing: '2px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                transition: 'all 0.3s'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'rgba(0,191,255,0.12)';
+                e.currentTarget.style.borderColor = '#00bfff';
+                e.currentTarget.style.boxShadow = '0 0 20px rgba(0,191,255,0.2)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'rgba(0,191,255,0.06)';
+                e.currentTarget.style.borderColor = 'rgba(0,191,255,0.3)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+            >
+              Explore Full Nexus Toolkit →
+            </button>
+          </div>
 
         </div>
       </section>
@@ -772,9 +583,11 @@ export default function HomePage() {
           {[
             { label: 'Platform', path: '/login' },
             { label: 'Security', path: '/security' },
-            { label: 'Live Modules', path: '/login' },
+            { label: 'Core Team', path: '/team' },
+            { label: 'Live Models', path: '/toolkit' },
+            { label: 'Contact Us', path: '/contact' },
             { label: 'Create Account', path: '/signup' },
-            { label: 'Contact Support', path: 'tel:+919351636193', external: true },
+            { label: 'Comms Line', path: 'tel:+919351636193', external: true },
             ...(user?.role === 'admin' ? [{ label: 'Admin Portal', path: '/nexus-admin' }] : [])
           ].map((item, i) => (
             item.external ? (
@@ -799,93 +612,13 @@ export default function HomePage() {
           ))}
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-          <div style={{ fontSize: 8, color: '#334155', letterSpacing: 2, textTransform: 'uppercase', fontWeight: 800 }}>Nexus Command Core</div>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, width: '100%' }}>
-            {/* Founder Card - Parent (Slightly larger) */}
-            <div 
-              onClick={() => setSelectedMember(team.find(t => t.isFounder))}
-              style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-                background: 'rgba(0,191,255,0.06)',
-                padding: '12px 24px', borderRadius: '12px 24px',
-                border: '1px solid rgba(0,191,255,0.3)',
-                cursor: 'pointer', transition: 'all 0.3s', minWidth: 160
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = 'rgba(0,191,255,0.12)';
-                e.currentTarget.style.borderColor = 'rgba(0,191,255,0.6)';
-                e.currentTarget.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'rgba(0,191,255,0.06)';
-                e.currentTarget.style.borderColor = 'rgba(0,191,255,0.3)';
-                e.currentTarget.style.transform = 'none';
-              }}
-            >
-              <div style={{ position: 'relative' }}>
-                <img src="https://ui-avatars.com/api/?name=Anil+Kumar&background=00bfff&color=fff&rounded=true&bold=true" alt="Anil Kumar" style={{ width: 22, height: 22, borderRadius: '50%' }} />
-                <div style={{ position: 'absolute', inset: -4, borderRadius: '50%', border: '1px solid rgba(0,191,255,0.4)', animation: 'pulse-ring 2s infinite' }} />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <span style={{ fontSize: 11, color: '#fff', fontWeight: 900, letterSpacing: 0.5 }}>Anil Kumar</span>
-                <span style={{ fontSize: 8, color: '#00bfff', textTransform: 'uppercase', fontWeight: 800 }}>Founder & Cybersecurity Analyst</span>
-              </div>
-            </div>
-
-            {/* Visual connector (optional tree line) */}
-            <div style={{ width: 1, height: 12, background: 'rgba(255,255,255,0.1)' }} />
-
-            {/* Team Members - Children */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', maxWidth: 900 }}>
-
-            {/* Team Members - Same Small Size */}
-            {team.filter(t => !t.isFounder).map((member, i) => (
-              <div key={i} 
-                onClick={() => setSelectedMember(member)}
-                style={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,
-                  background: 'rgba(255,255,255,0.02)',
-                  padding: '8px 16px', borderRadius: '8px 20px',
-                  border: '1px solid rgba(255,255,255,0.05)',
-                  transition: 'all 0.2s',
-                  cursor: 'pointer', minWidth: 130
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = `#${member.color}66`;
-                  e.currentTarget.style.background = `rgba(${COLOR_MAP[member.color]?.rgb || '255,255,255'}, 0.04)`;
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
-                  e.currentTarget.style.transform = 'none';
-                }}
-              >
-                <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=${member.color}&color=fff&rounded=true&bold=true`} alt={member.name} style={{ width: 18, height: 18, borderRadius: '50%' }} />
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <span style={{ fontSize: 9, color: '#cbd5e1', fontWeight: 700 }}>{member.name}</span>
-                  <span style={{ fontSize: 7, color: '#5a7fa8', textTransform: 'uppercase' }}>{member.role}</span>
-                </div>
-              </div>
-            ))}
-            </div>
-          </div>
-        </div>
-
-        <div style={{ width: '100%', maxWidth: 800, borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-          <div style={{ color: '#475569', fontSize: 9, textAlign: 'center', letterSpacing: 1, display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center' }}>
-            <span>© {new Date().getFullYear()} CYBERSHIELD X. {t('home.footer.allRightsReserved')}</span>
-            <div style={{ display: 'flex', gap: 10, marginTop: 2 }}>
-              <Link to="/privacy" style={{ color: '#00bfff', textDecoration: 'none' }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>Privacy Policy</Link>
-              <span style={{ color: '#334155' }}>|</span>
-              <Link to="/terms" style={{ color: '#00bfff', textDecoration: 'none' }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>Terms of Service</Link>
-            </div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 8, color: '#334155', textTransform: 'uppercase', letterSpacing: 2, marginTop: 4 }}>
-            <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#00ff88', boxShadow: '0 0 5px #00ff88', animation: 'pulse-ring 2s infinite' }} />
-            {t('home.footer.allSystemsOperational')}
+        <div style={{ width: '100%', maxWidth: 800, borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 14, display: 'flex', justifyContent: 'center' }}>
+          <div style={{ color: '#475569', fontSize: 9, textAlign: 'center', letterSpacing: 1, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <span>© {new Date().getFullYear()} CYBERSHIELD X. ALL RIGHTS RESERVED.</span>
+            <span style={{ color: '#334155' }}>|</span>
+            <Link to="/privacy" style={{ color: '#00bfff', textDecoration: 'none' }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>Privacy Policy</Link>
+            <span style={{ color: '#334155' }}>|</span>
+            <Link to="/terms" style={{ color: '#00bfff', textDecoration: 'none' }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>Terms of Service</Link>
           </div>
         </div>
       </footer>

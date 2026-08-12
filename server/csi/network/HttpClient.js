@@ -4,6 +4,11 @@ const http = require('http');
 const https = require('https');
 const url = require('url');
 const zlib = require('zlib');
+const net = require('net');
+const dnsPromises = require('dns').promises;
+
+const { isPrivateOrLoopback, ssrfLookup } = require('../../utils/ssrfValidator');
+
 const { INetworkClient } = require('../interfaces/INetworkClient');
 const { CsiTimeoutError, ResponseTooLargeError, NetworkContextExpiredError } = require('../errors/CsiErrors');
 
@@ -30,6 +35,7 @@ class HttpClient extends INetworkClient {
         this._defaultTimeout = options.defaultTimeout || 10000;
         this._maxRedirects = options.maxRedirects || 5;
         this._maxBodySize = options.maxBodySize || 1024 * 1024 * 5; // 5MB default limit
+        this._allowLocal = options.allowLocal === true;
     }
 
     protocol() { return 'http'; }
@@ -67,6 +73,10 @@ class HttpClient extends INetworkClient {
             throw new NetworkContextExpiredError(`HTTP execution context expired before starting request to ${targetUrl}`, { targetUrl });
         }
 
+        if (!this._allowLocal && await isPrivateOrLoopback(targetUrl)) {
+            throw new CsiHttpError('Outbound HTTP request to private or loopback target is prohibited (SSRF prevention).', { targetUrl });
+        }
+
         return new Promise((resolve, reject) => {
             let settled = false;
             const settle = (fn, val) => { if (!settled) { settled = true; fn(val); } };
@@ -90,7 +100,8 @@ class HttpClient extends INetworkClient {
                 method,
                 headers,
                 timeout: remaining,
-                rejectUnauthorized: false // We capture evidence even if TLS is broken
+                rejectUnauthorized: false, // We capture evidence even if TLS is broken
+                lookup: this._allowLocal ? undefined : ssrfLookup
             };
 
             const timer = setTimeout(() => {

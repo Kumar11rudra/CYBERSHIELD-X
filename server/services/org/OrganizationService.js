@@ -39,6 +39,11 @@ class OrganizationService {
     }
 
     async createOrganization(userId, data) {
+        if (!data || !data.name) {
+            const err = new Error('Organization name is required');
+            err.status = 400;
+            throw err;
+        }
         const slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
         
         const org = await organizationRepository.create({
@@ -46,6 +51,11 @@ class OrganizationService {
             slug,
             description: data.description,
             ownerId: userId
+        });
+
+        const OrganizationSettings = require('../../models/OrganizationSettings');
+        await OrganizationSettings.create({
+            organizationId: org._id
         });
 
         await membershipRepository.create({
@@ -67,7 +77,8 @@ class OrganizationService {
             const member = memberships.find(m => m.organizationId.toString() === org._id.toString());
             return {
                 ...org.toObject(),
-                myRole: member.role
+                myRole: member.role,
+                role: member.role
             };
         });
     }
@@ -80,7 +91,7 @@ class OrganizationService {
     }
 
     async updateOrganization(orgId, userId, data) {
-        await this._requireRole(orgId, userId, 'canManageBilling'); // owner or admin
+        await this._requireRole(orgId, userId, 'canUpdateSettings'); // owner or admin
         const org = await organizationRepository.findById(orgId);
         if (!org || org.status === 'deleted') throw new Error('Organization not found');
 
@@ -90,8 +101,19 @@ class OrganizationService {
             plan: data.plan || org.plan
         });
 
+        const OrganizationSettings = require('../../models/OrganizationSettings');
+        let settings = await OrganizationSettings.findOne({ organizationId: orgId });
+        if (!settings) {
+            settings = new OrganizationSettings({ organizationId: orgId });
+        }
+        if (data.defaultRiskThreshold !== undefined) settings.defaultRiskThreshold = data.defaultRiskThreshold;
+        if (data.aiModel !== undefined) settings.aiModel = data.aiModel;
+        if (data.retentionDays !== undefined) settings.retentionDays = data.retentionDays;
+        if (data.timezone !== undefined) settings.timezone = data.timezone;
+        await settings.save();
+
         await this._log(userId, orgId, 'UPDATE_ORGANIZATION', orgId.toString(), org.toObject(), updated.toObject());
-        return updated;
+        return { org: updated, settings };
     }
 
     async deleteOrganization(orgId, userId) {
@@ -225,12 +247,14 @@ class OrganizationService {
     // Webhooks
     async createWebhook(orgId, userId, data) {
         await this._requireRole(orgId, userId, 'canManageWebhooks');
+        const secret = data.secret || crypto.randomBytes(32).toString('hex');
         const webhook = await webhookRepository.create({
             organizationId: orgId,
             name: data.name,
             url: data.url,
-            secret: data.secret,
-            events: data.events
+            secret,
+            events: data.events,
+            type: data.type
         });
         await this._log(userId, orgId, 'CREATE_WEBHOOK', webhook._id.toString(), {}, { name: webhook.name, url: webhook.url });
         const obj = webhook.toObject();
@@ -269,7 +293,8 @@ class OrganizationService {
             name: data.name || webhook.name,
             url: data.url || webhook.url,
             events: data.events || webhook.events,
-            active: data.active !== undefined ? data.active : webhook.active
+            active: data.active !== undefined ? data.active : webhook.active,
+            type: data.type || webhook.type
         });
 
         await this._log(userId, orgId, 'UPDATE_WEBHOOK', webhookId.toString(), { name: webhook.name }, { name: updated.name });

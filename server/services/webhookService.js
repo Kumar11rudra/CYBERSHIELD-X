@@ -3,6 +3,13 @@ const crypto = require('crypto');
 const Webhook = require('../models/Webhook');
 const User = require('../models/User');
 const logger = require('../utils/logger');
+const { secureHttpAgent, secureHttpsAgent } = require('../utils/ssrfValidator');
+
+const secureAxios = axios.create({
+  httpAgent: secureHttpAgent,
+  httpsAgent: secureHttpsAgent,
+  timeout: 8000
+});
 
 // Maps alert severity to colors (Slack / Teams attachments)
 const SEVERITY_COLORS = {
@@ -30,7 +37,7 @@ const sendSlackPayload = async (webhook, payload) => {
     ],
   };
   
-  await axios.post(webhook.url, slackBody);
+  await secureAxios.post(webhook.url, slackBody);
 };
 
 const sendTeamsPayload = async (webhook, payload) => {
@@ -54,7 +61,7 @@ const sendTeamsPayload = async (webhook, payload) => {
     ],
   };
 
-  await axios.post(webhook.url, teamsBody);
+  await secureAxios.post(webhook.url, teamsBody);
 };
 
 const sendGenericPayload = async (webhook, payload) => {
@@ -76,7 +83,7 @@ const sendGenericPayload = async (webhook, payload) => {
     headers['X-CyberShield-Signature'] = signature;
   }
 
-  await axios.post(webhook.url, body, { headers });
+  await secureAxios.post(webhook.url, body, { headers });
 };
 
 const triggerWebhookForNotification = async (doc) => {
@@ -135,7 +142,7 @@ const triggerWebhookForNotification = async (doc) => {
       if (user && user.webhookUrl) {
         try {
           // Send simple generic payload to personal URL
-          await axios.post(user.webhookUrl, {
+          await secureAxios.post(user.webhookUrl, {
             event: 'personal_alert',
             timestamp: new Date(),
             data: payload,

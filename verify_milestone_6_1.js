@@ -91,7 +91,8 @@ try {
     const f = new FindingDTO({
         engineSource: 'DnsEngine', engineVersion: '1.0.0', findingType: 'missing_spf',
         severity: 'medium', weight: 12, detail: { record: 'TXT' },
-        evidenceHash: 'abc123', executionId: 'exec-uuid-001'
+        evidenceHash: 'abc123', executionId: 'exec-uuid-001',
+        confidence: 1.0, confidenceSource: 'manual', confidenceMethod: 'deterministic'
     });
     const before = f.findingType;
     try { f.findingType = 'hacked'; } catch (_) {}
@@ -236,7 +237,7 @@ try {
         async initialize(){ return; }
         async healthCheck() { return { status: 'healthy', latencyMs: 1, message: '' }; }
         metadata() {
-            return { engineId: 'dns', engineName: 'DnsEngine', version: '1.0.0',
+            return { id: 'dns', engineName: 'DnsEngine', version: '1.0.0',
                 apiVersion: '1', createdDate: '2026-07-10', maintainer: 'CyberShield',
                 capabilities: ['dns'], supportedTargets: ['domain'],
                 defaultTimeout: 3000, maximumTimeout: 8000,
@@ -263,7 +264,7 @@ try {
     else fail('EngineRegistry.supports() for IP with DNS-only engine', new Error('Should be false'));
 
     const metaList = registry.metadata();
-    if (metaList.length === 1 && metaList[0].engineId === 'dns')
+    if (metaList.length === 1 && metaList[0].id === 'dns')
         pass('EngineRegistry.metadata() returns engine metadata array');
     else fail('EngineRegistry.metadata()', new Error('Unexpected metadata'));
 } catch (e) { fail('EngineRegistry suite', e); }

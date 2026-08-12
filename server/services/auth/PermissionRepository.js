@@ -9,7 +9,7 @@ class PermissionRepository {
      * @param {import('../chatbot_core/storage/IStorageProvider')} storageProvider 
      */
     constructor(storageProvider) {
-        this.storage = storageProvider;
+        this.storage = storageProvider && storageProvider.storageProvider ? storageProvider.storageProvider : storageProvider;
         this.collection = 'permissions';
     }
 

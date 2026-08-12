@@ -2,18 +2,14 @@
  * Breach Intelligence Service
  * Uses Enzoic API (Free Tier) for accurate dark web monitoring.
  */
+const axios = require('axios');
 
 const ENZOIC_BASE = 'https://api.enzoic.com/v1';
 
 const checkEmailBreaches = async (email) => {
   const apiKey = process.env.ENZOIC_API_KEY;
   if (!apiKey) {
-    console.warn('[BREACH] Enzoic API key not configured. Using professional mock data.');
-    return { 
-      source: 'CyberShield-X Intel (Simulated)', 
-      breaches: [], 
-      note: 'Configure ENZOIC_API_KEY for real-world dark web alerts.' 
-    };
+    throw new Error('ENZOIC_API_KEY_NOT_CONFIGURED');
   }
 
   try {

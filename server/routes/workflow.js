@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { requireAuth } = require('../middleware/auth');
+const { authenticate } = require('../middleware/auth');
 const { workflowController } = require('../controllers/chatbot/chatbotController');
 
 // All endpoints require authentication
-router.use(requireAuth);
+router.use(authenticate);
 
 router.post('/start', workflowController.start);
 router.get('/', workflowController.list);

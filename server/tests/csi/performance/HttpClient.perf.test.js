@@ -10,7 +10,7 @@ describe('HttpClient Performance and Stress', () => {
     let baseUrl;
 
     beforeAll((done) => {
-        client = new HttpClient({ maxRedirects: 3 });
+        client = new HttpClient({ maxRedirects: 3, allowLocal: true });
         server = http.createServer((req, res) => {
             if (req.url === '/2mb-exact') {
                 const data = Buffer.alloc(2 * 1024 * 1024, 'A');

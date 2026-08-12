@@ -1,4 +1,4 @@
-const cveParser = require('../../utils/cveParser');
+const cveParser = require('../utils/cveParser');
 
 /**
  * IOC Correlation Engine (Phase 5) - PURE COMPUTATIONAL MODULE
@@ -103,6 +103,13 @@ const computeCorrelation = (target, targetType, intelData) => {
     };
 };
 
+const correlateTarget = (...args) => {
+    const { getIntelligenceModule } = require('./intelligenceComposition');
+    const mod = getIntelligenceModule();
+    return mod.correlationService.correlateTarget(...args);
+};
+
 module.exports = {
-    computeCorrelation
+    computeCorrelation,
+    correlateTarget
 };

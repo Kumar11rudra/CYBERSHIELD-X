@@ -45,7 +45,7 @@ const sections = [
     icon: '🔐',
     content: [
       'You are responsible for maintaining the confidentiality of your password and all activity under your account.',
-      'You must immediately notify us at security@cybershieldx.com if you suspect unauthorized access to your account.',
+      'You must immediately notify us at security@YOUR-DOMAIN.com if you suspect unauthorized access to your account.',
       'CyberShield X uses industry-standard security (bcrypt passwords, JWT tokens, 2FA) but cannot guarantee absolute security.',
       'You agree to use strong passwords and enable Two-Factor Authentication for maximum account security.',
     ],
@@ -110,7 +110,7 @@ const sections = [
     content: [
       'These Terms are governed by the laws of India and shall be subject to the jurisdiction of courts in India.',
       'Any disputes arising under these Terms shall first be attempted through good-faith negotiation. If unresolved, disputes shall be settled through binding arbitration in accordance with Indian Arbitration laws.',
-      'For concerns or legal notices, contact us at: legal@cybershieldx.com',
+      'For concerns or legal notices, contact us at: legal@YOUR-DOMAIN.com',
     ],
   },
 ];
@@ -142,8 +142,8 @@ export default function TermsOfServicePage() {
             → Privacy Policy
           </Link>
           <span className="text-cyber-muted text-xs">|</span>
-          <a href="mailto:legal@cybershieldx.com" className="text-xs font-mono text-cyber-muted hover:text-cyber-accent">
-            → legal@cybershieldx.com
+          <a href="mailto:legal@YOUR-DOMAIN.com" className="text-xs font-mono text-cyber-muted hover:text-cyber-accent">
+            → legal@YOUR-DOMAIN.com
           </a>
         </div>
       </motion.div>
@@ -227,7 +227,7 @@ export default function TermsOfServicePage() {
           Last Updated: April 2026 · CyberShield X v2.0 · Governed under Indian IT Act 2000
         </p>
         <p className="text-[10px] font-mono text-cyber-muted mt-1">
-          Legal questions? Contact us at <span className="text-cyber-accent">legal@cybershieldx.com</span>
+          Legal questions? Contact us at <span className="text-cyber-accent">legal@YOUR-DOMAIN.com</span>
         </p>
       </motion.div>
     </div>

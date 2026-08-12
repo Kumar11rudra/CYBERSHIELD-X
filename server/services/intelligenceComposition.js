@@ -57,6 +57,14 @@ function createIntelligenceModule(activeStorageProvider, eventPublisher) {
 
 function getIntelligenceModule(deps = {}) {
     if (!cachedModule) {
+        if (!deps.activeStorageProvider) {
+            try {
+                const { activeStorageProvider } = require('../controllers/chatbot/chatbotController');
+                deps.activeStorageProvider = activeStorageProvider;
+            } catch (err) {
+                // Ignore
+            }
+        }
         if (!deps.activeStorageProvider) throw new Error('Cannot initialize IntelligenceModule without activeStorageProvider');
         cachedModule = createIntelligenceModule(deps.activeStorageProvider, deps.eventPublisher);
     }

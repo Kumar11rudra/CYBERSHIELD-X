@@ -46,3 +46,9 @@ coverage/
 .vercel/
 vercel.json
 .vercelignore
+
+# ─── Scratch Scripts & Test Artifacts ──────────────────────────────────────────
+scratch/
+toolConfig.cjs
+*.cjs
+

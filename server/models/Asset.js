@@ -6,7 +6,7 @@ const assetSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Organization',
       index: true,
-      required: true,
+      required: false,
     },
     // Legacy support for older systems assuming userId ownership
     userId: {
@@ -29,7 +29,7 @@ const assetSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: false,
     },
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -90,7 +90,7 @@ const assetSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['active', 'archived', 'deleted'],
+      enum: ['active', 'archived', 'deleted', 'maintenance'],
       default: 'active',
     },
     metadata: {

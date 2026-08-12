@@ -70,12 +70,14 @@ class WhoisEngine extends IIntelligenceEngine {
         
         const findings = [];
         const collectionTime = new Date().toISOString();
-        const now = Date.now();
 
         for (const evidenceDto of evidenceDTOs) {
             const rawBytes = await this._evidenceStorage.retrieve(evidenceDto.evidenceId);
             const whoisResponse = JSON.parse(rawBytes.toString('utf8'));
             const domain = whoisResponse.target || whoisResponse.domain;
+
+            const referenceTimeStr = whoisResponse.collectedAt || whoisResponse.queriedAt || whoisResponse.at || (ctx && ctx.startedAt);
+            const now = referenceTimeStr ? new Date(referenceTimeStr).getTime() : Date.now();
 
             if (whoisResponse.protocol === 'error') {
                 findings.push(this._mkFinding('whois_data_unavailable', {

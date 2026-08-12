@@ -9,9 +9,14 @@ const SystemSettings = require('../../models/SystemSettings');
 const ActivityLog = require('../../models/ActivityLog');
 const { EventPublisher } = require('../../controllers/chatbot/chatbotController');
 
+const SystemHealthService = require('./SystemHealthService');
+const DeploymentService = require('../deployment/DeploymentService');
+
 class AdminService {
-    constructor() {
+    constructor(systemHealthService, deploymentService) {
         this.eventPublisher = EventPublisher ? new EventPublisher() : null;
+        this.systemHealthService = systemHealthService || new SystemHealthService();
+        this.deploymentService = deploymentService || new DeploymentService();
     }
 
     async logActivity(actorId, action, target, metadata = {}) {
@@ -289,6 +294,19 @@ class AdminService {
             cpus: os.cpus().length,
             timestamp: new Date()
         };
+    }
+
+    async getSystemHealth() {
+        return await this.systemHealthService.getDetailedSystemHealth();
+    }
+
+    async getDeployments() {
+        return await this.deploymentService.getDeploymentObservability();
+    }
+
+    async getDeploymentCorrelation() {
+        const systemHealth = await this.systemHealthService.getDetailedSystemHealth();
+        return await this.deploymentService.getDeploymentCorrelation(systemHealth);
     }
 }
 

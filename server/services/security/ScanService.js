@@ -45,7 +45,9 @@ class ScanService {
                 templateId = 'tpl-full-web';
             }
 
-            const workflowStartResult = await workflowManager.startWorkflow(templateId, userId, { target: normalizedTarget });
+            // Phase 17: Anonymous scans use 'guest' as workflow ownerId to satisfy model constraints.
+            const workflowOwnerId = userId ? userId.toString() : 'guest';
+            const workflowStartResult = await workflowManager.startWorkflow(templateId, workflowOwnerId, { target: normalizedTarget });
             
             if (!workflowStartResult.success) {
                 throw new Error(workflowStartResult.error || 'Workflow execution failed to start');

@@ -2,6 +2,128 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v27.0.0] - 2026-08-11
+### Final Production Readiness & Launch Gate (CODE READY)
+- **Release Verification CLI**: Implemented `server/scripts/releaseCheck.js` CLI registered under `npm run verify:release` in `server/package.json` and root `package.json`. Non-destructively audits infrastructure blueprints (`render.yaml`), build manifests (`_headers`, `_redirects`), release checklists, and target deployment alignment.
+- **Operator Launch Checklist**: Created [`docs/RELEASE_CHECKLIST.md`](file:///Users/anil/Documents/New%20project/cybershield-x/docs/RELEASE_CHECKLIST.md) providing a 15-section launch checklist categorizing automated checks, operator cloud deployment actions, and post-deployment verification procedures.
+- **Automated Tests**: Added `release_verification.test.js` (6/6 passing, 85 total backend tests passing across 9 test suites).
+- **SEO & Canonical Domain Integration (Phase 22)**: Replaced generic domain placeholders with `https://cybershieldx.pages.dev` in `index.html`, `sitemap.xml`, and `robots.txt`. Added OpenGraph, Twitter Card, and Schema.org JSON-LD metadata.
+- **GitHub Open Source Governance (Phase 23)**: Created official repository standards files: `LICENSE` (MIT), `CONTRIBUTING.md`, `SECURITY.md`, `.github/ISSUE_TEMPLATE/bug_report.md`, `.github/ISSUE_TEMPLATE/feature_request.md`, and `.github/PULL_REQUEST_TEMPLATE.md`.
+
+## [v26.0.0] - 2026-08-11
+### Nexus Toolkit 2.0: Live Model Performance & Timeout Hardening Engine
+- **Live Model Response Deadlines**: Enforced a global **10–15 second maximum execution response window** across all 14 live defensive models in CyberShield X.
+- **Timeout Fallback Resilience**: Implemented `Promise.race()` 10,000ms hard timeouts and structured degraded fallback contracts (`status: 'DEGRADED_TIMEOUT'`) on WHOIS, DNS, SSL, and network probes to prevent infinite loading or Express crashes.
+- **Active Vercel Removal**: Updated `DeploymentConfigValidator.js` to categorize unconfigured Vercel environment variables as `NOT_ACTIVE_TARGET`, reflecting the active Cloudflare Pages + Render + MongoDB Atlas target architecture.
+- **Automated Tests**: Created `live_model_performance.test.js` verifying model timings, local utility performance (`< 100ms`), timeout fallbacks, and zero credential exposure (7/7 passing, 68 total backend tests passing).
+
+## [v25.0.0] - 2026-08-11
+### Pre-Flight Staging Verification CLI & Production Operator Runbook
+- **Staging Verification CLI**: Implemented `server/scripts/stagingCheck.js` CLI registered under `npm run verify:staging` in `server/package.json` and root `package.json`. Non-destructively audits static build assets (`client/build/_headers`, `_redirects`), CORS origin regex security, health probes, and production configuration schemas without secret exposure.
+- **Production Operator Runbook**: Created [`docs/DEPLOYMENT_RUNBOOK.md`](file:///Users/anil/Documents/New%20project/cybershield-x/docs/DEPLOYMENT_RUNBOOK.md) providing step-by-step deployment guidance for Cloudflare Pages (Frontend SPA), Render Web Service (Backend API via `render.yaml`), and MongoDB Atlas cluster.
+- **Automated Tests**: Created `staging_verification.test.js` verifying CLI instantiation, manifest file detection, security header verification, CORS regex matching, and zero credential exposure (10/10 passing, 61 total backend tests passing).
+
+## [v24.0.0] - 2026-08-11
+### Cloudflare Pages & Render Operational Hardening & Production Deployment Readiness
+- **Cloudflare Security Headers**: Created `client/public/_headers` establishing Content Security Policy (CSP), Strict-Transport-Security (HSTS), X-Frame-Options (`DENY`), X-Content-Type-Options (`nosniff`), and Referrer-Policy alongside existing `/* /index.html 200` SPA fallback in `client/public/_redirects`.
+- **Render Backend CORS Hardening**: Enhanced `server/index.js` CORS origin validator to support `CLIENT_URL`, `ALT_CLIENT_URL`, `https://cybershieldx.pages.dev`, and legitimate Cloudflare Pages deployment aliases (`https://*.pages.dev`) via strict regex pattern matching without wildcard fallback.
+- **Render Infrastructure Blueprint**: Created `render.yaml` defining Node environment, `server/` root directory, `npm start`, `/health` health check path, and required environment variable definitions without hardcoded credentials.
+- **Production Config Validator**: Created `server/scripts/verifyProductionConfig.js` for non-destructive environment variable validation without credential exposure or network dependencies.
+- **Automated Tests**: Created `production_readiness.test.js` verifying CORS regex security, security headers presence, SPA fallback preservation, `/health` contract, and dry-run environment validation (10/10 passing, 51 total backend tests passing).
+
+## [v23.0.0] - 2026-08-11
+### Nexus Deployment Health Correlation & Configuration Validation
+- **Deployment Health Correlator**: Created `DeploymentHealthCorrelator.js` to automatically link 30-minute system health anomalies (error rate > 5%, API latency > 300ms, DB disconnects) with recent deployment history.
+- **Provider Config Validator**: Created `DeploymentConfigValidator.js` to audit environment variable formatting and readiness scores across GitHub Actions, Vercel, and Render with zero secret exposure.
+- **Admin Correlation Endpoint**: Registered `GET /api/admin/deployments/correlation` protected by `authenticate` and `requireAdmin` RBAC guards.
+- **SOC Dashboard Panels**: Extended `NexusDeploymentHealth.jsx` with Deployment Health Correlation Risk Panel (`STABLE`, `CORRELATED_DEGRADATION`, `POST_DEPLOY_LATENCY_SPIKE`, `NO_RECENT_DEPLOYMENTS`) and Provider Configuration Readiness Matrix (`READY`, `MISSING CONFIG`).
+- **Automated Tests**: Created `deployment_correlation.test.js` covering RBAC guards (401/403/200), correlation calculation algorithms, config readiness scores, and leak audits (10/10 passing).
+
+## [v22.0.0] - 2026-08-11
+### Nexus Deployment Data Integrity & Production Verification
+- **Zero-Fabrication Enforcement**: Eliminated inferred `LIVE` deployment statuses (`NODE_ENV === 'production'`) in `DeploymentService.js`. Deployment status becomes `LIVE` or `PASSED` strictly when backed by authoritative provider responses.
+- **Authoritative Pipeline Visualizer**: Sourced `BUILD`, `TEST`, and `DEPLOY` pipeline stages directly from provider API responses. Unconfigured stages report `NOT_CONFIGURED` instead of defaulting to `PASSED`.
+- **Metadata Nullability Normalization**: Server-side normalization converts unconfirmed commit SHAs, branches, deployment timestamps, and duration metrics to `null`.
+- **Frontend Fallback Sanitization**: Purged unsafe positive fallbacks from `NexusDeploymentHealth.jsx`. UI cleanly renders `UNKNOWN` and `NOT AVAILABLE` for null metadata.
+- **Data-Integrity Automated Tests**: Added 5 new tests to `deployment_observability.test.js` covering inferred status elimination, pipeline stage integrity, and null metadata normalization (14/14 passing).
+
+## [v21.0.0] - 2026-08-11
+### Nexus Real Deployment Observability
+- **Deployment Adapter Architecture**: Created `DeploymentService.js` and decoupled adapters (`GitHubDeploymentAdapter.js`, `VercelDeploymentAdapter.js`, `RenderDeploymentAdapter.js`) with 3-second timeouts for server-side REST telemetry.
+- **Admin Deployment Endpoint**: Registered `GET /api/admin/deployments` protected by `authenticate` and `requireAdmin` RBAC guards.
+- **Pipeline Visualizer & History**: Extended `NexusDeploymentHealth.jsx` with visual CI/CD pipeline stage indicators (`BUILD` → `TEST` → `DEPLOY` → `HEALTH CHECK`), provider deployment cards, bounded deployment history table (max 10 records), and metadata inspection drawer.
+- **Strict Read-Only & Zero-Fabrication**: Purely observational architecture without write buttons. Returns `NOT_CONFIGURED` when tokens are unconfigured without fabricating fake deployment records.
+- **Security Audit**: Verified zero exposure of provider tokens, API keys, JWT secrets, or DB URIs.
+- **Automated Tests**: Created `deployment_observability.test.js` covering RBAC guards (401/403/200), provider adapter fallbacks, failure isolation, history bounds, and leak audits (9/9 passing).
+
+## [v20.0.0] - 2026-08-11
+### Nexus Command — Deployment & Infrastructure Observability
+- **System Health Aggregator**: Built `SystemHealthService.js` to collect live telemetry across Backend API, MongoDB, Auth Engine, AI/CyboBot node, Threat Intel providers, and Deployment status.
+- **Admin Observability Endpoint**: Registered `GET /api/admin/system-health` protected by `authenticate` and `requireAdmin` RBAC guards.
+- **Enterprise SOC Dashboard**: Created `NexusDeploymentHealth.jsx` UI component in `AdminPage.jsx` with System Overview cards, Deployment Status panel, Connected Services grid, 30s auto-polling, and manual refresh controls.
+- **Zero Fake Data Policy**: Transparently displays `DEPLOYMENT MONITORING NOT CONFIGURED` / `DEFERRED — DEPLOYMENT PROVIDER INTEGRATION REQUIRED` when live deployment provider APIs are unconfigured.
+- **Security Audit**: Verified zero exposure of JWT secrets, database connection URIs, passwords, API keys, or private tokens.
+- **Automated Tests**: Created `admin_system_health.test.js` covering RBAC guards (401/403/200), telemetry contracts, degraded status handling, and leak audits (7/7 passing).
+
+## [v18.0.0] - 2026-08-10
+### Complete Security Audit, Attack-Surface Review & Production Hardening
+- **Centralized SSRF Validator**: Created centralized `ssrfValidator.js` to normalize IP addresses (hex, octal, decimal, mixed, IPv4-mapped IPv6) and check private/loopback/multicast address boundaries.
+- **DNS Rebinding Prevention**: Integrated connection-time socket DNS validation (`ssrfLookup`) inside `HttpClient.js` and `HttpAdapter.js` to block DNS-rebinding windows.
+- **Recursive Redirect SSRF Checks**: Strengthened outbound HTTP clients to recursively re-validate redirect locations against SSRF address ranges before execution.
+- **Role Verification Harmonization**: Standardized admin authorization checks to the canonical lowercase singular string `role === 'admin'`.
+- **CORS Hardening**: Enforced Express and Socket.IO origin checks to restrict arbitrary host reflections, allowing only explicit development localhost origins and production `CLIENT_URL` configurations.
+- **Middleware Cleanup**: Synced sameSite, secure, and HTTPOnly attributes during cookie removal. Deduplicated dual Helmet and IP firewall middleware registrations.
+- **Legacy Integration Parity**: Fixed broken imports in `routes/workflow.js`, resolved constructor parameter wiring mismatches in `RoleRepository` and `PermissionRepository`, and added auto-slug generation to `Organization` schema validation.
+
+## [v17.0.0] - 2026-08-09
+### Zero-Cost Public-First Access & Security Hardening
+- **Zero-Cost Access**: Cancelled paid WhatsApp messaging dependencies. Signup is a simple, one-step account registration details form.
+- **Public-First Access**: Opened DNS, WHOIS, SSL/TLS, technology stack, and other scans to public guest runs without requiring login.
+- **Authentication Download Gate**: Secured PDF report downloads behind a server-side authentication gate (401/403) checking user identity.
+- **IDOR / BOLA Prevention**: Added owner check inside report generation; returns 403 Forbidden if a user attempts to fetch another user's scan report.
+- **SSRF Scanner Hardening**: Strengthened `isPrivateOrLoopback()` to parse full URLs, extract hostnames, and strip port numbers, preventing loopback scan bypasses.
+- **Safe Return-To Navigation**: Implemented relative URL routing validation (`getSafeReturnUrl`) blocking open-redirect attempts during download gates.
+- **Cleanup**: Obsoleted and deleted `WhatsAppOTPService.js`, `whatsapp_otp.test.js`, and removed all verification endpoint dependencies.
+
+## [v16.0.0] - 2026-08-09
+### Two-Step Registration & WhatsApp OTP Authentication Migration
+- **Two-Step Registration Flow**: Replaced the legacy 3-step account creation with a clean, exactly 2-step registration process (Step 1: Account Details, Step 2: WhatsApp OTP Verification).
+- **Pluggable OTP Architecture**: Created `WhatsAppOTPService` implementing secure 6-digit random code generation, SHA256 hashing before persistence, a 5-minute TTL, a maximum of 3 failed attempts, and a 60-second resend cooldown timer.
+- **Pending Account Lockout**: Added user account status isolation (`status: 'pending'`, `'active'`, `'suspended'`). New signups are created in a `'pending'` state and prevented from logging in until they successfully verify their WhatsApp OTP.
+- **Security Validation Controls**: Implemented backend input validation checking for duplicate emails, usernames, and phone numbers, returning generic validation errors to prevent credential enumeration.
+- **Development OTP Bypass**: Integrated a development verification mechanism writing the current OTP to `scratch/last_whatsapp_otp.txt` inside non-production workspaces for test automation without stdout leaks.
+- **Frontend Signup Redesign**: Updated `SignupPage.jsx` and `AuthContext.jsx` to manage the transition from Account Details to WhatsApp verification with active cooldown countdowns and automatic dashboard redirection upon success.
+- **Programmatic Testing**: Created `whatsapp_otp.test.js` validating signup states, cooldown boundaries, failed attempt lockouts, duplicate checks, and replay protection. All tests passed.
+
+## [v15.1.0] - 2026-08-09
+### Database Foundation & Core Capability Registry
+- **Capability Registry Model**: Implemented `ToolRegistry` model containing fields for tool ID, permissions, roadmap status, and custom metadata.
+- **Auditable Execution Logs**: Created `ToolExecution` model to capture execution status, timings, durations, and result signatures without storing credentials or sensitive PII.
+- **Verification Schema Upgrade**: Modified `Verification` model with new helper parameters (destination, purpose, channel, status, and cooldownUntil) to support the future WhatsApp OTP two-step registration flow.
+- **Reconciliation Seed Script**: Built `seedTools.js` to automatically synchronize the authoritative 110-tool catalog from `toolConfig.js` to MongoDB, with detailed counts and safety overrides.
+- **Validation Suite**: Added `database_integration.test.js` to programmatically verify schema constraints, unique indices, and reconciliation statistics.
+
+## [v15.0.0] - 2026-08-09
+### Nexus Toolkit 2.0 Redesign & Dedicated Team Portal
+- **Authoritative Catalog**: Unified tool settings and metadata into a single-source configuration file `toolConfig.js` supporting dynamic statistics calculation and categorization.
+- **Category Grid Navigation**: Implemented custom landing page cards mapping security disciplines to URL parameters, filtering the main toolkit instantly.
+- **Route State History**: Added category state tracking in React Router to return to filtered tabs dynamically on Back button clicks.
+- **Visual Status Badges**: Added visually distinct tags mapping LIVE, PARTIAL, and COMING SOON tools correctly to their implementation state.
+- **Roadmap Handling**: Disabled execution paths and blocked mock results for upcoming models, displaying honest, premium roadmap dossier details.
+- **Partial Capabilities Banner**: Created status notification bars explaining Gemini AI key dependencies on the Remediation and Breach Checker tools.
+- **Company Team Page**: Extracted the core team grid from `HomePage.jsx` into a dedicated `/team` route, adding animated profile cards and a dossier viewer modal.
+- **Unreachable Code Cleanup**: Deleted over 1,000 lines of legacy, dead chatbot codes from `ToolDetailPage.jsx`, simplifying it to a lightweight orchestrator.
+- **AI Assistant Routing**: Configured the AI Assistant's backend controller to utilize real Gemini API capabilities when configured, or transparently notify users if offline.
+- **E2E Validation & Hardening**: Fixed a missing export on the private IP validator; mapped breach and remediation endpoints to their functional backend controllers; enforced strict COMING_SOON response schemas for upcoming models.
+- **SSRF Redirect Boundary Control**: Added `0.0.0.0/8` checks and integrated active, recursive redirect SSRF resolution inside `HttpClient` to secure outbound network queries.
+
+## [v14.0.0-rc.1] - 2026-08-09
+### Production Launch Stabilization & Hardening
+- **Authentication Improvements**: Complete removal of dead Google OAuth components; implemented `/check-username`, `/request-email-otp`, and `/verify-email-otp` endpoints; fixed sign-up parameter destruction to preserve profile details (mobile number, age, country, gender).
+- **Nexus Tools Corrections**: Fixed parameter mapping mismatches for SMS and UPI scanners; wrapped passive analyzer payloads (Phishing, SMS, UPI, WHOIS, SSL) inside structured formats expected by the UI.
+- **Reference & Stub Implementations**: Fixed ReferenceError (unimported `axios`) inside breach service; resolved stubs in breach and remediation controllers to connect them to MongoDB models and fallback indicators.
+- **SEO & Compliance Pages**: Added robots.txt and sitemap.xml domain placeholders; integrated premium dark-mode Cookie Policy, Acceptable Use, Security Info, and Contact pages with crawlable navigation.
+
 ## [CSI-v1.0.0-M6.5] - 2026-07-12
 ### CyberShield Core Intelligence — Executive Report Generation Layer
 - **Stateless Exporters**: Introduced perfectly decoupled Markdown, HTML, JSON, SARIF, and STIX rendering pipelines mapped to externalized, frozen templates.

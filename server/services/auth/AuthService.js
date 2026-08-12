@@ -34,27 +34,60 @@ class AuthService {
     }
 
     /**
-     * Register a new user
+     * Register a new user (Pending Verification)
      */
-    async register({ username, email, password }) {
-        if (!username || !email || !password) {
-            throw new Error('Username, email, and password are required');
+    async register({ username, email, password, mobileNumber, fullName, age, country, gender }) {
+        if (!username || !email || !password || !mobileNumber) {
+            throw new Error('Username, email, password, and mobile number are required');
         }
 
         const normalizedEmail = String(email).toLowerCase().trim();
-        const existing = await this.userRepo.findOne({ email: normalizedEmail });
-        if (existing) {
-            throw new Error('Email is already in use');
+        const normalizedUsername = String(username).toLowerCase().trim();
+        
+        // 1. Check duplicate username, email, and mobile number (Generic response to prevent enumeration)
+        // Use emailHash for lookup since email field is encrypted at rest with random IV
+        const emailHashCheck = crypto.createHash('sha256').update(normalizedEmail).digest('hex');
+        const existingEmail = await this.userRepo.findOne({ emailHash: emailHashCheck });
+        if (existingEmail) {
+            throw new Error('Username, email, or mobile number is already registered.');
+        }
+
+        const existingUsername = await this.userRepo.findOne({ username: normalizedUsername });
+        if (existingUsername) {
+            throw new Error('Username, email, or mobile number is already registered.');
+        }
+
+        const digits = String(mobileNumber).replace(/\D/g, '');
+        if (!digits) {
+            throw new Error('Invalid mobile number.');
+        }
+
+        const mobileHash = crypto.createHash('sha256').update(digits).digest('hex');
+        const existingMobile = await this.userRepo.findOne({ mobileHash });
+        if (existingMobile) {
+            throw new Error('Username, email, or mobile number is already registered.');
         }
 
         const hashedPassword = await this.hashPassword(password);
+        const emailHash = crypto.createHash('sha256').update(normalizedEmail).digest('hex');
+        const userId = crypto.randomBytes(12).toString('hex');
         
         const userData = {
-            username: String(username).trim(),
-            email: String(email).toLowerCase().trim(),
+            id: userId,
+            _id: userId,
+            username: normalizedUsername,
+            email: normalizedEmail,
+            emailHash,
+            mobileHash,
             password: hashedPassword,
             role: 'user', // default role
-            emailVerified: false,
+            emailVerified: true,  // immediately active
+            status: 'active',     // immediately active
+            mobileNumber: mobileNumber.trim(),
+            fullName,
+            age: age ? Number(age) : undefined,
+            country,
+            gender,
             createdAt: new Date(),
             updatedAt: new Date()
         };
@@ -62,11 +95,22 @@ class AuthService {
         const savedUser = await this.userRepo.create(userData);
 
         // Omit password from result DTO
-        const userDTO = { id: savedUser.id, username: savedUser.username, email: savedUser.email, role: savedUser.role };
+        const userDTO = { 
+            id: savedUser.id || savedUser._id || userData.id, 
+            username: savedUser.username || userData.username, 
+            email: savedUser.email || userData.email, 
+            role: savedUser.role || userData.role,
+            fullName: savedUser.fullName || userData.fullName,
+            mobileNumber: savedUser.mobileNumber || userData.mobileNumber,
+            status: savedUser.status || userData.status,
+            age: savedUser.age || userData.age,
+            country: savedUser.country || userData.country,
+            gender: savedUser.gender || userData.gender
+        };
 
         // Publish event
         await this.eventPublisher.publish({
-            type: 'UserRegistered',
+            type: 'UserRegisteredActive',
             source: 'AuthService',
             payload: { userId: userDTO.id, email: userDTO.email }
         });
@@ -83,7 +127,9 @@ class AuthService {
         }
 
         const normalizedEmail = email.toLowerCase().trim();
-        const user = await this.userRepo.findOne({ email: normalizedEmail });
+        // Use emailHash for lookup since email field is encrypted at rest with random IV
+        const emailHash = crypto.createHash('sha256').update(normalizedEmail).digest('hex');
+        const user = await this.userRepo.findOne({ emailHash });
         if (!user) {
             await this.eventPublisher.publish({
                 type: 'UserLoginFailed',
@@ -91,6 +137,11 @@ class AuthService {
                 payload: { email, reason: 'User not found', ip }
             });
             throw new Error('Invalid credentials');
+        }
+
+        // Account status validations
+        if (user.status === 'suspended') {
+            throw new Error('Account has been suspended. Please contact support.');
         }
 
         const isMatch = await this.comparePassword(password, user.password);
@@ -104,13 +155,13 @@ class AuthService {
         }
 
         // Generate tokens
-        const tokenPayload = { id: user._id, role: user.role };
+        const tokenPayload = { id: user.id, role: user.role };
         const accessToken = generateToken(tokenPayload);
         const refreshToken = generateRefreshToken(tokenPayload);
 
-        await this.userRepo.update({ id: user._id, lastLoginAt: new Date() });
+        await this.userRepo.update({ id: user.id, lastLoginAt: new Date() });
 
-        const userDTO = { id: user._id, username: user.username, email: user.email, role: user.role };
+        const userDTO = { id: user.id, username: user.username, email: user.email, role: user.role, status: user.status };
 
         // Publish event
         await this.eventPublisher.publish({

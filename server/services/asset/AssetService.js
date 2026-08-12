@@ -54,9 +54,13 @@ class AssetService {
     async getAssets(orgId, userId, query) {
         await RBACService.requirePermission(orgId, userId, 'canView');
         
-        const qb = new QueryBuilder(Asset, query)
-            .tenant(orgId)
-            .search()
+        const qb = new QueryBuilder(Asset, query);
+        if (orgId) {
+            qb.tenant(orgId);
+        } else {
+            qb.mongoQuery.$or = [{ userId }, { createdBy: userId }];
+        }
+        qb.search()
             .filter(['status', 'assetType', 'criticality', 'ownerId', 'teamId'])
             .paginate()
             .sortBy(['createdAt', 'updatedAt', 'hostname', 'lastRiskScore']);

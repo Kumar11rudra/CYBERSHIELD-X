@@ -1,4 +1,4 @@
-const IRepository = require('../../shared/IRepository');
+const IRepository = require('../../../shared/IRepository');
 const IOCRecordDTO = require('../dto/IOCRecordDTO');
 
 class IOCRepository extends IRepository {

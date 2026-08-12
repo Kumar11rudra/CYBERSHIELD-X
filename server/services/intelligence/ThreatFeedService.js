@@ -1,5 +1,5 @@
 const axios = require('axios');
-const logger = require('../../../utils/logger');
+const logger = require('../../utils/logger');
 
 const SYNC_LIMIT = parseInt(process.env.THREAT_FEED_LIMIT, 10) || 200;
 

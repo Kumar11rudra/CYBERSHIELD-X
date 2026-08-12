@@ -3,10 +3,9 @@
  * Central export barrel for all shared/common components.
  *
  * Usage:
- *   import { GlassCard, GoogleAuthButton, AuthDivider } from '../common';
+ *   import { GlassCard, AuthDivider } from '../common';
  */
 
-export { default as GoogleAuthButton } from './GoogleAuthButton';
 export { default as PasswordInput } from './PasswordInput';
 export { default as GlassCard } from './GlassCard';
 export { default as AuthLeftPanel } from './AuthLeftPanel';

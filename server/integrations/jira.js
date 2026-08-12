@@ -1,4 +1,34 @@
 const axios = require('axios');
+const { secureHttpAgent, secureHttpsAgent, isPrivateOrLoopback } = require('../utils/ssrfValidator');
+
+// Secure axios instance — all requests routed through ssrfLookup connection-time validation
+const secureAxios = axios.create({
+  httpAgent: secureHttpAgent,
+  httpsAgent: secureHttpsAgent,
+  timeout: 10000,
+});
+
+/**
+ * Validates that a user-supplied API base URL does not target a private/internal host.
+ * Throws if the URL is invalid, uses a non-http(s) protocol, or resolves to a private range.
+ */
+async function validateApiUrl(url, label) {
+  if (!url || typeof url !== 'string') throw new Error(`${label}: baseUrl is required`);
+  let parsed;
+  try {
+    parsed = new URL(url);
+  } catch {
+    throw new Error(`${label}: invalid baseUrl format`);
+  }
+  if (!['http:', 'https:'].includes(parsed.protocol)) {
+    throw new Error(`${label}: baseUrl must use http or https`);
+  }
+  // Strip IPv6 brackets from hostname (e.g. [::1] -> ::1) before SSRF check
+  const bareHost = parsed.hostname.replace(/^\[|\]$/g, '');
+  if (await isPrivateOrLoopback(bareHost)) {
+    throw new Error(`${label}: baseUrl resolves to a private/internal address (SSRF prevention)`);
+  }
+}
 
 const createJiraTicket = async (config, context) => {
   const { baseUrl, email, apiToken, projectKey, issueType = 'Bug' } = config;
@@ -6,6 +36,9 @@ const createJiraTicket = async (config, context) => {
   if (!baseUrl || !email || !apiToken || !projectKey) {
     throw new Error('Jira integration missing required fields: baseUrl, email, apiToken, projectKey');
   }
+
+  // Validate the baseUrl against SSRF before making the request
+  await validateApiUrl(baseUrl, 'Jira');
 
   const jiraPriorityMap = {
     'P1-Critical': 'Highest',
@@ -50,9 +83,10 @@ const createJiraTicket = async (config, context) => {
   };
 
   const auth = Buffer.from(`${email}:${apiToken}`).toString('base64');
+  const normalizedBase = baseUrl.replace(/\/$/, '');
 
-  const response = await axios.post(
-    `${baseUrl.replace(/\/$/, '')}/rest/api/3/issue`,
+  const response = await secureAxios.post(
+    `${normalizedBase}/rest/api/3/issue`,
     issueBody,
     {
       headers: {
@@ -60,12 +94,11 @@ const createJiraTicket = async (config, context) => {
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
-      timeout: 10000,
     }
   );
 
   const ticketKey = response.data.key;
-  const ticketUrl = `${baseUrl.replace(/\/$/, '')}/browse/${ticketKey}`;
+  const ticketUrl = `${normalizedBase}/browse/${ticketKey}`;
   return { ticketKey, url: ticketUrl, issueId: response.data.id };
 };
 
@@ -74,12 +107,13 @@ const testJiraConnection = async (config) => {
   if (!baseUrl || !email || !apiToken || !projectKey) {
     throw new Error('Jira configuration missing required fields');
   }
+  await validateApiUrl(baseUrl, 'Jira');
   const auth = Buffer.from(`${email}:${apiToken}`).toString('base64');
-  const response = await axios.get(
-    `${baseUrl.replace(/\/$/, '')}/rest/api/3/project/${projectKey}`,
+  const normalizedBase = baseUrl.replace(/\/$/, '');
+  const response = await secureAxios.get(
+    `${normalizedBase}/rest/api/3/project/${projectKey}`,
     {
       headers: { Authorization: `Basic ${auth}`, Accept: 'application/json' },
-      timeout: 8000,
     }
   );
   return { project: response.data.name, key: response.data.key };

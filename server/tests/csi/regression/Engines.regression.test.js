@@ -115,8 +115,8 @@ describe('CSI Engine Regression Baseline', () => {
             const mockTlsClient = {};
             const engine = new SslEngine(mockTlsClient, evidenceStorage);
 
-            // Certificate expires in 5 days
-            const validTo = new Date(Date.now() + 5 * 86400000).toISOString();
+            // Certificate expires in 5 days relative to collectedAt (July 11 2026)
+            const validTo = '2026-07-16T00:00:00Z';
             
             const fixturePayload = {
                 host: 'example.com',

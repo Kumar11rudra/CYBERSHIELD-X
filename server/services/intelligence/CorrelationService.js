@@ -1,6 +1,6 @@
-const { computeCorrelation } = require('../../IOCCorrelationEngine');
-const { checkSSLCertificate } = require('../../cronService');
-const logger = require('../../../utils/logger');
+const { computeCorrelation } = require('../IOCCorrelationEngine');
+const { checkSSLCertificate } = require('../cronService');
+const logger = require('../../utils/logger');
 
 class CorrelationService {
     constructor(deps) {
@@ -21,14 +21,28 @@ class CorrelationService {
 
             const cleanTarget = target.trim().toLowerCase().replace(/^https?:\/\//, '').split('/')[0];
 
+            // Late resolve cross-domain repositories if missing
+            let assetRepo = this.assetRepo;
+            let scanRepo = this.scanRepo;
+            if (!assetRepo || !scanRepo) {
+                try {
+                    const { getSecurityModule } = require('../securityComposition');
+                    const securityModule = getSecurityModule();
+                    assetRepo = assetRepo || securityModule.assetRepo;
+                    scanRepo = scanRepo || securityModule.scanRepo;
+                } catch (err) {
+                    // Ignore
+                }
+            }
+
             // 1. Load Required Intelligence
             const iocMatch = await this.iocRepo.findOne({ value: target.toLowerCase() });
             const feedMatch = await this.threatFeedRepo.findOne({ indicator: target.toLowerCase() });
-            const asset = this.assetRepo ? await this.assetRepo.findOne({ userId, hostname: cleanTarget }) : null;
+            const asset = assetRepo ? await assetRepo.findOne({ userId, hostname: cleanTarget }) : null;
             
             let latestScan = null;
-            if (this.scanRepo) {
-                const scans = await this.scanRepo.findMany({ 
+            if (scanRepo) {
+                const scans = await scanRepo.findMany({ 
                     userId, 
                     target: { $regex: new RegExp(cleanTarget, 'i') }, 
                     status: 'completed' 

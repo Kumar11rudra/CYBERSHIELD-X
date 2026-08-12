@@ -39,6 +39,54 @@ const { ipFirewall } = require('./middleware/auth');
 const logger = require('./utils/logger');
 const { observabilityMiddleware, getMetrics } = require('./middleware/observability');
 
+const isCloudflarePagesOrigin = (origin) => {
+  if (typeof origin !== 'string') return false;
+  return /^https:\/\/[a-zA-Z0-9-]+\.pages\.dev$/.test(origin);
+};
+
+const getAllowedOrigins = () => {
+  const allowed = [];
+  ['CLIENT_URL', 'ALT_CLIENT_URL'].forEach((envKey) => {
+    const val = process.env[envKey];
+    if (val) {
+      if (val.includes(',')) {
+        allowed.push(...val.split(',').map((o) => o.trim()));
+      } else {
+        allowed.push(val.trim());
+      }
+    }
+  });
+
+  allowed.push('https://cybershieldx.pages.dev');
+
+  if (process.env.NODE_ENV !== 'production') {
+    allowed.push(
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:5173',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001',
+      'http://127.0.0.1:5173'
+    );
+  } else if (allowed.length === 1) {
+    allowed.push('https://cybershield-x.app');
+  }
+  return allowed;
+};
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    const allowed = getAllowedOrigins();
+    if (allowed.includes(origin) || isCloudflarePagesOrigin(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
+};
+
 const app = express();
 
 // ─── Observability (Critical for Telemetry) ──────────────────────────────────
@@ -49,12 +97,16 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // unsafe-eval needed for some React/Vite builds in certain envs
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "wss:", "https:"],
+      imgSrc: ["'self'", "data:", "https://*"],
+      connectSrc: ["'self'", "https://*", "wss://*", "ws://*"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
     },
   },
+  crossOriginEmbedderPolicy: false,
 }));
 
 // Request Timeout (15s)
@@ -69,17 +121,8 @@ app.use((req, res, next) => {
 app.use(ipFirewall);
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
-  cors: {
-    origin: process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',') : (origin, callback) => {
-      // Dynamically echo the origin back to the client to support credentials verification
-      callback(null, origin || '*');
-    },
-    methods: ['GET', 'POST'],
-    credentials: true,
-  },
+  cors: corsOptions,
 });
-// ─── Observability ───────────────────────────────────────────────────────────
-app.use(observabilityMiddleware);
 
 app.set('io', io);
 
@@ -144,29 +187,10 @@ if (process.env.NODE_ENV !== 'test') {
   startScheduler();
 }
 
-// ─── Production Hardening ─────────────────────────────────────────────────────
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // unsafe-eval needed for some React/Vite builds in certain envs
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      imgSrc: ["'self'", "data:", "https://*"],
-      connectSrc: ["'self'", "https://*", "wss://*", "ws://*"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      objectSrc: ["'none'"],
-      upgradeInsecureRequests: [],
-    },
-  },
-  crossOriginEmbedderPolicy: false,
-}));
-
+// compression and sanitization
 app.use(compression());
 app.use(mongoSanitize());
-app.use(cors({
-  origin: true, // Allow all for this specific SOC build, or process.env.CLIENT_URL
-  credentials: true
-}));
+app.use(cors(corsOptions));
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -216,8 +240,7 @@ app.get('/api/status', (req, res) => {
   res.json(buildStatusPayload());
 });
 
-// IP Firewall
-app.use(ipFirewall);
+// IP Firewall has been registered early. No duplicate registration here.
 
 // CSRF Protection (Global for mutations)
 // app.use(csrfProtection); // Disabled: csrfProtection is undefined

@@ -6,7 +6,7 @@ const performScan = async (req, res, next) => {
         const { target } = req.body;
         
         const scanResponse = await scanService.performScan(
-            req.user._id,
+            req.user ? req.user._id : null,
             req.ip,
             req.get('User-Agent'),
             target

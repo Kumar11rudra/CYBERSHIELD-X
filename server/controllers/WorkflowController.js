@@ -34,7 +34,7 @@ class WorkflowController {
 
     list = async (req, res, next) => {
         try {
-            const isAdmin = req.user.roles && req.user.roles.includes('Admin');
+            const isAdmin = req.user.role === 'admin';
             const executions = await this.workflowManager.listExecutions(isAdmin ? null : req.user._id.toString());
             
             const summaries = executions.map(e => new WorkflowSummaryDTO(e));
@@ -51,7 +51,7 @@ class WorkflowController {
                 return res.status(404).json({ error: 'Workflow execution not found' });
             }
 
-            const isAdmin = req.user.roles && req.user.roles.includes('Admin');
+            const isAdmin = req.user.role === 'admin';
             if (!isAdmin && execution.ownerId !== req.user._id.toString()) {
                 return res.status(404).json({ error: 'Workflow execution not found' });
             }
@@ -69,7 +69,7 @@ class WorkflowController {
                 return res.status(404).json({ error: 'Workflow execution not found' });
             }
 
-            const isAdmin = req.user.roles && req.user.roles.includes('Admin');
+            const isAdmin = req.user.role === 'admin';
             if (!isAdmin && execution.ownerId !== req.user._id.toString()) {
                 return res.status(404).json({ error: 'Workflow execution not found' });
             }
@@ -88,7 +88,7 @@ class WorkflowController {
                 return res.status(404).json({ error: 'Workflow execution not found' });
             }
 
-            const isAdmin = req.user.roles && req.user.roles.includes('Admin');
+            const isAdmin = req.user.role === 'admin';
             if (!isAdmin && execution.ownerId !== req.user._id.toString()) {
                 return res.status(404).json({ error: 'Workflow execution not found' });
             }
@@ -110,7 +110,7 @@ class WorkflowController {
                 return res.status(404).json({ error: 'Workflow execution not found' });
             }
 
-            const isAdmin = req.user.roles && req.user.roles.includes('Admin');
+            const isAdmin = req.user.role === 'admin';
             if (!isAdmin && execution.ownerId !== req.user._id.toString()) {
                 return res.status(404).json({ error: 'Workflow execution not found' });
             }

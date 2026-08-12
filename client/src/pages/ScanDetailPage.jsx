@@ -135,6 +135,11 @@ export default function ScanDetailPage() {
 
   const handleDownloadBackendPdf = async () => {
     if (!scan?._id) return;
+    if (!user) {
+      toast.error('Authentication is required to download reports.');
+      navigate(`/login?returnTo=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
     setDownloadingBackend(true);
     try {
       const response = await api.get(`/reports/generate-pdf/${scan._id}`, {

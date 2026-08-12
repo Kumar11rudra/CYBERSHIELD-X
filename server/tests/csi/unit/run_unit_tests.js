@@ -1,24 +1,34 @@
 'use strict';
 
-async function runAll() {
-    let passes = 0, fails = 0;
-    const pass = (msg) => { console.log(`  [PASS] ${msg}`); passes++; };
-    const fail = (msg, err) => { console.error(`  [FAIL] ${msg}: ${err.message}`); fails++; };
-
+// Mock Jest globals for plain node execution
+global.describe = (name, fn) => {
+    console.log(`Suite: ${name}`);
+    fn();
+};
+global.it = (name, fn) => {
     try {
-        const runDnsUnitTests   = require('./DnsEngine.test.js');
-        const runWhoisUnitTests = require('./WhoisEngine.test.js');
-        const runSslUnitTests   = require('./SslEngine.test.js');
+        fn();
+        console.log(`  [PASS] ${name}`);
+    } catch (err) {
+        console.error(`  [FAIL] ${name}: ${err.message}`);
+        process.exitCode = 1;
+    }
+};
+global.expect = (val) => ({
+    toBe: (expected) => {
+        if (val !== expected) throw new Error(`Expected ${expected}, got ${val}`);
+    }
+});
 
-        await runDnsUnitTests(pass, fail);
-        await runWhoisUnitTests(pass, fail);
-        await runSslUnitTests(pass, fail);
+async function runAll() {
+    try {
+        require('./DnsEngine.test.js');
+        require('./WhoisEngine.test.js');
+        require('./SslEngine.test.js');
 
         console.log('\n══════════════════════════════════');
-        console.log(`  UNIT TESTS: ${passes} pass, ${fails} fail`);
+        console.log(`  UNIT TESTS COMPLETE`);
         console.log('══════════════════════════════════\n');
-
-        if (fails > 0) process.exit(1);
     } catch (err) {
         console.error('Fatal error running unit tests:', err);
         process.exit(1);

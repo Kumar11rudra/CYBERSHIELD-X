@@ -143,32 +143,22 @@ const authValidationRules = {
       .withMessage('Full Name is required')
       .isLength({ max: 100 }),
     body('mobileNumber')
-      .optional({ values: 'falsy' })
-      .trim(),
-    body('gender')
       .trim()
       .notEmpty()
-      .withMessage('Gender is required')
+      .withMessage('Mobile number is required'),
+    body('gender')
+      .optional()
+      .trim()
       .isIn(['Male', 'Female', 'Other'])
       .withMessage('Select a valid gender'),
     body('age')
-      .notEmpty()
-      .withMessage('Age is required')
+      .optional()
       .isInt({ min: 13, max: 120 })
       .withMessage('Age must be between 13 and 120'),
     body('country')
+      .optional()
       .trim()
-      .notEmpty()
-      .withMessage('Country is required')
       .isLength({ max: 100 }),
-    body('verificationToken')
-      .custom((value, { req }) => {
-        if (isDevSignupBypassEnabled()) return true;
-        if (!value || !value.trim()) {
-          throw new Error('Email verification token is required');
-        }
-        return true;
-      }),
   ],
   login: [
     normalizeIdentityField,

@@ -6,9 +6,11 @@ const RBACService = require('../org/RBACService');
 class NotificationService {
     static async getNotifications(orgId, userId, query) {
         await RBACService.requirePermission(orgId, userId, 'canView');
-        const qb = new QueryBuilder(Notification, query)
-            .tenant(orgId)
-            .filter(['type', 'read'])
+        const qb = new QueryBuilder(Notification, query);
+        if (orgId) {
+            qb.tenant(orgId);
+        }
+        qb.filter(['type', 'read'])
             .paginate()
             .sortBy(['createdAt']);
 
@@ -24,8 +26,16 @@ class NotificationService {
 
     static async markAsRead(orgId, userId, notificationId) {
         await RBACService.requirePermission(orgId, userId, 'canView');
+        if (notificationId === 'all') {
+            const query = orgId ? { organizationId: orgId, userId } : { userId };
+            await Notification.updateMany(query, { read: true });
+            return { success: true };
+        }
+        const query = orgId 
+            ? { _id: notificationId, organizationId: orgId, userId }
+            : { _id: notificationId, userId };
         const notification = await Notification.findOneAndUpdate(
-            { _id: notificationId, organizationId: orgId, userId },
+            query,
             { read: true },
             { new: true }
         );
@@ -35,7 +45,10 @@ class NotificationService {
 
     static async deleteNotification(orgId, userId, notificationId) {
         await RBACService.requirePermission(orgId, userId, 'canView');
-        const result = await Notification.findOneAndDelete({ _id: notificationId, organizationId: orgId, userId });
+        const query = orgId 
+            ? { _id: notificationId, organizationId: orgId, userId }
+            : { _id: notificationId, userId };
+        const result = await Notification.findOneAndDelete(query);
         if (!result) throw new Error('Notification not found');
         return { success: true };
     }

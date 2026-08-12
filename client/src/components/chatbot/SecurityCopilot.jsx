@@ -1,12 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Bot, Shield, Loader, Activity } from 'lucide-react';
+import { X, Send, Bot, Shield, Loader, Activity, Sparkles } from 'lucide-react';
 import axios from 'axios';
 
 const INITIAL_MESSAGE = {
   role: 'assistant',
-  content: "Hi. Welcome on Cyber Shield X. I am your Security Copilot. I have audited the system. How can I assist you today?"
+  content: "Hi. Welcome to Cyber Shield X. I am your Security Copilot. I have audited the system. How can I assist you today?"
 };
+
+const QUICK_PROMPTS = [
+  "Which tool maps subdomains?",
+  "Check if my domain has expiring SSL",
+  "Explain what a UPI VPA check is",
+  "How do I secure HTTP headers?"
+];
 
 export default function SecurityCopilot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,6 +21,7 @@ export default function SecurityCopilot() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [hasOpened, setHasOpened] = useState(false);
+  const [isAiOffline, setIsAiOffline] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -31,13 +39,13 @@ export default function SecurityCopilot() {
     setIsOpen(!isOpen);
   };
 
-  const handleSend = async (e) => {
-    e.preventDefault();
-    if (!input.trim()) return;
+  const handleSend = async (textToSend) => {
+    const query = textToSend || input;
+    if (!query.trim()) return;
 
-    const userMessage = { role: 'user', content: input };
+    const userMessage = { role: 'user', content: query };
     setMessages(prev => [...prev, userMessage]);
-    setInput('');
+    if (!textToSend) setInput('');
     setIsLoading(true);
 
     try {
@@ -46,7 +54,15 @@ export default function SecurityCopilot() {
       });
 
       if (response.data && response.data.content) {
-        setMessages(prev => [...prev, { role: 'assistant', content: response.data.content }]);
+        const reply = response.data.content;
+        setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+        
+        // Detect offline fallback indicator
+        if (reply.includes("currently offline") || reply.includes("GEMINI_API_KEY")) {
+          setIsAiOffline(true);
+        } else {
+          setIsAiOffline(false);
+        }
       }
     } catch (error) {
       console.error('Chatbot error:', error);
@@ -57,6 +73,10 @@ export default function SecurityCopilot() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleQuickPrompt = (prompt) => {
+    handleSend(prompt);
   };
 
   return (
@@ -93,13 +113,19 @@ export default function SecurityCopilot() {
                   <div className="w-10 h-10 rounded-full bg-[#00bfff]/10 flex items-center justify-center border border-[#00bfff]/30">
                     <Shield size={20} className="text-[#00bfff]" />
                   </div>
-                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e]" />
+                  <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full shadow-[0_0_8px] ${
+                    isAiOffline ? 'bg-amber-500 shadow-amber-500' : 'bg-green-500 shadow-green-500'
+                  }`} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-white tracking-wide">Security Copilot</h3>
+                  <h3 className="font-bold text-white text-xs tracking-wide">Nexus Security Copilot</h3>
                   <div className="flex items-center gap-1.5">
-                    <Activity size={10} className="text-green-400 animate-pulse" />
-                    <p className="text-[10px] text-green-400 font-mono tracking-widest uppercase">System Audited & Online</p>
+                    <Activity size={10} className={isAiOffline ? 'text-amber-400' : 'text-green-400 animate-pulse'} />
+                    <p className={`text-[8px] font-mono tracking-widest uppercase ${
+                      isAiOffline ? 'text-amber-400' : 'text-green-400'
+                    }`}>
+                      {isAiOffline ? 'Offline / Sandbox mode' : 'Cognitive Link Online'}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -128,12 +154,34 @@ export default function SecurityCopilot() {
                         <span className="text-[10px] uppercase tracking-wider text-[#00bfff]/80 font-bold">Nexus AI</span>
                       </div>
                     )}
-                    <div className="whitespace-pre-wrap font-mono leading-relaxed text-[13px]" 
+                    <div className="whitespace-pre-wrap font-mono leading-relaxed text-[11px]" 
                          dangerouslySetInnerHTML={{ __html: msg.content.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>').replace(/\n/g, '<br/>') }} 
                     />
                   </div>
                 </div>
               ))}
+
+              {/* Quick Actions Prompts (visible only when there are no user messages yet) */}
+              {messages.length === 1 && !isLoading && (
+                <div className="pt-2 space-y-2">
+                  <div className="flex items-center gap-1.5 text-cyber-muted font-mono text-[9px] uppercase tracking-widest px-1">
+                    <Sparkles size={10} className="text-cyber-accent" />
+                    <span>Quick Audits suggestions:</span>
+                  </div>
+                  <div className="grid grid-cols-1 gap-2">
+                    {QUICK_PROMPTS.map((prompt) => (
+                      <button
+                        key={prompt}
+                        onClick={() => handleQuickPrompt(prompt)}
+                        className="text-left w-full px-3 py-2 text-[10px] font-mono text-slate-300 bg-white/5 border border-white/10 rounded-xl hover:border-cyber-accent hover:bg-cyber-accent/5 transition-all"
+                      >
+                        {prompt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {isLoading && (
                 <div className="flex justify-start">
                   <div className="bg-white/5 border border-white/10 rounded-2xl rounded-bl-none px-4 py-3 flex items-center gap-3">
@@ -147,14 +195,14 @@ export default function SecurityCopilot() {
 
             {/* Input Area */}
             <div className="p-3 bg-[#060c18] border-t border-[#00bfff]/20">
-              <form onSubmit={handleSend} className="relative flex items-center">
+              <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="relative flex items-center">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask the Security Copilot..."
                   disabled={isLoading}
-                  className="w-full bg-[#0a1223] border border-[#00bfff]/30 text-white rounded-xl py-3 pl-4 pr-12 focus:outline-none focus:border-[#00bfff] focus:ring-1 focus:ring-[#00bfff]/50 disabled:opacity-50 text-sm font-mono transition-all"
+                  className="w-full bg-[#0a1223] border border-[#00bfff]/30 text-white rounded-xl py-3 pl-4 pr-12 focus:outline-none focus:border-[#00bfff] focus:ring-1 focus:ring-[#00bfff]/50 disabled:opacity-50 text-xs font-mono transition-all"
                 />
                 <button
                   type="submit"

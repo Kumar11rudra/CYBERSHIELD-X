@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import RiskBadge from '../components/common/RiskBadge';
 import ActivityTimeline from '../components/admin/ActivityTimeline';
+import NexusDeploymentHealth from '../components/admin/NexusDeploymentHealth';
 import usePdfExport from '../hooks/usePdfExport';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -258,15 +259,17 @@ export default function AdminPage() {
 
       {/* Tabs */}
       <div className="flex gap-1 border-b border-cyber-border overflow-x-auto custom-scrollbar">
-        {['overview', 'users', 'analytics', 'telemetry', 'firewall', 'maintenance', 'audit', 'inject', ...(tab === 'report' ? ['report'] : [])].map((t) => (
+        {['overview', 'health', 'users', 'analytics', 'telemetry', 'firewall', 'maintenance', 'audit', 'inject', ...(tab === 'report' ? ['report'] : [])].map((t) => (
           <button key={t} onClick={() => setTab(t)}
             className={`font-mono text-xs uppercase tracking-widest px-4 py-2.5 border-b-2 transition-all whitespace-nowrap ${
               tab === t ? 'border-cyber-accent text-cyber-accent' : 'border-transparent text-cyber-muted hover:text-cyber-text'
             }`}>
-            {t}
+            {t === 'health' ? 'DEPLOYMENT & HEALTH' : t}
           </button>
         ))}
       </div>
+
+      {tab === 'health' && <NexusDeploymentHealth />}
 
       {tab === 'overview' && stats && (
         <div className="space-y-6">

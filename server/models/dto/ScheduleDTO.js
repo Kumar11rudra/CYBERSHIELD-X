@@ -1,6 +1,7 @@
 class ScheduleDTO {
     constructor(data) {
         this.id = data._id;
+        this._id = data._id;
         this.organizationId = data.organizationId;
         this.name = data.name;
         this.target = data.target;

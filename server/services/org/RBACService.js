@@ -35,6 +35,10 @@ class RBACService {
         return this.hasSufficientRole(role, 'admin');
     }
 
+    static canUpdateSettings(role) {
+        return this.hasSufficientRole(role, 'admin');
+    }
+
     static canManageBilling(role) {
         return this.hasSufficientRole(role, 'owner');
     }
@@ -52,19 +56,26 @@ class RBACService {
     }
 
     static async requirePermission(orgId, userId, permissionMethod) {
+        if (!orgId) {
+            return 'owner';
+        }
         // Late require to avoid circular dependencies
         const { membershipRepository } = require('../../repositories/OrgRepositories');
         const membership = await membershipRepository.findOne({ organizationId: orgId, userId });
         
         if (!membership) {
-            throw new Error('Tenant isolation violation: User is not a member of this organization');
+            const err = new Error('Tenant isolation violation: User is not a member of this organization');
+            err.status = 403;
+            throw err;
         }
 
         const hasPermission = typeof this[permissionMethod] === 'function' ? 
             this[permissionMethod](membership.role) : false;
 
         if (!hasPermission) {
-            throw new Error('Insufficient privileges to perform this action');
+            const err = new Error('Insufficient privileges to perform this action');
+            err.status = 403;
+            throw err;
         }
         
         return membership.role;

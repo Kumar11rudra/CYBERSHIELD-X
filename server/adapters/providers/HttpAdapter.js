@@ -2,6 +2,7 @@ const CapabilityAdapter = require('../CapabilityAdapter');
 const AdapterResponseDTO = require('../dto/AdapterResponseDTO');
 const http = require('http');
 const https = require('https');
+const { isPrivateOrLoopback, ssrfLookup } = require('../../utils/ssrfValidator');
 
 class HttpAdapter extends CapabilityAdapter {
     async initialize() {
@@ -39,14 +40,24 @@ class HttpAdapter extends CapabilityAdapter {
                 }));
             }
 
-            const client = parsedUrl.protocol === 'https:' ? https : http;
-            const options = {
-                method,
-                headers,
-                timeout: request.timeout || 30000
-            };
+            isPrivateOrLoopback(url).then(isPrivate => {
+                if (isPrivate) {
+                    return resolve(AdapterResponseDTO.failure({
+                        stderr: 'Outbound HTTP request to private or loopback target is prohibited (SSRF prevention).',
+                        exitCode: 1,
+                        metadata: { provider: 'HttpAdapter' }
+                    }));
+                }
 
-            const req = client.request(url, options, (res) => {
+                const client = parsedUrl.protocol === 'https:' ? https : http;
+                const options = {
+                    method,
+                    headers,
+                    timeout: request.timeout || 30000,
+                    lookup: ssrfLookup
+                };
+
+                const req = client.request(url, options, (res) => {
                 let data = '';
                 res.on('data', chunk => data += chunk);
                 res.on('end', () => {
@@ -89,10 +100,17 @@ class HttpAdapter extends CapabilityAdapter {
                 }));
             });
 
-            if (body && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
-                req.write(typeof body === 'string' ? body : JSON.stringify(body));
-            }
-            req.end();
+                if (body && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+                    req.write(typeof body === 'string' ? body : JSON.stringify(body));
+                }
+                req.end();
+            }).catch(err => {
+                resolve(AdapterResponseDTO.failure({
+                    stderr: `SSRF validation error: ${err.message}`,
+                    exitCode: 1,
+                    metadata: { provider: 'HttpAdapter' }
+                }));
+            });
         });
     }
 }

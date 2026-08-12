@@ -199,13 +199,14 @@ describe('Security — Headers', () => {
 });
 
 // ══════════════════════════════════════════════════════════════════════════════
-// SCAN — Input Validation
+// SCAN — Input Validation (Phase 17 Public-First Zero-Cost Access)
 // ══════════════════════════════════════════════════════════════════════════════
 describe('Scan — Input Validation (Unauthenticated)', () => {
-  it('POST /api/scan without auth should return 401', async () => {
+  it('POST /api/scan without auth should be accessible anonymously (Phase 17)', async () => {
     const res = await request(app)
       .post('/api/scan')
       .send({ target: 'http://example.com' });
-    expect(res.statusCode).toBe(401);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.success).toBe(true);
   });
 });

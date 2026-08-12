@@ -43,7 +43,7 @@ class ExecutionController {
 
     listJobs = async (req, res, next) => {
         try {
-            const isAdmin = req.user.roles && req.user.roles.includes('Admin');
+            const isAdmin = req.user.role === 'admin';
             const jobs = isAdmin 
                 ? await this.jobManager.jobRepository.findAll()
                 : await this.jobManager.jobRepository.findByOwnerId(req.user._id.toString());
@@ -62,7 +62,7 @@ class ExecutionController {
                 return res.status(404).json({ error: 'Job not found' });
             }
 
-            const isAdmin = req.user.roles && req.user.roles.includes('Admin');
+            const isAdmin = req.user.role === 'admin';
             if (!isAdmin && job.ownerId !== req.user._id.toString()) {
                 return res.status(404).json({ error: 'Job not found' }); // Hide existence
             }
@@ -80,7 +80,7 @@ class ExecutionController {
                 return res.status(404).json({ error: 'Job not found' });
             }
 
-            const isAdmin = req.user.roles && req.user.roles.includes('Admin');
+            const isAdmin = req.user.role === 'admin';
             if (!isAdmin && job.ownerId !== req.user._id.toString()) {
                 return res.status(404).json({ error: 'Job not found' });
             }
@@ -103,7 +103,7 @@ class ExecutionController {
                 return res.status(404).json({ error: 'Job not found' });
             }
 
-            const isAdmin = req.user.roles && req.user.roles.includes('Admin');
+            const isAdmin = req.user.role === 'admin';
             if (!isAdmin && job.ownerId !== req.user._id.toString()) {
                 return res.status(404).json({ error: 'Job not found' });
             }

@@ -112,7 +112,8 @@ class SslEngine extends IIntelligenceEngine {
 
         const findings = [];
         const collectionTime = new Date().toISOString();
-        const now = Date.now();
+        const referenceTimeStr = metaData.collectedAt || metaData.queriedAt || metaData.at || (ctx && ctx.startedAt);
+        const now = referenceTimeStr ? new Date(referenceTimeStr).getTime() : Date.now();
 
         if (metaData.error) {
             findings.push(this._mkFinding('no_ssl_certificate', {

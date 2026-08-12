@@ -118,6 +118,10 @@ CorrelationRuleRegistry.initialize();
 PromptRegistry.initialize();
 ReportTemplateRegistry.initialize();
 
+// Initialize engines with signature files at startup
+techDetectionEngine.initialize().catch(err => console.error('[TECH DETECTION INITIALIZATION ERROR]', err));
+serviceFingerprintEngine.initialize().catch(err => console.error('[SERVICE FINGERPRINT INITIALIZATION ERROR]', err));
+
 const executionPipeline = new CsiExecutionPipeline({
     engineRunner: EngineRunner,
     engineRegistry,

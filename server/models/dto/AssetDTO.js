@@ -4,6 +4,7 @@ class AssetDTO {
         
         // Strip out Mongo specific internals and hidden metadata
         this.id = asset._id.toString();
+        this._id = this.id;
         this.organizationId = asset.organizationId ? asset.organizationId.toString() : null;
         this.teamId = asset.teamId ? asset.teamId.toString() : null;
         this.ownerId = asset.ownerId ? asset.ownerId.toString() : null;

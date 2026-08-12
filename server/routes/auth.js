@@ -11,6 +11,7 @@ const { authController } = getAuthModule({ storageManager, eventPublisher, activ
 // Registration & Login
 router.post('/signup', authValidationRules.signup, handleValidationErrors, authController.register);
 router.post('/login', authValidationRules.login, handleValidationErrors, authController.login);
+router.post('/admin-login', authValidationRules.login, handleValidationErrors, authController.adminLogin);
 router.post('/logout', authenticate, authController.logout);
 router.post('/refresh', authController.refresh);
 
@@ -32,5 +33,13 @@ router.patch('/me', authenticate, authController.updateProfile);
 // RBAC Metadata
 router.get('/roles', authenticate, authController.getRoles);
 router.get('/permissions', authenticate, authController.getPermissions);
+
+// Email risk analysis — authenticated users only
+router.post('/email-check', authValidationRules.emailCheck, handleValidationErrors, authenticate, authController.emailCheck);
+
+// Username availability and signup email verification
+router.post('/check-username', authController.checkUsername);
+router.post('/request-email-otp', authController.requestEmailOtp);
+router.post('/verify-email-otp', authController.verifyEmailOtp);
 
 module.exports = router;

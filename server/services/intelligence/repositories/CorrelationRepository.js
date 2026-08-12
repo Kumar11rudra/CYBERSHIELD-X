@@ -1,4 +1,4 @@
-const IRepository = require('../../shared/IRepository');
+const IRepository = require('../../../shared/IRepository');
 const CorrelationRecordDTO = require('../dto/CorrelationRecordDTO');
 
 class CorrelationRepository extends IRepository {

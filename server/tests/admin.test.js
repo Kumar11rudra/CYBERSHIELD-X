@@ -8,14 +8,20 @@ const mongoose = require('mongoose');
 const { app } = require('../index');
 
 beforeAll(async () => {
-  const testDbUri = process.env.MONGODB_TEST_URI || 'mongodb://localhost:27017/cybershield-test';
+  const testDbUri = process.env.MONGODB_URI || process.env.MONGODB_TEST_URI || 'mongodb://127.0.0.1:27017/cybershield-test';
   if (mongoose.connection.readyState === 0) {
-    await mongoose.connect(testDbUri);
+    try {
+      await mongoose.connect(testDbUri, { serverSelectionTimeoutMS: 2000 });
+    } catch (err) {}
   }
 });
 
 afterAll(async () => {
-  await mongoose.disconnect();
+  if (mongoose.connection.readyState !== 0) {
+    try {
+      await mongoose.disconnect();
+    } catch (err) {}
+  }
 });
 
 // ══════════════════════════════════════════════════════════════════════════════

@@ -5,8 +5,6 @@ import LoginHeader from './LoginHeader';
 import EmailField from './EmailField';
 import PasswordField from './PasswordField';
 import LoginActions from './LoginActions';
-import GoogleAuthButton from '../common/GoogleAuthButton';
-import AuthDivider from '../common/AuthDivider';
 
 export default function LoginForm({
   t,
@@ -18,7 +16,6 @@ export default function LoginForm({
   setShowPw,
   loading,
   doLogin,
-  handleGoogleLogin,
 }) {
   return (
     <motion.div
@@ -40,18 +37,6 @@ export default function LoginForm({
         />
         <LoginActions t={t} loading={loading} />
       </form>
-
-      <AuthDivider
-        label={`${t('common.or')} ${t('auth.login.loginButton')} ${t('common.with')}`}
-      />
-
-      <div className="flex flex-col gap-4 relative z-10">
-        <GoogleAuthButton
-          label={t('auth.login.continueWithGoogle')}
-          onClick={handleGoogleLogin}
-          size="sm"
-        />
-      </div>
 
       <div className="mt-8 pt-4 border-t border-white/10 text-center relative z-10 flex flex-col gap-2">
         <p className="font-mono text-[10px] text-cyber-muted">
