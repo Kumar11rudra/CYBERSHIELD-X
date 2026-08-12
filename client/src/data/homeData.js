@@ -3,37 +3,32 @@ export const team = [
     name: 'Anil Kumar',
     role: 'Founder & Cybersecurity Analyst',
     color: '00bfff',
-    email: 'official.cybershieldx@gmail.com',
-    phone: '+919351636193',
     isFounder: true
   },
   {
     name: 'Suryansh Pandey',
     role: 'Data Analyst',
-    color: '00ff88',
-    email: 'pandeysuryansh560@gmail.com',
-    phone: '+917565813054'
+    color: '00ff88'
   },
   {
     name: 'Aryan Patel',
     role: 'AI & Machine Learning',
-    color: 'ff8c00',
-    email: 'aryanpatel9171235114@gmail.com',
-    phone: '+919827035235'
+    color: 'ff8c00'
   },
   {
     name: 'Pranav Kumar',
     role: 'Data Analyst',
-    color: 'b400ff',
-    email: 'Parmarpranav57@gmail.com',
-    phone: '+918529395855'
+    color: 'b400ff'
   },
   {
     name: 'Ankita',
     role: 'Network Analyst',
-    color: 'ff2244',
-    email: 'pinksigar@gmail.com',
-    phone: ''
+    color: 'ff2244'
+  },
+  {
+    name: 'Sushant',
+    role: 'Data Analyst',
+    color: '00ff88'
   }
 ];
 

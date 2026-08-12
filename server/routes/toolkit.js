@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { executeTool } = require('../controllers/toolkitController');
-const { tryAuthenticate } = require('../middleware/auth');
+const { authenticate } = require('../middleware/auth');
 
-// Toolkit operations allow guest checks
-router.post('/execute', tryAuthenticate, executeTool);
+// Toolkit operations require authentication
+router.post('/execute', authenticate, executeTool);
 
 module.exports = router;

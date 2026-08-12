@@ -59,12 +59,16 @@ const AnalyzerToolView = ({ toolId }) => {
         setResults(data);
       }
     } catch (err) {
-      const msg =
-        err.response?.data?.error ||
-        err.response?.data?.message ||
-        err.message ||
-        'Analysis failed';
-      setError(msg);
+      if (err.response?.status === 401) {
+        setError('Create an account or sign in to use this security tool.');
+      } else {
+        const msg =
+          err.response?.data?.error ||
+          err.response?.data?.message ||
+          err.message ||
+          'Analysis failed';
+        setError(msg);
+      }
     } finally {
       setAnalyzing(false);
     }
@@ -244,7 +248,27 @@ const AnalyzerToolView = ({ toolId }) => {
       {/* Error */}
       {error && (
         <div style={styles.errorBox}>
-          <span style={styles.errorIcon}>✖</span> {error}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={styles.errorIcon}>✖</span> {error}
+            </div>
+            {error.includes('sign in') && (
+              <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+                <button
+                  onClick={() => navigate('/login')}
+                  style={{ background: '#00bfff', color: '#0a0e1a', padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', border: 'none', cursor: 'pointer' }}
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => navigate('/signup')}
+                  style={{ background: 'transparent', border: '1px solid #00bfff', color: '#00bfff', padding: '6px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                  Create Account
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
 

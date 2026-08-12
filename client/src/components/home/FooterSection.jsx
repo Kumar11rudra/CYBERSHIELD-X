@@ -42,7 +42,7 @@ export default function FooterSection({
             { label: 'Security', path: '/security' },
             { label: 'Live Modules', path: '/login' },
             { label: 'Sign Up', path: '/signup' },
-            { label: 'Contact Support', path: 'tel:+919351636193', external: true },
+            { label: 'Contact Support', path: '/contact' },
             ...(user?.role === 'admin' ? [{ label: 'Admin Portal', path: '/nexus-admin' }] : [])
           ].map((item, i) => (
             item.external ? (

@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { handleChat } = require('../controllers/chatbot/chatbotController');
 
-// Endpoint to handle chatbot interaction
-router.post('/chat', handleChat);
+const { authenticate } = require('../middleware/auth');
+
+// Endpoint to handle chatbot interaction (requires authentication)
+router.post('/chat', authenticate, handleChat);
 
 module.exports = router;

@@ -63,7 +63,6 @@ export default function ContactPage() {
             <h3 className="text-xs font-black text-white uppercase tracking-widest mb-2">Command Operations</h3>
             <p className="text-[10px] text-cyber-muted leading-relaxed uppercase">
               CyberShield X Security Hub<br />
-              Comms: +91 9351636193<br />
               Rajasthan, India
             </p>
           </div>

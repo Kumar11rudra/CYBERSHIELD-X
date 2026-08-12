@@ -8,8 +8,6 @@ const TEAM = [
     name: 'Anil Kumar',
     role: 'Founder & Cybersecurity Analyst',
     color: '00bfff',
-    email: 'official.cybershieldx@gmail.com',
-    phone: '+919351636193',
     isFounder: true,
     initials: 'AK',
     clearance: 'LEVEL 5 (ROOT)',
@@ -21,8 +19,6 @@ const TEAM = [
     name: 'Suryansh Pandey',
     role: 'Data Analyst',
     color: '00ff88',
-    email: 'pandeysuryansh560@gmail.com',
-    phone: '+917565813054',
     initials: 'SP',
     clearance: 'LEVEL 4',
     status: 'ONLINE',
@@ -33,8 +29,6 @@ const TEAM = [
     name: 'Aryan Patel',
     role: 'AI & Machine Learning',
     color: 'ff8c00',
-    email: 'aryanpatel9171235114@gmail.com',
-    phone: '+919827035235',
     initials: 'AP',
     clearance: 'LEVEL 4',
     status: 'ONLINE',
@@ -45,8 +39,6 @@ const TEAM = [
     name: 'Pranav Kumar',
     role: 'Data Analyst',
     color: 'b400ff',
-    email: 'Parmarpranav57@gmail.com',
-    phone: '+918529395855',
     initials: 'PK',
     clearance: 'LEVEL 4',
     status: 'ONLINE',
@@ -57,12 +49,20 @@ const TEAM = [
     name: 'Ankita',
     role: 'Network Analyst',
     color: 'ff2244',
-    email: 'pinksigar@gmail.com',
-    phone: '',
     initials: 'AN',
     clearance: 'LEVEL 4',
     status: 'ONLINE',
     focus: 'NETWORK TOPOLOGY & FORENSICS AUDIT'
+  },
+  {
+    id: 'sushant',
+    name: 'Sushant',
+    role: 'Data Analyst',
+    color: '00ff88',
+    initials: 'SU',
+    clearance: 'LEVEL 4',
+    status: 'ONLINE',
+    focus: 'DATA ANALYTICS & THREAT CORRELATION'
   }
 ];
 
@@ -163,7 +163,7 @@ const CyberAvatar = ({ color, initials, id, size = 78 }) => {
         <svg viewBox="0 0 64 64" fill="none" className="w-[72%] h-[72%] relative z-10">
           <path d="M32 10C21 10 16 18 16 28C16 38 21 44 32 46C43 44 48 38 48 28C48 18 43 10 32 10Z" fill={`${hex}20`} stroke={hex} strokeWidth="1.5" />
           
-          {id === 'suryansh-pandey' && (
+          {(id === 'suryansh-pandey' || id === 'sushant') && (
             <>
               <path d="M20 25C24 23 40 23 44 25C42 29 38 31 32 31C26 31 22 29 20 25Z" fill={hex} opacity="0.9" />
               <circle cx="26" cy="27" r="1.5" fill="#fff" />
@@ -416,8 +416,8 @@ export default function TeamPage() {
           </div>
         </div>
 
-        {/* 4 CORE TEAM MEMBERS GRID (1 Row on Desktop: lg:grid-cols-4) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 w-full">
+        {/* 5 CORE TEAM MEMBERS GRID (1 Row on Desktop: lg:grid-cols-5) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5 lg:gap-4 w-full">
           {coreMembers.map((member, idx) => (
             <CoreTeamCard
               key={member.id}
@@ -500,22 +500,9 @@ export default function TeamPage() {
                   </span>
                 </div>
                 <div className="flex justify-between items-center pt-2 border-t border-white/5">
-                  <span className="uppercase text-[10px] tracking-wider">Secure Email:</span>
-                  <a 
-                    href={`mailto:${selectedMember.email}`} 
-                    className="text-[#00bfff] hover:underline text-xs font-mono select-all font-bold"
-                  >
-                    {selectedMember.email}
-                  </a>
+                  <span className="uppercase text-[10px] tracking-wider">Specialization:</span>
+                  <span className="text-[#00bfff] uppercase font-bold text-[10px] text-right">{selectedMember.focus}</span>
                 </div>
-                {selectedMember.phone && (
-                  <div className="flex justify-between items-center">
-                    <span className="uppercase text-[10px] tracking-wider">Comms Line:</span>
-                    <a href={`tel:${selectedMember.phone}`} className="text-white hover:text-[#00bfff] font-mono text-xs font-bold">
-                      {selectedMember.phone}
-                    </a>
-                  </div>
-                )}
               </div>
 
               <div className="mt-5 text-center text-[10px] text-cyber-muted uppercase tracking-widest">
