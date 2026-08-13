@@ -19,6 +19,14 @@ describe('Phase 24 — Production Readiness & Operational Hardening', () => {
       expect(res.headers['access-control-allow-origin']).toBe('https://cybershieldx.pages.dev');
     });
 
+    it('1b. Accepts custom domain origin (https://cybershieldx.in)', async () => {
+      const res = await request(app)
+        .options('/health')
+        .set('Origin', 'https://cybershieldx.in')
+        .set('Access-Control-Request-Method', 'GET');
+      expect(res.headers['access-control-allow-origin']).toBe('https://cybershieldx.in');
+    });
+
     it('2. Accepts valid Cloudflare Pages branch alias origin (https://preview-123.pages.dev)', async () => {
       const res = await request(app)
         .options('/health')

@@ -58,6 +58,7 @@ const getAllowedOrigins = () => {
   });
 
   allowed.push('https://cybershieldx.pages.dev');
+  allowed.push('https://cybershieldx.in');
 
   if (process.env.NODE_ENV !== 'production') {
     allowed.push(

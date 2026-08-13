@@ -13,4 +13,4 @@ Disallow: /history/*
 Disallow: /toolkit/*
 Disallow: /api/*
 
-Sitemap: https://cybershieldx.pages.dev/sitemap.xml
+Sitemap: https://cybershieldx.in/sitemap.xml
