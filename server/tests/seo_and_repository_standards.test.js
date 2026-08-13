@@ -20,16 +20,16 @@ describe('Phase 22 & Phase 23 — SEO & Open Source Repository Standards', () =>
     expect(robotsTxt).not.toContain('YOUR-DOMAIN.com');
   });
 
-  it('2. sitemap.xml uses canonical production domain (https://cybershieldx.in)', () => {
+  it('2. sitemap.xml uses canonical production domain (https://www.cybershieldx.in)', () => {
     const sitemapXml = fs.readFileSync(path.join(publicDir, 'sitemap.xml'), 'utf8');
-    expect(sitemapXml).toContain('https://cybershieldx.in/');
-    expect(sitemapXml).toContain('https://cybershieldx.in/team');
-    expect(sitemapXml).toContain('https://cybershieldx.in/login');
+    expect(sitemapXml).toContain('https://www.cybershieldx.in/');
+    expect(sitemapXml).toContain('https://www.cybershieldx.in/team');
+    expect(sitemapXml).toContain('https://www.cybershieldx.in/login');
   });
 
   it('3. robots.txt references valid sitemap URL and disallows internal/admin routes', () => {
     const robotsTxt = fs.readFileSync(path.join(publicDir, 'robots.txt'), 'utf8');
-    expect(robotsTxt).toContain('Sitemap: https://cybershieldx.in/sitemap.xml');
+    expect(robotsTxt).toContain('Sitemap: https://www.cybershieldx.in/sitemap.xml');
     expect(robotsTxt).toContain('Disallow: /dashboard/*');
     expect(robotsTxt).toContain('Disallow: /nexus-admin/*');
     expect(robotsTxt).toContain('Disallow: /api/*');
@@ -37,9 +37,9 @@ describe('Phase 22 & Phase 23 — SEO & Open Source Repository Standards', () =>
 
   it('4. index.html contains canonical link, OpenGraph, Twitter Card, and Schema.org JSON-LD metadata', () => {
     const indexHtml = fs.readFileSync(path.join(publicDir, 'index.html'), 'utf8');
-    expect(indexHtml).toContain('<link rel="canonical" href="https://cybershieldx.in/" />');
+    expect(indexHtml).toContain('<link rel="canonical" href="https://www.cybershieldx.in/" />');
     expect(indexHtml).toContain('property="og:title"');
-    expect(indexHtml).toContain('property="og:url" content="https://cybershieldx.in"');
+    expect(indexHtml).toContain('property="og:url" content="https://www.cybershieldx.in"');
     expect(indexHtml).toContain('name="twitter:card"');
     expect(indexHtml).toContain('application/ld+json');
   });
