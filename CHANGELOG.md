@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v28.0.0] - 2026-08-13
+### Final Production Release & Custom Domain Activation
+- **Cloudflare Pages Production Deployment**: Deployed compiled React SPA build to Cloudflare Pages project `cybershieldx` (`cybershieldx.pages.dev`) with `REACT_APP_API_URL=https://cybershield-x.onrender.com`.
+- **Render Backend Verification**: Verified `https://cybershield-x.onrender.com/health` returns HTTP 200 OK. Enforced CORS allowed origin controls for `https://cybershieldx.in` and `https://cybershieldx.pages.dev`.
+- **Custom Domain Activation (`cybershieldx.in`)**: Checked GoDaddy domain WHOIS status confirming identity verification completed and `clientHold` cleared. Provided GoDaddy DNS setup mapping for Cloudflare Pages CNAME configuration.
+- **Production Verification & Test Pass**: Verified `npm run verify:release` (exit 0) and `npm run verify:staging` (exit 0). All 8 core production Jest test suites (79/79 tests) passing cleanly.
+- **SEO & Search Console Readiness**: Verified `sitemap.xml` (7 URLs) and `robots.txt` canonical URL alignment to `https://cybershieldx.in/`.
+
 ## [v27.0.0] - 2026-08-11
 ### Final Production Readiness & Launch Gate (CODE READY)
 - **Release Verification CLI**: Implemented `server/scripts/releaseCheck.js` CLI registered under `npm run verify:release` in `server/package.json` and root `package.json`. Non-destructively audits infrastructure blueprints (`render.yaml`), build manifests (`_headers`, `_redirects`), release checklists, and target deployment alignment.
