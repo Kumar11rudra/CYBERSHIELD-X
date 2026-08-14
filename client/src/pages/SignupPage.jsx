@@ -199,7 +199,7 @@ export default function SignupPage() {
         fullMobile,
         form.fullName.trim()
       );
-      toast.success('Account successfully registered! Welcome to CyberNexus.');
+      toast.success('Account successfully registered! Welcome to CyberShield X.');
       navigate(getSafeReturnUrl(returnTo));
     } catch (err) {
       toast.error(formatApiError(err, 'Failed to complete registration.'));

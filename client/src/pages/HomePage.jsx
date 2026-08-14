@@ -269,7 +269,7 @@ export default function HomePage() {
             <span style={{ color: '#00ff88', fontSize: '0.6em', marginLeft: '0.2em', verticalAlign: 'middle', textShadow: '0 0 20px rgba(0,255,136,0.8)' }}>X</span>
           </motion.h1>
 
-          {/* Phase 18 Platform Sub-Branding: Powered by CYBERNEXUS (X-Aligned Lockup) */}
+          {/* Platform Sub-Branding: Next-Gen Threat Intelligence */}
           <motion.div
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
@@ -290,7 +290,7 @@ export default function HomePage() {
               paddingRight: '0.1em'
             }}
           >
-            <span style={{ color: 'rgba(224, 230, 255, 0.55)', fontWeight: 500 }}>POWERED BY</span>
+            <span style={{ color: 'rgba(224, 230, 255, 0.55)', fontWeight: 500 }}>INTELLIGENCE</span>
             <motion.span 
               animate={{ 
                 textShadow: [
@@ -308,7 +308,7 @@ export default function HomePage() {
                 display: 'inline-block'
               }}
             >
-              CYBERNEXUS
+              PLATFORM
               {/* Subtle Cyan Scanning Highlight Underline */}
               <motion.span
                 initial={{ scaleX: 0, opacity: 0 }}
