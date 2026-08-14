@@ -50,41 +50,57 @@ const ICONS = {
   bulk: "M4 6h16M4 10h16M4 14h16M4 18h16",
   monitor: "M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z",
   qrcode: "M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 0h2v2h-2v-2zm4 0h2v2h-2v-2zm-4 4h2v2h-2v-2zm4 0h2v2h-2v-2z",
-  hash: "M7 20l4-16m2 16l4-16M6 9h14M4 15h14",
   shield: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z",
-  phone: "M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z",
-  lock: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z",
   pulse: "M3 12h4l3-8 4 16 3-8h4",
   toolkit: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4",
 };
 
-const getNavItems = (t) => [
-  { to: '/dashboard', label: t('navigation.dashboard'), icon: 'dashboard' },
-  { to: '/soc', label: t('navigation.soc') || 'SOC SIEM Command', icon: 'bell' },
-  { to: '/system-health', label: 'System Health', icon: 'pulse' },
-  { to: '/assets', label: t('navigation.assets') || 'Managed Assets', icon: 'monitor' },
-  { to: '/vulnerabilities', label: 'Vulnerability Management', icon: 'shield' },
-  { to: '/integrations', label: 'Security Automation', icon: 'settings' },
-  { to: '/remediation', label: 'AI Remediation', icon: 'pulse' },
-  { to: '/toolkit', label: t('navigation.toolkit'), icon: 'toolkit' },
-  { to: '/scan', label: t('navigation.liveScanner'), icon: 'scanner' },
-  { to: '/bulk-scan', label: t('navigation.bulkScanner'), icon: 'bulk' },
-  { to: '/message-analyzer', label: t('navigation.messageAnalyzer'), icon: 'email' },
-  { to: '/web-forensics', label: t('navigation.webForensics'), icon: 'globe' },
-  { to: '/vault', label: t('navigation.quantumVault'), icon: 'vault' },
-  { to: '/breach-checker', label: t('navigation.darkWebMonitor'), icon: 'monitor' },
-  { to: '/upi-verifier', label: t('navigation.upiVerifier'), icon: 'search' },
-  { to: '/qr-scanner', label: t('navigation.qrScanner'), icon: 'qrcode' },
-  { to: '/api-limits', label: t('navigation.apiRateLimits'), icon: 'pulse' },
-  { to: '/history', label: t('navigation.scanHistory'), icon: 'history' },
-  { to: '/security', label: t('navigation.securityPosture'), icon: 'shield' },
-  { to: '/membership', label: t('navigation.membership'), icon: 'shield' },
-  { to: '/team', label: 'Core Team', icon: 'user' },
+// ─── Grouped Navigation Structure ─────────────────────────────────────────────
+const NAV_GROUPS = [
+  {
+    title: 'COMMAND',
+    items: [
+      { to: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
+      { to: '/soc', label: 'SOC SIEM Console', icon: 'bell' },
+      { to: '/system-health', label: 'System Health', icon: 'pulse' },
+      { to: '/security', label: 'Security Posture', icon: 'shield' },
+    ]
+  },
+  {
+    title: 'SECURITY TOOLS',
+    items: [
+      { to: '/toolkit', label: 'All Tools (110)', icon: 'toolkit', badge: '110' },
+      { to: '/scan', label: 'Live Scanner', icon: 'scanner', badge: 'LIVE' },
+      { to: '/bulk-scan', label: 'Bulk Scanner', icon: 'bulk' },
+      { to: '/web-forensics', label: 'Web Forensics', icon: 'globe' },
+      { to: '/message-analyzer', label: 'Message Analyzer', icon: 'email' },
+      { to: '/upi-verifier', label: 'UPI Verifier', icon: 'search' },
+    ]
+  },
+  {
+    title: 'WORKSPACE',
+    items: [
+      { to: '/history', label: 'Scan History', icon: 'history' },
+      { to: '/vulnerabilities', label: 'Vulnerabilities', icon: 'shield' },
+      { to: '/assets', label: 'Managed Assets', icon: 'monitor' },
+      { to: '/integrations', label: 'Automations', icon: 'settings' },
+      { to: '/remediation', label: 'AI Remediation', icon: 'pulse' },
+      { to: '/vault', label: 'Quantum Vault', icon: 'vault' },
+      { to: '/breach-checker', label: 'Dark Web Monitor', icon: 'monitor' },
+    ]
+  },
+  {
+    title: 'ACCOUNT',
+    items: [
+      { to: '/team', label: 'Core Team', icon: 'user' },
+      { to: '/settings', label: 'Settings', icon: 'settings' },
+    ]
+  }
 ];
 
 export default function Layout() {
   const { user, logout } = useAuth();
-  const { isDark } = useTheme();
+  const { isDark, toggleTheme } = useTheme();
   const { t } = useTranslation();
   const location = useLocation();
   const { organizations, activeOrgId, activeOrg, switchToPersonal, switchToOrg, isOrgMode } = useOrganization();
@@ -92,10 +108,27 @@ export default function Layout() {
   const [terminalOpen, setTerminalOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [orgDropdownOpen, setOrgDropdownOpen] = useState(false);
+  const [clockTime, setClockTime] = useState('');
   const profileRef = useRef(null);
   const orgDropdownRef = useRef(null);
 
-  const navItems = getNavItems(t);
+  // Close mobile drawer on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setProfileOpen(false);
+  }, [location.pathname]);
+
+  // Live real-time clock
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const options = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+      setClockTime(now.toLocaleDateString('en-US', options));
+    };
+    updateTime();
+    const timer = setInterval(updateTime, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -119,239 +152,265 @@ export default function Layout() {
       <CyberTerminal isOpen={terminalOpen} onClose={() => setTerminalOpen(false)} />
 
       {/* MOBILE HEADER BAR */}
-      <div className={`lg:hidden fixed top-0 left-0 right-0 h-16 backdrop-blur-xl border-b z-[60] flex items-center justify-between px-4 transition-colors ${isDark ? 'bg-[#020814]/80 border-white/5' : 'bg-white/80 border-black/5'}`}>
-        <BrandLogo size={24} />
+      <div className={`lg:hidden fixed top-0 left-0 right-0 h-16 backdrop-blur-xl border-b z-[60] flex items-center justify-between px-4 transition-colors ${isDark ? 'bg-[#020814]/90 border-white/10' : 'bg-white/90 border-black/10'}`}>
+        <Link to="/" className="flex items-center gap-3">
+          <BrandLogo size={24} />
+          <span className="font-display font-black text-sm text-white tracking-widest uppercase">CYBERSHIELD X</span>
+        </Link>
         {user && (
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-3 bg-cyber-accent/10 border border-cyber-accent/30 rounded-xl text-cyber-accent backdrop-blur-xl shadow-lg hover:bg-cyber-accent/20 transition-all"
+            aria-label="Toggle navigation menu"
+            className="p-2.5 bg-cyber-accent/10 border border-cyber-accent/30 rounded-xl text-cyber-accent backdrop-blur-xl shadow-lg hover:bg-cyber-accent/20 transition-all"
           >
-            <Icon d={mobileMenuOpen ? ICONS.close : ICONS.menu} size={24} />
+            <Icon d={mobileMenuOpen ? ICONS.close : ICONS.menu} size={20} />
           </button>
         )}
       </div>
 
-      {/* Persistent Sidebar (Hidden on Dashboard for AI-First Mode) */}
-      {user && !location.pathname.startsWith('/dashboard') && (
-        <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-72 flex flex-col backdrop-blur-3xl border-r transition-all duration-500 ease-cyber ${isDark ? 'bg-[#020814]/90 border-white/5' : 'bg-white/90 border-black/5'} ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
-        <div className="p-8 border-b border-white/5">
-          <Link to="/" className="flex items-center gap-4 group">
-            <div className="p-3 rounded-2xl bg-cyber-accent/10 border border-cyber-accent/20 group-hover:border-cyber-accent/50 transition-all shadow-[0_0_20px_rgba(0,212,255,0.2)]">
-              <BrandLogo size={32} />
-            </div>
-            <div>
-              <h1 className="font-display text-lg font-black tracking-tighter text-white group-hover:text-cyber-accent transition-colors">NEXUS</h1>
-              <p className="font-mono text-[9px] text-cyber-muted tracking-[0.3em] uppercase">Security Hub</p>
-            </div>
-          </Link>
-        </div>
-
-        {/* ──── Organization / Workspace Switcher ──────────────────── */}
-        {user && organizations.length > 0 && (
-          <div className="px-4 pt-4 pb-2" ref={orgDropdownRef}>
-            <p className="px-3 mb-2 font-mono text-[8px] text-cyber-muted uppercase tracking-[0.4em]">Workspace</p>
-            <button
-              id="org-switcher-btn"
-              onClick={() => setOrgDropdownOpen(!orgDropdownOpen)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all duration-300 text-left group ${
-                isOrgMode
-                  ? 'bg-cyan-500/10 border-cyan-500/25 hover:border-cyan-500/50'
-                  : 'bg-white/[0.03] border-white/5 hover:border-white/20'
-              }`}
-            >
-              <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-black shrink-0 ${
-                isOrgMode
-                  ? 'bg-gradient-to-br from-cyan-500/30 to-blue-600/30 text-cyan-300 border border-cyan-500/30'
-                  : 'bg-gradient-to-br from-emerald-500/20 to-green-600/20 text-emerald-400 border border-emerald-500/20'
-              }`}>
-                {isOrgMode ? (activeOrg?.name?.[0] || 'O').toUpperCase() : '⌂'}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-mono text-[10px] font-bold text-white truncate uppercase tracking-wider">
-                  {isOrgMode ? activeOrg?.name : 'Personal Space'}
-                </p>
-                <p className="font-mono text-[8px] text-cyber-muted truncate">
-                  {isOrgMode ? `${activeOrg?.role || 'member'} access` : 'Private workspace'}
-                </p>
-              </div>
-              <Icon d={ICONS.chevDown} size={12} />
-            </button>
-
-            <AnimatePresence>
-              {orgDropdownOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -8, scaleY: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scaleY: 1 }}
-                  exit={{ opacity: 0, y: -8, scaleY: 0.9 }}
-                  transition={{ duration: 0.2 }}
-                  className="mt-2 py-2 bg-[#0a1628] border border-white/10 rounded-xl shadow-2xl overflow-hidden"
-                  style={{ transformOrigin: 'top' }}
-                >
-                  {/* Personal Space */}
-                  <button
-                    id="org-switch-personal"
-                    onClick={() => { switchToPersonal(); setOrgDropdownOpen(false); }}
-                    className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all hover:bg-white/5 ${
-                      !isOrgMode ? 'bg-emerald-500/10 text-emerald-400' : 'text-cyber-muted'
-                    }`}
-                  >
-                    <div className="w-6 h-6 rounded-md flex items-center justify-center text-[9px] bg-emerald-500/15 border border-emerald-500/20">⌂</div>
-                    <span className="font-mono text-[10px] font-bold uppercase tracking-wider">Personal Space</span>
-                    {!isOrgMode && <span className="ml-auto text-[8px] text-emerald-400">●</span>}
-                  </button>
-
-                  {organizations.length > 0 && (
-                    <div className="border-t border-white/5 mt-1 pt-1">
-                      <p className="px-4 py-1 font-mono text-[7px] text-cyber-muted uppercase tracking-[0.4em]">Organizations</p>
-                      {organizations.map((org) => {
-                        const orgId = org._id || org.id;
-                        const isActive = activeOrgId === orgId;
-                        return (
-                          <button
-                            key={orgId}
-                            id={`org-switch-${orgId}`}
-                            onClick={() => { switchToOrg(orgId); setOrgDropdownOpen(false); }}
-                            className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all hover:bg-white/5 ${
-                              isActive ? 'bg-cyan-500/10 text-cyan-300' : 'text-cyber-muted'
-                            }`}
-                          >
-                            <div className={`w-6 h-6 rounded-md flex items-center justify-center text-[9px] font-black border ${
-                              isActive
-                                ? 'bg-cyan-500/20 border-cyan-500/30 text-cyan-300'
-                                : 'bg-white/5 border-white/10 text-white/50'
-                            }`}>
-                              {(org.name?.[0] || 'O').toUpperCase()}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <span className="font-mono text-[10px] font-bold uppercase tracking-wider block truncate">{org.name}</span>
-                              <span className="font-mono text-[7px] text-cyber-muted uppercase">{org.role}</span>
-                            </div>
-                            {isActive && <span className="text-[8px] text-cyan-400">●</span>}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )}
-
-        <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto custom-scrollbar">
-          {navItems.map((item, idx) => (
-            <Link
-              key={idx}
-              to={item.to}
-              className={`flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-300 group relative overflow-hidden ${location.pathname === item.to ? 'bg-cyber-accent/10 text-cyber-accent border border-cyber-accent/20 shadow-[0_0_15px_rgba(0,212,255,0.1)]' : 'text-cyber-muted hover:text-white hover:bg-white/[0.03] border border-transparent'}`}
-            >
-              {/* Active Indicator Line */}
-              {location.pathname === item.to && (
-                <motion.div layoutId="activeNav" className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-cyber-accent rounded-r-full" />
-              )}
-              
-              <Icon d={ICONS[item.icon]} size={22} />
-              <span className="font-mono text-[11px] font-bold uppercase tracking-widest">{item.label}</span>
-              
-              {/* Subtle hover glow */}
-              <div className="absolute inset-0 bg-gradient-to-r from-cyber-accent/0 to-cyber-accent/5 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500" />
-            </Link>
-          ))}
-        </nav>
-
-        <div className="p-6 border-t border-white/5 space-y-6">
-          {/* HUD Status */}
-          <div className="space-y-3 px-2">
-            <div className="flex justify-between items-center">
-              <span className="font-mono text-[9px] text-cyber-muted uppercase tracking-widest">Network Link</span>
-              <span className="text-[10px] text-cyber-green animate-pulse">ESTABLISHED</span>
-            </div>
-            <div className="h-[2px] w-full bg-white/5 rounded-full overflow-hidden">
-              <motion.div animate={{ x: ['-100%', '100%'] }} transition={{ duration: 3, repeat: Infinity, ease: "linear" }} className="w-1/2 h-full bg-gradient-to-r from-transparent via-cyber-accent to-transparent" />
-            </div>
-          </div>
-
-          {/* User Section */}
-          {user ? (
-            <div className="flex items-center gap-4 p-3 bg-white/[0.03] border border-white/5 rounded-2xl group hover:border-cyber-accent/30 transition-all">
-              <div className="w-10 h-10 rounded-xl overflow-hidden border border-white/10 group-hover:border-cyber-accent/50 transition-all">
-                <img src="/bot-avatar.png" alt="Profile" className="w-full h-full object-cover" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-mono text-[11px] font-black text-white truncate uppercase">{user?.username}</p>
-                <p className="font-mono text-[8px] text-cyber-muted uppercase tracking-tighter">Level 4 Operator</p>
-              </div>
-              <button onClick={handleLogout} className="p-2 text-cyber-muted hover:text-cyber-red transition-colors">
-                <Icon d={ICONS.logout} size={18} />
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-2 p-2 bg-[#00bfff]/5 border border-[#00bfff]/20 rounded-2xl">
-              <Link to="/login" className="text-center py-2.5 bg-cyber-accent text-[#020814] font-bold text-xs uppercase tracking-widest rounded-xl hover:scale-[1.02] transition-transform">
-                Operator Sign In
-              </Link>
-              <Link to="/signup" className="text-center py-2 bg-transparent text-cyber-accent font-bold text-[10px] uppercase tracking-widest rounded-xl hover:bg-white/5 transition-colors">
-                Create Account
-              </Link>
-            </div>
-          )}
-        </div>
-      </aside>
+      {/* MOBILE BACKDROP OVERLAY */}
+      {mobileMenuOpen && (
+        <div
+          onClick={() => setMobileMenuOpen(false)}
+          className="lg:hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-40"
+        />
       )}
 
-      {/* Main Area */}
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        {!location.pathname.startsWith('/dashboard') && (
-        <header className={`h-16 flex items-center justify-between px-6 border-b backdrop-blur-xl z-30 transition-colors ${isDark ? 'border-white/5 bg-black/20' : 'border-black/5 bg-white/40'}`}>
-          <div className="flex-1 flex items-center gap-6 overflow-hidden">
-            <div className="threat-ticker-track flex gap-8 whitespace-nowrap text-[10px] font-mono text-cyber-muted uppercase tracking-widest italic opacity-50">
-              {[...TICKER, ...TICKER].map((t, i) => <span key={i}>{t}</span>)}
-            </div>
+      {/* SIDEBAR NAVIGATION (Desktop persistent + Mobile slide-over) */}
+      {user && (
+        <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-72 flex flex-col backdrop-blur-3xl border-r transition-all duration-300 ease-in-out ${isDark ? 'bg-[#030914]/95 border-white/5 shadow-2xl' : 'bg-white/95 border-black/5'} ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+          {/* Logo Brand Header */}
+          <div className="p-5 border-b border-white/5 flex items-center justify-between">
+            <Link to="/dashboard" className="flex items-center gap-3 group">
+              <div className="p-2 rounded-xl bg-cyber-accent/10 border border-cyber-accent/20 group-hover:border-cyber-accent/50 transition-all shadow-[0_0_15px_rgba(0,212,255,0.15)]">
+                <BrandLogo size={26} />
+              </div>
+              <div>
+                <h1 className="font-display text-sm font-black tracking-wider text-white group-hover:text-cyber-accent transition-colors">CYBERSHIELD X</h1>
+                <p className="font-mono text-[8px] text-cyber-accent/80 tracking-[0.25em] uppercase">Security Workspace</p>
+              </div>
+            </Link>
           </div>
 
-          <div className="flex items-center gap-4 ml-6">
-            <NotificationCenter />
-            <NetworkStatusHUD />
+          {/* Workspace Switcher */}
+          {organizations.length > 0 && (
+            <div className="px-4 pt-3 pb-1" ref={orgDropdownRef}>
+              <button
+                id="org-switcher-btn"
+                onClick={() => setOrgDropdownOpen(!orgDropdownOpen)}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl border transition-all duration-200 text-left group ${
+                  isOrgMode
+                    ? 'bg-cyan-500/10 border-cyan-500/25 hover:border-cyan-500/50'
+                    : 'bg-white/[0.03] border-white/5 hover:border-white/20'
+                }`}
+              >
+                <div className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black shrink-0 ${
+                  isOrgMode
+                    ? 'bg-gradient-to-br from-cyan-500/30 to-blue-600/30 text-cyan-300 border border-cyan-500/30'
+                    : 'bg-gradient-to-br from-emerald-500/20 to-green-600/20 text-emerald-400 border border-emerald-500/20'
+                }`}>
+                  {isOrgMode ? (activeOrg?.name?.[0] || 'O').toUpperCase() : '⌂'}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-mono text-[10px] font-bold text-white truncate uppercase tracking-wider">
+                    {isOrgMode ? activeOrg?.name : 'Personal Space'}
+                  </p>
+                </div>
+                <Icon d={ICONS.chevDown} size={12} />
+              </button>
 
-            {/* Profile Dropdown */}
-            {user && (
+              <AnimatePresence>
+                {orgDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6, scaleY: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scaleY: 1 }}
+                    exit={{ opacity: 0, y: -6, scaleY: 0.95 }}
+                    className="mt-1.5 py-1.5 bg-[#0a1628] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50"
+                  >
+                    <button
+                      id="org-switch-personal"
+                      onClick={() => { switchToPersonal(); setOrgDropdownOpen(false); }}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-all hover:bg-white/5 ${
+                        !isOrgMode ? 'bg-emerald-500/10 text-emerald-400' : 'text-cyber-muted'
+                      }`}
+                    >
+                      <span className="text-[10px]">⌂</span>
+                      <span className="font-mono text-[10px] font-bold uppercase tracking-wider">Personal Space</span>
+                    </button>
+                    {organizations.map((org) => {
+                      const orgId = org._id || org.id;
+                      const isActive = activeOrgId === orgId;
+                      return (
+                        <button
+                          key={orgId}
+                          onClick={() => { switchToOrg(orgId); setOrgDropdownOpen(false); }}
+                          className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-all hover:bg-white/5 ${
+                            isActive ? 'bg-cyan-500/10 text-cyan-300' : 'text-cyber-muted'
+                          }`}
+                        >
+                          <span className="text-[9px] font-bold">{(org.name?.[0] || 'O').toUpperCase()}</span>
+                          <span className="font-mono text-[10px] font-bold uppercase tracking-wider truncate">{org.name}</span>
+                        </button>
+                      );
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+
+          {/* Grouped Navigation Links */}
+          <nav className="flex-1 px-3 py-4 space-y-5 overflow-y-auto custom-scrollbar">
+            {NAV_GROUPS.map((group, gIdx) => (
+              <div key={gIdx} className="space-y-1">
+                <p className="px-3 text-[8px] font-mono font-bold text-cyber-muted uppercase tracking-[0.25em]">
+                  {group.title}
+                </p>
+                <div className="space-y-0.5">
+                  {group.items.map((item, idx) => {
+                    const isActive = location.pathname === item.to || (item.to !== '/dashboard' && location.pathname.startsWith(item.to));
+                    return (
+                      <Link
+                        key={idx}
+                        to={item.to}
+                        className={`flex items-center justify-between px-3 py-2 rounded-xl transition-all duration-200 group relative ${
+                          isActive
+                            ? 'bg-cyber-accent/10 text-cyber-accent border border-cyber-accent/25 shadow-[0_0_12px_rgba(0,212,255,0.1)]'
+                            : 'text-cyber-muted hover:text-white hover:bg-white/[0.03] border border-transparent'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <Icon d={ICONS[item.icon] || ICONS.dashboard} size={16} />
+                          <span className="font-mono text-[11px] font-medium tracking-wider truncate">
+                            {item.label}
+                          </span>
+                        </div>
+                        {item.badge && (
+                          <span className={`text-[8px] font-mono px-1.5 py-0.5 rounded uppercase font-bold tracking-wider ${
+                            item.badge === 'LIVE' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'bg-cyber-accent/15 text-cyber-accent border border-cyber-accent/30'
+                          }`}>
+                            {item.badge}
+                          </span>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </nav>
+
+          {/* User Profile Footer & Logout */}
+          <div className="p-3 border-t border-white/5 space-y-2">
+            <div className="flex items-center justify-between p-2 rounded-xl bg-white/[0.02] border border-white/5">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-7 h-7 rounded-lg overflow-hidden border border-cyber-accent/30 bg-cyber-accent/10 flex items-center justify-center text-[10px] font-bold text-cyber-accent">
+                  {(user?.username?.[0] || 'U').toUpperCase()}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-mono text-[10px] font-bold text-white truncate uppercase">{user?.username || 'Operator'}</p>
+                  <p className="font-mono text-[8px] text-cyber-accent truncate tracking-wider">Level 4 Operator</p>
+                </div>
+              </div>
+              <button
+                onClick={handleLogout}
+                title="Logout"
+                aria-label="Logout"
+                className="p-1.5 text-cyber-muted hover:text-cyber-red hover:bg-cyber-red/10 rounded-lg transition-colors"
+              >
+                <Icon d={ICONS.logout} size={15} />
+              </button>
+            </div>
+          </div>
+        </aside>
+      )}
+
+      {/* Main Workspace Area */}
+      <div className="flex-1 flex flex-col h-screen overflow-hidden">
+        {/* Top Header Bar */}
+        {user && (
+          <header className={`h-14 flex items-center justify-between px-6 border-b backdrop-blur-xl z-30 transition-colors ${isDark ? 'border-white/5 bg-[#020814]/80' : 'border-black/5 bg-white/80'}`}>
+            {/* Left: Section Path / Status */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="font-mono text-[10px] font-bold text-cyber-muted uppercase tracking-widest hidden sm:inline">CYBERSHIELD X SOC • 110 MODELS ACTIVE</span>
+              </div>
+            </div>
+
+            {/* Right: Live Clock, Ticker & Profile */}
+            <div className="flex items-center gap-4">
+              {clockTime && (
+                <div className="hidden md:flex items-center gap-2 text-[10px] font-mono text-cyber-muted bg-white/[0.02] border border-white/5 px-2.5 py-1 rounded-lg">
+                  <span className="text-cyber-accent">⏱</span>
+                  <span>{clockTime}</span>
+                </div>
+              )}
+
+              <NotificationCenter />
+              <NetworkStatusHUD />
+
+              {/* Profile Dropdown */}
               <div className="relative" ref={profileRef}>
                 <button
                   onClick={() => setProfileOpen(!profileOpen)}
-                  className="w-10 h-10 rounded-xl border border-white/10 overflow-hidden hover:border-cyber-accent/50 transition-all focus:ring-2 focus:ring-cyber-accent/20"
+                  aria-label="Open profile menu"
+                  className="flex items-center gap-2 px-2 py-1 rounded-xl border border-white/10 hover:border-cyber-accent/40 bg-white/[0.02] transition-all"
                 >
-                  <img
-                    src={`https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${user.username}`}
-                    alt="Avatar"
-                  />
+                  <div className="w-6 h-6 rounded-lg bg-cyber-accent/20 border border-cyber-accent/40 flex items-center justify-center text-[10px] font-bold text-cyber-accent">
+                    {(user?.username?.[0] || 'U').toUpperCase()}
+                  </div>
+                  <span className="font-mono text-[10px] text-white hidden sm:inline uppercase">{user.username}</span>
+                  <Icon d={ICONS.chevDown} size={10} />
                 </button>
 
                 <AnimatePresence>
                   {profileOpen && (
                     <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      className={`absolute top-full right-0 mt-3 w-64 bg-cyber-card border rounded-2xl shadow-2xl overflow-hidden backdrop-blur-2xl z-[100] transition-colors ${isDark ? 'border-white/10' : 'border-black/5'}`}
+                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                      transition={{ duration: 0.15 }}
+                      className={`absolute top-full right-0 mt-2 w-56 bg-[#0a1424] border border-white/10 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-2xl z-[100]`}
                     >
-                      <div className={`p-4 border-b transition-colors ${isDark ? 'border-white/5 bg-white/5' : 'border-black/5 bg-black/5'}`}>
-                        <p className="text-xs font-bold text-cyber-accent uppercase tracking-widest">{user.username}</p>
-                        <p className="text-[10px] text-cyber-muted truncate">{user.email}</p>
+                      <div className="p-3 border-b border-white/5 bg-white/[0.02]">
+                        <p className="text-xs font-bold text-cyber-accent uppercase tracking-wider">{user.username}</p>
+                        <p className="text-[9px] text-cyber-muted truncate">{user.email || 'operator@cybershieldx.in'}</p>
                       </div>
-                      <div className="p-2 flex flex-col gap-1">
-                        <Link to="/settings" className={`flex items-center gap-3 p-2 rounded-lg text-xs transition-colors ${isDark ? 'hover:bg-white/5' : 'hover:bg-black/5'}`}><Icon d={ICONS.user} /> {t('navigation.myProfile')}</Link>
-                        <Link to="/history" className={`flex items-center gap-3 p-2 rounded-lg text-xs transition-colors ${isDark ? 'hover:bg-white/5' : 'hover:bg-black/5'}`}><Icon d={ICONS.history} /> {t('navigation.scanHistory')}</Link>
-                        <button onClick={handleLogout} className="flex items-center gap-3 p-2 rounded-lg text-xs text-cyber-red/80 hover:bg-cyber-red/10 transition-colors w-full"><Icon d={ICONS.logout} /> {t('navigation.logout')}</button>
+                      <div className="p-1.5 flex flex-col gap-0.5">
+                        <Link to="/settings" className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-cyber-muted hover:text-white hover:bg-white/5 transition-colors">
+                          <Icon d={ICONS.user} size={14} /> Profile & Settings
+                        </Link>
+                        <Link to="/history" className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-cyber-muted hover:text-white hover:bg-white/5 transition-colors">
+                          <Icon d={ICONS.history} size={14} /> Scan History
+                        </Link>
+                        <button
+                          onClick={toggleTheme}
+                          className="flex items-center justify-between px-3 py-2 rounded-xl text-xs text-cyber-muted hover:text-white hover:bg-white/5 transition-colors w-full text-left"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <Icon d={isDark ? ICONS.sun : ICONS.moon} size={14} />
+                            <span>Theme</span>
+                          </div>
+                          <span className="text-[9px] font-bold text-cyber-accent uppercase">{isDark ? 'Dark' : 'Light'}</span>
+                        </button>
+                        <div className="my-1 border-t border-white/5" />
+                        <button
+                          onClick={handleLogout}
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-cyber-red/90 hover:bg-cyber-red/10 transition-colors w-full text-left"
+                        >
+                          <Icon d={ICONS.logout} size={14} /> Logout
+                        </button>
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
-            )}
-          </div>
-        </header>
+            </div>
+          </header>
         )}
 
+        {/* Scrollable Main Viewport */}
         <main className="flex-1 overflow-y-auto custom-scrollbar relative">
           <Outlet />
         </main>
@@ -359,3 +418,4 @@ export default function Layout() {
     </div>
   );
 }
+
