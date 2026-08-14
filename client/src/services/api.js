@@ -39,10 +39,20 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// ─── Request Interceptor: Attach CSRF session + Organization tenant header ────
+// ─── Request Interceptor: Attach Auth Token, CSRF session + Org tenant header ────
 api.interceptors.request.use((config) => {
   config.headers = config.headers || {};
   config.headers['x-nexus-session-token'] = getNexusSessionToken();
+
+  // Attach stored JWT Bearer token as fallback for cross-domain cookie restrictions
+  try {
+    const token = localStorage.getItem('cybershield_token');
+    if (token && !config.headers['Authorization']) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+  } catch (err) {
+    // LocalStorage might be blocked or unavailable
+  }
 
   // Attach active organization scope for multi-tenant requests
   try {

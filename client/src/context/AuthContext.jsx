@@ -7,14 +7,18 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(null); // Keep state if needed by UI, but don't persist
+  const [token, setToken] = useState(() => {
+    try {
+      return localStorage.getItem('cybershield_token');
+    } catch {
+      return null;
+    }
+  });
 
   const loadUser = useCallback(async () => {
     try {
       const res = await api.get('/auth/me');
       setUser(res.data.user);
-      // We don't get the token back here if HttpOnly, so token state might just stay null,
-      // but user indicates auth status.
     } catch {
       setUser(null);
     } finally {
@@ -36,6 +40,9 @@ export const AuthProvider = ({ children }) => {
       clientIntel: { location, network }
     });
     const { token: newToken, user: newUser } = res.data;
+    if (newToken) {
+      try { localStorage.setItem('cybershield_token', newToken); } catch {}
+    }
     setToken(newToken);
     setUser(newUser);
     return newUser;
@@ -47,6 +54,9 @@ export const AuthProvider = ({ children }) => {
 
     const res = await api.post('/auth/admin-login', { identity, password, clientIntel: { location, network } });
     const { token: newToken, user: newUser } = res.data;
+    if (newToken) {
+      try { localStorage.setItem('cybershield_token', newToken); } catch {}
+    }
     setToken(newToken);
     setUser(newUser);
     return newUser;
@@ -65,6 +75,9 @@ export const AuthProvider = ({ children }) => {
       clientIntel: { location, network }
     });
     const { token: newToken, user: newUser } = res.data;
+    if (newToken) {
+      try { localStorage.setItem('cybershield_token', newToken); } catch {}
+    }
     setToken(newToken);
     setUser(newUser);
     return newUser;
@@ -76,6 +89,7 @@ export const AuthProvider = ({ children }) => {
     } catch (err) {
       console.warn('[AUTH] Logout notification failed:', err.message);
     } finally {
+      try { localStorage.removeItem('cybershield_token'); } catch {}
       setToken(null);
       setUser(null);
       if (redirectTo) window.location.href = redirectTo;

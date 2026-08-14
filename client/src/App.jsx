@@ -146,7 +146,7 @@ const AppRoutes = () => (
 );
 
 const ROUTE_TITLES = {
-  '/': 'CyberShield X — Powered by CyberNexus',
+  '/': 'CyberShield X',
   '/dashboard': 'Dashboard — CyberShield X',
   '/scan': 'Live Scanner — CyberShield X',
   '/bulk-scan': 'Bulk Scanner — CyberShield X',
@@ -194,7 +194,7 @@ function PageTitleController() {
       } else if (location.pathname.startsWith('/shared-scan/')) {
         title = 'Shared Audit Report — CyberShield X';
       } else {
-        title = 'CyberShield X — Powered by CyberNexus';
+        title = 'CyberShield X';
       }
     }
     document.title = title;
