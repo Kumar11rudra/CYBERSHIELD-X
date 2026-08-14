@@ -46,7 +46,7 @@ class AIOrchestrator {
       
       // 2. Check if Gemini AI provider is configured
       if (this.genAI) {
-        const model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
         
         const systemPrompt = `You are CyberShield X Copilot, an AI assistant built to help security analysts.
 You have access to the Nexus Security Toolkit catalog.

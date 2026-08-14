@@ -1,9 +1,9 @@
 # CyberShield X - Project State
 
 ## Current Status
-- **Architecture Version**: V29.0.0 (Authenticated Workspace & Dashboard Redesign Complete)
-- **Phase**: PHASE 29 — USER DASHBOARD REDESIGN & GROUPED NAVIGATION ARCHITECTURE (COMPLETED)
-- **Status**: Redesigned authenticated user Dashboard into a clean, modern Cyber SOC workspace. Connected full 110-model catalog from authoritative registry with instant search, category chips, and status filters (14 Live, 2 Partial, 94 Upcoming). Grouped sidebar navigation into COMMAND, SECURITY TOOLS, WORKSPACE, and ACCOUNT sections. Added top header with real-time clock, threat ticker, and user profile menu. Implemented Quick Target Scan panel and Recent Activity history table with zero data fabrication. Built production client bundle cleanly with zero errors. `verify:release` and `verify:staging` passing.
+- **Architecture Version**: V29.1.0 (Production Reliability & Speed Patches Complete)
+- **Phase**: PHASE 29 — USER DASHBOARD REDESIGN & GROUPED NAVIGATION ARCHITECTURE (COMPLETED & PATCHED)
+- **Status**: Redesigned authenticated user Dashboard into a clean, modern Cyber SOC workspace. Resolved critical production errors: fixed "Create Account Network Error" and login issues by introducing dynamic API routing; fixed AI chatbot and remediation plan failures by upgrading model reference to `gemini-2.5-flash`; optimized DNS resolution speed globally via global resolvers; reduced WHOIS tool loading time on Render from 10s to 2s by capping socket timeouts and forcing fast RDAP fallbacks. All verification suites passing.
 
 ## Completed Phases
 - ✅ **Phase 29**: User Dashboard Redesign & Grouped Navigation Architecture (Clean Cyber SOC Workspace)
@@ -87,5 +87,5 @@
   - API Gateway and SSO integrations.
 
 ---
-- **Last Audit Date**: 2026-08-10
-- **Last Modified Date**: 2026-08-10 (Phase 18 Complete Security Audit & Hardening Complete)
+- **Last Audit Date**: 2026-08-15
+- **Last Modified Date**: 2026-08-15 (Production Reliability & Speed Patches Complete)

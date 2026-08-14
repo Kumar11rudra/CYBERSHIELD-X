@@ -110,7 +110,7 @@ Output your response in STRICT JSON format with EXACTLY these fields (no extra t
     try {
       logger.info(`[REMEDIATION] Querying Gemini for ${cve}...`);
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
       const result = await model.generateContent(prompt);
       const text = result.response.text();
       const plan = cleanJsonResponse(text);

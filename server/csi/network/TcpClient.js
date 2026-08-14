@@ -175,6 +175,7 @@ class TcpClient extends INetworkClient {
 
     /** Low-level TCP WHOIS socket query */
     async _whoisQuery(server, domain, timeout) {
+        const effectiveTimeout = Math.min(timeout, 2000);
         return new Promise((resolve, reject) => {
             let settled = false;
             const settle = (fn, v) => { if (!settled) { settled = true; fn(v); } };
@@ -183,10 +184,10 @@ class TcpClient extends INetworkClient {
             const timer = setTimeout(() => {
                 socket.destroy();
                 settle(reject, new CsiTimeoutError(
-                    `WHOIS TCP timeout after ${timeout}ms querying ${server} for ${domain}`,
-                    { timeoutMs: timeout }
+                    `WHOIS TCP timeout after ${effectiveTimeout}ms querying ${server} for ${domain}`,
+                    { timeoutMs: effectiveTimeout }
                 ));
-            }, timeout);
+            }, effectiveTimeout);
 
             const socket = net.createConnection({ host: server, port: 43 }, () => {
                 socket.write(`${domain}\r\n`);
