@@ -41,7 +41,10 @@ const { observabilityMiddleware, getMetrics } = require('./middleware/observabil
 
 const isCloudflarePagesOrigin = (origin) => {
   if (typeof origin !== 'string') return false;
-  return /^https:\/\/[a-zA-Z0-9-]+\.pages\.dev$/.test(origin);
+  return (
+    /^https:\/\/[a-zA-Z0-9-]+\.pages\.dev$/.test(origin) ||
+    /^https:\/\/(www\.)?cybershieldx\.in$/.test(origin)
+  );
 };
 
 const getAllowedOrigins = () => {
@@ -59,6 +62,7 @@ const getAllowedOrigins = () => {
 
   allowed.push('https://cybershieldx.pages.dev');
   allowed.push('https://cybershieldx.in');
+  allowed.push('https://www.cybershieldx.in');
 
   if (process.env.NODE_ENV !== 'production') {
     allowed.push(
