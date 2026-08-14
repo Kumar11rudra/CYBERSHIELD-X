@@ -147,36 +147,56 @@ const AppRoutes = () => (
 
 const ROUTE_TITLES = {
   '/': 'CyberShield X — AI-Powered Cybersecurity Platform',
-  '/team': 'Core Team — CyberShield X',
-  '/threat-intel': 'Threat Intelligence — CyberShield X',
-  '/toolkit': 'Security Tools & Models — CyberShield X',
   '/dashboard': 'Dashboard — CyberShield X',
   '/scan': 'Live Scanner — CyberShield X',
   '/bulk-scan': 'Bulk Scanner — CyberShield X',
-  '/web-forensics': 'Web Forensics — CyberShield X',
+  '/toolkit': 'Security Tools & Models — CyberShield X',
   '/message-analyzer': 'Message Analyzer — CyberShield X',
+  '/web-forensics': 'Web Forensics — CyberShield X',
+  '/upi-verifier': 'UPI & Fraud Verifier — CyberShield X',
+  '/qr-scanner': 'QR Scanner — CyberShield X',
   '/history': 'Scan History — CyberShield X',
-  '/vulnerabilities': 'Vulnerability Management — CyberShield X',
-  '/assets': 'Managed Assets — CyberShield X',
   '/vault': 'Quantum Vault — CyberShield X',
+  '/breach-checker': 'Dark Web Monitor — CyberShield X',
+  '/api-limits': 'API Limits — CyberShield X',
+  '/membership': 'Membership — CyberShield X',
+  '/assets': 'Managed Assets — CyberShield X',
   '/soc': 'SOC SIEM Console — CyberShield X',
+  '/vulnerabilities': 'Vulnerability Management — CyberShield X',
+  '/integrations': 'Security Automations — CyberShield X',
+  '/remediation': 'AI Remediation — CyberShield X',
   '/system-health': 'System Health — CyberShield X',
-  '/nexus-admin': 'Nexus Command — CyberShield X',
-  '/nexus-admin/dashboard': 'Nexus Command — CyberShield X',
+  '/threat-intel': 'Threat Intelligence — CyberShield X',
+  '/team': 'Core Team — CyberShield X',
+  '/contact': 'Contact Us — CyberShield X',
+  '/settings': 'Settings — CyberShield X',
   '/security': 'Security Posture — CyberShield X',
   '/login': 'Sign In — CyberShield X',
   '/signup': 'Create Account — CyberShield X',
-  '/settings': 'Settings — CyberShield X',
+  '/privacy': 'Privacy Policy — CyberShield X',
+  '/terms': 'Terms of Service — CyberShield X',
+  '/cookie-policy': 'Cookie Policy — CyberShield X',
+  '/acceptable-use': 'Acceptable Use Policy — CyberShield X',
+  '/security-info': 'Security Information — CyberShield X',
+  '/nexus-admin': 'Nexus Command — CyberShield X',
+  '/nexus-admin/dashboard': 'Nexus Command — CyberShield X',
 };
 
 function PageTitleController() {
   const location = useLocation();
   useEffect(() => {
-    const title = ROUTE_TITLES[location.pathname] || (
-      location.pathname.startsWith('/toolkit/')
-        ? 'Tool Details — CyberShield X'
-        : 'CyberShield X — AI-Powered Cybersecurity Platform'
-    );
+    let title = ROUTE_TITLES[location.pathname];
+    if (!title) {
+      if (location.pathname.startsWith('/toolkit/')) {
+        title = 'Tool Details — CyberShield X';
+      } else if (location.pathname.startsWith('/history/')) {
+        title = 'Scan Report — CyberShield X';
+      } else if (location.pathname.startsWith('/shared-scan/')) {
+        title = 'Shared Audit Report — CyberShield X';
+      } else {
+        title = 'CyberShield X — AI-Powered Cybersecurity Platform';
+      }
+    }
     document.title = title;
   }, [location.pathname]);
   return null;
