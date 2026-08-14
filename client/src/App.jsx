@@ -146,17 +146,27 @@ const AppRoutes = () => (
 );
 
 const ROUTE_TITLES = {
-  '/': 'CyberShield X • CyberNexus',
-  '/team': 'Team • CyberShield X',
-  '/threat-intel': 'Threat Intelligence • CyberShield X',
-  '/toolkit': 'Toolkit • CyberShield X',
-  '/dashboard': 'Dashboard • CyberShield X',
-  '/scan': 'Scanner • CyberShield X',
-  '/nexus-admin': 'Nexus Command • CyberShield X',
-  '/nexus-admin/dashboard': 'Nexus Command • CyberShield X',
-  '/security': 'Security Posture • CyberShield X',
-  '/login': 'Sign In • CyberShield X',
-  '/signup': 'Create Account • CyberShield X',
+  '/': 'CyberShield X — AI-Powered Cybersecurity Platform',
+  '/team': 'Core Team — CyberShield X',
+  '/threat-intel': 'Threat Intelligence — CyberShield X',
+  '/toolkit': 'Security Tools & Models — CyberShield X',
+  '/dashboard': 'Dashboard — CyberShield X',
+  '/scan': 'Live Scanner — CyberShield X',
+  '/bulk-scan': 'Bulk Scanner — CyberShield X',
+  '/web-forensics': 'Web Forensics — CyberShield X',
+  '/message-analyzer': 'Message Analyzer — CyberShield X',
+  '/history': 'Scan History — CyberShield X',
+  '/vulnerabilities': 'Vulnerability Management — CyberShield X',
+  '/assets': 'Managed Assets — CyberShield X',
+  '/vault': 'Quantum Vault — CyberShield X',
+  '/soc': 'SOC SIEM Console — CyberShield X',
+  '/system-health': 'System Health — CyberShield X',
+  '/nexus-admin': 'Nexus Command — CyberShield X',
+  '/nexus-admin/dashboard': 'Nexus Command — CyberShield X',
+  '/security': 'Security Posture — CyberShield X',
+  '/login': 'Sign In — CyberShield X',
+  '/signup': 'Create Account — CyberShield X',
+  '/settings': 'Settings — CyberShield X',
 };
 
 function PageTitleController() {
@@ -164,8 +174,8 @@ function PageTitleController() {
   useEffect(() => {
     const title = ROUTE_TITLES[location.pathname] || (
       location.pathname.startsWith('/toolkit/')
-        ? 'Tool • CyberShield X'
-        : 'CyberShield X • CyberNexus'
+        ? 'Tool Details — CyberShield X'
+        : 'CyberShield X — AI-Powered Cybersecurity Platform'
     );
     document.title = title;
   }, [location.pathname]);
