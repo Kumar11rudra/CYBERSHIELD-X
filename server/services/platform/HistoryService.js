@@ -7,9 +7,13 @@ class HistoryService {
     static async getHistory(orgId, userId, query) {
         await RBACService.requirePermission(orgId, userId, 'canView');
         
-        const qb = new QueryBuilder(ActivityLog, query)
-            .tenant(orgId)
-            .filter(['action', 'status', 'userId', 'target', 'assetId'])
+        const qb = new QueryBuilder(ActivityLog, query);
+        if (orgId) {
+            qb.mongoQuery.organizationId = orgId;
+        } else {
+            qb.mongoQuery.userId = userId;
+        }
+        qb.filter(['action', 'status', 'userId', 'target', 'assetId'])
             .dateRange('timestamp')
             .paginate()
             .sortBy(['timestamp']);
@@ -30,7 +34,7 @@ class HistoryService {
         await RBACService.requirePermission(orgId, userId, 'canView');
         
         // Setup filter based on entity type
-        const filter = { organizationId: orgId };
+        const filter = orgId ? { organizationId: orgId } : { userId };
         
         switch (entityType) {
             case 'scan':

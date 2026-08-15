@@ -1,4 +1,5 @@
 require('dotenv').config();
+const crypto = require('crypto');
 const dns = require('dns');
 dns.setServers(['8.8.8.8', '1.1.1.1']);
 const express = require('express');
@@ -95,6 +96,22 @@ const corsOptions = {
 };
 
 const app = express();
+
+// Trust reverse proxy (Cloudflare Pages, Render Web Service) - 1 hop
+app.set('trust proxy', 1);
+
+// ─── Request Correlation Middleware (X-Request-Id) ─────────────────────────
+const REQUEST_ID_REGEX = /^[a-zA-Z0-9_-]{1,64}$/;
+
+app.use((req, res, next) => {
+  const incomingId = req.headers['x-request-id'];
+  const requestId = (typeof incomingId === 'string' && REQUEST_ID_REGEX.test(incomingId.trim()))
+    ? incomingId.trim()
+    : crypto.randomUUID();
+  req.id = requestId;
+  res.setHeader('X-Request-Id', requestId);
+  next();
+});
 
 // ─── Observability (Critical for Telemetry) ──────────────────────────────────
 app.use(observabilityMiddleware);
@@ -228,6 +245,13 @@ const scanLimiter = rateLimit({
   handler: createRateLimitHandler('scan')
 });
 
+const aiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 15, // Max 15 AI triage requests per 15 minutes per identity
+  message: { error: 'Too many AI analysis requests. Please try again after 15 minutes.' },
+  handler: createRateLimitHandler('ai')
+});
+
 // Debug Logger to track all incoming requests
 app.use((req, res, next) => {
   next();
@@ -263,7 +287,7 @@ app.use('/api/audit', auditRoutes);
 app.use('/api/threat-feed', threatFeedRoutes);
 app.use('/api/community', communityRoutes);
 app.use('/api/tools', toolsRoutes);
-app.use('/api/ai', aiRoutes);
+app.use('/api/ai', aiLimiter, aiRoutes);
 app.use('/api/breach', breachRoutes);
 app.use('/api/vault', require('./routes/vault'));
 app.use('/api/watchlist', require('./routes/watchlist'));
@@ -354,18 +378,24 @@ if (process.env.NODE_ENV === 'production') {
 
 // ─── Production Error Handling & Resilience ────────────────────────────────
 app.use((err, req, res, next) => {
-  logger.error(`[RUNTIME ERROR] ${err.message}`, { stack: err.stack, path: req.path });
+  const requestId = req.id || req.headers?.['x-request-id'] || 'unknown';
+  logger.error(`[RUNTIME ERROR] [${requestId}] ${err.message}`, { stack: err.stack, path: req.path, requestId });
   
   const status = err.status || 500;
   res.status(status).json({
     success: false,
     error: isProduction ? 'Internal Intelligence Error' : err.message,
-    code: status === 500 ? 'NEXUS_CORE_FAULT' : 'REQUEST_INVALID'
+    code: status === 500 ? 'NEXUS_CORE_FAULT' : 'REQUEST_INVALID',
+    requestId
   });
 });
 
 // ─── Graceful Shutdown ──────────────────────────────────────────────────────
-const shutdown = async (signal) => {
+let isShuttingDown = false;
+
+const shutdown = async (signal, exitCode = 0) => {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
   logger.info(`[SHUTDOWN] Signal ${signal} received. Powering down Nexus Core...`);
   
   httpServer.close(async () => {
@@ -376,17 +406,33 @@ const shutdown = async (signal) => {
     } catch (err) {
       logger.error('[SHUTDOWN] Error closing database:', err.message);
     }
-    process.exit(0);
+    process.exit(exitCode);
   });
   
   setTimeout(() => {
     logger.error('[SHUTDOWN] Force terminating process after timeout.');
-    process.exit(1);
-  }, 10000);
+    process.exit(exitCode || 1);
+  }, 10000).unref();
 };
 
-process.on('SIGTERM', () => shutdown('SIGTERM'));
-process.on('SIGINT', () => shutdown('SIGINT'));
+// ─── Process-Level Crash Prevention & Resilience ────────────────────────────
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error('[PROCESS CRITICAL] Unhandled Promise Rejection:', {
+    reason: reason instanceof Error ? reason.message : String(reason),
+    stack: reason instanceof Error ? reason.stack : undefined,
+  });
+});
+
+process.on('uncaughtException', (err) => {
+  logger.error('[PROCESS CRITICAL] Uncaught Exception:', {
+    message: err.message,
+    stack: err.stack,
+  });
+  shutdown('uncaughtException', 1);
+});
+
+process.on('SIGTERM', () => shutdown('SIGTERM', 0));
+process.on('SIGINT', () => shutdown('SIGINT', 0));
 
 const PORT = Number(process.env.PORT) || 3001;
 if (require.main === module) {

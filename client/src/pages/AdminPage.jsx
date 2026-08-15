@@ -8,11 +8,11 @@ import { useTranslation } from 'react-i18next';
 import RiskBadge from '../components/common/RiskBadge';
 import ActivityTimeline from '../components/admin/ActivityTimeline';
 import NexusDeploymentHealth from '../components/admin/NexusDeploymentHealth';
+import FirewallPanel from '../components/admin/FirewallPanel';
+import TelemetryPanel from '../components/admin/TelemetryPanel';
+import MaintenancePanel from '../components/admin/MaintenancePanel';
+import AnalyticsPanel from '../components/admin/AnalyticsPanel';
 import usePdfExport from '../hooks/usePdfExport';
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend,
-} from 'recharts';
 
 const RISK_COLORS = { safe: '#00ff88', low: '#ffdd00', medium: '#ff8c00', dangerous: '#ff2244' };
 
@@ -39,25 +39,9 @@ export default function AdminPage() {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [reportData, setReportData] = useState(null);
   const [reportLoading, setReportLoading] = useState(false);
-  // Analytics state
-  const [analyticsOverview, setAnalyticsOverview] = useState(null);
-  const [dailyActivity, setDailyActivity] = useState([]);
-  const [scanTypes, setScanTypes] = useState([]);
-  const [analyticsLoading, setAnalyticsLoading] = useState(false);
-  // Firewall state
-  const [blockedIPs, setBlockedIPs] = useState([]);
-  const [newIP, setNewIP] = useState('');
-  const [firewallLoading, setFirewallLoading] = useState(false);
-  // Maintenance state
-  const [maintenanceMode, setMaintenanceMode] = useState(false);
-  const [maintenanceMsg, setMaintenanceMsg] = useState('');
-  const [maintenanceLoading, setMaintenanceLoading] = useState(false);
   // Audit Logs state
   const [auditLogs, setAuditLogs] = useState([]);
   const [auditLoading, setAuditLoading] = useState(false);
-  // Telemetry state
-  const [telemetry, setTelemetry] = useState(null);
-  const [telemetryLoading, setTelemetryLoading] = useState(false);
   // Threat Injection state
   const [threatTarget, setThreatTarget] = useState('');
   const [threatType, setThreatType] = useState('url');
@@ -92,42 +76,6 @@ export default function AdminPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Fetch analytics when analytics tab is opened
-  useEffect(() => {
-    if (tab !== 'analytics' || analyticsOverview) return;
-    setAnalyticsLoading(true);
-    Promise.all([
-      api.get('/analytics/overview'),
-      api.get('/analytics/daily-activity'),
-      api.get('/analytics/scan-types'),
-    ])
-      .then(([ov, da, st]) => {
-        setAnalyticsOverview(ov.data.overview);
-        setDailyActivity(da.data.dailyActivity);
-        setScanTypes(st.data.scanTypes.map((t, i) => ({ ...t, fill: ['#00d4ff','#00ff88','#ff8c00','#ff2244','#a855f7','#f59e0b'][i % 6] })));
-      })
-      .catch(() => toast.error('Analytics feed offline'))
-      .finally(() => setAnalyticsLoading(false));
-  }, [tab]);
-
-  // Fetch Firewall rules when firewall tab opened
-  useEffect(() => {
-    if (tab !== 'firewall') return;
-    setFirewallLoading(true);
-    api.get('/admin/firewall')
-      .then(r => setBlockedIPs(r.data.blockedIPs))
-      .catch(() => toast.error('Firewall data unavailable'))
-      .finally(() => setFirewallLoading(false));
-  }, [tab]);
-
-  // Fetch Maintenance status when maintenance tab opened
-  useEffect(() => {
-    if (tab !== 'maintenance') return;
-    api.get('/admin/maintenance')
-      .then(r => { setMaintenanceMode(r.data.maintenanceMode); setMaintenanceMsg(r.data.maintenanceMessage); })
-      .catch(() => toast.error('Could not load maintenance status'));
-  }, [tab]);
-
   // Fetch Audit Logs when audit tab opened
   useEffect(() => {
     if (tab !== 'audit') return;
@@ -137,44 +85,6 @@ export default function AdminPage() {
       .catch(() => toast.error('Audit log feed offline'))
       .finally(() => setAuditLoading(false));
   }, [tab]);
-
-  // Fetch Telemetry when telemetry tab opened
-  useEffect(() => {
-    if (tab !== 'telemetry') return;
-    setTelemetryLoading(true);
-    api.get('/admin/telemetry')
-      .then(r => setTelemetry(r.data))
-      .catch(() => toast.error('Forensic telemetry offline'))
-      .finally(() => setTelemetryLoading(false));
-  }, [tab]);
-
-  const blockIP = async () => {
-    if (!newIP.trim()) return;
-    try {
-      const r = await api.post('/admin/firewall', { ip: newIP.trim() });
-      setBlockedIPs(r.data.blockedIPs);
-      setNewIP('');
-      toast.success(`IP ${newIP.trim()} blocked`);
-    } catch (e) { toast.error(e.response?.data?.error || 'Failed to block IP'); }
-  };
-
-  const unblockIP = async (ip) => {
-    try {
-      const r = await api.delete(`/admin/firewall/${encodeURIComponent(ip)}`);
-      setBlockedIPs(r.data.blockedIPs);
-      toast.success(`IP ${ip} unblocked`);
-    } catch { toast.error('Failed to unblock IP'); }
-  };
-
-  const toggleMaintenance = async () => {
-    setMaintenanceLoading(true);
-    try {
-      const r = await api.post('/admin/maintenance', { maintenanceMode: !maintenanceMode, maintenanceMessage: maintenanceMsg });
-      setMaintenanceMode(r.data.maintenanceMode);
-      toast.success(r.data.maintenanceMode ? '🔒 Maintenance Mode ACTIVATED' : '✅ Platform is LIVE again');
-    } catch { toast.error('Failed to toggle maintenance mode'); }
-    finally { setMaintenanceLoading(false); }
-  };
 
   const injectThreat = async (e) => {
     e.preventDefault();
@@ -617,146 +527,13 @@ export default function AdminPage() {
       )}
 
       {/* ANALYTICS TAB */}
-      {tab === 'analytics' && (
-        <div className="space-y-6">
-          {analyticsLoading ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="w-8 h-8 border-2 border-cyber-accent border-t-transparent rounded-full animate-spin" />
-            </div>
-          ) : analyticsOverview ? (
-            <>
-              {/* KPI Overview Cards */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                  { label: 'Total Users', value: analyticsOverview.totalUsers, color: '#00d4ff' },
-                  { label: 'New Users (7d)', value: analyticsOverview.newUsersLast7Days, color: '#00ff88' },
-                  { label: 'Total Scans', value: analyticsOverview.totalScans, color: '#a855f7' },
-                  { label: '2FA Adoption', value: analyticsOverview.twoFAAdoptionRate, color: '#ff8c00' },
-                ].map((k) => (
-                  <div key={k.label} className="cyber-card p-5 text-center">
-                    <p className="text-[10px] font-mono text-cyber-muted uppercase tracking-widest mb-2">{k.label}</p>
-                    <p className="text-3xl font-display font-black" style={{ color: k.color }}>{k.value}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Daily Activity Chart */}
-              <div className="cyber-card p-6">
-                <h4 className="font-mono text-[10px] text-white uppercase tracking-widest mb-6">Daily Activity (14 Days)</h4>
-                <ResponsiveContainer width="100%" height={240}>
-                  <BarChart data={dailyActivity} margin={{ top: 0, right: 0, left: -15, bottom: 0 }}>
-                    <XAxis dataKey="date" tick={{ fill: '#4a5568', fontSize: 9, fontFamily: 'monospace' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fill: '#4a5568', fontSize: 9, fontFamily: 'monospace' }} axisLine={false} tickLine={false} />
-                    <Tooltip
-                      contentStyle={{ background: 'rgba(5,10,20,0.95)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', fontFamily: 'monospace', fontSize: '11px' }}
-                      labelStyle={{ color: '#00d4ff', textTransform: 'uppercase', letterSpacing: '0.1em' }}
-                    />
-                    <Bar dataKey="users" fill="#00d4ff" name="New Users" radius={[3,3,0,0]} />
-                    <Bar dataKey="scans" fill="#a855f7" name="Scans" radius={[3,3,0,0]} />
-                    <Bar dataKey="logins" fill="#00ff88" name="Logins" radius={[3,3,0,0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-
-              {/* Scan Type Pie */}
-              {scanTypes.length > 0 && (
-                <div className="cyber-card p-6">
-                  <h4 className="font-mono text-[10px] text-white uppercase tracking-widest mb-6">Scan Type Distribution</h4>
-                  <ResponsiveContainer width="100%" height={240}>
-                    <PieChart>
-                      <Pie data={scanTypes} dataKey="count" nameKey="type" cx="50%" cy="50%" outerRadius={90} paddingAngle={3}>
-                        {scanTypes.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
-                      </Pie>
-                      <Tooltip
-                        contentStyle={{ background: 'rgba(5,10,20,0.95)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', fontFamily: 'monospace', fontSize: '11px' }}
-                      />
-                      <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontFamily: 'monospace', fontSize: '10px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="text-center py-16">
-              <p className="font-mono text-[11px] text-cyber-muted uppercase tracking-widest">» Analytics feed offline — Connect Nexus Data Core</p>
-            </div>
-          )}
-        </div>
-      )}
+      {tab === 'analytics' && <AnalyticsPanel />}
 
       {/* ── TOOL 1: GLOBAL FIREWALL ─────────────────────────────────────────── */}
-      {tab === 'firewall' && (
-        <div className="space-y-6">
-          <div className="cyber-card p-6 border-l-4 border-l-red-500">
-            <h3 className="font-display text-sm font-bold text-white uppercase tracking-widest mb-1">{t('admin.globalFirewall')}</h3>
-            <p className="text-[10px] font-mono text-cyber-muted mb-6">Block any IP address from accessing the platform. Changes take effect immediately.</p>
-            <div className="flex gap-3 mb-6">
-              <input
-                type="text" value={newIP} onChange={e => setNewIP(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && blockIP()}
-                placeholder="Enter IP address (e.g. 192.168.1.1)"
-                className="cyber-input flex-1 h-10"
-              />
-              <button onClick={blockIP} disabled={firewallLoading || !newIP.trim()}
-                className="font-mono text-xs bg-red-600/20 text-red-500 border border-red-500/50 px-4 py-2 hover:bg-red-600 hover:text-black transition-all uppercase tracking-widest disabled:opacity-40">
-                Block IP
-              </button>
-            </div>
-            {firewallLoading ? (
-              <div className="flex justify-center py-8"><div className="w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin" /></div>
-            ) : blockedIPs.length === 0 ? (
-              <p className="text-center font-mono text-xs text-cyber-muted py-8 uppercase">No IPs currently blocked. Firewall perimeter is open.</p>
-            ) : (
-              <div className="space-y-2">
-                <p className="font-mono text-[10px] text-red-500 uppercase tracking-widest mb-3">{blockedIPs.length} IP(s) Blocked</p>
-                {blockedIPs.map(ip => (
-                  <div key={ip} className="flex items-center justify-between bg-red-900/10 border border-red-900/30 px-4 py-2.5 rounded">
-                    <span className="font-mono text-sm text-red-300">{ip}</span>
-                    <button onClick={() => unblockIP(ip)}
-                      className="font-mono text-[10px] text-red-500/60 hover:text-red-400 uppercase tracking-widest transition-colors">
-                      {t('admin.unblockIP')}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      {tab === 'firewall' && <FirewallPanel />}
 
       {/* ── TOOL 2: MAINTENANCE MODE ────────────────────────────────────────── */}
-      {tab === 'maintenance' && (
-        <div className="space-y-6">
-          <div className="cyber-card p-6 border-l-4 border-l-orange-500">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h3 className="font-display text-sm font-bold text-white uppercase tracking-widest mb-1">Maintenance Mode</h3>
-                <p className="text-[10px] font-mono text-cyber-muted">Lock the platform for all users. Only admins can bypass.</p>
-              </div>
-              <div className={`px-4 py-2 rounded border font-mono text-sm font-bold uppercase tracking-widest ${maintenanceMode ? 'bg-red-500/20 border-red-500/50 text-red-400' : 'bg-green-500/20 border-green-500/50 text-green-400'}`}>
-                {maintenanceMode ? '🔒 MAINTENANCE ON' : '✅ PLATFORM LIVE'}
-              </div>
-            </div>
-            <div className="mb-6">
-              <label className="block font-mono text-[10px] text-cyber-muted uppercase tracking-widest mb-2">Maintenance Message (shown to users)</label>
-              <textarea
-                value={maintenanceMsg} onChange={e => setMaintenanceMsg(e.target.value)} rows={3}
-                className="cyber-input w-full resize-none p-3 text-sm"
-                placeholder="e.g. CyberShield X is undergoing scheduled maintenance. Back shortly."
-              />
-            </div>
-            <motion.button onClick={toggleMaintenance} disabled={maintenanceLoading}
-              whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-              className={`w-full py-3.5 font-bold tracking-[0.2em] uppercase text-sm border transition-all duration-300 disabled:opacity-50 ${
-                maintenanceMode
-                  ? 'bg-green-500/20 text-green-400 border-green-500/50 hover:bg-green-500 hover:text-black'
-                  : 'bg-orange-500/20 text-orange-400 border-orange-500/50 hover:bg-orange-500 hover:text-black'
-              }`}>
-              {maintenanceLoading ? 'Processing...' : maintenanceMode ? '✅ Bring Platform Back LIVE' : '🔒 Activate Maintenance Mode'}
-            </motion.button>
-          </div>
-        </div>
-      )}
+      {tab === 'maintenance' && <MaintenancePanel />}
 
       {/* ── TOOL 3: ADMIN AUDIT LOGS ────────────────────────────────────────── */}
       {tab === 'audit' && (
@@ -807,114 +584,7 @@ export default function AdminPage() {
       )}
 
       {/* ── TOOL: FORENSIC TELEMETRY ─────────────────────────────────────────── */}
-      {tab === 'telemetry' && (
-        <div className="space-y-6">
-          {telemetryLoading ? (
-            <div className="flex justify-center py-20"><div className="w-8 h-8 border-2 border-cyber-accent border-t-transparent rounded-full animate-spin" /></div>
-          ) : telemetry ? (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="cyber-card p-6 border-l-4 border-l-cyber-accent">
-                  <h4 className="font-mono text-[10px] text-cyber-muted uppercase tracking-widest mb-4">Core Integrity</h4>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-end border-b border-white/5 pb-2">
-                      <span className="text-[10px] text-cyber-muted uppercase">Health Score</span>
-                      <span className="text-xl font-display font-black text-cyber-green">{telemetry.system.healthScore}%</span>
-                    </div>
-                    <div className="flex justify-between items-end border-b border-white/5 pb-2">
-                      <span className="text-[10px] text-cyber-muted uppercase">API Latency</span>
-                      <span className="text-sm font-mono text-white">{telemetry.system.apiLatency}</span>
-                    </div>
-                    <div className="flex justify-between items-end border-b border-white/5 pb-2">
-                      <span className="text-[10px] text-cyber-muted uppercase">System Uptime</span>
-                      <span className="text-sm font-mono text-white">{telemetry.system.uptime}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="cyber-card p-6">
-                  <h4 className="font-mono text-[10px] text-white uppercase tracking-widest mb-4">Node Distribution</h4>
-                  <ResponsiveContainer width="100%" height={120}>
-                    <PieChart>
-                      <Pie
-                        data={[
-                          { name: 'Mobile', value: telemetry.nodes.mobileNodes },
-                          { name: 'Desktop', value: telemetry.nodes.desktopNodes }
-                        ]}
-                        dataKey="value"
-                        innerRadius={30}
-                        outerRadius={50}
-                        paddingAngle={5}
-                      >
-                        <Cell fill="#00d4ff" />
-                        <Cell fill="#ff8c00" />
-                      </Pie>
-                      <Tooltip contentStyle={{ background: '#0a0f18', border: 'none', borderRadius: '8px', fontSize: '10px' }} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                  <div className="flex justify-center gap-4 mt-2">
-                    <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#00d4ff]" /><span className="text-[9px] font-mono text-cyber-muted uppercase">Mobile</span></div>
-                    <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#ff8c00]" /><span className="text-[9px] font-mono text-cyber-muted uppercase">Desktop</span></div>
-                  </div>
-                </div>
-
-                <div className="cyber-card p-6">
-                  <h4 className="font-mono text-[10px] text-white uppercase tracking-widest mb-4">Service Status</h4>
-                  <div className="flex flex-col gap-2">
-                    {['Database Cluster', 'Neural Engine', 'Intelligence API', 'Realtime Sockets'].map((s, i) => (
-                      <div key={s} className="flex items-center justify-between p-2 rounded bg-white/5 border border-white/5">
-                        <span className="text-[10px] font-mono text-white uppercase">{s}</span>
-                        <span className="w-2 h-2 rounded-full bg-cyber-green shadow-[0_0_8px_#00ff88]" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="cyber-card p-6">
-                <h4 className="font-mono text-[10px] text-white uppercase tracking-widest mb-6">Geographic Signal Distribution</h4>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                  <div className="space-y-3">
-                    {telemetry.geography.map((g, i) => (
-                      <div key={g._id} className="flex items-center justify-between group">
-                        <div className="flex items-center gap-3">
-                          <span className="text-[10px] font-mono text-cyber-muted">0{i+1}</span>
-                          <span className="text-xs font-display font-bold text-white uppercase tracking-wider">{g._id || 'Unknown'}</span>
-                        </div>
-                        <div className="flex items-center gap-4 flex-1 max-w-[200px] ml-4">
-                          <div className="h-1 bg-white/5 rounded-full flex-1 overflow-hidden">
-                            <motion.div 
-                              initial={{ width: 0 }}
-                              animate={{ width: `${(g.count / telemetry.geography[0].count) * 100}%` }}
-                              className="h-full bg-cyber-accent" 
-                            />
-                          </div>
-                          <span className="text-[10px] font-mono text-cyber-accent w-8 text-right">{g.count}</span>
-                        </div>
-                      </div>
-                    ))}
-                    {telemetry.geography.length === 0 && <p className="text-center font-mono text-xs text-cyber-muted py-8 uppercase">No geographic signals recorded.</p>}
-                  </div>
-                  <div className="h-48 border border-white/5 rounded-2xl bg-black/40 flex flex-col items-center justify-center relative overflow-hidden">
-                    <motion.div 
-                      animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.6, 0.3] }}
-                      transition={{ duration: 4, repeat: Infinity }}
-                      className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#00d4ff11_0%,_transparent_70%)]" 
-                    />
-                    <Icon d="M21 12a9 9 0 11-18 0 9 9 0 0114 0z" size={40} className="text-cyber-muted opacity-20 mb-4" />
-                    <p className="font-mono text-[10px] text-cyber-muted uppercase tracking-[0.4em] z-10 font-bold">Signal Vector Visualization</p>
-                    <p className="text-[9px] text-white/30 uppercase z-10 italic mt-2">Connecting global nodes...</p>
-                  </div>
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="text-center py-16">
-              <p className="font-mono text-[11px] text-cyber-muted uppercase tracking-widest">» Forensic telemetry stream encrypted — Awaiting SOC Handshake</p>
-            </div>
-          )}
-        </div>
-      )}
+      {tab === 'telemetry' && <TelemetryPanel />}
 
       {/* ── TOOL 4: THREAT INJECTION ─────────────────────────────────────────── */}
       {tab === 'inject' && (

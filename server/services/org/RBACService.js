@@ -43,6 +43,14 @@ class RBACService {
         return this.hasSufficientRole(role, 'owner');
     }
 
+    static canManageOrg(role) {
+        return this.hasSufficientRole(role, 'admin');
+    }
+
+    static canScan(role) {
+        return this.hasSufficientRole(role, 'analyst');
+    }
+
     static canManageRole(actorRole, targetRole) {
         // You cannot manage someone with a higher or equal privilege level than yourself,
         // EXCEPT if you are an owner, you can manage other owners (or demote them, subject to "last owner" rules).

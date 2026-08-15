@@ -29,10 +29,21 @@ const aiAnalysisSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    durationMs: {
+      type: Number,
+      default: 0,
+    },
+    metadata: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
   },
   {
     timestamps: true,
   }
 );
+
+// Compound index for multi-model scan triage lookups
+aiAnalysisSchema.index({ scanId: 1, model: 1 });
 
 module.exports = mongoose.model('AIAnalysis', aiAnalysisSchema);

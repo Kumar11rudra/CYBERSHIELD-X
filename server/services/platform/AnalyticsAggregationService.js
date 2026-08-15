@@ -9,7 +9,9 @@ const mongoose = require('mongoose');
 class AnalyticsAggregationService {
     static async getDailyScans(orgId, userId, query = {}) {
         await RBACService.requirePermission(orgId, userId, 'canView');
-        const match = { organizationId: new mongoose.Types.ObjectId(orgId) };
+        const match = orgId
+            ? { organizationId: new mongoose.Types.ObjectId(orgId) }
+            : { userId: new mongoose.Types.ObjectId(userId) };
         if (query.startDate) match.createdAt = { $gte: new Date(query.startDate) };
         if (query.endDate) match.createdAt = { ...match.createdAt, $lte: new Date(query.endDate) };
 
@@ -26,8 +28,11 @@ class AnalyticsAggregationService {
 
     static async getRiskTrends(orgId, userId) {
         await RBACService.requirePermission(orgId, userId, 'canView');
+        const match = orgId
+            ? { organizationId: new mongoose.Types.ObjectId(orgId) }
+            : { createdBy: new mongoose.Types.ObjectId(userId) };
         const data = await Vulnerability.aggregate([
-            { $match: { organizationId: new mongoose.Types.ObjectId(orgId) } },
+            { $match: match },
             { $group: {
                 _id: { $dateToString: { format: "%Y-%m-%d", date: "$firstSeen" } },
                 avgRisk: { $avg: "$riskScore" },
@@ -40,8 +45,11 @@ class AnalyticsAggregationService {
 
     static async getSeverityTrends(orgId, userId) {
         await RBACService.requirePermission(orgId, userId, 'canView');
+        const match = orgId
+            ? { organizationId: new mongoose.Types.ObjectId(orgId) }
+            : { createdBy: new mongoose.Types.ObjectId(userId) };
         const data = await Vulnerability.aggregate([
-            { $match: { organizationId: new mongoose.Types.ObjectId(orgId) } },
+            { $match: match },
             { $group: { _id: "$severity", count: { $sum: 1 } } }
         ]);
         return new AnalyticsDTO({ data });
@@ -49,8 +57,11 @@ class AnalyticsAggregationService {
     
     static async getTopVulnerableAssets(orgId, userId) {
         await RBACService.requirePermission(orgId, userId, 'canView');
+        const match = orgId
+            ? { organizationId: new mongoose.Types.ObjectId(orgId), status: { $in: ['Open', 'In Progress'] } }
+            : { createdBy: new mongoose.Types.ObjectId(userId), status: { $in: ['Open', 'In Progress'] } };
         const data = await Vulnerability.aggregate([
-            { $match: { organizationId: new mongoose.Types.ObjectId(orgId), status: { $in: ['Open', 'In Progress'] } } },
+            { $match: match },
             { $group: { _id: "$assetId", vulnCount: { $sum: 1 }, avgRisk: { $avg: "$riskScore" } } },
             { $sort: { vulnCount: -1 } },
             { $limit: 10 },
@@ -63,8 +74,11 @@ class AnalyticsAggregationService {
 
     static async getCommonCVEs(orgId, userId) {
         await RBACService.requirePermission(orgId, userId, 'canView');
+        const match = orgId
+            ? { organizationId: new mongoose.Types.ObjectId(orgId), cve: { $ne: null } }
+            : { createdBy: new mongoose.Types.ObjectId(userId), cve: { $ne: null } };
         const data = await Vulnerability.aggregate([
-            { $match: { organizationId: new mongoose.Types.ObjectId(orgId), cve: { $ne: null } } },
+            { $match: match },
             { $group: { _id: "$cve", count: { $sum: 1 } } },
             { $sort: { count: -1 } },
             { $limit: 10 }
@@ -74,8 +88,11 @@ class AnalyticsAggregationService {
 
     static async getSLABreaches(orgId, userId) {
         await RBACService.requirePermission(orgId, userId, 'canView');
+        const match = orgId
+            ? { organizationId: new mongoose.Types.ObjectId(orgId) }
+            : { createdBy: new mongoose.Types.ObjectId(userId) };
         const data = await Vulnerability.aggregate([
-            { $match: { organizationId: new mongoose.Types.ObjectId(orgId) } },
+            { $match: match },
             { $group: { _id: "$slaStatus", count: { $sum: 1 } } }
         ]);
         return new AnalyticsDTO({ data });

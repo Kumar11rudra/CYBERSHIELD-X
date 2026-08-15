@@ -42,5 +42,6 @@ const watchlistSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 watchlistSchema.index({ userId: 1, targetType: 1, target: 1 }, { unique: true });
+watchlistSchema.index({ isActive: 1, nextRunAt: 1 });
 
 module.exports = mongoose.model('Watchlist', watchlistSchema);

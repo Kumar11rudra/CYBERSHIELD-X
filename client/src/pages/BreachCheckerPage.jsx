@@ -79,7 +79,7 @@ const BreachCheckerPage = () => {
             setTimeout(() => {
                 setResult(res.data);
                 setLoading(false);
-            }, 2500);
+            }, 200);
         } catch (err) {
             setError(err.response?.data?.error || t('breach.error'));
             setLoading(false);

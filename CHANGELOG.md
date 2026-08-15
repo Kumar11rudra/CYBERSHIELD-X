@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
-## [v28.0.0] - 2026-08-13
+## [v29.4.1] - 2026-08-16
+### Production Hardening Maintenance Patch
+- **Trust Proxy Hardening**: Configured `app.set('trust proxy', 1)` in `server/index.js` for accurate originating client IP resolution and per-client rate limit accounting behind Cloudflare Pages / Render reverse proxies.
+- **X-Request-Id Validation**: Enforced strict regex validation (`/^[a-zA-Z0-9_-]{1,64}$/`) for incoming `X-Request-Id` headers to eliminate header injection and oversized log payloads; falls back cleanly to server-generated UUIDs on invalid inputs.
+- **Safe Uncaught Exception Shutdown**: Hardened `uncaughtException` listener to initiate idempotent graceful shutdown (`shutdown('uncaughtException', 1)`) so container supervisors (Docker/Render) can cleanly restart the process rather than running with corrupted state.
+- **Verification**: Created `server/scripts/test_v29_4_1_verification.js` passing 7/7 verification test assertions.
+
+## [v29.4.0] - 2026-08-15
+### Observability, Process Resilience, AI Quota Defense & Database Index Optimization
+- **Request Correlation Tracing**: Added `X-Request-Id` correlation middleware; surfaced request IDs in Winston logger context and client 500 error responses (`code: 'NEXUS_CORE_FAULT'`).
+- **AI Quota Protection Engine**: Applied dedicated `aiLimiter` rate limiting (15 requests / 15 minutes) on `/api/ai/*` to guard Google Gemini API usage.
+- **Database Background Index Optimization**: Added compound indexes on `Vulnerability` (`{ status: 1, slaDeadline: 1, slaStatus: 1 }`), `Watchlist` (`{ isActive: 1, nextRunAt: 1 }`), and `AIAnalysis` (`{ scanId: 1, model: 1 }`).
+- **AI Generation Telemetry**: Persisted `durationMs` and metadata in `AIAnalysis` records; formatted findings as clean strings to guarantee React and PDF export stability.
 ### Final Production Release & Custom Domain Activation
 - **Cloudflare Pages Production Deployment**: Deployed compiled React SPA build to Cloudflare Pages project `cybershieldx` (`cybershieldx.pages.dev`) with `REACT_APP_API_URL=https://cybershield-x.onrender.com`.
 - **Render Backend Verification**: Verified `https://cybershield-x.onrender.com/health` returns HTTP 200 OK. Enforced CORS allowed origin controls for `https://cybershieldx.in` and `https://cybershieldx.pages.dev`.

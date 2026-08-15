@@ -1,9 +1,7 @@
 const AnalyticsAggregationService = require('../services/platform/AnalyticsAggregationService');
 
 const getOrgId = (req) => {
-    const orgId = req.params.orgId || req.query.orgId || req.headers['x-organization-id'];
-    if (!orgId) throw new Error('organizationId is required');
-    return orgId;
+    return req.params.orgId || req.query.orgId || req.headers['x-organization-id'] || null;
 };
 
 exports.getDailyActivity = async (req, res, next) => {

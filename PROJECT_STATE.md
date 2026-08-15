@@ -1,11 +1,15 @@
 # CyberShield X - Project State
 
 ## Current Status
-- **Architecture Version**: V29.1.0 (Production Reliability & Speed Patches Complete)
-- **Phase**: PHASE 29 — USER DASHBOARD REDESIGN & GROUPED NAVIGATION ARCHITECTURE (COMPLETED & PATCHED)
-- **Status**: Redesigned authenticated user Dashboard into a clean, modern Cyber SOC workspace. Resolved critical production errors: fixed "Create Account Network Error" and login issues by introducing dynamic API routing; fixed AI chatbot and remediation plan failures by upgrading model reference to `gemini-2.5-flash`; optimized DNS resolution speed globally via global resolvers; reduced WHOIS tool loading time on Render from 10s to 2s by capping socket timeouts and forcing fast RDAP fallbacks. All verification suites passing.
+- **Architecture Version**: V29.4.1 (Production Hardening Patch: Trust Proxy, Request-ID Sanitization & Safe Uncaught Exception Shutdown)
+- **Phase**: PHASE 30.1 — V29.4.1 PRODUCTION HARDENING PATCH (COMPLETED)
+- **Status**: Configured Express `trust proxy` (`app.set('trust proxy', 1)`) for accurate client IP rate limiting behind Cloudflare/Render reverse proxies. Added strict regex validation (`/^[a-zA-Z0-9_-]{1,64}$/`) for client-supplied `X-Request-Id` headers to prevent header injection and oversized log entries. Hardened `uncaughtException` handling to trigger controlled, idempotent graceful shutdown (`shutdown('uncaughtException', 1)`) allowing container supervisors to restart cleanly. All verification tests pass and client build clean.
 
 ## Completed Phases
+- ✅ **Phase 30.1 (V29.4.1)**: Trust Proxy Hardening, X-Request-Id Validation & Uncaught Exception Safe Shutdown
+- ✅ **Phase 30 (V29.4.0)**: Request Correlation Tracing, Process Crash Resilience, AI Quota Defense & Database Index Optimization
+- ✅ **Phase 29.3**: Performance Tuning, Dead Code Cleanup & AI Scan Triage Activation
+- ✅ **Phase 29.2**: Codebase Refactoring, Admin Page Modularization, and Multi-tenant Stability Fixes
 - ✅ **Phase 29**: User Dashboard Redesign & Grouped Navigation Architecture (Clean Cyber SOC Workspace)
 - ✅ **Phase 28**: Final Production Launch & Custom Domain Activation (`cybershieldx.in`)
 - ✅ **Milestone 1**: Core Decoupling (Auth/Users)
