@@ -30,6 +30,10 @@ export default function DashboardPage() {
     return allTools.filter(tool => tool.status === TOOL_STATUS.LIVE || tool.status === TOOL_STATUS.PARTIAL);
   }, [allTools]);
 
+  const liveToolsCount = useMemo(() => {
+    return allTools.filter(tool => tool.status === TOOL_STATUS.LIVE).length;
+  }, [allTools]);
+
   // Dynamic Time of Day Greeting
   const greeting = useMemo(() => {
     const hour = new Date().getHours();
@@ -213,7 +217,7 @@ export default function DashboardPage() {
           <div className="flex justify-between items-start mb-3">
             <span className="text-2xl">⚡</span>
             <span className="text-[9px] text-emerald-400 font-bold px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
-              14 LIVE
+              {liveToolsCount} LIVE
             </span>
           </div>
           <p className="text-[10px] text-cyber-muted uppercase tracking-widest mb-1">REGISTERED MODELS</p>
@@ -598,7 +602,7 @@ export default function DashboardPage() {
           <div className="p-8 text-center rounded-xl bg-white/[0.01] border border-white/5 space-y-2">
             <p className="text-xs text-cyber-muted">No recent security scan runs recorded yet.</p>
             <p className="text-[10px] text-cyber-muted/60">
-              Use the Quick Target Scan above or select any of the 14 live tools to perform your first audit.
+              Use the Quick Target Scan above or select any of the {liveToolsCount} live tools to perform your first audit.
             </p>
           </div>
         )}

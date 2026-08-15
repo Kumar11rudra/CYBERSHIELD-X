@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [v29.4.1] - 2026-08-16
+## [v30.0.0] - 2026-08-16
+### Phase 31: Partial-to-Live Security Catalog Expansion (16 Live Models)
+- **AI Remediation Planner Live Activation**: Transitioned `remediation` tool to `TOOL_STATUS.LIVE`. Upgraded `server/services/remediationService.js` to reuse shared `cache.js` (24h TTL) with Gemini 2.5 Flash, deterministic NVD signature fallbacks, and IDOR ownership authorization.
+- **Threat Breach Checker Live Activation**: Transitioned `breach` tool to `TOOL_STATUS.LIVE`. Implemented SHA-1 k-Anonymity range queries (NIST SP 800-63B) in `server/services/breachService.js` with zero-knowledge password caching guarantees, 1-hour cache on prefix ranges, and email/phone checks.
+- **Authoritative Catalog Expansion**: Reconciled the security catalog from 14 Live Models to **16 Live Models** (16 LIVE / 0 PARTIAL / 94 UPCOMING).
+- **Dashboard Dynamic Derivation**: Dynamically computed live model counts across dashboard views from the authoritative registry.
+- **Verification**: Created `server/scripts/test_phase31_live_models.js` passing all live model assertions.
 ### Production Hardening Maintenance Patch
 - **Trust Proxy Hardening**: Configured `app.set('trust proxy', 1)` in `server/index.js` for accurate originating client IP resolution and per-client rate limit accounting behind Cloudflare Pages / Render reverse proxies.
 - **X-Request-Id Validation**: Enforced strict regex validation (`/^[a-zA-Z0-9_-]{1,64}$/`) for incoming `X-Request-Id` headers to eliminate header injection and oversized log payloads; falls back cleanly to server-generated UUIDs on invalid inputs.
