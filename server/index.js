@@ -233,7 +233,8 @@ const globalLimiter = rateLimit({
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20, // Strict for auth
+  max: 120, // Accommodates interactive availability checks & form validations
+  skip: (req) => req.method === 'OPTIONS' || req.path === '/check-username' || req.path === '/me',
   message: { error: 'Too many login/signup attempts. Try again later.' },
   handler: createRateLimitHandler('auth')
 });

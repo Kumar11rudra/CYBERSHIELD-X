@@ -176,19 +176,7 @@ export default function SignupPage() {
       return;
     }
 
-    // Extra validation: Password breach check
     setLoading(true);
-    try {
-      const res = await api.post('/auth/password-check', { password: form.password });
-      if (res.data.isPwned) {
-        newErrors.password = 'This password has appeared in a data breach. Please choose a stronger password.';
-        setErrors(newErrors);
-        setLoading(false);
-        return;
-      }
-    } catch (err) {
-      console.error('Breach check failed:', err);
-    }
 
     const fullMobile = `${form.countryCode}${cleanPhone}`;
     try {

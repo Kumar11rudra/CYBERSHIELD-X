@@ -3,24 +3,32 @@
  */
 export const captureBrowserLocation = () => {
   return new Promise((resolve) => {
-    if (!navigator.geolocation) {
+    if (typeof window === 'undefined' || !navigator.geolocation) {
       return resolve(null);
     }
 
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        resolve({
-          lat: pos.coords.latitude,
-          lon: pos.coords.longitude,
-          accuracy: pos.coords.accuracy,
-        });
-      },
-      (error) => {
-        console.warn('[LOCATION] Permission denied or unavailable:', error.message);
-        resolve(null);
-      },
-      { timeout: 5000 }
-    );
+    const timer = setTimeout(() => resolve(null), 400);
+
+    try {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          clearTimeout(timer);
+          resolve({
+            lat: pos.coords.latitude,
+            lon: pos.coords.longitude,
+            accuracy: pos.coords.accuracy,
+          });
+        },
+        () => {
+          clearTimeout(timer);
+          resolve(null);
+        },
+        { timeout: 350, maximumAge: 60000 }
+      );
+    } catch {
+      clearTimeout(timer);
+      resolve(null);
+    }
   });
 };
 
