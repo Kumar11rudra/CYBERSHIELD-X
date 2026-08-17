@@ -1,35 +1,57 @@
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <!-- Radial Background Gradient -->
+    <!-- Deep Space Radial Background -->
     <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#05152e"/>
-      <stop offset="70%" stop-color="#020814"/>
-      <stop offset="100%" stop-color="#01040a"/>
+      <stop offset="0%" stop-color="#071b38"/>
+      <stop offset="60%" stop-color="#020814"/>
+      <stop offset="100%" stop-color="#010308"/>
     </radialGradient>
 
-    <!-- Neon Cyber Gradient -->
-    <linearGradient id="cyberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00d4ff"/>
-      <stop offset="50%" stop-color="#00e5ff"/>
+    <!-- Electric Cyan to Emerald Neon Gradient -->
+    <linearGradient id="neonGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff"/>
+      <stop offset="45%" stop-color="#0099ff"/>
       <stop offset="100%" stop-color="#00ff88"/>
     </linearGradient>
 
-    <!-- Reverse Gradient for Accents -->
-    <linearGradient id="cyberGradRev" x1="100%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#00ff88"/>
-      <stop offset="100%" stop-color="#00d4ff"/>
+    <linearGradient id="neonGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00ffaa"/>
+      <stop offset="55%" stop-color="#00d4ff"/>
+      <stop offset="100%" stop-color="#0055ff"/>
     </linearGradient>
 
-    <!-- Shield Inner Fill Gradient -->
-    <linearGradient id="shieldFill" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#071b38"/>
-      <stop offset="100%" stop-color="#020914"/>
+    <!-- Faceted Dark Metal Armor Gradients -->
+    <linearGradient id="armorLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0c2548"/>
+      <stop offset="60%" stop-color="#06152b"/>
+      <stop offset="100%" stop-color="#020813"/>
     </linearGradient>
 
-    <!-- Glowing Filters -->
-    <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="8" result="blur1"/>
-      <feGaussianBlur stdDeviation="16" result="blur2"/>
+    <linearGradient id="armorRight" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#091d38"/>
+      <stop offset="60%" stop-color="#040e1f"/>
+      <stop offset="100%" stop-color="#01050d"/>
+    </linearGradient>
+
+    <!-- Faceted 'X' Blade Gradients -->
+    <linearGradient id="xBlade1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="25%" stop-color="#70eaff"/>
+      <stop offset="70%" stop-color="#0099ff"/>
+      <stop offset="100%" stop-color="#0033aa"/>
+    </linearGradient>
+
+    <linearGradient id="xBlade2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="25%" stop-color="#a3ffdb"/>
+      <stop offset="70%" stop-color="#00d488"/>
+      <stop offset="100%" stop-color="#004d2e"/>
+    </linearGradient>
+
+    <!-- Intense Holographic Glows -->
+    <filter id="hyperGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur1"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="22" result="blur2"/>
       <feMerge>
         <feMergeNode in="blur2"/>
         <feMergeNode in="blur1"/>
@@ -37,77 +59,119 @@
       </feMerge>
     </filter>
 
-    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="4" result="blur"/>
-      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
     </filter>
+
+    <!-- Clean boundary clip -->
+    <clipPath id="squircleClip">
+      <rect width="512" height="512" rx="112"/>
+    </clipPath>
   </defs>
 
-  <!-- Circular Base Icon Background for high visibility on light & dark search engines -->
-  <rect width="512" height="512" rx="110" fill="url(#bgGrad)"/>
-  <rect width="504" height="504" x="4" y="4" rx="106" fill="none" stroke="url(#cyberGrad)" stroke-width="4" opacity="0.35"/>
+  <g clip-path="url(#squircleClip)">
+    <!-- Base Icon Background -->
+    <rect width="512" height="512" fill="url(#bgGrad)"/>
 
-  <!-- Subtle Cyber Grid in Icon Background -->
-  <g opacity="0.08" stroke="#00d4ff" stroke-width="1.5">
-    <line x1="128" y1="0" x2="128" y2="512"/>
-    <line x1="256" y1="0" x2="256" y2="512"/>
-    <line x1="384" y1="0" x2="384" y2="512"/>
-    <line x1="0" y1="128" x2="512" y2="128"/>
-    <line x1="0" y1="256" x2="512" y2="256"/>
-    <line x1="0" y1="384" x2="512" y2="384"/>
+    <!-- Outer Neon Border Rim -->
+    <rect width="504" height="504" x="4" y="4" rx="108" fill="none" stroke="url(#neonGrad1)" stroke-width="3" opacity="0.5"/>
+
+    <!-- Cyber Matrix Hex / Grid Overlay -->
+    <g opacity="0.08" stroke="#00d4ff" stroke-width="1.5">
+      <line x1="0" y1="128" x2="512" y2="128"/>
+      <line x1="0" y1="256" x2="512" y2="256"/>
+      <line x1="0" y1="384" x2="512" y2="384"/>
+      <line x1="128" y1="0" x2="128" y2="512"/>
+      <line x1="256" y1="0" x2="256" y2="512"/>
+      <line x1="384" y1="0" x2="384" y2="512"/>
+    </g>
+
+    <!-- Ambient Pulsing Core Light -->
+    <circle cx="256" cy="245" r="160" fill="#00d4ff" opacity="0.16" filter="url(#hyperGlow)"/>
+    <circle cx="256" cy="245" r="90" fill="#00ff88" opacity="0.14" filter="url(#hyperGlow)"/>
+
+    <!-- ═════════ 3D FACETED STEALTH SHIELD ═════════ -->
+    <!-- Outer Glow Outline Path -->
+    <path
+      d="M256 38 L438 108 L396 300 C374 382 256 468 256 468 C256 468 138 382 116 300 L74 108 Z"
+      fill="none"
+      stroke="url(#neonGrad1)"
+      stroke-width="12"
+      stroke-linejoin="miter"
+      filter="url(#softGlow)"
+    />
+
+    <!-- Shield Left Facet Plate -->
+    <path
+      d="M256 46 L82 114 L122 295 C142 370 256 450 256 450 Z"
+      fill="url(#armorLeft)"
+    />
+
+    <!-- Shield Right Facet Plate -->
+    <path
+      d="M256 46 L430 114 L390 295 C370 370 256 450 256 450 Z"
+      fill="url(#armorRight)"
+    />
+
+    <!-- Center Shield Crease Spine Highlight -->
+    <line x1="256" y1="46" x2="256" y2="450" stroke="#00f0ff" stroke-width="2" opacity="0.6"/>
+
+    <!-- Inner Angular Shield Cutouts & Tactical Wings -->
+    <path
+      d="M256 82 L388 134 L356 280 C340 338 256 406 256 406 C256 406 172 338 156 280 L124 134 Z"
+      fill="none"
+      stroke="url(#neonGrad2)"
+      stroke-width="4"
+      stroke-dasharray="14 8"
+      opacity="0.6"
+    />
+
+    <!-- Corner Chevron Defense Accents -->
+    <g stroke="#00f0ff" stroke-width="3.5" fill="none" opacity="0.8">
+      <path d="M148 158 L180 148 L170 180"/>
+      <path d="M364 158 L332 148 L342 180"/>
+      <path d="M168 290 L188 322 L158 318"/>
+      <path d="M344 290 L324 322 L354 318"/>
+    </g>
+
+    <!-- ═════════ THE SUPREME DIAMOND 'X' CYBER CORE ═════════ -->
+    <!-- Back Energy Glow for the X -->
+    <g filter="url(#hyperGlow)" opacity="0.85">
+      <path d="M152 142 L212 142 L360 338 L300 338 Z" fill="url(#neonGrad1)"/>
+      <path d="M360 142 L300 142 L152 338 L212 338 Z" fill="url(#neonGrad2)"/>
+    </g>
+
+    <!-- Sharp Diamond-Faceted Primary 'X' Wings -->
+    <!-- Top-Left Wing -->
+    <polygon points="154,144 216,144 256,218 226,240 154,144" fill="url(#xBlade1)"/>
+    <!-- Top-Right Wing -->
+    <polygon points="358,144 296,144 256,218 286,240 358,144" fill="url(#xBlade2)"/>
+    <!-- Bottom-Left Wing -->
+    <polygon points="154,336 216,336 256,262 226,240 154,336" fill="url(#xBlade2)"/>
+    <!-- Bottom-Right Wing -->
+    <polygon points="358,336 296,336 256,262 286,240 358,336" fill="url(#xBlade1)"/>
+
+    <!-- Center Razor Diamond Facet Overlap -->
+    <polygon points="256,198 292,240 256,282 220,240" fill="#010611" stroke="url(#neonGrad1)" stroke-width="4"/>
+
+    <!-- Central Glowing Hyper-Core Power Node -->
+    <circle cx="256" cy="240" r="10" fill="#ffffff" filter="url(#softGlow)"/>
+    <circle cx="256" cy="240" r="5" fill="#00ffaa"/>
+
+    <!-- Futuristic Tactical Targeting Crosshairs around Core -->
+    <g stroke="#00f0ff" stroke-width="2.5" opacity="0.9">
+      <line x1="256" y1="180" x2="256" y2="192"/>
+      <line x1="256" y1="288" x2="256" y2="300"/>
+      <line x1="196" y1="240" x2="210" y2="240"/>
+      <line x1="302" y1="240" x2="316" y2="240"/>
+    </g>
+
+    <!-- Subtle Laser HUD Arcs around Center -->
+    <path d="M224 214 A 42 42 0 0 1 288 214" fill="none" stroke="#00ff88" stroke-width="3" stroke-dasharray="6 4" opacity="0.85"/>
+    <path d="M288 266 A 42 42 0 0 1 224 266" fill="none" stroke="#00d4ff" stroke-width="3" stroke-dasharray="6 4" opacity="0.85"/>
   </g>
-
-  <!-- Ambient Glow Behind Shield -->
-  <circle cx="256" cy="240" r="140" fill="#00d4ff" opacity="0.12" filter="url(#neonGlow)"/>
-
-  <!-- Outer Cyber Shield Body -->
-  <path
-    d="M256 46 L430 114 L430 286 C430 380 256 458 256 458 C256 458 82 380 82 286 L82 114 Z"
-    fill="url(#shieldFill)"
-    stroke="url(#cyberGrad)"
-    stroke-width="16"
-    stroke-linejoin="round"
-    filter="url(#softGlow)"
-  />
-
-  <!-- Inner High-Tech Shield Trim -->
-  <path
-    d="M256 78 L398 134 L398 276 C398 350 256 422 256 422 C256 422 114 350 114 276 L114 134 Z"
-    fill="none"
-    stroke="url(#cyberGradRev)"
-    stroke-width="5"
-    opacity="0.5"
-    stroke-dasharray="16 8"
-  />
-
-  <!-- Circuit Connection Tracks (Left Side) -->
-  <g stroke="#00d4ff" stroke-width="4" fill="none" opacity="0.8">
-    <path d="M140 190 L180 190 L205 215"/>
-    <circle cx="140" cy="190" r="6" fill="#00d4ff"/>
-    <path d="M130 270 L170 270 L195 245"/>
-    <circle cx="130" cy="270" r="6" fill="#00d4ff"/>
-  </g>
-
-  <!-- Radar Arc Tracks (Right Side) -->
-  <g stroke="#00ff88" stroke-width="3" fill="none" opacity="0.7">
-    <path d="M340 180 A 90 90 0 0 1 380 270" stroke-dasharray="8 6"/>
-    <circle cx="370" cy="225" r="5" fill="#00ff88"/>
-  </g>
-
-  <!-- The Bold Central 'X' Symbol (Outer Neon Cyan/Green) -->
-  <path
-    d="M176 172 L234 246 L176 320 L214 320 L256 266 L298 320 L336 320 L278 246 L336 172 L298 172 L256 226 L214 172 Z"
-    fill="url(#cyberGrad)"
-    filter="url(#neonGlow)"
-  />
-
-  <!-- Inner Bright White Core of 'X' for High Legibility at 16px and 48px -->
-  <path
-    d="M188 180 L238 246 L188 312 L206 312 L256 252 L306 312 L324 312 L274 246 L324 180 L306 180 L256 240 L206 180 Z"
-    fill="#ffffff"
-  />
-
-  <!-- Center Security Core Anchor -->
-  <circle cx="256" cy="246" r="14" fill="#020814" stroke="url(#cyberGrad)" stroke-width="3"/>
-  <circle cx="256" cy="246" r="5" fill="#00ff88"/>
 </svg>

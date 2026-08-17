@@ -1,6 +1,9 @@
 import React from 'react';
 
-export default function BrandLogo({ size = 40, className = "" }) {
+export default function BrandLogo({ size = 40, className = "", color }) {
+  const grad1 = color ? color : "#00f0ff";
+  const grad2 = color ? color : "#00ff88";
+
   return (
     <svg
       width={size}
@@ -8,86 +11,99 @@ export default function BrandLogo({ size = 40, className = "" }) {
       viewBox="0 0 100 100"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={`${className} cyber-logo-animate`}
+      className={`${className} cyber-brand-logo`}
+      style={{ display: 'inline-block', verticalAlign: 'middle' }}
     >
-      <style>
-        {`
-          @keyframes nodePulse {
-            0%, 100% { opacity: 0.4; r: 1.5; }
-            50% { opacity: 1; r: 2.5; }
-          }
-          @keyframes radarRotate {
-            from { transform: rotate(0deg); transform-origin: center; }
-            to { transform: rotate(360deg); transform-origin: center; }
-          }
-          @keyframes shieldBreath {
-            0%, 100% { filter: drop-shadow(0 0 5px rgba(0,212,255,0.2)); }
-            50% { filter: drop-shadow(0 0 15px rgba(0,212,255,0.5)); }
-          }
-          .animate-node { animation: nodePulse 2s infinite ease-in-out; }
-          .animate-radar { animation: radarRotate 10s infinite linear; }
-          .animate-shield { animation: shieldBreath 4s infinite ease-in-out; }
-        `}
-      </style>
       <defs>
-        <linearGradient id="shieldGrad" x1="0" y1="0" x2="100" y2="0">
-          <stop offset="50%" stopColor="#00d4ff" />
-          <stop offset="50%" stopColor="#00ff88" />
+        <linearGradient id={`brandNeon1_${size}`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={grad1} />
+          <stop offset="50%" stopColor="#0099ff" />
+          <stop offset="100%" stopColor={grad2} />
         </linearGradient>
-        <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="4" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
-        <filter id="heavyGlow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="2" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+
+        <linearGradient id={`brandArmorL_${size}`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#0c2548" />
+          <stop offset="100%" stopColor="#020813" />
+        </linearGradient>
+
+        <linearGradient id={`brandArmorR_${size}`} x1="100%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#091d38" />
+          <stop offset="100%" stopColor="#01050d" />
+        </linearGradient>
+
+        <linearGradient id={`brandBlade1_${size}`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="40%" stopColor="#70eaff" />
+          <stop offset="100%" stopColor="#0066cc" />
+        </linearGradient>
+
+        <linearGradient id={`brandBlade2_${size}`} x1="100%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="40%" stopColor="#a3ffdb" />
+          <stop offset="100%" stopColor="#00aa66" />
+        </linearGradient>
+
+        <filter id={`brandGlow_${size}`} x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="1.8" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
         </filter>
       </defs>
 
-      {/* Outer Shield Outline */}
+      {/* Outer Glow Shield Rim */}
       <path
-        d="M50 5 L90 20 L90 60 C90 80 50 95 50 95 C50 95 10 80 10 60 L10 20 Z"
-        stroke="url(#shieldGrad)"
-        strokeWidth="4"
-        fill="rgba(5, 10, 20, 0.8)"
-        filter="url(#neonGlow)"
-        className="animate-shield"
-      />
-
-      {/* Inner Shield Trim */}
-      <path
-        d="M50 14 L82 25 L82 58 C82 72 50 85 50 85 C50 85 18 72 18 58 L18 25 Z"
-        stroke="url(#shieldGrad)"
-        strokeWidth="1.5"
+        d="M50 8 L86 22 L78 60 C74 76 50 92 50 92 C50 92 26 76 22 60 L14 22 Z"
         fill="none"
-        opacity="0.6"
+        stroke={`url(#brandNeon1_${size})`}
+        strokeWidth="3.5"
+        strokeLinejoin="miter"
+        filter={`url(#brandGlow_${size})`}
       />
 
-      {/* Circuit Nodes (Left Blue Side) */}
-      <circle cx="25" cy="35" r="1.5" fill="#00d4ff" filter="url(#neonGlow)" className="animate-node" />
-      <path d="M25 35 L35 35 L40 40" stroke="#00d4ff" strokeWidth="1" fill="none" opacity="0.6" />
-      <circle cx="28" cy="50" r="1.5" fill="#00d4ff" filter="url(#neonGlow)" className="animate-node" style={{ animationDelay: '0.5s' }} />
-      <path d="M28 50 L35 50 L40 45" stroke="#00d4ff" strokeWidth="1" fill="none" opacity="0.6" />
-
-      {/* Radar arcs (Right Green Side) - now rotating */}
-      <g className="animate-radar">
-        <path d="M70 30 A 25 25 0 0 1 80 50" stroke="#00ff88" strokeWidth="1" strokeDasharray="2 4" fill="none" opacity="0.6" />
-        <path d="M60 25 A 35 35 0 0 1 85 60" stroke="#00ff88" strokeWidth="1" strokeDasharray="1 6" fill="none" opacity="0.3" />
-      </g>
-
-      {/* The Central 'X' Symbol */}
+      {/* Shield Left Facet */}
       <path
-        d="M30 35 L45 50 L30 65 L40 65 L50 55 L60 65 L70 65 L55 50 L70 35 L60 35 L50 45 L40 35 Z"
-        fill="url(#shieldGrad)"
-        filter="url(#heavyGlow)"
-      />
-      <path
-        d="M34 37 L45 48 L45 52 L34 63 L38 63 L50 51 L62 63 L66 63 L55 52 L55 48 L66 37 L62 37 L50 49 L38 37 Z"
-        fill="#ffffff"
+        d="M50 10 L16 23 L23 59 C27 74 50 89 50 89 Z"
+        fill={`url(#brandArmorL_${size})`}
       />
 
-      {/* Keyhole dead center over the X */}
-      <path d="M50 46 A 3.5 3.5 0 1 0 50 52 L 47 57.5 L 53 57.5 Z" fill="#050a14" />
+      {/* Shield Right Facet */}
+      <path
+        d="M50 10 L84 23 L77 59 C73 74 50 89 50 89 Z"
+        fill={`url(#brandArmorR_${size})`}
+      />
+
+      {/* Spine */}
+      <line x1="50" y1="10" x2="50" y2="89" stroke="#00f0ff" strokeWidth="0.8" opacity="0.6" />
+
+      {/* Inner Angular Dashes */}
+      <path
+        d="M50 18 L76 28 L70 56 C67 67 50 80 50 80 C50 80 33 67 30 56 L24 28 Z"
+        fill="none"
+        stroke={grad1}
+        strokeWidth="1"
+        strokeDasharray="3 2"
+        opacity="0.5"
+      />
+
+      {/* 3D Faceted Diamond X Blades */}
+      {/* Top-Left to Bottom-Right */}
+      <polygon points="30,28 42,28 70,68 58,68" fill={`url(#brandBlade1_${size})`} />
+      {/* Top-Right to Bottom-Left */}
+      <polygon points="70,28 58,28 30,68 42,68" fill={`url(#brandBlade2_${size})`} />
+
+      {/* Center Razor Diamond */}
+      <polygon
+        points="50,39 57,48 50,57 43,48"
+        fill="#010611"
+        stroke={`url(#brandNeon1_${size})`}
+        strokeWidth="1.2"
+      />
+
+      {/* Central Core Light */}
+      <circle cx="50" cy="48" r="2.2" fill="#ffffff" />
+      <circle cx="50" cy="48" r="1.2" fill={grad2} />
     </svg>
   );
 }

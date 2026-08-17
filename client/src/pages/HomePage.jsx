@@ -220,52 +220,48 @@ export default function HomePage() {
       <ScanLine />
       <LiveTicker />
 
-      {/* ── TOP-LEFT BRAND LOCKUP WITH VERSION ── */}
-      <div style={{ position: 'fixed', top: 12, left: 16, zIndex: 50 }}>
-        <Link
-          to="/"
+      {/* ── BOTTOM-LEFT TACTICAL VERSION HUD BADGE ── */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 20,
+          left: 20,
+          zIndex: 40,
+          pointerEvents: 'auto',
+        }}
+      >
+        <div
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 10,
-            textDecoration: 'none',
-            background: 'rgba(2, 8, 20, 0.90)',
-            backdropFilter: 'blur(16px)',
+            gap: 8,
+            background: 'rgba(2, 8, 20, 0.88)',
+            backdropFilter: 'blur(14px)',
             border: '1px solid rgba(0, 212, 255, 0.25)',
-            padding: '7px 14px',
-            borderRadius: 12,
-            boxShadow: '0 0 25px rgba(0, 212, 255, 0.15)',
-            transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = 'rgba(0, 212, 255, 0.6)';
-            e.currentTarget.style.boxShadow = '0 0 30px rgba(0, 212, 255, 0.3)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = 'rgba(0, 212, 255, 0.25)';
-            e.currentTarget.style.boxShadow = '0 0 25px rgba(0, 212, 255, 0.15)';
+            padding: '6px 14px',
+            borderRadius: 10,
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 212, 255, 0.1)',
+            fontFamily: '"JetBrains Mono", monospace',
+            fontSize: 11,
+            letterSpacing: 1,
           }}
         >
-          <BrandLogo size={24} />
-          <span style={{ fontFamily: 'Orbitron, monospace', fontWeight: 900, fontSize: 13, letterSpacing: 1.5, color: '#ffffff' }}>
-            CYBERSHIELD X
-          </span>
           <span
             style={{
-              fontFamily: '"JetBrains Mono", monospace',
-              fontSize: 10,
-              fontWeight: 700,
-              padding: '2px 7px',
-              borderRadius: 6,
-              background: 'rgba(0, 212, 255, 0.12)',
-              color: '#00d4ff',
-              border: '1px solid rgba(0, 212, 255, 0.35)',
-              letterSpacing: 0.5,
+              width: 7,
+              height: 7,
+              borderRadius: '50%',
+              background: '#00ff88',
+              boxShadow: '0 0 8px #00ff88',
+              display: 'inline-block',
             }}
-          >
-            v33.0.0
+          />
+          <span style={{ color: '#ffffff', fontWeight: 700, fontSize: 10, letterSpacing: '1.5px', fontFamily: 'Orbitron, monospace' }}>
+            CYBERSHIELD X
           </span>
-        </Link>
+          <span style={{ color: 'rgba(0, 212, 255, 0.4)' }}>|</span>
+          <span style={{ fontWeight: 700, color: '#00d4ff' }}>v33.0.0</span>
+        </div>
       </div>
 
       {/* ── HERO ── */}
@@ -314,23 +310,6 @@ export default function HomePage() {
             <GlitchText text="CYBER" color="#e0e6ff" />
             <span className="glow-text" style={{ color: '#00bfff', marginLeft: '0.18em', textShadow: '0 0 40px rgba(0,191,255,0.8), 0 0 80px rgba(0,191,255,0.4)' }}> SHIELD</span>
             <span style={{ color: '#00ff88', fontSize: '0.6em', marginLeft: '0.2em', verticalAlign: 'middle', textShadow: '0 0 20px rgba(0,255,136,0.8)' }}>X</span>
-            <span
-              style={{
-                fontSize: 'clamp(10px, 1.2vw, 13px)',
-                fontFamily: '"JetBrains Mono", monospace',
-                fontWeight: 700,
-                padding: '4px 10px',
-                borderRadius: '8px',
-                background: 'rgba(0,212,255,0.12)',
-                border: '1px solid rgba(0,212,255,0.35)',
-                color: '#00d4ff',
-                letterSpacing: '1px',
-                verticalAlign: 'middle',
-                marginLeft: '14px',
-              }}
-            >
-              v33.0.0
-            </span>
           </motion.h1>
 
           {/* Platform Sub-Branding: Next-Gen Threat Intelligence */}
