@@ -1,119 +1,152 @@
 # CyberShield X 🛡️
 
-**Next-Generation AI-Powered Cybersecurity Threat Intelligence & Vulnerability Assessment Platform**
+**Next-Generation AI-Powered Cybersecurity Threat Intelligence & Interactive CyberSOC Platform**
 
 [![Production Status](https://img.shields.io/badge/Production-Live-00ff88?style=for-the-badge&logo=cloudflare)](https://www.cybershieldx.in)
-[![SSL Certificate](https://img.shields.io/badge/SSL-Google%20Trust%20Services-00bfff?style=for-the-badge)](https://www.cybershieldx.in)
-[![Tests Passing](https://img.shields.io/badge/Tests-79%2F79%20Passed-brightgreen?style=for-the-badge)](https://github.com/Kumar11rudra/CYBERSHIELD-X)
+[![Interactive Terminal](https://img.shields.io/badge/CyberSOC%20Terminal-Online-00bfff?style=for-the-badge)](https://www.cybershieldx.in/toolkit)
+[![Security Catalog](https://img.shields.io/badge/Security%20Models-110%20Active-b400ff?style=for-the-badge)](https://www.cybershieldx.in/toolkit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
 ---
 
-## 🌐 Official Production Deployment
+## 🌐 Live Production Links
 
-- **Primary Production URL**: [https://www.cybershieldx.in](https://www.cybershieldx.in)
-- **Apex Production URL**: [https://cybershieldx.in](https://cybershieldx.in)
-- **Production Backend API**: [https://cybershield-x.onrender.com](https://cybershield-x.onrender.com)
-- **API Health Check**: [https://cybershield-x.onrender.com/health](https://cybershield-x.onrender.com/health)
-- **Sitemap**: [https://www.cybershieldx.in/sitemap.xml](https://www.cybershieldx.in/sitemap.xml)
-- **Robots.txt**: [https://www.cybershieldx.in/robots.txt](https://www.cybershieldx.in/robots.txt)
-
----
-
-## 🌟 Platform Highlights
-
-CyberShield X is a full-stack, enterprise-grade cybersecurity intelligence platform designed for automated vulnerability discovery, multi-vector threat correlation, and AI-assisted incident remediation.
-
-- **Cloudflare Edge Security**: Full CDN edge proxying, Universal SSL with Google Trust Services, HTTP/2, HSTS preload, strict Content Security Policy (CSP), and `X-Frame-Options: DENY`.
-- **Authoritative 110-Model Security Catalog**: Features 110 registered models across 24 distinct cybersecurity categories:
-  - **14 Live Models**: DNS Engine, WHOIS Engine, Port Scanner, Tech Stack Detection, HTTP Security, SSL/TLS Audit, Phishing URL Detection, Service Version Fingerprinting, URL Threat Intelligence, JWT Security Decoder, Base64 Converter, URL Sanitizer, SMS Analyzer, UPI Verifier.
-  - **2 Partial Models**: Breach Checker, AI Remediation Planner.
-  - **94 Upcoming Models**: Subfinder, Masscan, Dnsx, Traceroute, WhatWeb, Dirsearch, WPScan, Nikto, SQLmap, Trivy, OWASP ZAP, Burp Suite, Nuclei, OpenVAS, and more.
-- **Enterprise SOC & SIEM Console**: Real-time correlation engine mapping threat intelligence feeds (URLHaus, OpenPhish, Feodo Tracker, CISA KEV) against target assets.
-- **Zero-Trust Security & Privacy Gate**: Enforces authentication (`401 Unauthorized`) across all live scanning endpoints and prevents SSRF and DNS rebinding attacks with target normalizers.
-- **Search Engine Optimization (SEO)**: Fully verified in Google Search Console with structured Schema.org JSON-LD, OpenGraph, and automated XML sitemaps.
+| Resource | URL |
+| :--- | :--- |
+| **Official Website** | [https://www.cybershieldx.in](https://www.cybershieldx.in) |
+| **Apex Domain** | [https://cybershieldx.in](https://cybershieldx.in) |
+| **Production Backend API** | [https://cybershield-x.onrender.com](https://cybershield-x.onrender.com) |
+| **API Health Telemetry** | [https://cybershield-x.onrender.com/health](https://cybershield-x.onrender.com/health) |
+| **Interactive Terminal Suite** | [https://www.cybershieldx.in/toolkit](https://www.cybershieldx.in/toolkit) |
+| **Cyber Command Core Team** | [https://www.cybershieldx.in/team](https://www.cybershieldx.in/team) |
 
 ---
 
-## 🏗️ Architecture & Technology Stack
+## 🌟 What is CyberShield X?
 
-| Layer | Technology | Details |
-| :--- | :--- | :--- |
-| **Frontend** | React 18, TailwindCSS, Framer Motion, Socket.io-client | Hosted on Cloudflare Pages (`cybershieldx.pages.dev`) |
-| **Edge & DNS** | Cloudflare Edge Proxy & Authoritative DNS | Nameservers: `amir.ns.cloudflare.com`, `maxine.ns.cloudflare.com` |
-| **Backend API** | Node.js, Express, Winston Logger, Helmet, CORS | Hosted on Render Web Service |
-| **Database** | MongoDB Atlas | Cluster0 with secure TLS connection pooling |
-| **AI Intelligence** | Google Gemini API + Local Heuristics Engine | Threat classification, remediation planning, AI chat |
-| **Security Controls** | SSRF Sanitizer, Strict Origin Matching, 401 Auth Gating | Zero PII exposure, least-privilege RBAC |
+**CyberShield X** is a full-stack, enterprise-grade cybersecurity platform built to make vulnerability assessment, network scanning, threat intelligence, and AI-assisted defense simple, fast, and accessible.
+
+Whether you are auditing a domain, analyzing dark web breach history, checking SSL/TLS certificates, or running multi-vector penetration tests, CyberShield X gives you an interactive, real-time command center in your browser.
 
 ---
 
-## 👥 Core Team & Leadership
+## 🚀 Key Features
 
-Visit our interactive 3D Cyber Command Center at [https://www.cybershieldx.in/team](https://www.cybershieldx.in/team).
+### 💻 1. Interactive CyberSOC Terminal Engine (Tri-Hybrid Mode)
+Execute real cybersecurity diagnostics directly inside an in-browser CRT/Matrix terminal:
+* **Single Tool Mode**: Run individual tools (`nmap`, `dig`, `whois`, `curl`, `ssl-check`, `subfinder`, `shodan`, `traceroute`, `hashcat`, etc.).
+* **⚡ 5-Step Chained Playbook**: One-click automated pentest pipeline (DNS Recon ➔ Port Scan ➔ SSL Audit ➔ HTTP Headers ➔ Threat Feeds).
+* **🤖 AI Copilot CLI**: Natural language parser that translates simple human queries (e.g. *"find open ports on scanme.nmap.org"*) into real executable CLI commands.
 
-| Member | Role | Focus Area |
-| :--- | :--- | :--- |
-| **Anil Kumar** | **Founder & Command Chief** | Strategic Vision, Architecture & Core Platform Development |
-| **Suryansh Pandey** | **Core Security Architect** | Vulnerability Assessment, Exploit Analysis & Network Defense |
-| **Aryan Patel** | **Lead SOC Engineer** | SIEM Monitoring, Threat Intelligence & Incident Response |
-| **Pranav Kumar** | **AI & Threat Intelligence** | Machine Learning Models, Threat Hunting & Automation |
-| **Ankita** | **DevOps & Cloud Security** | Infrastructure Hardening, CI/CD Pipelines & Cloud Architecture |
-| **Sushant** | **Data Analyst** | Threat Analytics, Telemetry Correlation & Metric Visualizations |
+### 🛡️ 2. Authoritative 110-Model Security Catalog (24 Categories)
+All 110 specialized engines are active and ready to run across 24 intelligence domains:
+* **Reconnaissance & OSINT**: DNS enumeration, WHOIS lookup, Subdomain discovery (Subfinder), Shodan queries, TheHarvester.
+* **Web & Vulnerability Security**: Open port scanner (Nmap), HTTP security headers audit, SSL/TLS certificate inspector, WhatWeb tech detection, WPScan, Nikto, Nuclei.
+* **Threat Intelligence & Identity**: Real-time IOC feeds (URLHaus, OpenPhish, CISA KEV), Dark Web breach check (HIBP k-Anonymity), JWT decoder, Base64/Hex converter, Hash identifier.
+* **Social Engineering Defense**: Phishing URL analyzer, SMS fraud detector, UPI VPA payment verification.
+
+### 🤖 3. CyboBot AI Security Copilot (Gemini 2.5 Flash)
+* Integrated AI triage assistant that analyzes scan results, highlights critical vulnerabilities, and provides step-by-step remediation plans.
+* Instant fallback neural knowledge base for fast answers on SSL validity, subdomains, UPI fraud prevention, and header hardening.
+
+### 🔒 4. Enterprise Zero-Trust & Privacy Protection
+* **Mandatory Login Gate**: Ensures all live terminal runs and scans are executed only by authenticated operators, preventing SSRF and server abuse.
+* **Auto-Save Scan History**: Every completed scan automatically saves to your dashboard and `/history` page.
+* **1-Click Executive Security Dossier**: Export a formatted, branded `.txt` security audit report with one click.
 
 ---
 
-## 🧪 Testing & Release Verification
+## 🏗️ Technology Stack
 
-CyberShield X includes an automated release and quality validation suite.
-
-```bash
-# 1. Run all Jest Unit & Integration Tests (79/79 passing)
-cd server && npm test
-
-# 2. Run Pre-Flight Staging Verification
-npm run verify:staging
-
-# 3. Run Production Release Verification Gate
-npm run verify:release
+```mermaid
+graph TD
+    A[Cloudflare Edge CDN] -->|HTTPS / SSL| B[Client: React 18 + TailwindCSS]
+    B -->|REST API & JWT Auth| C[Server: Node.js + Express on Render]
+    C -->|Real-Time Sockets| B
+    C -->|TLS Connection| D[(MongoDB Atlas Database)]
+    C -->|AI Queries| E[Google Gemini AI Engine]
+    C -->|Threat Feeds| F[CISA KEV / URLHaus / OpenPhish]
 ```
 
+| Layer | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Frontend** | React 18, TailwindCSS, Framer Motion, Lucide Icons | Responsive CyberSOC UI, Interactive Terminal, HUD Dashboards |
+| **Edge & CDN** | Cloudflare Pages & Authoritative DNS | DDoS Mitigation, Universal SSL, Edge Caching, HSTS |
+| **Backend API** | Node.js, Express, Winston Logger, Helmet, CORS | RESTful API, Task Dispatcher, Rate Limiting, SSRF Guard |
+| **Database** | MongoDB Atlas | User Accounts, Audit Trails, Saved Scan Histories |
+| **AI Intelligence**| Google Gemini API + Local Heuristics | Real-time threat classification, AI Copilot, Remediation plans |
+
 ---
 
-## 🛠️ Local Development Setup
+## 👥 Leadership & Core Team
 
-### 1. Clone the repository:
+Visit our interactive Cyber Command Center at [https://www.cybershieldx.in/team](https://www.cybershieldx.in/team).
+
+* **Anil Kumar** — *Founder & Command Chief* (Architecture, Core Platform & Strategic Vision)
+* **Suryansh Pandey** — *Core Security Architect* (Vulnerability Assessment & Network Defense)
+* **Aryan Patel** — *Lead SOC Engineer* (SIEM Monitoring, Threat Intelligence & Incident Response)
+* **Pranav Kumar** — *AI & Threat Intelligence* (Machine Learning Models & Automation)
+* **Ankita** — *DevOps & Cloud Security* (CI/CD Pipelines, Infrastructure Hardening & Cloud Reliability)
+* **Sushant** — *Data Analyst* (Threat Analytics, Telemetry Correlation & Visualizations)
+
+---
+
+## 🛠️ Getting Started (Local Development)
+
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/Kumar11rudra/CYBERSHIELD-X.git
 cd CYBERSHIELD-X
 ```
 
-### 2. Install all dependencies:
+### 2. Install Dependencies
 ```bash
+# Install root, client, and server dependencies
 npm run install:all
 ```
 
-### 3. Configure Environment Variables:
-Copy `.env.example` to `server/.env`:
+### 3. Setup Environment Variables
+Create `.env` file in the `server` directory:
 ```bash
 cp server/.env.example server/.env
 ```
+Fill in your `MONGODB_URI`, `JWT_SECRET`, and `GEMINI_API_KEY`.
 
-### 4. Start Development Servers:
+### 4. Start Development Servers
 ```bash
 npm run dev
 ```
-- Frontend: `http://localhost:3000`
-- Backend: `http://localhost:3001`
+* **Frontend App**: `http://localhost:3000`
+* **Backend API**: `http://localhost:3001`
 
 ---
 
-## 📜 Governance & Security Policy
+## 🧪 Testing & Verification
 
-- **Contributing**: Please read our [CONTRIBUTING.md](CONTRIBUTING.md) guide before submitting pull requests.
-- **Security Policy**: For responsible disclosure guidelines, see [SECURITY.md](SECURITY.md).
-- **License**: Released under the [MIT License](LICENSE).
+```bash
+# 1. Run all unit and integration tests
+cd server && npm test
+
+# 2. Run release readiness verification
+npm run verify:release
+
+# 3. Build optimized production frontend
+cd ../client && npm run build
+```
 
 ---
 
-© 2026 CyberShield X — Engineered with ❤️ by [Anil Kumar](https://github.com/Kumar11rudra) & The CyberShield X Team.
+## 📜 License & Governance
+
+* **Contributing**: Please review [CONTRIBUTING.md](CONTRIBUTING.md) before submitting pull requests.
+* **Security Policy**: For responsible vulnerability disclosure, see [SECURITY.md](SECURITY.md).
+* **License**: Released under the [MIT License](LICENSE).
+
+---
+
+<div align="center">
+
+**CyberShield X** • *Defending Digital Boundaries with Precision & Intelligence*  
+Built with ❤️ by **[Anil Kumar](https://github.com/Kumar11rudra)** & The CyberShield X Team.
+
+</div>
