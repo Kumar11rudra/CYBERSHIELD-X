@@ -102,13 +102,13 @@ export default function SecurityCopilot() {
         onClick={toggleChat}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-[#00bfff] text-white shadow-[0_0_20px_rgba(0,191,255,0.4)] flex items-center justify-center z-50 border border-[#00bfff]/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.6)] transition-shadow"
+        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-[#0a1428] text-white shadow-[0_0_25px_rgba(0,191,255,0.5)] flex items-center justify-center z-50 border-2 border-[#00bfff]/70 hover:shadow-[0_0_35px_rgba(0,191,255,0.8)] transition-all overflow-hidden p-1.5"
       >
-        {isOpen ? <X size={24} /> : <Bot size={28} />}
+        {isOpen ? <X size={24} className="text-[#00bfff]" /> : <img src="/bot-avatar.png" alt="Copilot" className="w-full h-full rounded-full object-cover" />}
         
         {/* Notification dot if hasn't opened yet */}
         {!hasOpened && !isOpen && (
-          <span className="absolute top-0 right-0 w-3 h-3 rounded-full bg-red-500 animate-pulse" />
+          <span className="absolute top-1 right-1 w-3 h-3 rounded-full bg-red-500 animate-pulse ring-2 ring-black" />
         )}
       </motion.button>
 
@@ -126,8 +126,8 @@ export default function SecurityCopilot() {
             <div className="p-4 border-b border-[#00bfff]/20 bg-gradient-to-r from-[#020814] to-[#0d1b32] flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <div className="w-10 h-10 rounded-full bg-[#00bfff]/10 flex items-center justify-center border border-[#00bfff]/30">
-                    <Shield size={20} className="text-[#00bfff]" />
+                  <div className="w-10 h-10 rounded-full bg-[#00bfff]/10 flex items-center justify-center border border-[#00bfff]/30 overflow-hidden shadow-[0_0_10px_rgba(0,191,255,0.3)]">
+                    <img src="/bot-avatar.png" alt="Nexus AI" className="w-full h-full object-cover" />
                   </div>
                   <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full shadow-[0_0_8px] ${
                     isAiOffline ? 'bg-amber-500 shadow-amber-500' : 'bg-green-500 shadow-green-500'
@@ -166,8 +166,8 @@ export default function SecurityCopilot() {
                   >
                     {msg.role === 'assistant' && (
                       <div className="flex items-center gap-2 mb-1.5">
-                        <Bot size={12} className="text-[#00bfff]" />
-                        <span className="text-[10px] uppercase tracking-wider text-[#00bfff]/80 font-bold">Nexus AI</span>
+                        <img src="/bot-avatar.png" alt="Nexus AI" className="w-4 h-4 rounded-full object-cover border border-[#00bfff]/50" />
+                        <span className="text-[10px] uppercase tracking-wider text-[#00bfff]/90 font-bold">Nexus AI Copilot</span>
                       </div>
                     )}
                     <div className="whitespace-pre-wrap font-mono leading-relaxed text-[11px]" 

@@ -35,7 +35,7 @@ export default function CopilotChatConsole({
       {/* Header */}
       <div className="border-b border-cyber-border/10 pb-3 mb-3 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <span className="text-lg">🤖</span>
+          <img src="/bot-avatar.png" alt="Copilot" className="w-5 h-5 rounded-full object-cover border border-cyber-accent/40 shadow-[0_0_8px_rgba(0,212,255,0.4)]" />
           <span className="text-xs font-bold text-cyber-text tracking-widest uppercase">
             AI SECURITY COPILOT
           </span>
@@ -82,15 +82,22 @@ export default function CopilotChatConsole({
                 : 'bg-cyber-card border border-cyber-border/10 self-start text-cyber-text'
             }`}
           >
-            <div className="text-[8px] text-cyber-muted uppercase tracking-wider mb-1 font-bold">
-              {msg.sender === 'user' ? 'USER QUERY' : 'COPILOT AGENT'}
+            <div className="text-[8px] text-cyber-muted uppercase tracking-wider mb-1 font-bold flex items-center gap-1.5">
+              {msg.sender === 'user' ? (
+                'USER QUERY'
+              ) : (
+                <>
+                  <img src="/bot-avatar.png" alt="AI" className="w-3.5 h-3.5 rounded-full object-cover inline-block" />
+                  <span className="text-cyber-accent">COPILOT AGENT</span>
+                </>
+              )}
             </div>
             <div className="whitespace-pre-wrap leading-relaxed">{msg.text}</div>
           </div>
         ))}
         {isChatting && (
           <div className="self-start bg-cyber-card border border-cyber-border/10 rounded-lg p-2.5 text-cyber-accent animate-pulse flex items-center gap-2">
-            <span>🤖</span>
+            <img src="/bot-avatar.png" alt="AI" className="w-4 h-4 rounded-full object-cover inline-block" />
             <span className="text-[10px] uppercase tracking-widest">
               Typing triage response...
             </span>
