@@ -36,18 +36,33 @@ const applyAppearance = (settings) => {
   else root.style.fontSize = '16px';
 };
 
+const safeStorage = {
+  getItem: (key, fallback = null) => {
+    try {
+      return localStorage.getItem(key) || fallback;
+    } catch {
+      return fallback;
+    }
+  },
+  setItem: (key, value) => {
+    try {
+      localStorage.setItem(key, value);
+    } catch {}
+  }
+};
+
 export function ThemeProvider({ children }) {
-  const [settings, setSettings] = useState({
+  const [settings, setSettings] = useState(() => ({
     theme: 'night', // Always dark
-    accentColor: localStorage.getItem('csx_accentColor') || '#00d4ff',
-    customAccentHex: localStorage.getItem('csx_customAccentHex') || '#00d4ff',
-    fontSize: localStorage.getItem('csx_fontSize') || 'default',
+    accentColor: safeStorage.getItem('csx_accentColor', '#00d4ff'),
+    customAccentHex: safeStorage.getItem('csx_customAccentHex', '#00d4ff'),
+    fontSize: safeStorage.getItem('csx_fontSize', 'default'),
     globalThreatLevel: 'low', // 'low' | 'high'
-  });
+  }));
 
   useEffect(() => {
     // Clear any saved light theme preference
-    localStorage.setItem('csx_theme', 'night');
+    safeStorage.setItem('csx_theme', 'night');
     applyAppearance(settings);
   }, [settings]);
 
@@ -55,7 +70,7 @@ export function ThemeProvider({ children }) {
     // Don't allow theme changes
     if (key === 'theme') return;
     setSettings(prev => ({ ...prev, [key]: value }));
-    localStorage.setItem(`csx_${key}`, value);
+    safeStorage.setItem(`csx_${key}`, value);
   };
 
   const value = useMemo(() => ({

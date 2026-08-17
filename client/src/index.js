@@ -12,18 +12,30 @@ root.render(
   </React.StrictMode>
 );
 
-// PWA: Service Worker Registration (Phase 7)
+// PWA & Cache Management: Clean up legacy Service Workers and cached assets
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    if (process.env.NODE_ENV === 'production') {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then((reg) => console.log('SW Registered:', reg.scope))
-        .catch((err) => console.warn('SW Register Failed:', err));
-      return;
-    }
-
     navigator.serviceWorker.getRegistrations()
-      .then((registrations) => Promise.all(registrations.map((registration) => registration.unregister())))
-      .catch((err) => console.warn('SW Cleanup Failed:', err));
+      .then((registrations) => {
+        registrations.forEach((registration) => {
+          registration.unregister().then((unregistered) => {
+            if (unregistered) {
+              console.log('[SW] Legacy service worker unregistered successfully.');
+            }
+          });
+        });
+      })
+      .catch((err) => console.warn('[SW] Cleanup error:', err));
+
+    if ('caches' in window) {
+      caches.keys().then((names) => {
+        names.forEach((name) => {
+          if (name.startsWith('cybershield')) {
+            caches.delete(name);
+          }
+        });
+      }).catch(() => {});
+    }
   });
 }
+

@@ -1,49 +1,29 @@
-const CACHE_NAME = 'cybershield-v1';
-const URLS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/favicon.svg',
-  '/manifest.json'
-];
+/**
+ * CyberShield X — Self-Purging Service Worker
+ * Ensures all legacy caches (including stale index.html) are deleted immediately
+ * and all client requests are routed directly to the network.
+ */
 
-// Install Service Worker
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Opened cache');
-        return cache.addAll(URLS_TO_CACHE);
-      })
-  );
+  self.skipWaiting();
 });
 
-// Cache and return requests
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      }
-    )
-  );
-});
-
-// Update Service Worker
 self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
+          console.log('[SW] Purging legacy cache:', cacheName);
+          return caches.delete(cacheName);
         })
       );
+    }).then(() => {
+      return self.clients.claim();
     })
   );
+});
+
+// Pass all requests directly to network to avoid stale SPA chunks
+self.addEventListener('fetch', (event) => {
+  event.respondWith(fetch(event.request));
 });

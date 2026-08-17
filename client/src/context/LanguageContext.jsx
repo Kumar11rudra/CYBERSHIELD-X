@@ -6,13 +6,21 @@ const LanguageContext = createContext(null);
 
 const getStoredLanguage = () => {
   if (typeof window === 'undefined') return null;
-  return window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
+  try {
+    return window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
+  } catch {
+    return null;
+  }
 };
 
 const getBrowserLanguage = () => {
   if (typeof navigator === 'undefined') return 'en';
-  const code = navigator.language?.toLowerCase();
-  return code?.startsWith('hi') ? 'hi' : code?.startsWith('ar') ? 'ar' : code?.startsWith('zh') ? 'zh' : code?.startsWith('es') ? 'es' : code?.startsWith('fr') ? 'fr' : code?.startsWith('de') ? 'de' : code?.startsWith('pt') ? 'pt' : code?.startsWith('ru') ? 'ru' : code?.startsWith('ja') ? 'ja' : 'en';
+  try {
+    const code = navigator.language?.toLowerCase();
+    return code?.startsWith('hi') ? 'hi' : code?.startsWith('ar') ? 'ar' : code?.startsWith('zh') ? 'zh' : code?.startsWith('es') ? 'es' : code?.startsWith('fr') ? 'fr' : code?.startsWith('de') ? 'de' : code?.startsWith('pt') ? 'pt' : code?.startsWith('ru') ? 'ru' : code?.startsWith('ja') ? 'ja' : 'en';
+  } catch {
+    return 'en';
+  }
 };
 
 export function LanguageProvider({ children }) {
@@ -20,7 +28,9 @@ export function LanguageProvider({ children }) {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+    try {
+      window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+    } catch {}
     if (i18n.language !== language) {
       i18n.changeLanguage(language);
     }

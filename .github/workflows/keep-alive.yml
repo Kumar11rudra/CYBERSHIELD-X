@@ -1,0 +1,25 @@
+name: Render Backend Keep-Alive
+
+on:
+  schedule:
+    # Runs every 10 minutes to prevent Render free-tier from entering sleep mode
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  keep-alive:
+    name: Ping Backend Health Endpoint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: 🛰️ Send Keep-Alive Ping
+        run: |
+          echo "Pinging CyberShield X Render Backend at $(date -u)..."
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 45 https://cybershield-x.onrender.com/health || echo "000")
+          echo "Response Status Code: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
+            echo "✅ Render backend is active and healthy!"
+          else
+            echo "⚠️ Backend returned status $HTTP_STATUS (it might be spinning up or responding slowly)."
+          fi

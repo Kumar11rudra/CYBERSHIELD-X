@@ -204,47 +204,40 @@ function PageTitleController() {
 
 export default function App() {
   useEffect(() => {
-    // Session Hard Reset for Fresh Launch
-    const lastReset = localStorage.getItem('csx_last_reset');
-    if (lastReset !== '2026-05-12') {
-      console.warn('🔄 System Upgrade Detected: Clearing legacy sessions...');
-      localStorage.clear();
-      sessionStorage.clear();
-      localStorage.setItem('csx_last_reset', '2026-05-12');
-      window.location.reload();
+    try {
+      NotificationService.init(); // Initialize Enterprise SOC Alerts
+    } catch (err) {
+      console.warn('[INIT] Notification service init error:', err);
     }
-    
-    const initializeApp = async () => { };
-    initializeApp();
-    NotificationService.init(); // Initialize Enterprise SOC Alerts
   }, []);
 
   return (
-    <BrowserRouter>
-      <PageTitleController />
-      <I18nProvider>
-        <LanguageProvider>
-          <ThemeProvider>
-            <AuthProvider>
-              <OrganizationProvider>
-              <div className="relative min-h-screen bg-cyber-bg text-cyber-text selection:bg-cyber-accent/30 selection:text-white">
-                <DefenseOverlay />
-                <ErrorBoundary>
-                  <CyberSuspense>
-                    <AppRoutes />
-                  </CyberSuspense>
-                </ErrorBoundary>
-                <CookieConsentBanner />
-                <SecurityCopilot />
-                <Toaster position="top-right" toastOptions={{
-                  style: { background: '#020814', color: '#fff', border: '1px solid rgba(0, 212, 255, 0.2)', fontSize: '12px' },
-                }} />
-              </div>
-              </OrganizationProvider>
-            </AuthProvider>
-          </ThemeProvider>
-        </LanguageProvider>
-      </I18nProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <PageTitleController />
+        <I18nProvider>
+          <LanguageProvider>
+            <ThemeProvider>
+              <AuthProvider>
+                <OrganizationProvider>
+                  <div className="relative min-h-screen bg-cyber-bg text-cyber-text selection:bg-cyber-accent/30 selection:text-white">
+                    <DefenseOverlay />
+                    <CyberSuspense>
+                      <AppRoutes />
+                    </CyberSuspense>
+                    <CookieConsentBanner />
+                    <SecurityCopilot />
+                    <Toaster position="top-right" toastOptions={{
+                      style: { background: '#020814', color: '#fff', border: '1px solid rgba(0, 212, 255, 0.2)', fontSize: '12px' },
+                    }} />
+                  </div>
+                </OrganizationProvider>
+              </AuthProvider>
+            </ThemeProvider>
+          </LanguageProvider>
+        </I18nProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
+

@@ -6,6 +6,7 @@
 - **Status**: Upgraded AI Remediation Planner (`remediation`) and Threat Breach Checker (`breach`) from `partial` to `live`. AI Remediation Planner is fully integrated with shared 24h `MemoryCache`, Gemini 2.5 Flash, and IDOR ownership authorization. Threat Breach Checker is upgraded with SHA-1 k-Anonymity range queries (NIST SP 800-63B) and 1h caching with zero plaintext password storage or logging. Authoritative catalog now features 16 Live Models, 0 Partial Models, and 94 Upcoming Models. All unit, verification, and release gates pass cleanly.
 
 ## Completed Phases
+- ✅ **Phase 31.1 (V30.1.0)**: Client Runtime Hardening, Stale Cache-First Service Worker Purge & Multi-Browser Safari Resilience (Blank Screen Permanent Fix)
 - ✅ **Phase 31 (V30.0.0)**: Partial-to-Live Catalog Expansion (AI Remediation Planner & Threat Breach Checker Live Activation — 16 Live Models)
 - ✅ **Phase 30.1 (V29.4.1)**: Trust Proxy Hardening, X-Request-Id Validation & Uncaught Exception Safe Shutdown
 - ✅ **Phase 30 (V29.4.0)**: Request Correlation Tracing, Process Crash Resilience, AI Quota Defense & Database Index Optimization
@@ -92,5 +93,6 @@
   - API Gateway and SSO integrations.
 
 ---
-- **Last Audit Date**: 2026-08-15
-- **Last Modified Date**: 2026-08-15 (Production Reliability & Speed Patches Complete)
+- **Last Audit Date**: 2026-08-17
+- **Last Modified Date**: 2026-08-17 (Client Runtime Hardening & Stale SW Purge Complete)
+
