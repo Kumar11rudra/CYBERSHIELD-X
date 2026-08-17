@@ -1,176 +1,263 @@
 <svg width="1200" height="1200" viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <!-- Background Gradient -->
-    <radialGradient id="bgGlow" cx="45%" cy="50%" r="65%">
-      <stop offset="0%" stop-color="#082046"/>
+    <!-- Background Gradients -->
+    <radialGradient id="ogBg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#071b38"/>
       <stop offset="50%" stop-color="#020914"/>
-      <stop offset="100%" stop-color="#010308"/>
+      <stop offset="100%" stop-color="#010408"/>
     </radialGradient>
 
-    <!-- Electric Cyan to Emerald Neon Gradient -->
-    <linearGradient id="neonGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00f0ff"/>
-      <stop offset="45%" stop-color="#0099ff"/>
+    <!-- Neon Cyber Gradients -->
+    <linearGradient id="neonCyanEmerald" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00d4ff"/>
+      <stop offset="50%" stop-color="#00f0ff"/>
       <stop offset="100%" stop-color="#00ff88"/>
     </linearGradient>
 
-    <linearGradient id="neonGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#00ffaa"/>
-      <stop offset="55%" stop-color="#00d4ff"/>
-      <stop offset="100%" stop-color="#0055ff"/>
+    <linearGradient id="neonEmeraldCyan" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00ff88"/>
+      <stop offset="100%" stop-color="#00d4ff"/>
     </linearGradient>
 
-    <linearGradient id="armorLeft" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0c2548"/>
-      <stop offset="60%" stop-color="#06152b"/>
-      <stop offset="100%" stop-color="#020813"/>
+    <linearGradient id="shieldFillGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#09254d"/>
+      <stop offset="100%" stop-color="#020a17"/>
     </linearGradient>
 
-    <linearGradient id="armorRight" x1="100%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#091d38"/>
-      <stop offset="60%" stop-color="#040e1f"/>
-      <stop offset="100%" stop-color="#01050d"/>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(12, 35, 68, 0.65)"/>
+      <stop offset="100%" stop-color="rgba(3, 10, 24, 0.85)"/>
     </linearGradient>
 
-    <linearGradient id="xBlade1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="25%" stop-color="#70eaff"/>
-      <stop offset="70%" stop-color="#0099ff"/>
-      <stop offset="100%" stop-color="#0033aa"/>
+    <linearGradient id="statPillGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(0, 212, 255, 0.12)"/>
+      <stop offset="100%" stop-color="rgba(0, 255, 136, 0.08)"/>
     </linearGradient>
 
-    <linearGradient id="xBlade2" x1="100%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="25%" stop-color="#a3ffdb"/>
-      <stop offset="70%" stop-color="#00d488"/>
-      <stop offset="100%" stop-color="#004d2e"/>
-    </linearGradient>
-
-    <filter id="hyperGlow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur1"/>
-      <feGaussianBlur in="SourceGraphic" stdDeviation="28" result="blur2"/>
+    <!-- Glow Filters -->
+    <filter id="intenseGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="12" result="b1"/>
+      <feGaussianBlur stdDeviation="28" result="b2"/>
       <feMerge>
-        <feMergeNode in="blur2"/>
-        <feMergeNode in="blur1"/>
+        <feMergeNode in="b2"/>
+        <feMergeNode in="b1"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
 
     <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
+      <feGaussianBlur stdDeviation="6" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
+
+    <clipPath id="shieldSquircle">
+      <rect width="320" height="320" rx="68"/>
+    </clipPath>
   </defs>
 
-  <!-- Background Base -->
-  <rect width="1200" height="1200" fill="url(#bgGlow)"/>
+  <!-- 1200x1200 Base Canvas for 1200x630 Centered Crop (Visible vertical area is y=285 to y=915) -->
+  <rect width="1200" height="1200" fill="url(#ogBg)"/>
 
-  <!-- Cyber Grid Pattern centered around y=600 -->
-  <g opacity="0.08" stroke="#00d4ff" stroke-width="1.5">
+  <!-- Tactical Cyber Grid (Centered vertically around y=600) -->
+  <g opacity="0.10" stroke="#00d4ff" stroke-width="1.2">
     <line x1="0" y1="360" x2="1200" y2="360"/>
-    <line x1="0" y1="480" x2="1200" y2="480"/>
+    <line x1="0" y1="440" x2="1200" y2="440"/>
+    <line x1="0" y1="520" x2="1200" y2="520"/>
     <line x1="0" y1="600" x2="1200" y2="600"/>
-    <line x1="0" y1="720" x2="1200" y2="720"/>
+    <line x1="0" y1="680" x2="1200" y2="680"/>
+    <line x1="0" y1="760" x2="1200" y2="760"/>
     <line x1="0" y1="840" x2="1200" y2="840"/>
-    <line x1="200" y1="0" x2="200" y2="1200"/>
-    <line x1="400" y1="0" x2="400" y2="1200"/>
+
+    <line x1="120" y1="0" x2="120" y2="1200"/>
+    <line x1="280" y1="0" x2="280" y2="1200"/>
+    <line x1="440" y1="0" x2="440" y2="1200"/>
     <line x1="600" y1="0" x2="600" y2="1200"/>
-    <line x1="800" y1="0" x2="800" y2="1200"/>
-    <line x1="1000" y1="0" x2="1000" y2="1200"/>
+    <line x1="760" y1="0" x2="760" y2="1200"/>
+    <line x1="920" y1="0" x2="920" y2="1200"/>
+    <line x1="1080" y1="0" x2="1080" y2="1200"/>
   </g>
 
-  <!-- Ambient Light Halos -->
-  <circle cx="280" cy="600" r="260" fill="#00d4ff" opacity="0.18" filter="url(#hyperGlow)"/>
-  <circle cx="960" cy="600" r="240" fill="#00ff88" opacity="0.12" filter="url(#hyperGlow)"/>
+  <!-- Volumetric Cyber Glow Cones -->
+  <circle cx="280" cy="600" r="220" fill="#00d4ff" opacity="0.16" filter="url(#intenseGlow)"/>
+  <circle cx="1000" cy="580" r="240" fill="#00ff88" opacity="0.10" filter="url(#intenseGlow)"/>
+  <circle cx="650" cy="500" r="300" fill="#0077ff" opacity="0.08" filter="url(#intenseGlow)"/>
 
-  <!-- ═════════ LEFT EMBLEM (Centered vertically at y=600, scale 0.72) ═════════ -->
-  <g transform="translate(130, 415) scale(0.72)">
-    <!-- Outer Glow Outline Path -->
-    <path
-      d="M256 38 L438 108 L396 300 C374 382 256 468 256 468 C256 468 138 382 116 300 L74 108 Z"
-      fill="none"
-      stroke="url(#neonGrad1)"
-      stroke-width="14"
-      stroke-linejoin="miter"
-      filter="url(#softGlow)"
-    />
+  <!-- Top and Bottom Cyber Accent Lines (Within 630 crop: y=295 & y=905) -->
+  <line x1="60" y1="305" x2="1140" y2="305" stroke="url(#neonCyanEmerald)" stroke-width="2" opacity="0.4"/>
+  <line x1="60" y1="895" x2="1140" y2="895" stroke="url(#neonCyanEmerald)" stroke-width="2" opacity="0.4"/>
 
-    <!-- Shield Left Facet Plate -->
-    <path
-      d="M256 46 L82 114 L122 295 C142 370 256 450 256 450 Z"
-      fill="url(#armorLeft)"
-    />
+  <!-- Corner HUD Crosshairs -->
+  <g stroke="#00f0ff" stroke-width="2" opacity="0.7">
+    <path d="M 60 325 L 60 305 L 80 305"/>
+    <path d="M 1140 325 L 1140 305 L 1120 305"/>
+    <path d="M 60 875 L 60 895 L 80 895"/>
+    <path d="M 1140 875 L 1140 895 L 1120 895"/>
+  </g>
 
-    <!-- Shield Right Facet Plate -->
-    <path
-      d="M256 46 L430 114 L390 295 C370 370 256 450 256 450 Z"
-      fill="url(#armorRight)"
-    />
+  <!-- ══════════════ LEFT HERO EMBLEM GLASSMORPHIC MODULE ══════════════ -->
+  <!-- Module Container at (x=100, y=440), Size 320x320 -->
+  <g transform="translate(100, 440)">
+    <!-- Glassmorphic Card Backdrop -->
+    <rect width="320" height="320" rx="36" fill="url(#cardGrad)" stroke="url(#neonCyanEmerald)" stroke-width="2.5" opacity="0.95"/>
+    <rect width="308" height="308" x="6" y="6" rx="30" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
 
-    <!-- Spine -->
-    <line x1="256" y1="46" x2="256" y2="450" stroke="#00f0ff" stroke-width="2.5" opacity="0.7"/>
-
-    <!-- Inner Angular Cutouts -->
-    <path
-      d="M256 82 L388 134 L356 280 C340 338 256 406 256 406 C256 406 172 338 156 280 L124 134 Z"
-      fill="none"
-      stroke="url(#neonGrad2)"
-      stroke-width="4.5"
-      stroke-dasharray="14 8"
-      opacity="0.65"
-    />
-
-    <!-- Energy X Glow -->
-    <g filter="url(#hyperGlow)" opacity="0.85">
-      <path d="M152 142 L212 142 L360 338 L300 338 Z" fill="url(#neonGrad1)"/>
-      <path d="M360 142 L300 142 L152 338 L212 338 Z" fill="url(#neonGrad2)"/>
+    <!-- Subtle Circuit Tracks in Icon Card -->
+    <g opacity="0.25" stroke="#00d4ff" stroke-width="1.5">
+      <path d="M20 50 L50 50 L70 30"/>
+      <circle cx="20" cy="50" r="3" fill="#00d4ff"/>
+      <path d="M300 270 L270 270 L250 290"/>
+      <circle cx="300" cy="270" r="3" fill="#00d4ff"/>
     </g>
 
-    <!-- Faceted X Blades -->
-    <polygon points="154,144 216,144 256,218 226,240 154,144" fill="url(#xBlade1)"/>
-    <polygon points="358,144 296,144 256,218 286,240 358,144" fill="url(#xBlade2)"/>
-    <polygon points="154,336 216,336 256,262 226,240 154,336" fill="url(#xBlade2)"/>
-    <polygon points="358,336 296,336 256,262 286,240 358,336" fill="url(#xBlade1)"/>
+    <!-- The Exact Beloved CyberShield X Logo (Scale 0.54 inside card) -->
+    <g transform="translate(22, 22) scale(0.54)">
+      <!-- Shield Outer Glow -->
+      <path
+        d="M256 46 L430 114 L430 286 C430 380 256 458 256 458 C256 458 82 380 82 286 L82 114 Z"
+        fill="url(#shieldFillGrad)"
+        stroke="url(#neonCyanEmerald)"
+        stroke-width="18"
+        stroke-linejoin="round"
+        filter="url(#softGlow)"
+      />
 
-    <!-- Center Razor Diamond Overlap -->
-    <polygon points="256,198 292,240 256,282 220,240" fill="#010611" stroke="url(#neonGrad1)" stroke-width="4.5"/>
-    <circle cx="256" cy="240" r="10" fill="#ffffff" filter="url(#softGlow)"/>
-    <circle cx="256" cy="240" r="5" fill="#00ffaa"/>
+      <!-- Shield Inner Trim -->
+      <path
+        d="M256 78 L398 134 L398 276 C398 350 256 422 256 422 C256 422 114 350 114 276 L114 134 Z"
+        fill="none"
+        stroke="url(#neonEmeraldCyan)"
+        stroke-width="6"
+        opacity="0.55"
+        stroke-dasharray="16 8"
+      />
+
+      <!-- Circuit Nodes -->
+      <g stroke="#00d4ff" stroke-width="4.5" fill="none" opacity="0.9">
+        <path d="M140 190 L180 190 L205 215"/>
+        <circle cx="140" cy="190" r="6" fill="#00d4ff"/>
+        <path d="M130 270 L170 270 L195 245"/>
+        <circle cx="130" cy="270" r="6" fill="#00d4ff"/>
+      </g>
+
+      <!-- Radar Arc -->
+      <g stroke="#00ff88" stroke-width="3.5" fill="none" opacity="0.8">
+        <path d="M340 180 A 90 90 0 0 1 380 270" stroke-dasharray="8 6"/>
+        <circle cx="370" cy="225" r="5" fill="#00ff88"/>
+      </g>
+
+      <!-- Central 'X' Outer Neon -->
+      <path
+        d="M176 172 L234 246 L176 320 L214 320 L256 266 L298 320 L336 320 L278 246 L336 172 L298 172 L256 226 L214 172 Z"
+        fill="url(#neonCyanEmerald)"
+        filter="url(#intenseGlow)"
+      />
+
+      <!-- Central 'X' Pure White Core -->
+      <path
+        d="M188 180 L238 246 L188 312 L206 312 L256 252 L306 312 L324 312 L274 246 L324 180 L306 180 L256 240 L206 180 Z"
+        fill="#ffffff"
+      />
+
+      <!-- Security Core Anchor -->
+      <circle cx="256" cy="246" r="14" fill="#020814" stroke="url(#neonCyanEmerald)" stroke-width="3.5"/>
+      <circle cx="256" cy="246" r="5" fill="#00ff88"/>
+    </g>
+
+    <!-- Tactical HUD Corner Brackets on Card -->
+    <g stroke="#00ff88" stroke-width="2" opacity="0.8">
+      <path d="M 12 24 L 12 12 L 24 12"/>
+      <path d="M 308 24 L 308 12 L 296 12"/>
+      <path d="M 12 296 L 12 308 L 24 308"/>
+      <path d="M 308 296 L 308 308 L 296 308"/>
+    </g>
   </g>
 
-  <!-- ═════════ RIGHT TYPOGRAPHY & BRAND LOCKUP ═════════ -->
-  <!-- Main Title -->
-  <text x="540" y="525" font-family="'Orbitron', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="60" fill="#ffffff" letter-spacing="2">
-    CYBER<tspan fill="#00f0ff">SHIELD</tspan> <tspan fill="#00ff88">X</tspan>
-  </text>
+  <!-- ══════════════ RIGHT HIGH-TECH CONTENT ARCHITECTURE ══════════════ -->
+  <g transform="translate(470, 0)">
+    <!-- Top Pill: Next-Gen Platform Tag -->
+    <g transform="translate(0, 360)">
+      <rect width="450" height="32" rx="16" fill="rgba(0, 212, 255, 0.12)" stroke="rgba(0, 212, 255, 0.35)" stroke-width="1.2"/>
+      <circle cx="18" cy="16" r="4" fill="#00ff88" filter="url(#softGlow)"/>
+      <text x="32" y="21" font-family="'JetBrains Mono', 'Courier New', monospace" font-weight="700" font-size="11" fill="#00f0ff" letter-spacing="2">
+        NEXT-GEN AI THREAT INTEL &amp; SOC SUITE
+      </text>
+    </g>
 
-  <!-- Badge Pill -->
-  <rect x="540" y="555" width="410" height="34" rx="8" fill="rgba(0, 240, 255, 0.10)" stroke="rgba(0, 240, 255, 0.35)" stroke-width="1.5"/>
-  <text x="555" y="578" font-family="'JetBrains Mono', 'Courier New', monospace" font-weight="700" font-size="12" fill="#00f0ff" letter-spacing="2">
-    NEXT-GEN THREAT INTEL &amp; VULN SCANNER
-  </text>
-
-  <!-- Description -->
-  <text x="540" y="632" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="500" font-size="20" fill="#94a3b8">
-    Enterprise AI-Powered Threat Intelligence Platform
-  </text>
-  <text x="540" y="666" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="400" font-size="16" fill="#64748b">
-    35+ Real-Time Intel Feeds • 110 Defense Modules • Automated SOC
-  </text>
-
-  <!-- Footer Info -->
-  <g transform="translate(540, 700)">
-    <rect width="190" height="36" rx="8" fill="rgba(0, 255, 136, 0.1)" stroke="rgba(0, 255, 136, 0.35)" stroke-width="1.2"/>
-    <text x="18" y="24" font-family="'JetBrains Mono', 'Courier New', monospace" font-weight="bold" font-size="14" fill="#00ff88">
-      cybershieldx.in
+    <!-- Main Typography: CYBERSHIELD X -->
+    <text x="0" y="465" font-family="'Orbitron', -apple-system, BlinkMacSystemFont, sans-serif" font-weight="900" font-size="64" fill="#ffffff" letter-spacing="1.5">
+      CYBER<tspan fill="#00d4ff">SHIELD</tspan> <tspan fill="#00ff88">X</tspan>
     </text>
 
-    <rect x="210" width="105" height="36" rx="8" fill="rgba(0, 240, 255, 0.1)" stroke="rgba(0, 240, 255, 0.35)" stroke-width="1.2"/>
-    <text x="225" y="24" font-family="'JetBrains Mono', 'Courier New', monospace" font-weight="bold" font-size="14" fill="#00f0ff">
-      v33.0.0
+    <!-- Tagline -->
+    <text x="0" y="520" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="600" font-size="21" fill="#e2e8f0" letter-spacing="0.2">
+      Enterprise Multi-Vector Threat Intelligence Platform
     </text>
+    <text x="0" y="555" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="400" font-size="16" fill="#94a3b8">
+      Real-Time URL, Domain, IP, File Hash, SSL &amp; Playbook Diagnostics
+    </text>
+
+    <!-- 3 High-Impact Cyber Feature Cards (x=0, y=595) -->
+    <g transform="translate(0, 595)">
+      <!-- Card 1: 110+ Modules -->
+      <g transform="translate(0, 0)">
+        <rect width="195" height="74" rx="14" fill="url(#cardGrad)" stroke="rgba(0, 212, 255, 0.3)" stroke-width="1.2"/>
+        <text x="16" y="32" font-family="'Orbitron', monospace" font-weight="900" font-size="20" fill="#00d4ff">
+          110+
+        </text>
+        <text x="16" y="54" font-family="'JetBrains Mono', monospace" font-weight="600" font-size="10" fill="#94a3b8" letter-spacing="1">
+          THREAT MODULES
+        </text>
+      </g>
+
+      <!-- Card 2: 35+ Intel Feeds -->
+      <g transform="translate(210, 0)">
+        <rect width="195" height="74" rx="14" fill="url(#cardGrad)" stroke="rgba(0, 255, 136, 0.3)" stroke-width="1.2"/>
+        <text x="16" y="32" font-family="'Orbitron', monospace" font-weight="900" font-size="20" fill="#00ff88">
+          35+
+        </text>
+        <text x="16" y="54" font-family="'JetBrains Mono', monospace" font-weight="600" font-size="10" fill="#94a3b8" letter-spacing="1">
+          LIVE INTEL FEEDS
+        </text>
+      </g>
+
+      <!-- Card 3: 24/7 AI SOC -->
+      <g transform="translate(420, 0)">
+        <rect width="210" height="74" rx="14" fill="url(#cardGrad)" stroke="rgba(168, 85, 247, 0.3)" stroke-width="1.2"/>
+        <text x="16" y="32" font-family="'Orbitron', monospace" font-weight="900" font-size="20" fill="#c084fc">
+          24/7 SOC
+        </text>
+        <text x="16" y="54" font-family="'JetBrains Mono', monospace" font-weight="600" font-size="10" fill="#94a3b8" letter-spacing="1">
+          AI COPILOT TRIAGE
+        </text>
+      </g>
+    </g>
+
+    <!-- Bottom Status & Domain Strip (x=0, y=710) -->
+    <g transform="translate(0, 710)">
+      <!-- Domain Pill -->
+      <rect width="220" height="38" rx="10" fill="rgba(0, 255, 136, 0.12)" stroke="rgba(0, 255, 136, 0.4)" stroke-width="1.2"/>
+      <text x="22" y="24" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="14" fill="#00ff88" letter-spacing="0.5">
+        cybershieldx.in
+      </text>
+
+      <!-- Version Pill -->
+      <g transform="translate(235, 0)">
+        <rect width="130" height="38" rx="10" fill="rgba(0, 212, 255, 0.12)" stroke="rgba(0, 212, 255, 0.4)" stroke-width="1.2"/>
+        <text x="20" y="24" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#00d4ff" letter-spacing="1">
+          v33.0.0
+        </text>
+      </g>
+
+      <!-- Live Operational Status Indicator -->
+      <g transform="translate(385, 10)">
+        <circle cx="6" cy="9" r="4.5" fill="#00ff88" filter="url(#softGlow)"/>
+        <text x="20" y="14" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="11" fill="#cbd5e1" letter-spacing="1">
+          SYSTEMS ACTIVE &amp; SECURE
+        </text>
+      </g>
+    </g>
   </g>
 </svg>
