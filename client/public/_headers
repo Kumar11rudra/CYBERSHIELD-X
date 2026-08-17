@@ -4,6 +4,21 @@
 /service-worker.js
   Cache-Control: no-cache, no-store, must-revalidate
 
+/favicon.ico
+  Cache-Control: public, max-age=0, must-revalidate
+
+/favicon.svg
+  Cache-Control: public, max-age=0, must-revalidate
+
+/favicon*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/logo*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/bot-avatar*
+  Cache-Control: public, max-age=0, must-revalidate
+
 /static/*
   Cache-Control: public, max-age=31536000, immutable
 
@@ -13,4 +28,3 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' http: https: ws: wss: https://cloudflareinsights.com https://static.cloudflareinsights.com; frame-ancestors 'none';
-

@@ -220,50 +220,6 @@ export default function HomePage() {
       <ScanLine />
       <LiveTicker />
 
-      {/* ── BOTTOM-LEFT TACTICAL VERSION HUD BADGE ── */}
-      <div
-        style={{
-          position: 'fixed',
-          bottom: 20,
-          left: 20,
-          zIndex: 40,
-          pointerEvents: 'auto',
-        }}
-      >
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            background: 'rgba(2, 8, 20, 0.88)',
-            backdropFilter: 'blur(14px)',
-            border: '1px solid rgba(0, 212, 255, 0.25)',
-            padding: '6px 14px',
-            borderRadius: 10,
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 212, 255, 0.1)',
-            fontFamily: '"JetBrains Mono", monospace',
-            fontSize: 11,
-            letterSpacing: 1,
-          }}
-        >
-          <span
-            style={{
-              width: 7,
-              height: 7,
-              borderRadius: '50%',
-              background: '#00ff88',
-              boxShadow: '0 0 8px #00ff88',
-              display: 'inline-block',
-            }}
-          />
-          <span style={{ color: '#ffffff', fontWeight: 700, fontSize: 10, letterSpacing: '1.5px', fontFamily: 'Orbitron, monospace' }}>
-            CYBERSHIELD X
-          </span>
-          <span style={{ color: 'rgba(0, 212, 255, 0.4)' }}>|</span>
-          <span style={{ fontWeight: 700, color: '#00d4ff' }}>v33.0.0</span>
-        </div>
-      </div>
-
       {/* ── HERO ── */}
       <section style={{ 
         position: 'relative', 
@@ -567,15 +523,15 @@ export default function HomePage() {
           viewport={{ once: true }}
           style={{ maxWidth: 600, margin: '0 auto' }}
         >
-          <div style={{ position: 'relative', display: 'inline-block', marginBottom: 24 }}>
+          <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
             <motion.div 
-              animate={{ boxShadow: ['0 0 20px rgba(0,191,255,0.3)', '0 0 40px rgba(0,191,255,0.6)', '0 0 20px rgba(0,191,255,0.3)'] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              style={{ width: 80, height: 80, background: 'linear-gradient(135deg,#003366,#006699)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 36, margin: '0 auto' }}
+              animate={{ boxShadow: ['0 0 20px rgba(0,212,255,0.2)', '0 0 45px rgba(0,212,255,0.5)', '0 0 20px rgba(0,212,255,0.2)'] }}
+              transition={{ duration: 2.5, repeat: Infinity }}
+              style={{ width: 84, height: 84, background: 'linear-gradient(135deg, rgba(0,51,102,0.6), rgba(0,102,153,0.4))', backdropFilter: 'blur(12px)', border: '1px solid rgba(0,212,255,0.3)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}
             >
-              🛡
+              <BrandLogo size={46} />
             </motion.div>
-            <div style={{ position: 'absolute', inset: -8, borderRadius: '50%', border: '1px solid rgba(0,191,255,0.3)', animation: 'pulse-ring 2s infinite' }} />
+            <div style={{ position: 'absolute', inset: -8, borderRadius: '50%', border: '1px solid rgba(0,212,255,0.3)', animation: 'pulse-ring 2s infinite' }} />
           </div>
           <h2 className="hero-title" style={{ fontSize: 'clamp(24px,4vw,38px)', fontWeight: 900, color: '#e0e6ff', margin: '0 0 16px' }}>
             {t('home.finalCta.title')}
@@ -655,8 +611,17 @@ export default function HomePage() {
           ))}
         </div>
 
-        <div style={{ width: '100%', maxWidth: 800, borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 14, display: 'flex', justifyContent: 'center' }}>
-          <div style={{ color: '#475569', fontSize: 9, textAlign: 'center', letterSpacing: 1, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+        <div style={{ width: '100%', maxWidth: 1000, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14 }}>
+          {/* LEFT: Clean in-flow Tactical Version Badge in footer */}
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: '"JetBrains Mono", monospace', fontSize: 10 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00ff88', boxShadow: '0 0 6px #00ff88', display: 'inline-block' }} />
+            <span style={{ color: '#94a3b8', fontWeight: 600, letterSpacing: '0.8px' }}>CYBERSHIELD X</span>
+            <span style={{ color: 'rgba(0, 212, 255, 0.4)' }}>•</span>
+            <span style={{ fontWeight: 700, color: '#00d4ff', background: 'rgba(0, 212, 255, 0.1)', padding: '2px 7px', borderRadius: 4, border: '1px solid rgba(0, 212, 255, 0.25)' }}>v33.0.0</span>
+          </div>
+
+          {/* RIGHT: Legal & Copyright Links */}
+          <div style={{ color: '#64748b', fontSize: 10, letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
             <span>© {new Date().getFullYear()} CYBERSHIELD X. ALL RIGHTS RESERVED.</span>
             <span style={{ color: '#334155' }}>|</span>
             <Link to="/privacy" style={{ color: '#00bfff', textDecoration: 'none' }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>Privacy Policy</Link>

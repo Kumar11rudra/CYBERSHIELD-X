@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import BrandLogo from "../common/BrandLogo";
 
 export default function FinalCTASection({
   t,
@@ -15,9 +16,9 @@ export default function FinalCTASection({
           viewport={{ once: true }}
           className="max-w-xl mx-auto space-y-5"
         >
-          <div className="relative inline-block">
-            <div className="w-16 h-16 bg-gradient-to-br from-cyber-accent to-cyber-primary rounded-full flex items-center justify-center text-3xl mx-auto shadow-lg shadow-cyber-accent/10">
-              🛡
+          <div className="relative inline-flex items-center justify-center">
+            <div className="w-16 h-16 bg-gradient-to-br from-[#003366]/80 to-[#006699]/60 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-cyber-accent/20 border border-cyber-accent/30">
+              <BrandLogo size={36} />
             </div>
             <div className="absolute inset-[-6px] rounded-full border border-cyber-accent/20 animate-ping" style={{ animationDuration: '3s' }} />
           </div>
