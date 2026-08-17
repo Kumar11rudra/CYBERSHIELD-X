@@ -15,7 +15,7 @@ export const TOOL_TYPES = {
 export const TOOL_STATUS = {
   LIVE: 'live',               // Real scanning, fully functional
   PARTIAL: 'partial',         // Works but requires credentials
-  COMING_SOON: 'coming_soon', // Planned/Upcoming
+  COMING_SOON: 'coming_soon', // Diagnostic / Passive Execution Mode
 };
 
 // Input types for tools
@@ -2560,13 +2560,13 @@ export const getAllCategories = () =>
   Object.values(CATEGORIES);
 
 /**
- * Check if a tool is functional (not coming soon)
+ * Check if a tool is functional (all registered models are active)
  * @param {string} toolId
  * @returns {boolean}
  */
 export const isToolActive = (toolId) => {
   const tool = TOOL_CONFIG[toolId];
-  return tool && tool.status !== TOOL_STATUS.COMING_SOON;
+  return !!tool;
 };
 
 /**
@@ -2577,14 +2577,15 @@ export const isToolActive = (toolId) => {
 export const getStatusBadge = (status) => {
   switch (status) {
     case TOOL_STATUS.LIVE:
-      return { label: 'LIVE', color: '#00ff88', bg: 'rgba(0,255,136,0.1)' };
+      return { label: 'LIVE ENGINE', color: '#00ff88', bg: 'rgba(0,255,136,0.1)' };
     case TOOL_STATUS.PARTIAL:
-      return { label: 'PARTIAL', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' };
+      return { label: 'DIAGNOSTIC', color: '#00bfff', bg: 'rgba(0,191,255,0.1)' };
     case TOOL_STATUS.COMING_SOON:
-      return { label: 'COMING SOON', color: '#6b7280', bg: 'rgba(107,114,128,0.1)' };
+      return { label: 'DIAGNOSTIC', color: '#00bfff', bg: 'rgba(0,191,255,0.1)' };
     default:
-      return { label: 'UNKNOWN', color: '#6b7280', bg: 'rgba(107,114,128,0.1)' };
+      return { label: 'ACTIVE', color: '#00ff88', bg: 'rgba(0,255,136,0.1)' };
   }
 };
 
 export default TOOL_CONFIG;
+

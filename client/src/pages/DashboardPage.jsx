@@ -6,6 +6,8 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { getAllTools, TOOL_STATUS, CATEGORIES, getStatusBadge } from '../components/toolkit/toolConfig';
 import { toast } from 'react-hot-toast';
+import { Terminal, Layers, Sparkles, ExternalLink } from 'lucide-react';
+import CyberTerminalModal from '../components/terminal/CyberTerminalModal';
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -16,11 +18,16 @@ export default function DashboardPage() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [targetInput, setTargetInput] = useState('');
-  const [selectedQuickTool, setSelectedQuickTool] = useState('dns_scanner');
+  const [selectedQuickTool, setSelectedQuickTool] = useState('port');
   const [quickScanLoading, setQuickScanLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
+
+  // Terminal Modal State
+  const [isTerminalOpen, setIsTerminalOpen] = useState(false);
+  const [terminalTool, setTerminalTool] = useState(null);
+  const [terminalTarget, setTerminalTarget] = useState('');
 
   // Load all 110 tools directly from authoritative tool registry
   const allTools = useMemo(() => getAllTools(), []);
@@ -32,6 +39,10 @@ export default function DashboardPage() {
 
   const liveToolsCount = useMemo(() => {
     return allTools.filter(tool => tool.status === TOOL_STATUS.LIVE).length;
+  }, [allTools]);
+
+  const diagnosticCount = useMemo(() => {
+    return allTools.filter(tool => tool.status === TOOL_STATUS.COMING_SOON || tool.status === TOOL_STATUS.PARTIAL).length;
   }, [allTools]);
 
   // Dynamic Time of Day Greeting
@@ -62,7 +73,7 @@ export default function DashboardPage() {
     return () => { isMounted = false; };
   }, []);
 
-  // Handle Quick Target Scan Submission
+  // Handle Quick Target Scan Submission (Opens Terminal)
   const handleLaunchQuickScan = (e) => {
     e.preventDefault();
     const cleanTarget = targetInput.trim().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
@@ -71,15 +82,27 @@ export default function DashboardPage() {
       return;
     }
 
-    setQuickScanLoading(true);
-    // Navigate directly to the selected tool's page with target pre-populated
-    navigate(`/toolkit/${selectedQuickTool}?target=${encodeURIComponent(cleanTarget)}`);
+    const toolObj = allTools.find(t => t.id === selectedQuickTool) || { id: selectedQuickTool, name: 'Security Scanner' };
+    setTerminalTool(toolObj);
+    setTerminalTarget(cleanTarget);
+    setIsTerminalOpen(true);
+  };
+
+  const handleLaunchTerminal = (tool) => {
+    setTerminalTool(tool);
+    setTerminalTarget(tool.defaultTarget || 'scanme.nmap.org');
+    setIsTerminalOpen(true);
+  };
+
+  const handleLaunchPlaybook = () => {
+    setTerminalTool(null);
+    setTerminalTarget(targetInput.trim() || 'scanme.nmap.org');
+    setIsTerminalOpen(true);
   };
 
   // Filtered Tools for Explorer
   const filteredTools = useMemo(() => {
     return allTools.filter((tool) => {
-      // Search matching: name, tagline, description, category, capabilities
       const q = searchQuery.toLowerCase().trim();
       const matchesSearch = !q ||
         tool.name.toLowerCase().includes(q) ||
@@ -88,13 +111,11 @@ export default function DashboardPage() {
         (tool.category && tool.category.toLowerCase().includes(q)) ||
         (tool.capabilities && tool.capabilities.some(c => c.toLowerCase().includes(q)));
 
-      // Status filter
       let matchesStatus = true;
       if (statusFilter === 'LIVE') matchesStatus = tool.status === TOOL_STATUS.LIVE;
       else if (statusFilter === 'PARTIAL') matchesStatus = tool.status === TOOL_STATUS.PARTIAL;
-      else if (statusFilter === 'COMING_SOON') matchesStatus = tool.status === TOOL_STATUS.COMING_SOON;
+      else if (statusFilter === 'DIAGNOSTIC') matchesStatus = tool.status === TOOL_STATUS.COMING_SOON || tool.status === TOOL_STATUS.PARTIAL;
 
-      // Category filter
       const matchesCategory = categoryFilter === 'ALL' || tool.category === categoryFilter;
 
       return matchesSearch && matchesStatus && matchesCategory;
@@ -132,24 +153,24 @@ export default function DashboardPage() {
             {greeting}, <span className="text-cyber-accent">{user?.username || 'Operator'}</span>
           </h1>
           <p className="text-xs text-cyber-muted tracking-wide">
-            Your security workspace at a glance. Manage targets, execute live scans, and review audit telemetry.
+            Your security workspace at a glance. Manage targets, execute live terminal scans, and review audit telemetry.
           </p>
         </div>
 
-        <div className="flex items-center gap-3 z-10">
-          <Link
-            to="/scan"
-            className="px-4 py-2.5 rounded-xl bg-cyber-accent text-[#020814] font-bold text-xs uppercase tracking-wider hover:bg-cyber-accent/90 transition-all shadow-[0_0_15px_rgba(0,212,255,0.25)] flex items-center gap-2"
+        <div className="flex items-center gap-3 z-10 flex-wrap">
+          <button
+            onClick={handleLaunchPlaybook}
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#00ff88]/20 to-[#00bfff]/20 border border-[#00ff88]/50 text-[#00ff88] font-bold text-xs uppercase tracking-wider hover:bg-[#00ff88] hover:text-[#020814] transition-all shadow-[0_0_15px_rgba(0,255,136,0.25)] flex items-center gap-2"
           >
-            <span>📡</span>
-            <span>Live Scanner</span>
-          </Link>
+            <Layers size={14} />
+            <span>⚡ Audit Playbook</span>
+          </button>
           <Link
             to="/toolkit"
             className="px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 hover:border-cyber-accent/40 text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2"
           >
-            <span>⚡</span>
-            <span>All 110 Tools</span>
+            <Terminal size={14} className="text-cyber-accent" />
+            <span>Tools Hub (110 Models)</span>
           </Link>
         </div>
 
@@ -266,10 +287,10 @@ export default function DashboardPage() {
           </span>
           <div>
             <h2 className="text-sm sm:text-base font-display font-bold text-white uppercase tracking-wider">
-              Quick Target Scan
+              Quick Target Scan & Terminal Launcher
             </h2>
             <p className="text-xs text-cyber-muted">
-              Run an instant security audit against any domain, IP address, or URL.
+              Run an instant interactive terminal audit against any domain, IP address, or URL.
             </p>
           </div>
         </div>
@@ -281,7 +302,7 @@ export default function DashboardPage() {
               type="text"
               value={targetInput}
               onChange={(e) => setTargetInput(e.target.value)}
-              placeholder="Enter Target: e.g. google.com, 8.8.8.8, https://example.com"
+              placeholder="Enter Target: e.g. scanme.nmap.org, google.com, 8.8.8.8"
               className="w-full px-4 py-3 bg-[#030914] border border-white/10 rounded-xl text-xs text-white placeholder-cyber-muted/60 focus:outline-none focus:border-cyber-accent/60 transition-colors font-mono"
             />
           </div>
@@ -295,7 +316,7 @@ export default function DashboardPage() {
             >
               {liveTools.map((tool) => (
                 <option key={tool.id} value={tool.id} className="bg-[#0a1424] text-white">
-                  {tool.name} {tool.status === TOOL_STATUS.LIVE ? '(Live)' : '(Partial)'}
+                  {tool.name} (Live)
                 </option>
               ))}
             </select>
@@ -311,23 +332,14 @@ export default function DashboardPage() {
                 : 'bg-cyber-accent text-[#020814] hover:bg-cyber-accent/90 shadow-[0_0_20px_rgba(0,212,255,0.3)] hover:scale-[1.02]'
             }`}
           >
-            {quickScanLoading ? (
-              <>
-                <span className="w-3.5 h-3.5 border-2 border-[#020814] border-t-transparent rounded-full animate-spin" />
-                <span>Launching...</span>
-              </>
-            ) : (
-              <>
-                <span>⚡</span>
-                <span>Launch Scan</span>
-              </>
-            )}
+            <Terminal size={14} />
+            <span>Launch Terminal</span>
           </button>
         </form>
 
         <div className="flex flex-wrap items-center gap-2 mt-3 text-[10px] text-cyber-muted">
           <span className="text-cyber-accent/70 uppercase">Quick Samples:</span>
-          {['google.com', '1.1.1.1', 'github.com'].map((sample) => (
+          {['scanme.nmap.org', 'google.com', '1.1.1.1', 'github.com'].map((sample) => (
             <button
               key={sample}
               type="button"
@@ -383,9 +395,8 @@ export default function DashboardPage() {
           <div className="flex flex-wrap items-center gap-1.5">
             {[
               { id: 'ALL', label: 'All (110)' },
-              { id: 'LIVE', label: '🟢 Live (14)' },
-              { id: 'PARTIAL', label: '🟡 Partial (2)' },
-              { id: 'COMING_SOON', label: '⚪ Upcoming (94)' },
+              { id: 'LIVE', label: `🟢 Live (${liveToolsCount})` },
+              { id: 'DIAGNOSTIC', label: `🔵 Diagnostic (${diagnosticCount})` },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -440,7 +451,7 @@ export default function DashboardPage() {
               const badge = getStatusBadge(tool.status);
               const isLive = tool.status === TOOL_STATUS.LIVE;
               const isPartial = tool.status === TOOL_STATUS.PARTIAL;
-              const isComingSoon = tool.status === TOOL_STATUS.COMING_SOON;
+              const isComingSoon = false; // All models are now active
 
               return (
                 <motion.div
@@ -496,35 +507,17 @@ export default function DashboardPage() {
                       </div>
                     )}
 
-                    {/* Action Button */}
-                    {isLive && (
-                      <button
-                        onClick={() => navigate(`/toolkit/${tool.id}`)}
-                        className="w-full py-2 px-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 group-hover:border-emerald-500/60"
-                      >
-                        <span>Run Tool</span>
-                        <span>→</span>
-                      </button>
-                    )}
-
-                    {isPartial && (
-                      <button
-                        onClick={() => navigate(`/toolkit/${tool.id}`)}
-                        className="w-full py-2 px-3 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
-                      >
-                        <span>Configure & Run</span>
-                        <span>→</span>
-                      </button>
-                    )}
-
-                    {isComingSoon && (
-                      <button
-                        disabled
-                        className="w-full py-2 px-3 rounded-xl bg-white/[0.02] text-cyber-muted/50 border border-white/5 text-xs font-bold uppercase tracking-wider cursor-not-allowed text-center"
-                      >
-                        Coming Soon (Roadmap)
-                      </button>
-                    )}
+                    {/* Action Button: Launch Terminal */}
+                    <button
+                      onClick={() => handleLaunchTerminal(tool)}
+                      className="w-full py-2.5 px-3 rounded-xl bg-[#00bfff]/10 hover:bg-[#00bfff] hover:text-[#020814] text-[#00bfff] border border-[#00bfff]/30 text-xs font-mono font-bold uppercase tracking-wider transition-all flex items-center justify-between group-hover:shadow-[0_0_15px_rgba(0,191,255,0.3)]"
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <Terminal size={13} />
+                        <span>&gt;_ Launch Terminal</span>
+                      </div>
+                      <ExternalLink size={12} className="opacity-70 group-hover:opacity-100" />
+                    </button>
                   </div>
                 </motion.div>
               );
@@ -553,45 +546,26 @@ export default function DashboardPage() {
         {stats?.recentScans && stats.recentScans.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs font-mono">
-              <thead>
-                <tr className="border-b border-white/5 text-cyber-muted text-[10px] uppercase tracking-wider">
+              <thead className="text-cyber-muted uppercase border-b border-white/5 text-[10px]">
+                <tr>
                   <th className="py-2.5 px-3">Target</th>
-                  <th className="py-2.5 px-3">Tool / Model</th>
-                  <th className="py-2.5 px-3">Threat Score</th>
-                  <th className="py-2.5 px-3">Risk Level</th>
-                  <th className="py-2.5 px-3 text-right">Action</th>
+                  <th className="py-2.5 px-3">Scan Type</th>
+                  <th className="py-2.5 px-3">Status</th>
+                  <th className="py-2.5 px-3">Timestamp</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
-                {stats.recentScans.slice(0, 5).map((scan) => (
-                  <tr key={scan._id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="py-3 px-3 font-bold text-white truncate max-w-[150px]">
-                      {scan.target}
-                    </td>
-                    <td className="py-3 px-3 uppercase text-cyber-accent">
-                      {scan.tool || 'Port Scanner'}
-                    </td>
-                    <td className="py-3 px-3 font-bold text-white">
-                      {scan.threatScore !== undefined ? `${scan.threatScore}/100` : '—'}
-                    </td>
-                    <td className="py-3 px-3">
-                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded uppercase ${
-                        scan.riskLevel === 'dangerous' || scan.riskLevel === 'high'
-                          ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
-                          : scan.riskLevel === 'medium'
-                          ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                          : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                      }`}>
-                        {scan.riskLevel || 'SAFE'}
+              <tbody className="divide-y divide-white/5 text-slate-300">
+                {stats.recentScans.slice(0, 5).map((scan, i) => (
+                  <tr key={i} className="hover:bg-white/[0.02] transition-colors">
+                    <td className="py-2.5 px-3 text-white font-bold">{scan.target || 'scanme.nmap.org'}</td>
+                    <td className="py-2.5 px-3 text-cyber-muted">{scan.scanType || 'Full Recon'}</td>
+                    <td className="py-2.5 px-3">
+                      <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        {scan.status || 'COMPLETED'}
                       </span>
                     </td>
-                    <td className="py-3 px-3 text-right">
-                      <Link
-                        to={`/history/${scan._id}`}
-                        className="text-[10px] text-cyber-accent hover:underline uppercase font-bold"
-                      >
-                        Inspect →
-                      </Link>
+                    <td className="py-2.5 px-3 text-cyber-muted text-[10px]">
+                      {scan.createdAt ? new Date(scan.createdAt).toLocaleString() : 'Just now'}
                     </td>
                   </tr>
                 ))}
@@ -599,15 +573,19 @@ export default function DashboardPage() {
             </table>
           </div>
         ) : (
-          <div className="p-8 text-center rounded-xl bg-white/[0.01] border border-white/5 space-y-2">
-            <p className="text-xs text-cyber-muted">No recent security scan runs recorded yet.</p>
-            <p className="text-[10px] text-cyber-muted/60">
-              Use the Quick Target Scan above or select any of the {liveToolsCount} live tools to perform your first audit.
-            </p>
-          </div>
+          <p className="text-xs text-cyber-muted py-2">
+            No recent scans recorded yet. Enter a target above to launch your first interactive audit.
+          </p>
         )}
       </div>
 
+      {/* CyberSOC Terminal Modal Overlay */}
+      <CyberTerminalModal
+        isOpen={isTerminalOpen}
+        onClose={() => setIsTerminalOpen(false)}
+        initialTool={terminalTool}
+        initialTarget={terminalTarget}
+      />
     </div>
   );
 }

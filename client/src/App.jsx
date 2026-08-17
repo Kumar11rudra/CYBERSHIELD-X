@@ -66,8 +66,9 @@ const TeamPage                 = lazy(() => import('./pages/TeamPage'));
 // Helper Components
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
   if (loading) return <LoadingScreen />;
-  return user ? children : <Navigate to="/login" />;
+  return user ? children : <Navigate to={`/login?returnTo=${encodeURIComponent(location.pathname + location.search)}`} replace />;
 };
 
 const AdminRoute = ({ children }) => {
@@ -116,7 +117,7 @@ const AppRoutes = () => (
       <Route path="integrations" element={<PrivateRoute><IntegrationsPage /></PrivateRoute>} />
       <Route path="remediation" element={<PrivateRoute><RemediationPage /></PrivateRoute>} />
       <Route path="system-health" element={<PrivateRoute><SystemHealthPage /></PrivateRoute>} />
-      <Route path="toolkit" element={<ToolkitPage />} />
+      <Route path="toolkit" element={<PrivateRoute><ToolkitPage /></PrivateRoute>} />
       <Route path="threat-intel" element={<PrivateRoute><ThreatIntelligencePage /></PrivateRoute>} />
       <Route path="privacy" element={<PrivacyPolicyPage />} />
       <Route path="terms" element={<TermsOfServicePage />} />
@@ -128,7 +129,7 @@ const AppRoutes = () => (
 
 
       {/* ─── Toolkit — all tool pages share the same Layout shell ─────── */}
-      <Route path="toolkit/:toolId" element={<ToolDetailPage />} />
+      <Route path="toolkit/:toolId" element={<PrivateRoute><ToolDetailPage /></PrivateRoute>} />
 
       {/* ─── Legacy deep-link support (redirect old bookmarks) ────────── */}
       <Route path="email-intel" element={<Navigate replace to="/message-analyzer" />} />

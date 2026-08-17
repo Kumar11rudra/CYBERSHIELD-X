@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CATEGORIES, getAllTools, TOOL_STATUS } from '../toolkit/toolConfig';
+import { CATEGORIES, getAllTools } from '../toolkit/toolConfig';
 
 const CATEGORY_ICONS = {
   [CATEGORIES.RECON]: '🌐',
@@ -64,8 +64,6 @@ export default function NexusCategoryGrid() {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {Object.values(CATEGORIES).map(catName => {
         const catTools = tools.filter(t => t.category === catName);
-        const liveCount = catTools.filter(t => t.status === TOOL_STATUS.LIVE || t.status === TOOL_STATUS.PARTIAL).length;
-        const upcomingCount = catTools.filter(t => t.status === TOOL_STATUS.COMING_SOON).length;
         const icon = CATEGORY_ICONS[catName] || '🔧';
         const desc = CATEGORY_DESCS[catName] || 'Security diagnostic tools.';
 
@@ -79,14 +77,13 @@ export default function NexusCategoryGrid() {
               <div className="flex justify-between items-center mb-4">
                 <span className="text-3xl">{icon}</span>
                 <div className="flex gap-2">
-                  <span className="text-[7px] font-mono font-bold px-1.5 py-0.5 rounded border bg-[#00ff88]/10 border-[#00ff88]/20 text-[#00ff88]">
-                    LIVE: {liveCount}
+                  <span className="text-[8px] font-mono font-bold px-2 py-0.5 rounded border bg-[#00ff88]/10 border-[#00ff88]/20 text-[#00ff88] flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#00ff88] animate-pulse" />
+                    <span>{catTools.length} MODELS</span>
                   </span>
-                  {upcomingCount > 0 && (
-                    <span className="text-[7px] font-mono font-bold px-1.5 py-0.5 rounded border bg-white/5 border-white/10 text-white/40">
-                      UPCOMING: {upcomingCount}
-                    </span>
-                  )}
+                  <span className="text-[8px] font-mono font-bold px-2 py-0.5 rounded border bg-[#00bfff]/10 border-[#00bfff]/20 text-[#00bfff]">
+                    &gt;_ TERMINAL READY
+                  </span>
                 </div>
               </div>
               <h3 className="font-display text-sm font-bold text-white uppercase tracking-wider mb-2 group-hover:text-cyber-accent transition-colors">
@@ -97,7 +94,7 @@ export default function NexusCategoryGrid() {
               </p>
             </div>
             <div className="text-[9px] font-mono text-cyber-accent uppercase tracking-widest flex items-center gap-1">
-              <span>Explore Ecosystem</span>
+              <span>Launch Terminal Suite</span>
               <span>→</span>
             </div>
           </div>

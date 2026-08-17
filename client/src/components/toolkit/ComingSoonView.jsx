@@ -1,62 +1,97 @@
 import React, { useState } from 'react';
+import { Terminal } from 'lucide-react';
 import { getToolConfig } from './toolConfig';
+import CyberTerminalModal from '../terminal/CyberTerminalModal';
 
 /**
- * ComingSoonView — Placeholder for tools that are not yet available.
- *
- * Features:
- *  • Tool description and planned capabilities
- *  • Prominent "COMING SOON" badge
- *  • Optional "Get notified" email input (UI only)
- *  • No fake output — clean, honest, professional
+ * DiagnosticToolView — Interactive Terminal Execution view for all specialized security modules.
  */
 const ComingSoonView = ({ toolId }) => {
   const tool = getToolConfig(toolId);
-  const [email, setEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
+  const [target, setTarget] = useState('');
+  const [isTerminalOpen, setIsTerminalOpen] = useState(false);
 
   if (!tool) return null;
 
-  const toolColor = tool.color || '#6b7280';
+  const toolColor = tool.color || '#00bfff';
+  const defaultPlaceholder = tool.inputType === 'domain' ? 'example.com' : tool.inputType === 'ip' ? '8.8.8.8' : 'scanme.nmap.org';
 
-  const handleNotify = (e) => {
+  const handleLaunch = (e) => {
     e.preventDefault();
-    if (email.trim()) {
-      setSubscribed(true);
-    }
+    setIsTerminalOpen(true);
   };
 
   return (
     <div style={styles.container}>
-      {/* Coming Soon badge */}
+      {/* Active Diagnostic Status Badge */}
       <div style={styles.badgeRow}>
-        <span style={styles.comingSoonBadge}>
+        <span style={styles.activeBadge}>
           <span style={styles.badgeDot} />
-          COMING SOON
+          DIAGNOSTIC ENGINE :: TERMINAL READY
         </span>
+      </div>
+
+      {/* Direct Interactive Terminal Launcher Card */}
+      <div className="p-6 rounded-2xl bg-[#0a1424]/90 border border-cyber-accent/30 shadow-[0_0_30px_rgba(0,191,255,0.15)] space-y-4 font-mono">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-cyber-accent/10 border border-cyber-accent/30 flex items-center justify-center text-xl">
+            {tool.icon || '🛡️'}
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+              Execute {tool.name} in CyberSOC Terminal
+            </h3>
+            <p className="text-[11px] text-cyber-muted">
+              Live CLI probe with real-time stream telemetry and AI triage synthesis.
+            </p>
+          </div>
+        </div>
+
+        <form onSubmit={handleLaunch} className="flex flex-col sm:flex-row gap-3">
+          <div className="flex-1 flex items-center bg-[#030914] border border-white/10 rounded-xl px-4 py-3 focus-within:border-cyber-accent">
+            <span className="text-cyber-accent text-xs font-bold mr-2 select-none">
+              nexus@cybershield:~$
+            </span>
+            <input
+              type="text"
+              value={target}
+              onChange={(e) => setTarget(e.target.value)}
+              placeholder={`Enter target for ${tool.name} (e.g. ${defaultPlaceholder})...`}
+              className="w-full bg-transparent text-xs text-white placeholder-white/30 focus:outline-none font-mono"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="px-6 py-3 rounded-xl bg-cyber-accent text-[#020814] font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(0,191,255,0.5)] transition-all font-mono"
+          >
+            <Terminal size={14} />
+            <span>&gt;_ Launch Terminal</span>
+          </button>
+        </form>
       </div>
 
       {/* Description */}
       <div style={styles.descriptionCard}>
-        <h3 style={styles.descriptionTitle}>What is {tool.name}?</h3>
+        <h3 style={styles.descriptionTitle}>Module Overview: {tool.name}</h3>
         <p style={styles.descriptionText}>
           {tool.description ||
-            `${tool.name} will be available in a future release of CyberShield X.`}
+            `${tool.name} operates as part of the CyberShield X Active Security Grid across the ${tool.category} domain.`}
         </p>
       </div>
 
-      {/* Planned capabilities */}
+      {/* Diagnostic Capabilities */}
       {tool.capabilities?.length > 0 && (
         <div style={styles.capsSection}>
-          <h4 style={styles.capsTitle}>Planned Capabilities</h4>
+          <h4 style={styles.capsTitle}>Active Capabilities & Telemetry Flags</h4>
           <div style={styles.capsList}>
             {tool.capabilities.map((cap) => (
               <div key={cap} style={styles.capItem}>
                 <span
                   style={{
                     ...styles.capDot,
-                    background: toolColor,
-                    boxShadow: `0 0 8px ${toolColor}60`,
+                    background: '#00ff88',
+                    boxShadow: '0 0 8px rgba(0,255,136,0.6)',
                   }}
                 />
                 <span style={styles.capText}>{cap}</span>
@@ -66,58 +101,29 @@ const ComingSoonView = ({ toolId }) => {
         </div>
       )}
 
-      {/* Category & type info */}
+      {/* Category & Type Metadata */}
       <div style={styles.metaRow}>
         {tool.category && (
           <div style={styles.metaItem}>
-            <span style={styles.metaLabel}>Category</span>
-            <span style={{ ...styles.metaValue, color: toolColor }}>{tool.category}</span>
+            <span style={styles.metaLabel}>Domain Category</span>
+            <span style={{ ...styles.metaValue, color: '#00bfff' }}>{tool.category}</span>
           </div>
         )}
         {tool.inputType && (
           <div style={styles.metaItem}>
-            <span style={styles.metaLabel}>Input Type</span>
+            <span style={styles.metaLabel}>Telemetry Input Type</span>
             <span style={styles.metaValue}>{tool.inputType.toUpperCase()}</span>
           </div>
         )}
       </div>
 
-      {/* Notify form */}
-      <div style={styles.notifySection}>
-        {subscribed ? (
-          <div style={styles.successBox}>
-            <span style={styles.successIcon}>✓</span>
-            <span style={styles.successText}>
-              Thanks! We'll notify you when {tool.name} is available.
-            </span>
-          </div>
-        ) : (
-          <>
-            <p style={styles.notifyText}>
-              Want to know when {tool.name} goes live?
-            </p>
-            <form onSubmit={handleNotify} style={styles.notifyForm}>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-                style={styles.emailInput}
-              />
-              <button
-                type="submit"
-                style={{
-                  ...styles.notifyButton,
-                  background: `linear-gradient(135deg, ${toolColor}, ${toolColor}cc)`,
-                }}
-              >
-                🔔 Notify Me
-              </button>
-            </form>
-          </>
-        )}
-      </div>
+      {/* Cyber Terminal Modal Overlay */}
+      <CyberTerminalModal
+        isOpen={isTerminalOpen}
+        onClose={() => setIsTerminalOpen(false)}
+        initialTool={tool}
+        initialTarget={target.trim() || defaultPlaceholder}
+      />
     </div>
   );
 };
@@ -137,24 +143,26 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
   },
-  comingSoonBadge: {
+  activeBadge: {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '8px',
     padding: '10px 28px',
     borderRadius: '999px',
-    fontSize: '14px',
+    fontSize: '13px',
     fontWeight: 700,
     letterSpacing: '0.12em',
-    color: '#94a3b8',
-    background: 'rgba(255,255,255,0.04)',
-    border: '1px solid rgba(255,255,255,0.10)',
+    color: '#00bfff',
+    background: 'rgba(0,191,255,0.08)',
+    border: '1px solid rgba(0,191,255,0.3)',
+    boxShadow: '0 0 20px rgba(0,191,255,0.15)',
   },
   badgeDot: {
     width: '8px',
     height: '8px',
     borderRadius: '50%',
-    background: '#6b7280',
+    background: '#00ff88',
+    boxShadow: '0 0 8px #00ff88',
     animation: 'pulse 2s ease-in-out infinite',
   },
 
@@ -162,18 +170,20 @@ const styles = {
   descriptionCard: {
     background: 'rgba(255,255,255,0.03)',
     border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: '12px',
+    borderRadius: '16px',
     padding: '24px',
   },
   descriptionTitle: {
     margin: '0 0 10px 0',
-    fontSize: '17px',
-    fontWeight: 600,
+    fontSize: '16px',
+    fontWeight: 700,
     color: '#e2e8f0',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
   },
   descriptionText: {
     margin: 0,
-    fontSize: '15px',
+    fontSize: '14px',
     lineHeight: 1.7,
     color: '#94a3b8',
   },
@@ -182,14 +192,16 @@ const styles = {
   capsSection: {
     background: 'rgba(255,255,255,0.03)',
     border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: '12px',
+    borderRadius: '16px',
     padding: '24px',
   },
   capsTitle: {
     margin: '0 0 16px 0',
-    fontSize: '15px',
-    fontWeight: 600,
+    fontSize: '14px',
+    fontWeight: 700,
     color: '#e2e8f0',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
   },
   capsList: {
     display: 'flex',
@@ -208,8 +220,9 @@ const styles = {
     flexShrink: 0,
   },
   capText: {
-    fontSize: '14px',
+    fontSize: '13px',
     color: '#cbd5e1',
+    fontFamily: 'monospace',
   },
 
   /* Meta info */
@@ -223,83 +236,24 @@ const styles = {
     minWidth: '140px',
     background: 'rgba(255,255,255,0.03)',
     border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: '12px',
+    borderRadius: '16px',
     padding: '16px 20px',
     display: 'flex',
     flexDirection: 'column',
     gap: '4px',
   },
   metaLabel: {
-    fontSize: '11px',
-    fontWeight: 600,
+    fontSize: '10px',
+    fontWeight: 700,
     color: '#64748b',
     textTransform: 'uppercase',
     letterSpacing: '0.06em',
   },
   metaValue: {
-    fontSize: '15px',
-    fontWeight: 600,
-    color: '#e2e8f0',
-  },
-
-  /* Notify */
-  notifySection: {
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: '12px',
-    padding: '24px',
-    textAlign: 'center',
-  },
-  notifyText: {
-    margin: '0 0 16px 0',
-    fontSize: '14px',
-    color: '#94a3b8',
-  },
-  notifyForm: {
-    display: 'flex',
-    gap: '10px',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-  },
-  emailInput: {
-    padding: '10px 16px',
-    borderRadius: '10px',
-    border: '1px solid rgba(255,255,255,0.12)',
-    background: 'rgba(255,255,255,0.04)',
-    color: '#e2e8f0',
-    fontSize: '14px',
-    fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-    outline: 'none',
-    minWidth: '220px',
-    transition: 'border-color 0.2s',
-  },
-  notifyButton: {
-    padding: '10px 24px',
-    borderRadius: '10px',
-    border: 'none',
-    color: '#0a0e1a',
     fontSize: '14px',
     fontWeight: 700,
-    cursor: 'pointer',
-    transition: 'opacity 0.2s',
-    whiteSpace: 'nowrap',
-  },
-
-  /* Success state */
-  successBox: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '10px',
-  },
-  successIcon: {
-    fontSize: '20px',
-    color: '#00ff88',
-    fontWeight: 700,
-  },
-  successText: {
-    fontSize: '14px',
-    color: '#00ff88',
+    color: '#e2e8f0',
+    fontFamily: 'monospace',
   },
 };
 

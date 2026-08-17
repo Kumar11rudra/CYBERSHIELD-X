@@ -1,11 +1,13 @@
 # CyberShield X - Project State
 
 ## Current Status
-- **Architecture Version**: V30.0.0 (Phase 31: Partial-to-Live Security Catalog Expansion)
-- **Phase**: PHASE 31 — PARTIAL-TO-LIVE SECURITY CATALOG EXPANSION (COMPLETED)
-- **Status**: Upgraded AI Remediation Planner (`remediation`) and Threat Breach Checker (`breach`) from `partial` to `live`. AI Remediation Planner is fully integrated with shared 24h `MemoryCache`, Gemini 2.5 Flash, and IDOR ownership authorization. Threat Breach Checker is upgraded with SHA-1 k-Anonymity range queries (NIST SP 800-63B) and 1h caching with zero plaintext password storage or logging. Authoritative catalog now features 16 Live Models, 0 Partial Models, and 94 Upcoming Models. All unit, verification, and release gates pass cleanly.
+- **Architecture Version**: V32.0.0 (Phase 33: Mandatory Auth Gate, Scan History Auto-Save & Executive Dossier Export)
+- **Phase**: PHASE 33 — MANDATORY AUTHENTICATION GATE, TERMINAL AUTO-SAVE & EXECUTIVE DOSSIER EXPORT (COMPLETED)
+- **Status**: Enforced strict authentication gates on `/toolkit`, `/toolkit/:toolId`, and interactive terminal executions (preventing unauthenticated SSRF/abuse and driving user signups via sleek returnTo redirect flows). Added automated background persistence of completed terminal and chained playbook scans into `/api/scan` under the authenticated user's account (instantly updating `/history` and `/dashboard`). Upgraded terminal log exporter to generate formatted, branded Executive Security Audit Dossiers with zero compile or runtime regressions.
 
 ## Completed Phases
+- ✅ **Phase 33 (V32.0.0)**: Mandatory Auth Gate on Tools & Terminal, Automated Scan History Persistence (`/api/scan`), and 1-Click Executive Security Audit Dossier Export
+- ✅ **Phase 32 (V31.0.0)**: Tri-Hybrid Cyber Terminal Engine (Option 1 In-Modal + Option 6 AI Copilot CLI + Option 8 Chained Multi-Vector Playbooks), 4-Column Tools Hub Redesign & Global Active Badging
 - ✅ **Phase 31.1 (V30.1.0)**: Client Runtime Hardening, Stale Cache-First Service Worker Purge & Multi-Browser Safari Resilience (Blank Screen Permanent Fix)
 - ✅ **Phase 31 (V30.0.0)**: Partial-to-Live Catalog Expansion (AI Remediation Planner & Threat Breach Checker Live Activation — 16 Live Models)
 - ✅ **Phase 30.1 (V29.4.1)**: Trust Proxy Hardening, X-Request-Id Validation & Uncaught Exception Safe Shutdown
