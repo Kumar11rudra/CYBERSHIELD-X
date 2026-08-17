@@ -75,6 +75,11 @@ export default function AdminLoginPage() {
         </motion.div>
 
         <div className="z-10 mt-20 text-center max-w-lg relative">
+          <div className="inline-flex items-center gap-2 mb-3">
+            <span className="font-mono text-xs font-bold px-2.5 py-1 rounded bg-red-500/10 text-red-400 border border-red-500/30 tracking-wider">
+              CYBERSHIELD X v33.0.0
+            </span>
+          </div>
           <h2 className="font-display text-5xl font-bold text-red-500 tracking-widest mb-4 uppercase" style={{ textShadow: '0 0 20px rgba(255,0,0,0.4)' }}>
             NEXUS <br/><span className="text-white">COMMAND</span>
           </h2>
@@ -112,7 +117,10 @@ export default function AdminLoginPage() {
             <div className="inline-flex justify-center mb-4 relative drop-shadow-[0_0_30px_rgba(255,0,0,0.5)]">
               <BrandLogo size={60} color="#ef4444" />
             </div>
-            <h1 className="font-display text-3xl font-bold text-red-500 tracking-widest">NEXUS COMMAND</h1>
+            <div className="flex items-center justify-center gap-2">
+              <h1 className="font-display text-3xl font-bold text-red-500 tracking-widest">NEXUS COMMAND</h1>
+              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 border border-red-500/30">v33.0.0</span>
+            </div>
           </div>
 
           <div className="bg-white/[0.02] backdrop-blur-3xl border border-red-500/20 p-8 md:p-10 rounded-2xl shadow-[0_8px_50px_rgba(255,0,0,0.15)] relative overflow-hidden">

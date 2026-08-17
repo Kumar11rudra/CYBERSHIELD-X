@@ -153,9 +153,10 @@ export default function Layout() {
 
       {/* MOBILE HEADER BAR */}
       <div className={`lg:hidden fixed top-0 left-0 right-0 h-16 backdrop-blur-xl border-b z-[60] flex items-center justify-between px-4 transition-colors ${isDark ? 'bg-[#020814]/90 border-white/10' : 'bg-white/90 border-black/10'}`}>
-        <Link to="/" className="flex items-center gap-3">
+        <Link to="/" className="flex items-center gap-2.5">
           <BrandLogo size={24} />
           <span className="font-display font-black text-sm text-white tracking-widest uppercase">CYBERSHIELD X</span>
+          <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyber-accent/15 text-cyber-accent border border-cyber-accent/30 tracking-wider">v33.0.0</span>
         </Link>
         {user && (
           <button
@@ -186,7 +187,10 @@ export default function Layout() {
                 <BrandLogo size={26} />
               </div>
               <div>
-                <h1 className="font-display text-sm font-black tracking-wider text-white group-hover:text-cyber-accent transition-colors">CYBERSHIELD X</h1>
+                <div className="flex items-center gap-2">
+                  <h1 className="font-display text-sm font-black tracking-wider text-white group-hover:text-cyber-accent transition-colors">CYBERSHIELD X</h1>
+                  <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyber-accent/15 text-cyber-accent border border-cyber-accent/30 tracking-wider">v33.0.0</span>
+                </div>
                 <p className="font-mono text-[8px] text-cyber-accent/80 tracking-[0.25em] uppercase">Security Workspace</p>
               </div>
             </Link>

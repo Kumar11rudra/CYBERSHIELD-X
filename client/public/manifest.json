@@ -1,26 +1,46 @@
 {
-  "short_name": "CyberShield",
-  "name": "CyberShield X - Tactical Defense Command",
-  "description": "Premium Cyber Threat Intelligence and Command Center",
+  "short_name": "CyberShield X",
+  "name": "CyberShield X — Threat Intelligence Platform",
+  "description": "Enterprise AI-Powered Threat Intelligence and Security Workspace",
   "icons": [
     {
       "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
+      "sizes": "48x48 32x32 24x24 16x16",
       "type": "image/x-icon"
+    },
+    {
+      "src": "favicon-48x48.png",
+      "type": "image/png",
+      "sizes": "48x48",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "favicon-96x96.png",
+      "type": "image/png",
+      "sizes": "96x96",
+      "purpose": "any maskable"
     },
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512",
+      "purpose": "any"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
-  "theme_color": "#01060f",
-  "background_color": "#01060f"
+  "theme_color": "#020814",
+  "background_color": "#020814"
 }

@@ -96,6 +96,11 @@ export default function LoginPage() {
         </motion.div>
 
         <div className="z-10 mt-16 text-center max-w-lg">
+          <div className="inline-flex items-center gap-2 mb-4">
+            <span className="font-mono text-xs font-bold px-2.5 py-1 rounded bg-cyber-green/10 text-cyber-green border border-cyber-green/30 tracking-wider">
+              CYBERSHIELD X v33.0.0
+            </span>
+          </div>
           <h2 className="font-display text-4xl font-bold text-white tracking-widest mb-6 uppercase">
             SECURE <br /><span className="text-cyber-green">ACCESS</span>
           </h2>
@@ -124,7 +129,10 @@ export default function LoginPage() {
             <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 3, repeat: Infinity }} className="inline-flex justify-center mb-2">
               <BrandLogo size={50} />
             </motion.div>
-            <h1 className="font-display text-xl font-bold text-white tracking-widest">CYBERSHIELD X</h1>
+            <div className="flex items-center justify-center gap-2">
+              <h1 className="font-display text-xl font-bold text-white tracking-widest">CYBERSHIELD X</h1>
+              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyber-green/10 text-cyber-green border border-cyber-green/30">v33.0.0</span>
+            </div>
           </div>
 
           <div className="absolute top-0 right-0 p-4 z-20">

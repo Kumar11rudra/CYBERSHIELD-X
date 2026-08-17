@@ -221,6 +221,11 @@ export default function SignupPage() {
           </motion.div>
 
           <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 mb-3">
+              <span className="font-mono text-[10px] font-bold px-2.5 py-0.5 rounded bg-cyber-green/10 text-cyber-green border border-cyber-green/30 tracking-wider">
+                CYBERSHIELD X v33.0.0
+              </span>
+            </div>
             <h1 className="font-display text-5xl font-black tracking-tighter uppercase leading-[0.9] text-white">Nexus</h1>
             <h1 className="font-display text-5xl font-black tracking-tighter uppercase leading-[0.9] text-cyber-green">Registry</h1>
             <p className="font-mono text-[10px] text-white/40 uppercase tracking-[0.4em] mt-4">Secure Identity Node</p>
@@ -249,7 +254,10 @@ export default function SignupPage() {
           {/* Mobile Header Logo */}
           <div className="text-center mb-8 lg:hidden">
             <BrandLogo size={60} />
-            <h2 className="font-display text-2xl font-bold text-white tracking-widest mt-2 uppercase">Nexus Registry</h2>
+            <div className="flex items-center justify-center gap-2 mt-2">
+              <h2 className="font-display text-2xl font-bold text-white tracking-widest uppercase">Nexus Registry</h2>
+              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyber-green/10 text-cyber-green border border-cyber-green/30">v33.0.0</span>
+            </div>
           </div>
 
           <div className="bg-white/[0.03] backdrop-blur-3xl border border-white/10 p-8 lg:p-12 rounded-3xl shadow-[0_20px_80px_rgba(0,0,0,0.6)] relative overflow-hidden">

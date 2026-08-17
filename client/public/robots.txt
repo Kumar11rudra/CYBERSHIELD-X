@@ -1,5 +1,11 @@
 User-agent: *
 Allow: /
+Allow: /favicon.ico
+Allow: /favicon*.png
+Allow: /logo*.png
+Allow: /apple-touch-icon.png
+Allow: /og-banner.png
+Allow: /manifest.json
 Allow: /team
 Allow: /login
 Allow: /signup
@@ -10,7 +16,12 @@ Disallow: /dashboard/*
 Disallow: /nexus-admin/*
 Disallow: /settings/*
 Disallow: /history/*
-Disallow: /toolkit/*
 Disallow: /api/*
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Google-Favicon
+Allow: /
 
 Sitemap: https://www.cybershieldx.in/sitemap.xml

@@ -139,7 +139,7 @@ export default function FooterSection({
         {/* Bottom Metadata */}
         <div className="w-full max-w-3xl border-t border-cyber-border/10 pt-6 flex flex-col items-center gap-4">
           <div className="text-[10px] text-cyber-muted text-center font-body flex flex-col gap-2 items-center">
-            <span>© {new Date().getFullYear()} CYBERSHIELD X. All rights reserved.</span>
+            <span>© {new Date().getFullYear()} CYBERSHIELD X • Platform v33.0.0 (Tactical SOC Edition). All rights reserved.</span>
             <div className="flex flex-wrap justify-center gap-4 text-center">
               <Link to="/privacy" className="text-cyber-accent hover:underline">Privacy Policy</Link>
               <span className="text-cyber-border/20">|</span>
