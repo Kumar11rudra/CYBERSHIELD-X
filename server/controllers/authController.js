@@ -63,11 +63,12 @@ class AuthController {
 
     login = async (req, res) => {
         try {
-            const { email, password } = req.body;
+            const { email, identity, password } = req.body;
+            const loginId = (email || identity || '').trim();
             const ip = req.ip;
             const userAgent = req.get('User-Agent');
 
-            const { user, accessToken, refreshToken } = await this.authService.login({ email, password, ip, userAgent });
+            const { user, accessToken, refreshToken } = await this.authService.login({ email: loginId, identity: loginId, password, ip, userAgent });
 
             // Set secure cookies
             const cookieSameSite = process.env.NODE_ENV === 'production' ? 'none' : 'strict';

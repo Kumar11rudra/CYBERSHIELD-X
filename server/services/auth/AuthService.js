@@ -121,20 +121,26 @@ class AuthService {
     /**
      * Login user
      */
-    async login({ email, password, ip, userAgent }) {
-        if (!email || !password) {
-            throw new Error('Email and password are required');
+    async login({ email, identity, password, ip, userAgent }) {
+        const loginIdentifier = String(email || identity || '').toLowerCase().trim();
+        if (!loginIdentifier || !password) {
+            throw new Error('Email or Username and password are required');
         }
 
-        const normalizedEmail = email.toLowerCase().trim();
-        // Use emailHash for lookup since email field is encrypted at rest with random IV
-        const emailHash = crypto.createHash('sha256').update(normalizedEmail).digest('hex');
-        const user = await this.userRepo.findOne({ emailHash });
+        // 1. Lookup by SHA-256 emailHash
+        const emailHash = crypto.createHash('sha256').update(loginIdentifier).digest('hex');
+        let user = await this.userRepo.findOne({ emailHash });
+
+        // 2. Fallback: Lookup by username
+        if (!user) {
+            user = await this.userRepo.findOne({ username: loginIdentifier });
+        }
+
         if (!user) {
             await this.eventPublisher.publish({
                 type: 'UserLoginFailed',
                 source: 'AuthService',
-                payload: { email, reason: 'User not found', ip }
+                payload: { identifier: loginIdentifier, reason: 'User not found', ip }
             });
             throw new Error('Invalid credentials');
         }

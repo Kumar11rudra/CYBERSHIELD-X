@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }) => {
 
     const res = await api.post('/auth/login', {
       email,
+      identity: email,
       password,
       otp, // Pass the 2FA token if provided
       clientIntel: { location, network }
