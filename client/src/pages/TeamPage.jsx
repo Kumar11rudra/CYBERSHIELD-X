@@ -19,7 +19,7 @@ const TEAM = [
     name: 'Suryansh',
     role: 'Data Analyst',
     color: '00ff88',
-    initials: 'SP',
+    initials: 'SY',
     clearance: 'CORE SPECIALIST',
     status: 'ONLINE',
     focus: 'DATA INTELLIGENCE & THREAT ANALYSIS'
@@ -39,7 +39,7 @@ const TEAM = [
     name: 'Pranav',
     role: 'Data Analyst',
     color: 'b400ff',
-    initials: 'PK',
+    initials: 'PR',
     clearance: 'CORE SPECIALIST',
     status: 'ONLINE',
     focus: 'DATA ANALYTICS & SECURITY TELEMETRY'
