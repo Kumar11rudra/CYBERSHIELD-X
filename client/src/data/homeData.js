@@ -6,7 +6,7 @@ export const team = [
     isFounder: true
   },
   {
-    name: 'Suryansh Pandey',
+    name: 'Suryansh',
     role: 'Data Analyst',
     color: '00ff88'
   },
@@ -16,7 +16,7 @@ export const team = [
     color: 'ff8c00'
   },
   {
-    name: 'Pranav Kumar',
+    name: 'Pranav',
     role: 'Data Analyst',
     color: 'b400ff'
   },

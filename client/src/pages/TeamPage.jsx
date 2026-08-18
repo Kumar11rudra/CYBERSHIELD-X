@@ -16,7 +16,7 @@ const TEAM = [
   },
   {
     id: 'suryansh-pandey',
-    name: 'Suryansh Pandey',
+    name: 'Suryansh',
     role: 'Data Analyst',
     color: '00ff88',
     initials: 'SP',
@@ -36,7 +36,7 @@ const TEAM = [
   },
   {
     id: 'pranav-kumar',
-    name: 'Pranav Kumar',
+    name: 'Pranav',
     role: 'Data Analyst',
     color: 'b400ff',
     initials: 'PK',

@@ -83,9 +83,9 @@ graph TD
 Visit our interactive Cyber Command Center at [https://www.cybershieldx.in/team](https://www.cybershieldx.in/team).
 
 * **Anil Kumar** — *Founder & Command Chief* (Architecture, Core Platform & Strategic Vision)
-* **Suryansh Pandey** — *Core Security Architect* (Vulnerability Assessment & Network Defense)
+* **Suryansh** — *Core Security Architect* (Vulnerability Assessment & Network Defense)
 * **Aryan Patel** — *Lead SOC Engineer* (SIEM Monitoring, Threat Intelligence & Incident Response)
-* **Pranav Kumar** — *AI & Threat Intelligence* (Machine Learning Models & Automation)
+* **Pranav** — *AI & Threat Intelligence* (Machine Learning Models & Automation)
 * **Ankita** — *DevOps & Cloud Security* (CI/CD Pipelines, Infrastructure Hardening & Cloud Reliability)
 * **Sushant** — *Data Analyst* (Threat Analytics, Telemetry Correlation & Visualizations)
 
