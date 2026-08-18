@@ -15,7 +15,7 @@ const TEAM = [
     focus: 'THREAT INTELLIGENCE & CORE ARCHITECTURE'
   },
   {
-    id: 'suryansh-pandey',
+    id: 'suryansh',
     name: 'Suryansh',
     role: 'Data Analyst',
     color: '00ff88',
@@ -35,7 +35,7 @@ const TEAM = [
     focus: 'AI SECURITY MODELS & THREAT DETECTION'
   },
   {
-    id: 'pranav-kumar',
+    id: 'pranav',
     name: 'Pranav',
     role: 'Data Analyst',
     color: 'b400ff',
@@ -163,7 +163,7 @@ const CyberAvatar = ({ color, initials, id, size = 78 }) => {
         <svg viewBox="0 0 64 64" fill="none" className="w-[72%] h-[72%] relative z-10">
           <path d="M32 10C21 10 16 18 16 28C16 38 21 44 32 46C43 44 48 38 48 28C48 18 43 10 32 10Z" fill={`${hex}20`} stroke={hex} strokeWidth="1.5" />
           
-          {(id === 'suryansh-pandey' || id === 'sushant') && (
+          {(id === 'suryansh' || id === 'sushant') && (
             <>
               <path d="M20 25C24 23 40 23 44 25C42 29 38 31 32 31C26 31 22 29 20 25Z" fill={hex} opacity="0.9" />
               <circle cx="26" cy="27" r="1.5" fill="#fff" />
@@ -179,7 +179,7 @@ const CyberAvatar = ({ color, initials, id, size = 78 }) => {
             </>
           )}
 
-          {id === 'pranav-kumar' && (
+          {id === 'pranav' && (
             <>
               <path d="M20 25C24 23 40 23 44 25C42 29 38 31 32 31C26 31 22 29 20 25Z" fill={hex} opacity="0.9" />
               <path d="M22 27H42" stroke="#fff" strokeWidth="1" strokeDasharray="2 2" />
