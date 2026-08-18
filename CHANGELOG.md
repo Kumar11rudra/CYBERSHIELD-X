@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v35.0.0] - 2026-08-18
+### Phase 37: Security Tool Catalog Expansion (Batch 2: Web Security, DNS & OSINT Suite)
+- **CORS Configuration Auditor (`cors-scanner`)**: Upgraded to `TOOL_STATUS.LIVE`. Added multi-origin probing (arbitrary origin, null origin, subdomain prefix) detecting unvalidated origin reflections and dangerous credential trust (`ACAC: true`).
+- **CSP Policy Evaluator (`csp-evaluator`)**: Upgraded to `TOOL_STATUS.LIVE`. Built automated Content-Security-Policy evaluator calculating security grades (A+ to F), flagging XSS script-src bypasses (`unsafe-inline`, `unsafe-eval`, wildcards), and auditing fallback directives.
+- **Dnsx Multi-Record Resolver (`dnsx`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented parallel resolution of 8 DNS record types (A, AAAA, MX, TXT, NS, CNAME, SOA, CAA) with real-time latency measurement.
+- **AbuseIPDB Threat Score Analyzer (`abuseipdb`)**: Upgraded to `TOOL_STATUS.LIVE`. Integrated real-time IP abuse confidence scoring, ISP/ASN metadata resolution, and threat history classification.
+- **Sherlock Social & Username Profiler (`sherlock`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented parallel account discovery across 10+ developer & web platforms (GitHub, Reddit, Twitter/X, Telegram, Dev.to, Medium, GitLab, NPM, YouTube) with direct profile links.
+- **Dedicated GUI Visual Cards (`AnalyzerToolView.jsx` & `ScannerToolView.jsx`)**: Added interactive origin test tables, grade meters, DNS record chips, and clickable profile cards.
+- **Verification**: Created `server/tests/batch2_web_intel_tools.test.js` (6/6 tests passing, 14/14 total batch tests passing) and verified clean client build (`npm run build` exit code 0).
+
 ## [v34.0.0] - 2026-08-18
 ### Phase 36: Security Tool Catalog Expansion (Batch 1: Reconnaissance & Network Suite)
 - **Subdomain Discovery Engine (`subfinder`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented live Certificate Transparency log ingestion (`crt.sh`) paired with DNS A-record resolvers, wildcard cleanup, and real-time live host identification.

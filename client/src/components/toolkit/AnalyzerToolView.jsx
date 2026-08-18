@@ -116,6 +116,176 @@ const AnalyzerToolView = ({ toolId }) => {
   const renderResultCards = (data) => {
     if (!data) return null;
 
+    // 1. Sherlock OSINT Username Profiler View
+    if (data.profiles && data.totalScanned !== undefined) {
+      return (
+        <div className="p-6 rounded-2xl bg-[#0a1424]/90 border border-[#10b981]/30 shadow-2xl space-y-4 font-mono">
+          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            <div>
+              <h3 className="text-sm font-bold text-white uppercase tracking-wider">Sherlock Identity Profiles</h3>
+              <p className="text-[11px] text-cyber-muted mt-0.5">{data.summary}</p>
+            </div>
+            <div className="flex items-center gap-3 text-xs">
+              <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-slate-300 font-bold">
+                Scanned: {data.totalScanned}
+              </span>
+              <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-emerald-400 font-bold">
+                Found: {data.foundCount}
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
+            {data.profiles.map((p, i) => (
+              <div key={i} className={`p-3 rounded-xl border transition-all ${p.exists ? 'bg-emerald-950/20 border-emerald-500/30 hover:border-emerald-400' : 'bg-black/30 border-white/5 opacity-50'}`}>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-white">{p.platform}</span>
+                  <span className={`text-[9px] px-2 py-0.5 rounded font-bold uppercase ${p.exists ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-500'}`}>
+                    {p.exists ? '● Found' : '○ Not Found'}
+                  </span>
+                </div>
+                {p.exists ? (
+                  <a
+                    href={p.profileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[11px] text-cyan-400 hover:text-cyan-300 underline truncate block mt-2"
+                  >
+                    {p.profileUrl} ↗
+                  </a>
+                ) : (
+                  <span className="text-[10px] text-slate-600 block mt-2">No public account</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // 2. CORS Configuration Auditor View
+    if (data.tests && data.overallRisk) {
+      const isCritical = data.overallRisk === 'CRITICAL' || data.overallRisk === 'HIGH';
+      return (
+        <div className="p-6 rounded-2xl bg-[#0a1424]/90 border border-[#0ea5e9]/30 shadow-2xl space-y-4 font-mono">
+          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            <div>
+              <h3 className="text-sm font-bold text-white uppercase tracking-wider">CORS Misconfiguration Audit</h3>
+              <p className="text-[11px] text-cyber-muted mt-0.5">{data.summary}</p>
+            </div>
+            <span className={`px-3 py-1 rounded-lg text-xs font-bold uppercase border ${isCritical ? 'bg-red-500/15 text-red-400 border-red-500/30 animate-pulse' : 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'}`}>
+              Risk: {data.overallRisk}
+            </span>
+          </div>
+
+          <div className="space-y-3">
+            {data.tests.map((t, i) => (
+              <div key={i} className="p-4 rounded-xl bg-black/40 border border-white/5 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-white">{t.label}</span>
+                  <span className={`text-[10px] px-2 py-0.5 rounded font-bold uppercase ${t.risk === 'CRITICAL' || t.risk === 'HIGH' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-emerald-500/10 text-emerald-400'}`}>
+                    {t.risk}
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-[11px]">
+                  <div><span className="text-slate-500">Tested Origin:</span> <span className="text-cyan-400">{t.testOrigin}</span></div>
+                  <div><span className="text-slate-500">Allowed Origin:</span> <span className="text-amber-400">{t.allowOrigin}</span></div>
+                  <div><span className="text-slate-500">Credentials:</span> <span className="text-white">{String(t.allowCredentials)}</span></div>
+                </div>
+                {t.issue && t.issue !== 'None' && (
+                  <p className="text-[11px] text-red-400/90 bg-red-950/20 p-2 rounded border border-red-500/20 mt-1">
+                    ⚠ {t.issue}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // 3. CSP Policy Evaluator View
+    if (data.grade && data.directives) {
+      return (
+        <div className="p-6 rounded-2xl bg-[#0a1424]/90 border border-[#10b981]/30 shadow-2xl space-y-4 font-mono">
+          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            <div>
+              <h3 className="text-sm font-bold text-white uppercase tracking-wider">CSP Security Policy Evaluation</h3>
+              <p className="text-[11px] text-cyber-muted mt-0.5">{data.summary}</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className={`text-2xl font-black px-4 py-1 rounded-xl border ${data.grade.startsWith('A') ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' : data.grade === 'B' ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40' : 'bg-red-500/20 text-red-400 border-red-500/40'}`}>
+                {data.grade}
+              </span>
+              <span className="text-xs text-slate-400 font-bold">Score: {data.score}/100</span>
+            </div>
+          </div>
+
+          {data.findings?.length > 0 && (
+            <div className="space-y-2">
+              <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Security Observations ({data.findings.length})</span>
+              {data.findings.map((f, i) => (
+                <div key={i} className="p-3 rounded-lg bg-black/40 border border-white/5 flex items-start gap-2 text-xs">
+                  <span className={`text-[9px] px-2 py-0.5 rounded font-bold uppercase shrink-0 ${f.severity === 'HIGH' ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                    {f.severity}
+                  </span>
+                  <span className="text-slate-300">{f.message}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Configured Directives ({data.directiveCount})</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+              {Object.entries(data.directives).map(([dir, vals]) => (
+                <div key={dir} className="p-2.5 rounded-lg bg-black/30 border border-white/5 text-xs">
+                  <span className="text-cyan-400 font-bold">{dir}:</span>
+                  <span className="text-slate-300 ml-1.5 break-all">{Array.isArray(vals) ? vals.join(' ') : String(vals)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // 4. AbuseIPDB Threat View
+    if (data.abuseConfidenceScore && data.ipAddress) {
+      return (
+        <div className="p-6 rounded-2xl bg-[#0a1424]/90 border border-[#e11d48]/30 shadow-2xl space-y-4 font-mono">
+          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            <div>
+              <h3 className="text-sm font-bold text-white uppercase tracking-wider">IP Threat & Abuse Intelligence</h3>
+              <p className="text-[11px] text-cyber-muted mt-0.5">{data.summary}</p>
+            </div>
+            <span className={`px-3 py-1 rounded-lg text-xs font-bold uppercase border ${data.riskLevel === 'CLEAN' ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' : 'bg-red-500/15 text-red-400 border-red-500/30'}`}>
+              {data.riskLevel}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
+              <span className="text-[10px] text-slate-500 uppercase font-bold">Target IP</span>
+              <div className="text-xs text-white font-bold">{data.ipAddress}</div>
+            </div>
+            <div className="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
+              <span className="text-[10px] text-slate-500 uppercase font-bold">Abuse Confidence</span>
+              <div className="text-xs text-red-400 font-bold">{data.abuseConfidenceScore}</div>
+            </div>
+            <div className="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
+              <span className="text-[10px] text-slate-500 uppercase font-bold">ISP / ASN</span>
+              <div className="text-xs text-cyan-400 font-bold truncate">{data.isp}</div>
+            </div>
+            <div className="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
+              <span className="text-[10px] text-slate-500 uppercase font-bold">Country</span>
+              <div className="text-xs text-amber-400 font-bold">{data.country}</div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     // If data is an array of items
     if (Array.isArray(data)) {
       return (

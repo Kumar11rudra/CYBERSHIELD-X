@@ -330,6 +330,45 @@ const ScannerToolView = ({ toolId }) => {
         </div>
       )}
 
+      {/* Structured Visual Cards for Dnsx Multi-Record Resolver */}
+      {structuredData?.records && structuredData?.latencyMs && (
+        <div className="p-6 rounded-2xl bg-[#0a1424]/90 border border-[#06b6d4]/30 shadow-2xl space-y-4 font-mono">
+          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            <div>
+              <h3 className="text-sm font-bold text-white uppercase tracking-wider">Dnsx Multi-Record Resolution</h3>
+              <p className="text-[11px] text-cyber-muted mt-0.5">{structuredData.summary}</p>
+            </div>
+            <div className="flex items-center gap-3 text-xs">
+              <span className="px-3 py-1 bg-[#06b6d4]/10 border border-[#06b6d4]/30 rounded-lg text-[#06b6d4] font-bold">
+                Records: {structuredData.totalRecords}
+              </span>
+              <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-emerald-400 font-bold">
+                ⚡ {structuredData.latencyMs}
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            {Object.entries(structuredData.records).map(([recType, val]) => {
+              const count = Array.isArray(val) ? val.length : val ? 1 : 0;
+              return (
+                <div key={recType} className="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-cyan-400 font-bold tracking-wider">{recType}</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-slate-400">{count}</span>
+                  </div>
+                  <div className="text-xs text-white truncate">
+                    {Array.isArray(val) 
+                      ? val.length > 0 ? val[0] : <span className="text-slate-600 text-[11px]">None</span>
+                      : val ? (typeof val === 'object' ? JSON.stringify(val).slice(0, 30) : String(val)) : <span className="text-slate-600 text-[11px]">None</span>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Terminal output */}
       <div style={styles.terminalSection}>
         <div style={styles.terminalHeader}>

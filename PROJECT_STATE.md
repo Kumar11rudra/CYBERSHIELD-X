@@ -1,11 +1,12 @@
 # CyberShield X - Project State
 
 ## Current Status
-- **Architecture Version**: V34.0.0 (Phase 36: Security Tool Catalog Expansion — Batch 1: Reconnaissance & Network Suite)
-- **Phase**: PHASE 36 — BATCH 1 RECON & NETWORK DEEP VISUAL SCANNERS (COMPLETED)
-- **Status**: Activated 5 high-demand security tools from upcoming to full Dedicated GUI Live status: `subfinder` (Subdomain Discovery via crt.sh & live DNS), `dnssec-audit` (DNSSEC Cryptographic Trust Chain Validator), `ipv6-checker` (IPv6 Dual-Stack & AAAA Connectivity Auditor), `mac-lookup` (MAC OUI Hardware Vendor & Format Parser), and `cve-lookup` (CVE Vulnerability & CVSS 3.1 Inspector). Built dedicated `networkToolService.js` with SSRF protection, sub-second offline CVE & OUI caches, and live DoH/CT API fallbacks. Enhanced `ScannerToolView.jsx` with real-time visual cards, subdomain lists with live IP badges, and IPv6 readiness gauges. Verified with 8/8 passing Jest test suite and clean client production build.
+- **Architecture Version**: V35.0.0 (Phase 37: Security Tool Catalog Expansion — Batch 2: Web Security, DNS & OSINT Suite)
+- **Phase**: PHASE 37 — BATCH 2 WEB SECURITY, DNS & OSINT DEEP VISUAL SCANNERS (COMPLETED)
+- **Status**: Activated 5 additional high-demand security tools from upcoming to full Dedicated GUI Live status: `cors-scanner` (CORS Misconfiguration & Origin Reflection Auditor), `csp-evaluator` (Content-Security-Policy Parser & Grade Calculator), `dnsx` (Parallel Multi-Record DNS & CNAME Resolver), `abuseipdb` (AbuseIPDB Threat Score & IP Reputation Analyzer), and `sherlock` (Sherlock Social Profiler across 10+ major developer & web platforms). Built dedicated `webIntelToolService.js` with SSRF protection, custom preflight probes, and CSP Grade algorithms. Enhanced `ScannerToolView.jsx` and `AnalyzerToolView.jsx` with rich visual widgets, interactive origin test tables, grade badges, and profile links. Verified with 14/14 passing Jest test suite and clean client production build.
 
 ## Completed Phases
+- ✅ **Phase 37 (V35.0.0)**: Security Tool Catalog Expansion (Batch 2: Web Security, DNS & OSINT Suite — CORS Scanner, CSP Evaluator, Dnsx Multi-Record Resolver, AbuseIPDB Threat Reporter, Sherlock Social Profiler)
 - ✅ **Phase 36 (V34.0.0)**: Security Tool Catalog Expansion (Batch 1: Reconnaissance & Network Suite — Subdomain Discovery, DNSSEC Audit, IPv6 Readiness, MAC OUI Parser, CVE Vulnerability Inspector)
 - ✅ **Phase 35 (V33.1.0)**: Comprehensive Copy De-AI-ification, Simple US English Natural Language Transformation Across All Components, Pages, and Localization Bundles
 - ✅ **Phase 34 (V33.0.0)**: Brand Identity Perfection, Original Shield Restoration, In-Flow Footer Version Badge, Favicon Cache-Busting & Bot Avatar Suite Deployment

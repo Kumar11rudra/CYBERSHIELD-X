@@ -10,6 +10,7 @@ const toolsController = require('./toolsController');
 const breachController = require('./breachController');
 const remediationController = require('./remediationController');
 const networkToolService = require('../services/networkToolService');
+const webIntelToolService = require('../services/webIntelToolService');
 
 const sanitizeTarget = (target) => {
   if (typeof target !== 'string') throw new Error('Target must be a string');
@@ -28,7 +29,8 @@ const ACTIVE_TOOLS = new Set([
   'dns', 'whois', 'port', 'tech_detection', 'http', 'ssl', 'phishing',
   'service_fingerprint', 'remediation', 'url', 'breach', 'sms', 'upi',
   'jwt-parser', 'base64-decoder', 'url-sanitizer',
-  'subfinder', 'dnssec-audit', 'ipv6-checker', 'mac-lookup', 'cve-lookup'
+  'subfinder', 'dnssec-audit', 'ipv6-checker', 'mac-lookup', 'cve-lookup',
+  'cors-scanner', 'csp-evaluator', 'dnsx', 'abuseipdb', 'sherlock'
 ]);
 
 const parseDnsFromResponse = (resData) => {
@@ -140,6 +142,49 @@ const executeTool = async (req, res) => {
       if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
       const ipv6Results = await networkToolService.checkIpv6(cleanTarget);
       return res.json({ success: true, results: ipv6Results });
+    }
+
+    // Batch 2: Sherlock OSINT Social Profiler
+    if (toolId === 'sherlock') {
+      const sherlockResults = await webIntelToolService.profileUsername(cleanTarget);
+      return res.json({ success: true, results: sherlockResults });
+    }
+
+    // Batch 2: AbuseIPDB Threat Score Analyzer
+    if (toolId === 'abuseipdb') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback IP addresses are not permitted.' });
+      const abuseResults = await webIntelToolService.checkAbuseIp(cleanTarget);
+      return res.json({ success: true, results: abuseResults });
+    }
+
+    // Batch 2: CORS Configuration Auditor
+    if (toolId === 'cors-scanner') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const corsResults = await webIntelToolService.auditCors(cleanTarget);
+      return res.json({ success: true, results: corsResults });
+    }
+
+    // Batch 2: CSP Policy Evaluator
+    if (toolId === 'csp-evaluator') {
+      if (cleanTarget.includes('.') && (isValidURL(cleanTarget) || isValidDomain(cleanTarget))) {
+        const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+        if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      }
+      const cspResults = await webIntelToolService.evaluateCsp(cleanTarget);
+      return res.json({ success: true, results: cspResults });
+    }
+
+    // Batch 2: Dnsx Multi-Record Resolver
+    if (toolId === 'dnsx') {
+      if (!isValidDomain(cleanTarget) && !isValidURL(cleanTarget)) {
+        return res.status(400).json({ error: 'Enter a valid domain name.' });
+      }
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const dnsxResults = await webIntelToolService.resolveDnsx(cleanTarget);
+      return res.json({ success: true, results: dnsxResults });
     }
 
     // SSRF validation for passive engines
