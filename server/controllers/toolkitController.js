@@ -11,6 +11,23 @@ const breachController = require('./breachController');
 const remediationController = require('./remediationController');
 const networkToolService = require('../services/networkToolService');
 const webIntelToolService = require('../services/webIntelToolService');
+const securityArtifactToolService = require('../services/securityArtifactToolService');
+const webCmsCloudToolService = require('../services/webCmsCloudToolService');
+const netSastApiToolService = require('../services/netSastApiToolService');
+const malwareContainerToolService = require('../services/malwareContainerToolService');
+const mobileReverseToolService = require('../services/mobileReverseToolService');
+const firmwareEmailToolService = require('../services/firmwareEmailToolService');
+const aiPrivacyIncidentToolService = require('../services/aiPrivacyIncidentToolService');
+const monitoringComplianceToolService = require('../services/monitoringComplianceToolService');
+const osintCryptoToolService = require('../services/osintCryptoToolService');
+const vulnDastScannerService = require('../services/vulnDastScannerService');
+const threatIntelOsintService = require('../services/threatIntelOsintService');
+const cloudAuditApiFuzzService = require('../services/cloudAuditApiFuzzService');
+const devsecForensicsSandboxService = require('../services/devsecForensicsSandboxService');
+const memoryReverseForensicsService = require('../services/memoryReverseForensicsService');
+const wirelessTyposquatService = require('../services/wirelessTyposquatService');
+const enterpriseVulnPhishService = require('../services/enterpriseVulnPhishService');
+const aiRedteamPlaybookService = require('../services/aiRedteamPlaybookService');
 
 const sanitizeTarget = (target) => {
   if (typeof target !== 'string') throw new Error('Target must be a string');
@@ -30,7 +47,24 @@ const ACTIVE_TOOLS = new Set([
   'service_fingerprint', 'remediation', 'url', 'breach', 'sms', 'upi',
   'jwt-parser', 'base64-decoder', 'url-sanitizer',
   'subfinder', 'dnssec-audit', 'ipv6-checker', 'mac-lookup', 'cve-lookup',
-  'cors-scanner', 'csp-evaluator', 'dnsx', 'abuseipdb', 'sherlock'
+  'cors-scanner', 'csp-evaluator', 'dnsx', 'abuseipdb', 'sherlock',
+  'saml-decoder', 'oauth-validator', 'gitleaks', 'kubesec', 'pdfid',
+  'whatweb', 'dirsearch', 'wpscan', 'iam-policy-audit', 'jwt-strength',
+  'traceroute', 'bgp-route-audit', 'oas-linter', 'semgrep', 'dependency-track',
+  'yara-rules', 'peframe', 'docker-bench', 'ldap-audit', 'postman-audit',
+  'mobsf-apk', 'ipa-signer-check', 'apk-leak-finder', 'androguard', 'falco-logs',
+  'binwalk', 'capstone', 'mail-spoof-checker', 'phishmeister', 'mxtoolbox-check',
+  'prompt-guard', 'pii-scanner', 'gdpr-cookie-audit', 'exif-stripper', 'thehive',
+  'wazuh-agent-audit', 'zeek-logs', 'auditd-viewer', 'soc2-checklist', 'hipaa-auditor',
+  'shodan-query', 'censys-search', 'masscan', 'hash-generator', 'hex-editor',
+  'nikto', 'sqlmap', 'trivy', 'zap', 'nuclei',
+  'alienvault-otx', 'virusshare', 'misp-lookup', 'harvester', 'hunter-io',
+  'intelx', 'prowler', 'scoutsuite', 'bucket-finder', 'api-fuzzer',
+  'hydra', 'kube-bench', 'snyk-test', 'cuckoo-sandbox', 'autopsy',
+  'volatility', 'sleuthkit', 'plaso', 'ghidra', 'radare2',
+  'aircrack', 'aircrack-ng', 'kismet', 'wifite', 'bt-scanner', 'domain-twist',
+  'burp', 'openvas', 'gophish', 'evilginx-audit', 'cis-cat',
+  'garak', 'llm-redteam', 'prompt-fuzzer', 'misp-feed', 'playbook-runner'
 ]);
 
 const parseDnsFromResponse = (resData) => {
@@ -65,6 +99,240 @@ const executeTool = async (req, res) => {
         status: 'COMING_SOON',
         message: 'This capability is not enabled for execution. Backend integration and container sandboxing are planned for a future release.'
       });
+    }
+
+    // Batch 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 & 18: Tools that accept raw multi-line code / XML / YAML / JSON / Tokens / Specs / Lockfiles / Binaries / Manifests / Hex / EML / Prompts / Logs / Audits / Hashes / Images / Queries / Samples / Dumps / Opcodes / Caps / Interfaces / Campaigns
+    if (toolId === 'saml-decoder') {
+      const samlResults = await securityArtifactToolService.decodeSaml(target);
+      return res.json({ success: true, results: samlResults });
+    }
+    if (toolId === 'gitleaks') {
+      const leakResults = await securityArtifactToolService.scanSecrets(target);
+      return res.json({ success: true, results: leakResults });
+    }
+    if (toolId === 'kubesec') {
+      const kubesecResults = await securityArtifactToolService.lintKubesec(target);
+      return res.json({ success: true, results: kubesecResults });
+    }
+    if (toolId === 'pdfid') {
+      const pdfResults = await securityArtifactToolService.inspectPdf(target);
+      return res.json({ success: true, results: pdfResults });
+    }
+    if (toolId === 'iam-policy-audit') {
+      const iamResults = await webCmsCloudToolService.lintIamPolicy(target);
+      return res.json({ success: true, results: iamResults });
+    }
+    if (toolId === 'jwt-strength') {
+      const jwtResults = await webCmsCloudToolService.auditJwtStrength(target);
+      return res.json({ success: true, results: jwtResults });
+    }
+    if (toolId === 'oas-linter') {
+      const oasResults = await netSastApiToolService.lintOasSpec(target);
+      return res.json({ success: true, results: oasResults });
+    }
+    if (toolId === 'semgrep') {
+      const sastResults = await netSastApiToolService.runSemgrepSast(target);
+      return res.json({ success: true, results: sastResults });
+    }
+    if (toolId === 'dependency-track') {
+      const dtResults = await netSastApiToolService.auditDependencyTrack(target);
+      return res.json({ success: true, results: dtResults });
+    }
+    if (toolId === 'yara-rules') {
+      const yaraResults = await malwareContainerToolService.matchYaraRules(target);
+      return res.json({ success: true, results: yaraResults });
+    }
+    if (toolId === 'peframe') {
+      const peResults = await malwareContainerToolService.analyzePeBinary(target);
+      return res.json({ success: true, results: peResults });
+    }
+    if (toolId === 'docker-bench') {
+      const dockerResults = await malwareContainerToolService.auditDockerBench(target);
+      return res.json({ success: true, results: dockerResults });
+    }
+    if (toolId === 'postman-audit') {
+      const postmanResults = await malwareContainerToolService.auditPostmanCollection(target);
+      return res.json({ success: true, results: postmanResults });
+    }
+    if (toolId === 'mobsf-apk') {
+      const mobsfResults = await mobileReverseToolService.analyzeMobSfApk(target);
+      return res.json({ success: true, results: mobsfResults });
+    }
+    if (toolId === 'ipa-signer-check') {
+      const ipaResults = await mobileReverseToolService.validateIpaSigner(target);
+      return res.json({ success: true, results: ipaResults });
+    }
+    if (toolId === 'apk-leak-finder') {
+      const leakResults = await mobileReverseToolService.extractApkLeaks(target);
+      return res.json({ success: true, results: leakResults });
+    }
+    if (toolId === 'androguard') {
+      const androResults = await mobileReverseToolService.disassembleAndroguard(target);
+      return res.json({ success: true, results: androguard });
+    }
+    if (toolId === 'falco-logs') {
+      const falcoResults = await mobileReverseToolService.inspectFalcoLogs(target);
+      return res.json({ success: true, results: falcoResults });
+    }
+    if (toolId === 'binwalk') {
+      const binwalkResults = await firmwareEmailToolService.analyzeBinwalk(target);
+      return res.json({ success: true, results: binwalkResults });
+    }
+    if (toolId === 'capstone') {
+      const capstoneResults = await firmwareEmailToolService.disassembleCapstone(target);
+      return res.json({ success: true, results: capstoneResults });
+    }
+    if (toolId === 'phishmeister') {
+      const phishResults = await firmwareEmailToolService.traceEmailHops(target);
+      return res.json({ success: true, results: phishResults });
+    }
+    if (toolId === 'prompt-guard') {
+      const promptResults = await aiPrivacyIncidentToolService.auditPromptGuard(target);
+      return res.json({ success: true, results: promptResults });
+    }
+    if (toolId === 'pii-scanner') {
+      const piiResults = await aiPrivacyIncidentToolService.scanPiiData(target);
+      return res.json({ success: true, results: piiResults });
+    }
+    if (toolId === 'exif-stripper') {
+      const exifResults = await aiPrivacyIncidentToolService.inspectExifMetadata(target);
+      return res.json({ success: true, results: exifResults });
+    }
+    if (toolId === 'thehive') {
+      const thehiveResults = await aiPrivacyIncidentToolService.formatTheHiveCase(target);
+      return res.json({ success: true, results: thehiveResults });
+    }
+    if (toolId === 'wazuh-agent-audit') {
+      const wazuhResults = await monitoringComplianceToolService.auditWazuhAgent(target);
+      return res.json({ success: true, results: wazuhResults });
+    }
+    if (toolId === 'zeek-logs') {
+      const zeekResults = await monitoringComplianceToolService.parseZeekLogs(target);
+      return res.json({ success: true, results: zeekResults });
+    }
+    if (toolId === 'auditd-viewer') {
+      const auditdResults = await monitoringComplianceToolService.traceAuditdEvents(target);
+      return res.json({ success: true, results: auditdResults });
+    }
+    if (toolId === 'soc2-checklist') {
+      const soc2Results = await monitoringComplianceToolService.evaluateSoc2Checklist(target);
+      return res.json({ success: true, results: soc2Results });
+    }
+    if (toolId === 'hipaa-auditor') {
+      const hipaaResults = await monitoringComplianceToolService.auditHipaaCompliance(target);
+      return res.json({ success: true, results: hipaaResults });
+    }
+    if (toolId === 'hash-generator') {
+      const hashResults = await osintCryptoToolService.generateCryptoHashes(target);
+      return res.json({ success: true, results: hashResults });
+    }
+    if (toolId === 'hex-editor') {
+      const hexResults = await osintCryptoToolService.inspectHexEditor(target);
+      return res.json({ success: true, results: hexResults });
+    }
+    if (toolId === 'trivy') {
+      const trivyResults = await vulnDastScannerService.auditTrivyContainer(target);
+      return res.json({ success: true, results: trivyResults });
+    }
+    if (toolId === 'virusshare') {
+      const virusResults = await threatIntelOsintService.searchVirusShare(target);
+      return res.json({ success: true, results: virusResults });
+    }
+    if (toolId === 'misp-lookup') {
+      const mispResults = await threatIntelOsintService.lookupMispIoc(target);
+      return res.json({ success: true, results: mispResults });
+    }
+    if (toolId === 'intelx') {
+      const intelxResults = await cloudAuditApiFuzzService.queryIntelxArchive(target);
+      return res.json({ success: true, results: intelxResults });
+    }
+    if (toolId === 'prowler') {
+      const prowlerResults = await cloudAuditApiFuzzService.auditProwlerAws(target);
+      return res.json({ success: true, results: prowlerResults });
+    }
+    if (toolId === 'scoutsuite') {
+      const scoutResults = await cloudAuditApiFuzzService.auditScoutSuiteMultiCloud(target);
+      return res.json({ success: true, results: scoutResults });
+    }
+    if (toolId === 'kube-bench') {
+      const kubeResults = await devsecForensicsSandboxService.auditKubeBenchCis(target);
+      return res.json({ success: true, results: kubeResults });
+    }
+    if (toolId === 'snyk-test') {
+      const snykResults = await devsecForensicsSandboxService.auditSnykDependencies(target);
+      return res.json({ success: true, results: snykResults });
+    }
+    if (toolId === 'cuckoo-sandbox') {
+      const cuckooResults = await devsecForensicsSandboxService.detonateCuckooSandbox(target);
+      return res.json({ success: true, results: cuckooResults });
+    }
+    if (toolId === 'autopsy') {
+      const autopsyResults = await devsecForensicsSandboxService.analyzeAutopsyForensics(target);
+      return res.json({ success: true, results: autopsyResults });
+    }
+    if (toolId === 'volatility') {
+      const volResults = await memoryReverseForensicsService.analyzeVolatilityDump(target);
+      return res.json({ success: true, results: volResults });
+    }
+    if (toolId === 'sleuthkit') {
+      const tskResults = await memoryReverseForensicsService.parseSleuthKitVolume(target);
+      return res.json({ success: true, results: tskResults });
+    }
+    if (toolId === 'plaso') {
+      const plasoResults = await memoryReverseForensicsService.generatePlasoSuperTimeline(target);
+      return res.json({ success: true, results: plasoResults });
+    }
+    if (toolId === 'ghidra') {
+      const ghidraResults = await memoryReverseForensicsService.decompileGhidraBinary(target);
+      return res.json({ success: true, results: ghidraResults });
+    }
+    if (toolId === 'radare2') {
+      const r2Results = await memoryReverseForensicsService.inspectRadare2Binary(target);
+      return res.json({ success: true, results: r2Results });
+    }
+    if (toolId === 'aircrack' || toolId === 'aircrack-ng') {
+      const aircrackResults = await wirelessTyposquatService.auditAircrackHandshake(target);
+      return res.json({ success: true, results: aircrackResults });
+    }
+    if (toolId === 'kismet') {
+      const kismetResults = await wirelessTyposquatService.parseKismetSurveyLogs(target);
+      return res.json({ success: true, results: kismetResults });
+    }
+    if (toolId === 'wifite') {
+      const wifiteResults = await wirelessTyposquatService.auditWifiteProtocols(target);
+      return res.json({ success: true, results: wifiteResults });
+    }
+    if (toolId === 'bt-scanner') {
+      const btResults = await wirelessTyposquatService.scanBluetoothBleDevices(target);
+      return res.json({ success: true, results: btResults });
+    }
+    if (toolId === 'gophish') {
+      const gophishResults = await enterpriseVulnPhishService.trackGophishCampaign(target);
+      return res.json({ success: true, results: gophishResults });
+    }
+    if (toolId === 'cis-cat') {
+      const ciscatResults = await enterpriseVulnPhishService.evaluateCisCatHostBenchmark(target);
+      return res.json({ success: true, results: ciscatResults });
+    }
+    if (toolId === 'garak') {
+      const garakResults = await aiRedteamPlaybookService.scanGarakLlm(target);
+      return res.json({ success: true, results: garakResults });
+    }
+    if (toolId === 'llm-redteam') {
+      const redteamResults = await aiRedteamPlaybookService.runLlmRedteam(target);
+      return res.json({ success: true, results: redteamResults });
+    }
+    if (toolId === 'prompt-fuzzer') {
+      const fuzzerResults = await aiRedteamPlaybookService.fuzzPromptBoundaries(target);
+      return res.json({ success: true, results: fuzzerResults });
+    }
+    if (toolId === 'misp-feed') {
+      const mispResults = await aiRedteamPlaybookService.publishMispFeed(target);
+      return res.json({ success: true, results: mispResults });
+    }
+    if (toolId === 'playbook-runner') {
+      const pbResults = await aiRedteamPlaybookService.orchestratePlaybook(target);
+      return res.json({ success: true, results: pbResults });
     }
 
     const cleanTarget = sanitizeTarget(target);
@@ -185,6 +453,222 @@ const executeTool = async (req, res) => {
       if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
       const dnsxResults = await webIntelToolService.resolveDnsx(cleanTarget);
       return res.json({ success: true, results: dnsxResults });
+    }
+
+    // Batch 3: OAuth 2.0 Route Validator
+    if (toolId === 'oauth-validator') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const oauthResults = await securityArtifactToolService.validateOAuth(cleanTarget);
+      return res.json({ success: true, results: oauthResults });
+    }
+
+    // Batch 4: WhatWeb Technology Scanner
+    if (toolId === 'whatweb') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const whatwebResults = await webCmsCloudToolService.scanWhatWeb(cleanTarget);
+      return res.json({ success: true, results: whatwebResults });
+    }
+
+    // Batch 4: Dirsearch Sensitive Path Prober
+    if (toolId === 'dirsearch') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const dirsearchResults = await webCmsCloudToolService.probeDirsearch(cleanTarget);
+      return res.json({ success: true, results: dirsearchResults });
+    }
+
+    // Batch 4: WPScan WordPress Security Auditor
+    if (toolId === 'wpscan') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const wpscanResults = await webCmsCloudToolService.auditWpScan(cleanTarget);
+      return res.json({ success: true, results: wpscanResults });
+    }
+
+    // Batch 5: Traceroute Network Hop Visualizer
+    if (toolId === 'traceroute') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const traceResults = await netSastApiToolService.traceRoute(cleanTarget);
+      return res.json({ success: true, results: traceResults });
+    }
+
+    // Batch 5: BGP Route & RPKI Validator
+    if (toolId === 'bgp-route-audit') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const bgpResults = await netSastApiToolService.auditBgpRoute(cleanTarget);
+      return res.json({ success: true, results: bgpResults });
+    }
+
+    // Batch 6: Active Directory LDAP Policy Auditor
+    if (toolId === 'ldap-audit') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const ldapResults = await malwareContainerToolService.auditLdapPolicy(cleanTarget);
+      return res.json({ success: true, results: ldapResults });
+    }
+
+    // Batch 8: Email Spoofing, SPF, DKIM & DMARC Policy Auditor
+    if (toolId === 'mail-spoof-checker') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const spoofResults = await firmwareEmailToolService.auditMailSpoofing(cleanTarget);
+      return res.json({ success: true, results: spoofResults });
+    }
+
+    // Batch 8: Mail Exchange Server & IP Blacklist / RBL Auditor
+    if (toolId === 'mxtoolbox-check') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const mxResults = await firmwareEmailToolService.auditMxBlacklist(cleanTarget);
+      return res.json({ success: true, results: mxResults });
+    }
+
+    // Batch 9: GDPR Tracking Cookie & Consent Policy Auditor
+    if (toolId === 'gdpr-cookie-audit') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const gdprResults = await aiPrivacyIncidentToolService.auditGdprCookies(cleanTarget);
+      return res.json({ success: true, results: gdprResults });
+    }
+
+    // Batch 11: Shodan Node & Port Intelligence Search
+    if (toolId === 'shodan-query') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const shodanResults = await osintCryptoToolService.queryShodanIntel(cleanTarget);
+      return res.json({ success: true, results: shodanResults });
+    }
+
+    // Batch 11: Censys Host & TLS Certificate Explorer
+    if (toolId === 'censys-search') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const censysResults = await osintCryptoToolService.searchCensysHost(cleanTarget);
+      return res.json({ success: true, results: censysResults });
+    }
+
+    // Batch 11: Masscan Range & Port Prober
+    if (toolId === 'masscan') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const masscanResults = await osintCryptoToolService.probeMasscanRange(cleanTarget);
+      return res.json({ success: true, results: masscanResults });
+    }
+
+    // Batch 12: Nikto Web Application Scanner
+    if (toolId === 'nikto') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const niktoResults = await vulnDastScannerService.auditNiktoWeb(cleanTarget);
+      return res.json({ success: true, results: niktoResults });
+    }
+
+    // Batch 12: SQLmap Injection & Database Auditor
+    if (toolId === 'sqlmap') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const sqlmapResults = await vulnDastScannerService.auditSqlmapInjection(cleanTarget);
+      return res.json({ success: true, results: sqlmapResults });
+    }
+
+    // Batch 12: OWASP ZAP Dynamic Web Application Scanner
+    if (toolId === 'zap') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const zapResults = await vulnDastScannerService.runZapDastScan(cleanTarget);
+      return res.json({ success: true, results: zapResults });
+    }
+
+    // Batch 12: Nuclei Template-Based Vulnerability Scanner
+    if (toolId === 'nuclei') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const nucleiResults = await vulnDastScannerService.runNucleiTemplateScan(cleanTarget);
+      return res.json({ success: true, results: nucleiResults });
+    }
+
+    // Batch 13: AlienVault OTX Threat Pulse & IOC Search
+    if (toolId === 'alienvault-otx') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const otxResults = await threatIntelOsintService.queryAlienVaultOtx(cleanTarget);
+      return res.json({ success: true, results: otxResults });
+    }
+
+    // Batch 13: TheHarvester Intelligence Gatherer
+    if (toolId === 'harvester') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const harvesterResults = await threatIntelOsintService.runTheHarvester(cleanTarget);
+      return res.json({ success: true, results: harvesterResults });
+    }
+
+    // Batch 13: Hunter.io Corporate Domain Email Search
+    if (toolId === 'hunter-io') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const hunterResults = await threatIntelOsintService.searchHunterDomain(cleanTarget);
+      return res.json({ success: true, results: hunterResults });
+    }
+
+    // Batch 14: Cloud Storage Bucket Finder
+    if (toolId === 'bucket-finder') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const bucketResults = await cloudAuditApiFuzzService.findCloudStorageBuckets(cleanTarget);
+      return res.json({ success: true, results: bucketResults });
+    }
+
+    // Batch 14: API Endpoint Fuzzer & Parameter Tester
+    if (toolId === 'api-fuzzer') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const fuzzResults = await cloudAuditApiFuzzService.fuzzApiEndpoint(cleanTarget);
+      return res.json({ success: true, results: fuzzResults });
+    }
+
+    // Batch 15: Hydra Protocol Authentication & Password Auditor
+    if (toolId === 'hydra') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const hydraResults = await devsecForensicsSandboxService.auditHydraAuth(cleanTarget);
+      return res.json({ success: true, results: hydraResults });
+    }
+
+    // Batch 17: Domain Typosquatting & Homoglyph Permutation Searcher
+    if (toolId === 'domain-twist') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const twistResults = await wirelessTyposquatService.generateDomainTwistPermutations(cleanTarget);
+      return res.json({ success: true, results: twistResults });
+    }
+
+    // Batch 18: Burp Suite Enterprise DAST Integration
+    if (toolId === 'burp') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const burpResults = await enterpriseVulnPhishService.auditBurpScan(cleanTarget);
+      return res.json({ success: true, results: burpResults });
+    }
+
+    // Batch 18: OpenVAS Network Vulnerability Engine
+    if (toolId === 'openvas') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const openvasResults = await enterpriseVulnPhishService.runOpenVasAudit(cleanTarget);
+      return res.json({ success: true, results: openvasResults });
+    }
+
+    // Batch 18: Evilginx Reverse-Proxy MFA Bypass Auditor
+    if (toolId === 'evilginx-audit') {
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const evilResults = await enterpriseVulnPhishService.auditEvilginxResilience(cleanTarget);
+      return res.json({ success: true, results: evilResults });
     }
 
     // SSRF validation for passive engines

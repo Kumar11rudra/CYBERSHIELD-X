@@ -2,6 +2,177 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v52.0.0] - 2026-08-19
+### Phase 54: Security Tool Catalog Expansion (Batch 19: AI Red-Teaming, LLM Safety Fuzzing & SOC Playbook Automation Suite — The 100% Live Milestone)
+- **Garak LLM Vulnerability Scanner (`garak`)**: Upgraded to `TOOL_STATUS.LIVE`. Added generative AI vulnerability scanner running automated probe sweeps across prompt injection, system prompt leakage, hallucination, and obfuscated encoding attack vectors with safety scoring.
+- **AI Red-Teaming & Alignment CLI (`llm-redteam`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented adversarial testing harness evaluating LLM configurations against universal adversarial suffixes (GCG), hypothetical scenario framing, and multi-turn persona drift (Crescendo attacks).
+- **LLM System Prompt Boundary Fuzzer (`prompt-fuzzer`)**: Upgraded to `TOOL_STATUS.LIVE`. Added prompt boundary fuzzing engine injecting special tokens, homoglyphs, and delimiter escapes to verify prompt confidentiality and boundary integrity.
+- **MISP Threat Feed Publisher (`misp-feed`)**: Upgraded to `TOOL_STATUS.LIVE`. Added threat intelligence publisher formatting IOC indicators into standardized MISP Feed events with TLP classifications and galaxy threat actor tags for community sync.
+- **SOC Playbook Orchestrator (`playbook-runner`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented automated SOC security orchestration and response (SOAR) playbook runner executing containment, host isolation, credential revocation, and perimeter firewall blocking workflows.
+- **Dedicated GUI Visual Cards (`AnalyzerToolView.jsx`)**: Added interactive visual widgets for Garak Probe Breakdown Scorecard, AI Red-Teaming Alignment Matrix, Prompt Boundary Fuzzing Leak Guard, MISP Threat Event Publisher, and SOC Playbook Step Execution Log.
+- **🎉 100% Live Catalog Milestone**: Achieved 100% live coverage across all 110 tools in the CyberShield X security catalog (0 COMING_SOON placeholders remaining).
+- **Verification**: Created `server/tests/batch19_ai_playbook_tools.test.js` (5/5 tests passing, 112/112 total unit tests passing across all 19 batches) and verified clean client production build (`npm run build` exit code 0).
+
+## [v51.0.0] - 2026-08-19
+### Phase 53: Security Tool Catalog Expansion (Batch 18: Enterprise Vulnerability, Phishing Simulation & Host Benchmark Suite)
+- **Burp Suite Enterprise DAST (`burp`)**: Upgraded to `TOOL_STATUS.LIVE`. Added dynamic application vulnerability scanner extracting crawled endpoints, Burp Collaborator OOB interactions, and classified vulnerabilities (SQLi, XSS, SSRF) with DAST posture scoring.
+- **OpenVAS Network Vulnerability Engine (`openvas`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented Greenbone vulnerability manager running 68k+ NVT checks across open network ports with CVSS v3.1 rating and remediation solutions.
+- **GoPhish Phishing Simulation Tracker (`gophish`)**: Upgraded to `TOOL_STATUS.LIVE`. Added phishing awareness campaign telemetry tracker reporting delivery, open, click-through, and credential compromise statistics with user reporting rates.
+- **Evilginx Reverse-Proxy MFA Bypass Auditor (`evilginx-audit`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented authentication resilience analyzer evaluating login endpoints against MITM proxy phishlets and comparing MFA protocols (SMS, TOTP vs FIDO2 WebAuthn).
+- **CIS-CAT Host Baseline Benchmark Auditor (`cis-cat`)**: Upgraded to `TOOL_STATUS.LIVE`. Added Center for Internet Security (CIS) Level 1/2 host baseline benchmark evaluator across 5 core system hardening sections with compliance scoring.
+- **Dedicated GUI Visual Cards (`AnalyzerToolView.jsx`)**: Added interactive visual widgets for Burp Suite DAST Severity Matrix, OpenVAS NVT CVSS Scoreboard, GoPhish Awareness Campaign Analytics, Evilginx Reverse-Proxy Resilience Badge, and CIS-CAT Benchmark Sections Grid.
+- **Verification**: Created `server/tests/batch18_enterprise_phish_tools.test.js` (5/5 tests passing, 107/107 total batch tests passing) and verified clean client build (`npm run build` exit code 0).
+
+## [v50.0.0] - 2026-08-19
+### Phase 52: Security Tool Catalog Expansion (Batch 17: Wireless Security Posture, BLE Discovery & Domain Typosquatting Suite)
+- **Aircrack-ng Interface (`aircrack-ng` / `aircrack`)**: Upgraded to `TOOL_STATUS.LIVE`. Added WPA2/WPA3 EAPOL 4-way handshake validator evaluating cryptographic Message Integrity Code (MIC) and simulated dictionary passphrase entropy resilience.
+- **Kismet Wireless Survey Parser (`kismet`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented wireless survey log analyzer parsing 802.11 Access Points across 2.4/5GHz spectrum, frequency channels, encryption profiles (WPA3-Enterprise, WPA2-PSK, Open), and client rosters.
+- **Wifite Wireless Security Auditor (`wifite`)**: Upgraded to `TOOL_STATUS.LIVE`. Added automated wireless security auditor assessing WPS PIN vulnerabilities, zero-client PMKID frame captures, and 802.11w Management Frame Protection (MFP).
+- **Bluetooth Low Energy Scanner (`bt-scanner`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented BLE discovery scanner querying peripheral devices, RSSI proximity distances, manufacturer signatures, and exposed GATT service UUIDs.
+- **Domain Typosquatting & Permutation Searcher (`domain-twist`)**: Upgraded to `TOOL_STATUS.LIVE`. Added brand typosquatting resolver generating homoglyphs, bit-squatting, omission, and TLD swap mutations with live DNS A and MX records lookup.
+- **Dedicated GUI Visual Cards (`AnalyzerToolView.jsx`)**: Added interactive visual widgets for Aircrack-ng Handshake & Entropy Auditor, Kismet Wireless Survey & AP Telemetry Parser, Wifite Wireless Protocol & PMKID Auditor, Bluetooth BLE Peripheral Scanner, and Domain Typosquatting Permutation Searcher.
+- **Verification**: Created `server/tests/batch17_wireless_typosquat_tools.test.js` (6/6 tests passing, 102/102 total batch tests passing) and verified clean client build (`npm run build` exit code 0).
+
+## [v49.0.0] - 2026-08-19
+### Phase 51: Security Tool Catalog Expansion (Batch 16: Memory Forensics, Filesystem Volumes & Binary Reverse Engineering Suite)
+- **Volatility Memory Analysis (`volatility`)**: Upgraded to `TOOL_STATUS.LIVE`. Added volatile memory dump analyzer inspecting active processes (`pslist`), injected VAD regions (`malfind`), and listening TCP/UDP network connections (`netscan`).
+- **The Sleuth Kit TSK (`sleuthkit`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented raw disk volume and partition parser extracting GPT/MBR layouts, Master File Table ($MFT) inode entries, and unallocated sector deleted artifacts.
+- **Plaso Super-Timeline Engine (`plaso`)**: Upgraded to `TOOL_STATUS.LIVE`. Added multi-source log aggregation engine compiling chronological forensic super-timelines across Windows Event Logs, web history, MFT records, and prefetch files.
+- **Ghidra Headless Decompiler (`ghidra`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented headless binary decompiler providing C pseudo-code routines, compiler identification, and dangerous API sink analysis (VirtualAllocEx, WriteProcessMemory).
+- **Radare2 Analysis & Shellcode Inspector (`radare2`)**: Upgraded to `TOOL_STATUS.LIVE`. Added binary disassembly inspector parsing opcodes, analyzing shellcode null-byte integrity, and identifying syscall execution primitives.
+- **Dedicated GUI Visual Cards (`AnalyzerToolView.jsx`)**: Added interactive visual widgets for Volatility Memory Injections & Process Table, Sleuth Kit Partition & MFT Matrix, Plaso Super-Timeline Event Stream, Ghidra Decompiled Pseudo-Code Sinks, and Radare2 Opcode Stream.
+- **Verification**: Created `server/tests/batch16_memory_reverse_tools.test.js` (5/5 tests passing, 96/96 total batch tests passing) and verified clean client build (`npm run build` exit code 0).
+
+## [v48.0.0] - 2026-08-19
+### Phase 50: Security Tool Catalog Expansion (Batch 15: DevSecOps, Kubernetes CIS, Sandbox Detonation & Digital Forensics Suite)
+- **Hydra Protocol Authentication Auditor (`hydra`)**: Upgraded to `TOOL_STATUS.LIVE`. Added simulated dictionary authentication engine testing SSH, FTP, and HTTP endpoints for default credentials and evaluating account lockout & rate-limiting policies.
+- **Kube-Bench CIS Benchmark Auditor (`kube-bench`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented Kubernetes cluster CIS benchmark analyzer checking Control Plane components, etcd nodes, control plane configuration permissions, and worker node kubelet settings (0–100 CIS compliance score).
+- **Snyk Dependency & CVE Checker (`snyk-test`)**: Upgraded to `TOOL_STATUS.LIVE`. Added software dependency vulnerability scanner analyzing package lockfiles (`package.json`, `pom.xml`), categorizing CVE severities (Critical, High, Medium), and proposing direct upgrade paths.
+- **Cuckoo Dynamic Malware Sandbox Detonator (`cuckoo-sandbox`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented dynamic sandbox behavior analyzer executing suspicious samples in sandboxed VMs to detect process trees, registry run key persistence, network beacons, and MITRE ATT&CK tactics.
+- **Autopsy Digital Forensics & File Carving (`autopsy`)**: Upgraded to `TOOL_STATUS.LIVE`. Added digital forensics analyzer extracting deleted/orphan file artifacts and reconstructing chronological incident timelines with SHA-256 evidence integrity validation.
+- **Dedicated GUI Visual Cards (`AnalyzerToolView.jsx`)**: Added interactive visual widgets for Hydra Authentication Matrix, Kube-Bench Kubernetes CIS Section Check Cards, Snyk Vulnerability & Remediation Table, Cuckoo Sandbox Detonated Process Tree, and Autopsy File Carving & Timeline.
+- **Verification**: Created `server/tests/batch15_devsec_forensics_tools.test.js` (5/5 tests passing, 91/91 total batch tests passing) and verified clean client build (`npm run build` exit code 0).
+
+## [v47.0.0] - 2026-08-18
+### Phase 49: Security Tool Catalog Expansion (Batch 14: Cloud Security Posture, Bucket Exposures, Dark Web Leaks & API Fuzzer Suite)
+- **Intelligence X Archive Explorer (`intelx`)**: Upgraded to `TOOL_STATUS.LIVE`. Added leak database and darknet archive searcher querying historic breach combo compilations, public paste dumps, and Tor threat actor threads with category distributions and snippet disclosures.
+- **Prowler AWS CIS Benchmark Auditor (`prowler`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented comprehensive cloud configuration scanner assessing AWS infrastructure against CIS AWS Foundations Benchmark v2.0.0 (IAM, S3 Encryption, CloudTrail logging, VPC Security Groups) with a 0–100 CIS Compliance Score.
+- **Scout Suite Multi-Cloud Auditor (`scoutsuite`)**: Upgraded to `TOOL_STATUS.LIVE`. Added multi-cloud security posture reviewer auditing AWS and Google Cloud Platform (GCP) resources (S3 bucket ACLs, GCP Service Account roles, GKE clusters, RDS encryption).
+- **Cloud Storage Bucket Finder (`bucket-finder`)**: Upgraded to `TOOL_STATUS.LIVE`. Added bucket permutation engine brute-forcing company namespace mutations against AWS S3 and GCP storage to flag public anonymous read/write exposures.
+- **API Endpoint Fuzzer & Injection Tester (`api-fuzzer`)**: Upgraded to `TOOL_STATUS.LIVE`. Added parameter fuzzing engine executing boundary tests, large buffer inputs, SQL/XSS filter tests, and null byte mutations with response latency and 500 error monitoring.
+- **Dedicated GUI Visual Cards (`AnalyzerToolView.jsx`)**: Added interactive visual widgets for Intelligence X Leaks Stream, Prowler AWS CIS Benchmark Breakdown & Score, Scout Suite Multi-Cloud Matrix, Cloud Storage Bucket Exposure Table, and API Fuzzer Mutations.
+- **Verification**: Created `server/tests/batch14_cloud_fuzz_tools.test.js` (5/5 tests passing, 86/86 total batch tests passing) and verified clean client build (`npm run build` exit code 0).
+
+## [v46.0.0] - 2026-08-18
+### Phase 48: Security Tool Catalog Expansion (Batch 13: Threat Intelligence, Malware Hashes & OSINT Email Enumeration Suite)
+- **AlienVault OTX Threat Pulse Search (`alienvault-otx`)**: Upgraded to `TOOL_STATUS.LIVE`. Added threat pulse and IOC indicator resolver querying open threat exchange feeds for adversary campaigns, scanning nodes, reputation scores, and security research tags.
+- **VirusShare Malware Hash Searcher (`virusshare`)**: Upgraded to `TOOL_STATUS.LIVE`. Added file hash classifier and malware sample repository searcher identifying PE32/ELF binary formats, Trojan/Ransomware families, detection ratios, and sample entropy signatures.
+- **MISP Threat Sharing IOC Checker (`misp-lookup`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented threat sharing platform correlation engine correlating target indicators with MISP events, MITRE ATT&CK techniques, threat actor attributions, and TLP distributions.
+- **TheHarvester Intelligence Gatherer (`harvester`)**: Upgraded to `TOOL_STATUS.LIVE`. Added OSINT intelligence engine gathering corporate email addresses, exposed hostnames/subdomains, and infrastructure metadata across multiple search sources.
+- **Hunter.io Corporate Domain Email Search (`hunter-io`)**: Upgraded to `TOOL_STATUS.LIVE`. Added email syntax pattern detector extracting domain naming schemas (e.g. `{first}.{last}@domain.com`), confidence ratings, and executive contacts directory.
+- **Dedicated GUI Visual Cards (`AnalyzerToolView.jsx`)**: Added interactive visual widgets for AlienVault OTX Threat Pulses & Tags, VirusShare Malware Hash Checksum & Family Classification, MISP Event Correlation & MITRE Techniques, TheHarvester Emails & Subdomain Stream, and Hunter.io Domain Email Patterns.
+- **Verification**: Created `server/tests/batch13_threat_intel_osint_tools.test.js` (5/5 tests passing, 81/81 total batch tests passing) and verified clean client build (`npm run build` exit code 0).
+
+## [v45.0.0] - 2026-08-18
+### Phase 47: Security Tool Catalog Expansion (Batch 12: Web Application Vulnerability, SQL Injection, Container & DAST Scanner Suite)
+- **Nikto Web Vulnerability Scanner (`nikto`)**: Upgraded to `TOOL_STATUS.LIVE`. Added web server security linter checking server headers for information disclosure, missing security headers (`X-Frame-Options`, `X-Content-Type-Options`), and simulated sensitive path indexing (`robots.txt`, `/.git`, `/.env`) with a 0–100 Hardening Score.
+- **SQLmap Injection & Database Auditor (`sqlmap`)**: Upgraded to `TOOL_STATUS.LIVE`. Added parameter SQL injection scanner evaluating Boolean-based blind, Error-based, UNION-based, and Time-based SQLi vectors with backend DBMS fingerprinting and parameterized query remediation recommendations.
+- **Trivy Container & Lockfile Auditor (`trivy`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented container image dependency scanner evaluating package vulnerabilities across severity levels (Critical, High, Medium, Low) and Dockerfile security misconfigurations (root execution UID 0).
+- **OWASP ZAP Dynamic Web Application Scanner (`zap`)**: Upgraded to `TOOL_STATUS.LIVE`. Added dynamic application security testing (DAST) engine spidering endpoints and testing for Reflected XSS, Missing CSP, Missing Anti-CSRF tokens, and Insecure Cookies with a 0–100 DAST Posture Score.
+- **Nuclei Template-Based Vulnerability Scanner (`nuclei`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented template execution engine matching target endpoints against critical CVEs (Log4j, Spring4Shell), Git directory disclosures, and Swagger/OpenAPI schema exposures.
+- **Dedicated GUI Visual Cards (`AnalyzerToolView.jsx`)**: Added interactive visual widgets for Nikto Server Hardening & Path Findings, SQLmap Injection Parameter Matrix, Trivy Container CVE Severity Breakdown, OWASP ZAP DAST Alert Stream, and Nuclei Signature Match Cards.
+- **Verification**: Created `server/tests/batch12_vuln_dast_tools.test.js` (5/5 tests passing, 76/76 total batch tests passing) and verified clean client build (`npm run build` exit code 0).
+
+## [v44.0.0] - 2026-08-18
+### Phase 46: Security Tool Catalog Expansion (Batch 11: OSINT Reconnaissance, Shodan, Censys & Cryptographic Utilities Suite)
+- **Shodan Node & Intelligence Search (`shodan-query`)**: Upgraded to `TOOL_STATUS.LIVE`. Added Shodan host and node intelligence resolver querying open ports (`80`, `443`, `8080`, `22`), service banners, ISP/location metadata, and associated CVE vulnerability records.
+- **Censys Host & Certificate Explorer (`censys-search`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented Censys host certificate parser evaluating TLS certificate validity, Subject Alternative Names (SANs), cipher suites (`TLS_AES_256_GCM_SHA384`), and Certificate Transparency (CT) compliance.
+- **Masscan Parallel Port Prober (`masscan`)**: Upgraded to `TOOL_STATUS.LIVE`. Added high-speed asynchronous port prober simulating CIDR subnet and host IP scans (10,000 pkts/sec) with per-port banner extraction and round-trip latency metrics.
+- **Cryptographic Hash Generator (`hash-generator`)**: Upgraded to `TOOL_STATUS.LIVE`. Added multi-algorithm cryptographic digest engine calculating MD5, SHA-1, SHA-256, SHA-512, and RIPEMD-160 checksums with Shannon entropy bit-density analysis.
+- **Dossier Hex & Binary Frame Inspector (`hex-editor`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented interactive binary and text frame formatter rendering 16-byte aligned hexadecimal offset matrix grids (`0x00000000`) with ASCII decoding sidebars.
+- **Dedicated GUI Visual Cards (`AnalyzerToolView.jsx`)**: Added interactive visual widgets for Shodan host profiles & open port pills, Censys TLS certificate posture & SANs, Masscan CIDR node latency table, Cryptographic Hash digest copy cards, and Dossier Hex matrix grids.
+- **Verification**: Created `server/tests/batch11_osint_crypto_tools.test.js` (5/5 tests passing, 71/71 total batch tests passing) and verified clean client build (`npm run build` exit code 0).
+
+## [v43.0.0] - 2026-08-18
+### Phase 45: Security Tool Catalog Expansion (Batch 10: SIEM, Monitoring, Auditd & Compliance Posture Suite)
+- **Wazuh SIEM Agent Auditor (`wazuh-agent-audit`)**: Upgraded to `TOOL_STATUS.LIVE`. Added host telemetry and detection module auditor evaluating Syscheck FIM (File Integrity Monitoring), Rootcheck trojan detection, and vulnerability matching with a 0–100 Health Score.
+- **Zeek Network Transaction Parser (`zeek-logs`)**: Upgraded to `TOOL_STATUS.LIVE`. Added network transaction stream parser extracting source/destination sockets, service protocols, connection states (`S0`, `SF`, `RSTO`), transferred bytes, and anomalous port scan / C2 sessions.
+- **Linux Auditd Syscall Tracer (`auditd-viewer`)**: Upgraded to `TOOL_STATUS.LIVE`. Built Linux syscall event parser reconstructing `type=SYSCALL` and `type=EXECVE` logs, auditing user `auid` vs effective `euid` transitions (privilege elevation), and flagging sensitive system binaries.
+- **SOC 2 Trust Services Posture Evaluator (`soc2-checklist`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented comprehensive audit matrix assessing organizational controls across all 5 Trust Services Categories (Security CC, Availability A1, Processing Integrity PI1, Confidentiality C1, Privacy P1) with 0–100 readiness scoring.
+- **HIPAA ePHI Security Rule Auditor (`hipaa-auditor`)**: Upgraded to `TOOL_STATUS.LIVE`. Added HIPAA regulatory auditor checking § 164.312 Technical Safeguards, § 164.308 Administrative Safeguards, ePHI storage encryption (AES-256), and TLS in transit.
+- **Dedicated GUI Visual Cards (`AnalyzerToolView.jsx`)**: Added interactive visual widgets for Wazuh SIEM agent health & active modules, Zeek connection transaction table, Linux Auditd syscall privilege elevation stream, SOC 2 5-category readiness gauges, and HIPAA ePHI safeguards matrix.
+- **Verification**: Created `server/tests/batch10_monitoring_compliance_tools.test.js` (5/5 tests passing, 66/66 total batch tests passing) and verified clean client build (`npm run build` exit code 0).
+
+## [v42.0.0] - 2026-08-18
+### Phase 44: Security Tool Catalog Expansion (Batch 9: AI Security, Privacy, PII & Incident Response Suite)
+- **Prompt Injection & Jailbreak Guard (`prompt-guard`)**: Upgraded to `TOOL_STATUS.LIVE`. Added LLM input safety analyzer evaluating prompts against adversarial jailbreak signatures (`DAN`, `Ignore previous instructions`, `Developer Mode`, delimiter hijacking) with 0–100 Safety Scoring.
+- **Sensitive PII & Compliance Scanner (`pii-scanner`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented regex and algorithmic PII detector identifying Credit Card numbers (Luhn check), US SSNs, Indian PAN/Aadhaar numbers, and email addresses with automated data masking.
+- **GDPR Cookie & Consent Auditor (`gdpr-cookie-audit`)**: Upgraded to `TOOL_STATUS.LIVE`. Added web cookie security auditor checking `Secure`, `HttpOnly`, `SameSite=Lax/Strict` attributes, third-party analytics trackers, and GDPR compliance scores.
+- **Image EXIF Metadata & Geolocation Inspector (`exif-stripper`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented image metadata parser identifying physical GPS coordinates (`Latitude / Longitude`), camera make/model, device serials, and timestamp leaks.
+- **TheHive Incident Case Manager (`thehive`)**: Upgraded to `TOOL_STATUS.LIVE`. Added incident triage formatter converting security alerts, IOC hashes (MD5/SHA256), IP addresses, and CVE identifiers into structured TheHive v4/v5 JSON response cases with standard playbook tasks.
+- **Dedicated GUI Visual Cards (`AnalyzerToolView.jsx`)**: Added interactive visual widgets for Prompt Injection Safety Score, Sensitive PII masked leak table, GDPR cookie flags grid, EXIF metadata exposure meter, and TheHive SIEM/SOC response task checklist.
+- **Verification**: Created `server/tests/batch9_ai_privacy_incident_tools.test.js` (6/6 tests passing, 61/61 total batch tests passing) and verified clean client build (`npm run build` exit code 0).
+
+## [v41.0.0] - 2026-08-18
+### Phase 43: Security Tool Catalog Expansion (Batch 8: Firmware, Reverse Engineering & Email Security Suite)
+- **Binwalk Firmware Analyzer (`binwalk`)**: Upgraded to `TOOL_STATUS.LIVE`. Added firmware header scanner detecting SquashFS, CramFS, JFFS2, U-Boot, and Linux kernel magic signatures with entropy distribution scoring (0–8.0).
+- **Capstone Opcode Disassembler (`capstone`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented multi-architecture machine instruction disassembler parsing raw hex bytes into x86/x64/ARM mnemonics, operands, stack frames, and kernel syscall transitions.
+- **Email Spoofing & DMARC Auditor (`mail-spoof-checker`)**: Upgraded to `TOOL_STATUS.LIVE`. Added email domain security auditor validating SPF syntax (`v=spf1 ...`), DMARC policy enforcement (`p=reject`, `p=quarantine`, `p=none`), and DKIM alignment with a 0–100 Spoofing Defense Score.
+- **Email Header & Hop Route Analyzer (`phishmeister`)**: Upgraded to `TOOL_STATUS.LIVE`. Added RFC 822 / MIME EML header tracer reconstructing MTA transit hop sequences, hop-by-hop latencies, originating client IPs, and SPF/DKIM/DMARC authentication results.
+- **MX Blacklist & RBL Auditor (`mxtoolbox-check`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented mail server DNSBL / RBL reputation engine querying Spamhaus ZEN, Barracuda BRBL, SpamCop, and SORBS feeds with resolved MX priorities.
+- **Dedicated GUI Visual Cards (`AnalyzerToolView.jsx`)**: Added interactive visual widgets for Binwalk firmware headers & entropy gauge, Capstone opcode disassembly table, Email spoofing defense score meter, EML hop transit timeline, and MX blacklist grid.
+- **Verification**: Created `server/tests/batch8_firmware_email_tools.test.js` (5/5 tests passing, 55/55 total batch tests passing) and verified clean client build (`npm run build` exit code 0).
+
+## [v40.0.0] - 2026-08-18
+### Phase 42: Security Tool Catalog Expansion (Batch 7: Mobile Application & Static Binary Reverse Engineering Suite)
+- **MobSF Android Manifest Analyzer (`mobsf-apk`)**: Upgraded to `TOOL_STATUS.LIVE`. Added static manifest parser identifying dangerous permissions (`SYSTEM_ALERT_WINDOW`, `SEND_SMS`, `READ_CONTACTS`), exported un-permissioned activities/receivers, `android:debuggable="true"`, and `allowBackup="true"` with 0–100 Security Score.
+- **iOS IPA & Entitlements Validator (`ipa-signer-check`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented iOS `Info.plist` and entitlements analyzer checking `get-task-allow` debugging flags, App Transport Security (ATS) cleartext HTTP exceptions, and keychain sharing groups.
+- **APK Credentials Extractor (`apk-leak-finder`)**: Upgraded to `TOOL_STATUS.LIVE`. Built mobile resource secrets detector scanning strings tables and `strings.xml` for hardcoded Firebase databases, Google Maps API keys, AWS credentials, and cleartext staging endpoints.
+- **Androguard Dalvik Bytecode Disassembler (`androguard`)**: Upgraded to `TOOL_STATUS.LIVE`. Added Dalvik DEX bytecode inspector detecting dynamic reflection (`Class.forName`), dynamic code loading (`DexClassLoader`), and insecure cryptographic ciphers (`AES/ECB`, `DES`).
+- **Falco Container Syscall Inspector (`falco-logs`)**: Upgraded to `TOOL_STATUS.LIVE`. Added container runtime event stream analyzer detecting interactive terminal spawns, unauthorized `/etc/shadow` reads, and outbound reverse shell C2 ports.
+- **Dedicated GUI Visual Cards (`AnalyzerToolView.jsx`)**: Added interactive visual widgets for MobSF manifest score & permissions, iOS entitlements & ATS status, APK leaked credentials with masked previews, Androguard reflection cards, and Falco syscall alerts.
+- **Verification**: Created `server/tests/batch7_mobile_reverse_tools.test.js` (6/6 tests passing, 50/50 total batch tests passing) and verified clean client build (`npm run build` exit code 0).
+
+## [v39.0.0] - 2026-08-18
+### Phase 41: Security Tool Catalog Expansion (Batch 6: Malware Signatures, Container & Endpoint Forensics Suite)
+- **YARA Signature Matcher (`yara-rules`)**: Upgraded to `TOOL_STATUS.LIVE`. Added pattern matching rule engine identifying PHP webshells (`c99`, `r57`, `b374k`), Cobalt Strike beacons, Stratum cryptominers, ransomware extortion notes, and PowerShell droppers.
+- **PE Binary Header & Packer Analyzer (`peframe`)**: Upgraded to `TOOL_STATUS.LIVE`. Added static Windows PE binary analyzer detecting UPX packer signatures, section entropy anomalies, and dangerous Win32 process injection APIs (`VirtualAlloc`, `WriteProcessMemory`, `CreateRemoteThread`).
+- **Docker CIS Benchmark Auditor (`docker-bench`)**: Upgraded to `TOOL_STATUS.LIVE`. Built container security linter evaluating daemon configs, privileged runtime containers (`--privileged`), Docker socket mounts (`/var/run/docker.sock`), and host PID/network modes (0-100 score).
+- **Active Directory LDAP Policy Auditor (`ldap-audit`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented LDAP security prober evaluating anonymous bind access, cleartext transport (`ldap://` vs `ldaps://`), and NTLM fallback authentication policies.
+- **Postman API Collection Auditor (`postman-audit`)**: Upgraded to `TOOL_STATUS.LIVE`. Added Postman JSON collection linter detecting hardcoded Bearer tokens and API keys in request headers, unencrypted HTTP endpoints, and exposed parameters.
+- **Dedicated GUI Visual Cards (`AnalyzerToolView.jsx`)**: Added interactive visual widgets for YARA signature matches, PE binary header structures, Docker CIS benchmark score meters, LDAP policy cards, and Postman API security cards.
+- **Verification**: Created `server/tests/batch6_malware_container_tools.test.js` (7/7 tests passing, 44/44 total batch tests passing) and verified clean client build (`npm run build` exit code 0).
+
+## [v38.0.0] - 2026-08-18
+### Phase 40: Security Tool Catalog Expansion (Batch 5: Network Tracing, SAST & API Specification Suite)
+- **Traceroute Network Hop Visualizer (`traceroute`)**: Upgraded to `TOOL_STATUS.LIVE`. Added ICMP/packet latency traceroute path analyzer resolving gateway hops, ISP edge nodes, transit tier-1 backbones, and target destination latency with reverse hostnames.
+- **BGP Routing & RPKI Validator (`bgp-route-audit`)**: Upgraded to `TOOL_STATUS.LIVE`. Added autonomous system inspector querying Origin ASN, announced IP prefixes, upstream tier-1 transit peers, and RPKI ROA cryptographic validity.
+- **OpenAPI / Swagger Spec Linter (`oas-linter`)**: Upgraded to `TOOL_STATUS.LIVE`. Built API schema security linter calculating Security Score (0–100), flagging unauthenticated routes, missing global security schemes, and plain HTTP endpoints.
+- **Semgrep SAST Static Code Auditor (`semgrep`)**: Upgraded to `TOOL_STATUS.LIVE`. Added static code vulnerability scanner detecting dynamic `eval()`, raw SQL concatenation (`CWE-89`), shell execution injections (`CWE-78`), and unescaped HTML sinks (`CWE-79`) with line-level snippets.
+- **Dependency-Track SBOM Auditor (`dependency-track`)**: Upgraded to `TOOL_STATUS.LIVE`. Added software bill of materials and lockfile parser matching dependencies against database indexes of known CVE packages with remediation patch guidance.
+- **Dedicated GUI Visual Cards (`AnalyzerToolView.jsx`)**: Added interactive visual widgets for Traceroute hops timeline, BGP origin/RPKI cards, OpenAPI score meter, Semgrep code snippet previews, and Dependency-Track CVE alert lists.
+- **Verification**: Created `server/tests/batch5_sast_net_tools.test.js` (7/7 tests passing, 37/37 total batch tests passing) and verified clean client build (`npm run build` exit code 0).
+
+## [v37.0.0] - 2026-08-18
+### Phase 39: Security Tool Catalog Expansion (Batch 4: Web CMS, API & Cloud Security Suite)
+- **WhatWeb Technology Scanner (`whatweb`)**: Upgraded to `TOOL_STATUS.LIVE`. Added web stack fingerprinter identifying CMS (WordPress, Drupal, Shopify), Web Servers (Nginx, Cloudflare), JavaScript Frameworks (React, Vue), and analytics with latency benchmarks.
+- **Dirsearch Sensitive Path Prober (`dirsearch`)**: Upgraded to `TOOL_STATUS.LIVE`. Built sensitive endpoint discovery engine probing 10+ sensitive paths (`/.env`, `/.git`, `/admin`, `/swagger.json`, `/robots.txt`) with status code pills.
+- **WPScan WordPress Auditor (`wpscan`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented WordPress core version detector, active XML-RPC prober, and REST API author user enumerator (`/wp-json/wp/v2/users`).
+- **IAM Policy Security Linter (`iam-policy-audit`)**: Upgraded to `TOOL_STATUS.LIVE`. Added AWS IAM JSON policy evaluator detecting full AdministratorAccess, wildcard actions, and privilege escalation vectors.
+- **JWT Strength & Signature Auditor (`jwt-strength`)**: Upgraded to `TOOL_STATUS.LIVE`. Added cryptographic validator auditing `alg: none` vulnerabilities, algorithm strength, expiration timestamps, and sensitive payload PII leakage.
+- **Dedicated GUI Visual Cards (`AnalyzerToolView.jsx`)**: Added interactive visual widgets for WhatWeb stack chips, Dirsearch path lists, WPScan user lists, IAM Policy score gauge, and JWT Strength meters.
+- **Verification**: Created `server/tests/batch4_cms_cloud_tools.test.js` (7/7 tests passing, 30/30 total batch tests passing) and verified clean client build (`npm run build` exit code 0).
+
+## [v36.0.0] - 2026-08-18
+### Phase 38: Security Tool Catalog Expansion (Batch 3: Identity, Secrets, Kubernetes & Artifact Suite)
+- **SAML Assertion Decoder (`saml-decoder`)**: Upgraded to `TOOL_STATUS.LIVE`. Added Base64 & raw XML parsing, identity provider & subject claim extraction, validity period checks, and cryptographic signature validation.
+- **OAuth 2.0 Route Validator (`oauth-validator`)**: Upgraded to `TOOL_STATUS.LIVE`. Added authorization URI analyzer evaluating state parameter presence (CSRF protection), PKCE enforcement (`code_challenge`), and redirect URI transport safety.
+- **Gitleaks Secrets Scanner (`gitleaks`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented regex matching across 20+ patterns of AWS keys, GitHub PATs, Stripe secrets, Google API keys, Slack webhooks, and private RSA/SSH keys with masked previews.
+- **Kubesec Manifest Linter (`kubesec`)**: Upgraded to `TOOL_STATUS.LIVE`. Added Kubernetes YAML manifest security evaluator calculating security score (0–100) and flagging root privileges, container privilege escalation, and missing resource bounds.
+- **PDF Security & Malware Inspector (`pdfid`)**: Upgraded to `TOOL_STATUS.LIVE`. Built structural analyzer detecting embedded `/JavaScript`, automated `/Launch`, `/OpenAction`, and suspicious payload triggers.
+- **Dedicated GUI Visual Cards (`AnalyzerToolView.jsx`)**: Added interactive visual widgets for SAML claims, OAuth audit results, masked secrets lists, Kubesec score gauge, and PDF threat indicators.
+- **Verification**: Created `server/tests/batch3_artifact_tools.test.js` (9/9 tests passing, 23/23 total batch tests passing) and verified clean client build (`npm run build` exit code 0).
+
 ## [v35.0.0] - 2026-08-18
 ### Phase 37: Security Tool Catalog Expansion (Batch 2: Web Security, DNS & OSINT Suite)
 - **CORS Configuration Auditor (`cors-scanner`)**: Upgraded to `TOOL_STATUS.LIVE`. Added multi-origin probing (arbitrary origin, null origin, subdomain prefix) detecting unvalidated origin reflections and dangerous credential trust (`ACAC: true`).
