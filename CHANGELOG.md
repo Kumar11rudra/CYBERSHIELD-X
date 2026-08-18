@@ -2,7 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
-## [v30.0.0] - 2026-08-16
+## [v33.1.0] - 2026-08-18
+### Phase 35: Copy De-AI-ification & Simple US English Translation Across All Pages
+- **Localization Overhaul (`en.json` & `hi.json`)**: Replaced robotic, sci-fi, and overly academic jargon across all 763 lines of `client/src/locales/en.json` and synchronized `client/src/locales/hi.json`. Removed terms like "Aegis", "Neural Node", "Nexus Command", "Self-Destruct", "Global Hive Feed", "Quantum Vault", replacing them with humanized, accessible cybersecurity terminology.
+- **Auth Pages Transformation (`SignupPage.jsx`, `LoginPage.jsx`, `AdminLoginPage.jsx`, `VerifyEmailPage.jsx`)**: Updated headers from "Nexus Registry" to "Create Account", "Central Command Access Granted" to "Admin Login Successful", and updated sample placeholders from `operator@nexus.io` to `user@example.com`.
+- **Security Standards & Team Transformation (`SecurityPosturePage.jsx`, `TeamPage.jsx`)**: Humanized security headers to "CyberShield X Security Standards", replaced military clearance labels with clear functional roles ("FOUNDER & LEAD", "CORE SPECIALIST"), and simplified action CTAs to "VIEW PROFILE →" and "ADMIN CONSOLE →".
+- **Tool Catalog Category Modernization (`toolConfig.js`)**: Rewrote purpose and description fields for all 24 cybersecurity categories in clean, actionable US English.
+- **Pages & Components Cleanup (`ThreatIntelligencePage.jsx`, `VaultPage.jsx`, `SecurityCopilot.jsx`, `CyberTerminalModal.jsx`)**: Updated status messages, empty states, and terminal startup headers to clear, user-friendly language.
+- **Verification**: Verified zero broken JSX tags, zero missing translation keys, and successful client production build (`npm run build` exit code 0).
 ### Phase 31: Partial-to-Live Security Catalog Expansion (16 Live Models)
 - **AI Remediation Planner Live Activation**: Transitioned `remediation` tool to `TOOL_STATUS.LIVE`. Upgraded `server/services/remediationService.js` to reuse shared `cache.js` (24h TTL) with Gemini 2.5 Flash, deterministic NVD signature fallbacks, and IDOR ownership authorization.
 - **Threat Breach Checker Live Activation**: Transitioned `breach` tool to `TOOL_STATUS.LIVE`. Implemented SHA-1 k-Anonymity range queries (NIST SP 800-63B) in `server/services/breachService.js` with zero-knowledge password caching guarantees, 1-hour cache on prefix ranges, and email/phone checks.

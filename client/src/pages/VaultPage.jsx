@@ -202,15 +202,15 @@ const VaultPage = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
           <div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-2">
-              QUANTUM <span className="text-cyber-accent">VAULT</span>
+              ENCRYPTED <span className="text-cyber-accent">VAULT</span>
             </h1>
-            <p className="font-mono text-xs text-cyber-muted uppercase tracking-[0.3em]">Neural Identity Protection & Tokenized Assets</p>
+            <p className="font-mono text-xs text-cyber-muted uppercase tracking-[0.3em]">Encrypted Identity Protection & Secure Assets</p>
           </div>
           <button 
             onClick={() => setShowAdd(!showAdd)}
             className="cyber-button-primary px-8 py-3 text-xs font-black"
           >
-            {showAdd ? 'CANCEL' : '+ ADD NEW IDENTITY'}
+            {showAdd ? 'CANCEL' : '+ ADD NEW ITEM'}
           </button>
         </div>
 
@@ -260,7 +260,7 @@ const VaultPage = () => {
               </div>
               <div className="mt-8 flex justify-end">
                 <button type="submit" className="cyber-button-primary px-12 py-3 text-sm font-black">
-                  ENROLL IN VAULT
+                  SAVE TO VAULT
                 </button>
               </div>
             </motion.form>
@@ -268,12 +268,12 @@ const VaultPage = () => {
         </AnimatePresence>
 
         {loading ? (
-          <div className="text-center py-24 font-mono text-cyber-accent animate-pulse">Initializing Neural Secure Storage...</div>
+          <div className="text-center py-24 font-mono text-cyber-accent animate-pulse">Loading Encrypted Vault...</div>
         ) : (
           <div className="grid gap-6">
             {assets.length === 0 ? (
               <div className="cyber-card p-12 text-center border-dashed border-white/10">
-                <p className="text-cyber-muted font-mono text-sm uppercase">Vault is empty. Add your first identity to enable Nexus Monitoring.</p>
+                <p className="text-cyber-muted font-mono text-sm uppercase">Vault is empty. Add your first item to begin monitoring.</p>
               </div>
             ) : (
               assets.map(asset => (

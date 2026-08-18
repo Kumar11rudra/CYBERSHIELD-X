@@ -230,7 +230,7 @@ export default function SecurityCopilot() {
               </form>
               <div className="text-center mt-2">
                 <p className="text-[9px] text-slate-500 font-mono tracking-widest uppercase">
-                  End-to-End Encrypted Neural Link
+                  End-to-End Encrypted AI Assistant
                 </p>
               </div>
             </div>

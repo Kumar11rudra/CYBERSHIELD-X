@@ -383,13 +383,13 @@ export default function HomePage() {
 
           {/* Section header */}
           <div style={{ textAlign: 'center', marginBottom: 52 }}>
-            <p style={{ fontSize: 11, letterSpacing: 4, color: '#00bfff', marginBottom: 12 }}>SECURE DOMAIN ORCHESTRATION</p>
+            <p style={{ fontSize: 11, letterSpacing: 4, color: '#00bfff', marginBottom: 12 }}>CYBERSECURITY TOOLS & MODULES</p>
             <h2 className="hero-title" style={{ fontSize: 'clamp(28px,4vw,42px)', fontWeight: 900, color: '#e0e6ff', margin: 0 }}>
-              NEXUS SECURITY TOOLKIT
+              CYBERSHIELD X TOOLKIT
             </h2>
             <div style={{ width: 60, height: 2, background: 'linear-gradient(90deg,transparent,#00bfff,transparent)', margin: '20px auto 0' }} />
             <p style={{ fontSize: 12, color: '#5a7fa8', maxWidth: 600, margin: '16px auto 0', lineHeight: 1.6 }}>
-              Deploy specialized threat intelligence, passive vulnerability mapping, and cryptographic diagnostic modules across 7 custom cybersecurity categories.
+              Scan websites, inspect network security, analyze threats, and check data breaches with easy-to-use tools.
             </p>
           </div>
 
@@ -424,7 +424,7 @@ export default function HomePage() {
                 e.currentTarget.style.boxShadow = 'none';
               }}
             >
-              Explore Full Nexus Toolkit →
+              Explore All Security Tools →
             </button>
           </div>
 

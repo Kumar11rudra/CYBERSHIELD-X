@@ -112,7 +112,7 @@ export default function LoginPage() {
         {/* Decorative HUD Elements */}
         <div className="absolute bottom-8 left-8 border-l border-cyber-green/40 pl-4">
           <p className="font-mono text-[10px] text-cyber-green tracking-[0.3em] mb-1">NETWORK: SECURE</p>
-          <p className="font-mono text-[10px] text-cyber-muted tracking-[0.3em] uppercase">Auth channels open</p>
+          <p className="font-mono text-[10px] text-cyber-muted tracking-[0.3em] uppercase">Secure connection active</p>
         </div>
       </motion.div>
 
@@ -175,7 +175,7 @@ export default function LoginPage() {
                           value={identity}
                           onChange={(e) => setIdentity(e.target.value)}
                           className="w-full bg-black/40 border border-white/10 rounded-lg pl-10 pr-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-cyber-green focus:ring-1 focus:ring-cyber-green transition-all placeholder:text-white/20"
-                          placeholder="operator@nexus.io"
+                          placeholder="user@example.com"
                           required
                           autoFocus
                         />

@@ -60,100 +60,100 @@ export const CATEGORIES = {
 
 export const CATEGORY_METADATA = {
   [CATEGORIES.RECON]: {
-    purpose: 'Infrastructure discovery and boundary mapping.',
-    description: 'Discover hosts, scan active ports, gather domain ownership details, and trace routing pathways.'
+    purpose: 'Network and domain discovery.',
+    description: 'Discover hosts, scan open ports, gather domain ownership details, and inspect network pathways.'
   },
   [CATEGORIES.DNS_NET]: {
-    purpose: 'Domain system diagnostics and topology mapping.',
-    description: 'Resolve primary records, audit name servers, and map routing structures.'
+    purpose: 'DNS diagnostics and network analysis.',
+    description: 'Resolve DNS records, check name servers, and inspect IP routing details.'
   },
   [CATEGORIES.WEB]: {
-    purpose: 'HTTP application configuration audit.',
-    description: 'Audit SSL certificates, inspect response headers, and scan target sites.'
+    purpose: 'Web application and HTTPS security audits.',
+    description: 'Inspect SSL certificates, analyze security response headers, and scan websites for misconfigurations.'
   },
   [CATEGORIES.VULN]: {
-    purpose: 'Identification of active system CVE risks.',
-    description: 'Detect version vulnerabilities and map system-level exposures.'
+    purpose: 'Vulnerability and CVE detection.',
+    description: 'Identify known security vulnerabilities (CVEs) and check software versions.'
   },
   [CATEGORIES.INTEL]: {
-    purpose: 'Reputation validation and external breach tracking.',
-    description: 'Scan blacklists and check database compromise history.'
+    purpose: 'Threat reputation and data breach monitoring.',
+    description: 'Scan IP/domain blacklists, query malware reputation feeds, and check breach records.'
   },
   [CATEGORIES.OSINT]: {
-    purpose: 'Public intelligence gathering.',
-    description: 'Search open web records and metadata sources.'
+    purpose: 'Open-source intelligence gathering.',
+    description: 'Search public web records, usernames, and domain metadata sources.'
   },
   [CATEGORIES.CLOUD]: {
-    purpose: 'Cloud resource compliance auditing.',
-    description: 'Audit configuration parameters on public buckets and cloud assets.'
+    purpose: 'Cloud security and storage auditing.',
+    description: 'Inspect permissions on public cloud buckets and check cloud infrastructure configurations.'
   },
   [CATEGORIES.API]: {
-    purpose: 'API security auditing.',
-    description: 'Map API routing methods and parameters to isolate exposure.'
+    purpose: 'API endpoint security testing.',
+    description: 'Test API routes and query parameters to find security flaws.'
   },
   [CATEGORIES.AUTH_IDENTITY]: {
-    purpose: 'Identity policy assessment.',
-    description: 'Verify token properties and map authentication protocol errors.'
+    purpose: 'Authentication and token security.',
+    description: 'Verify JWT tokens, check password security policies, and test auth protocols.'
   },
   [CATEGORIES.MOBILE]: {
-    purpose: 'Mobile app security validation.',
-    description: 'Analyze Android and iOS binary archives for API leaks.'
+    purpose: 'Mobile app security analysis.',
+    description: 'Inspect Android (APK) and iOS applications for hardcoded secrets and security flaws.'
   },
   [CATEGORIES.CONTAINER]: {
-    purpose: 'Microservices isolation checks.',
-    description: 'Verify Docker layers and Kubernetes deployment configurations.'
+    purpose: 'Docker and Kubernetes security.',
+    description: 'Audit Dockerfile configurations, container images, and Kubernetes cluster settings.'
   },
   [CATEGORIES.DEVSECOPS]: {
-    purpose: 'Software supply chain auditing.',
-    description: 'Scan package locks and dependencies for software CVEs.'
+    purpose: 'Source code and supply chain security.',
+    description: 'Scan package dependencies, lockfiles, and git repositories for leaked secrets and known CVEs.'
   },
   [CATEGORIES.MALWARE]: {
-    purpose: 'Anomalous program evaluation.',
-    description: 'Extract executable strings and headers to verify integrity.'
+    purpose: 'File and malware analysis.',
+    description: 'Analyze executable strings, file hashes, and inspect suspicious files.'
   },
   [CATEGORIES.FORENSICS]: {
-    purpose: 'Digital artifact evidence carving.',
-    description: 'Audit system events logs and analyze memory maps.'
+    purpose: 'Digital forensics and log inspection.',
+    description: 'Analyze system event logs, memory dumps, and examine digital evidence.'
   },
   [CATEGORIES.REVERSE]: {
-    purpose: 'Binary compilation analysis.',
-    description: 'Analyze raw assembly paths and executable file components.'
+    purpose: 'Binary inspection and disassembly.',
+    description: 'Inspect executable file headers, strings, and assembly instructions.'
   },
   [CATEGORIES.WIRELESS]: {
-    purpose: 'Wireless signal diagnostics.',
-    description: 'Assess beacon encryption strength and channel bounds.'
+    purpose: 'Wi-Fi and wireless network security.',
+    description: 'Evaluate Wi-Fi encryption strength, SSID beacons, and channel configurations.'
   },
   [CATEGORIES.EMAIL]: {
-    purpose: 'Email spoofing audit.',
-    description: 'Verify SPF, DKIM, and DMARC parameters.'
+    purpose: 'Email security and anti-spoofing checks.',
+    description: 'Verify SPF, DKIM, and DMARC DNS records to prevent email impersonation.'
   },
   [CATEGORIES.SOCIAL_PHISHING]: {
-    purpose: 'Phishing domain heuristics checking.',
-    description: 'Analyze suspect link parameters and harvest templates.'
+    purpose: 'Phishing detection and defense.',
+    description: 'Detect phishing links, suspicious domain typos, and inspect scam messages.'
   },
   [CATEGORIES.AI]: {
-    purpose: 'Jailbreak payload interception.',
-    description: 'Sanitize model input bounds and check injection strings.'
+    purpose: 'AI and prompt security.',
+    description: 'Check AI inputs for prompt injections, jailbreaks, and sanitize inputs.'
   },
   [CATEGORIES.PRIVACY]: {
-    purpose: 'Data leakage prevention diagnostics.',
-    description: 'Verify session cookie settings and map encryption rules.'
+    purpose: 'Data privacy and tracking protection.',
+    description: 'Verify cookie security attributes and inspect data encryption settings.'
   },
   [CATEGORIES.INCIDENT]: {
-    purpose: 'Remediation playbook execution.',
-    description: 'Run playbooks and compile remediation checklists.'
+    purpose: 'Incident response checklists.',
+    description: 'Follow step-by-step security response workflows and remediation checklists.'
   },
   [CATEGORIES.MONITORING]: {
-    purpose: 'Intrusion trace analysis.',
-    description: 'Verify audit trails and trace anomalous connections.'
+    purpose: 'Security logs and monitoring.',
+    description: 'Inspect server logs, track access patterns, and detect anomalous activity.'
   },
   [CATEGORIES.COMPLIANCE]: {
-    purpose: 'Security posture auditing.',
-    description: 'Cross-check settings against SOC2 and NIST control frameworks.'
+    purpose: 'Compliance and posture checks.',
+    description: 'Check security configurations against standard frameworks like SOC 2, ISO 27001, and NIST.'
   },
   [CATEGORIES.UTILITIES]: {
-    purpose: 'Token conversion and helper utilities.',
-    description: 'Parse base64 tokens, decode JWT structures, and run calculations.'
+    purpose: 'Encoding and cryptography tools.',
+    description: 'Encode/decode Base64, parse JWTs, generate hashes, and calculate subnet masks.'
   }
 };
 

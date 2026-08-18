@@ -59,10 +59,10 @@ export default function CyberTerminalModal({ isOpen, onClose, initialTool = null
       }
       setOutputLogs([
         `╔══════════════════════════════════════════════════════════════════════════════╗`,
-        `║  CYBERSHIELD X — ADVANCED CYBERSOC INTERACTIVE TERMINAL v31.0.0             ║`,
+        `║  CYBERSHIELD X — ADVANCED CYBERSOC INTERACTIVE TERMINAL v33.0.0             ║`,
         `║  Target Interface: Authenticated Zero Trust Sandbox [STABLE]                 ║`,
         `╚══════════════════════════════════════════════════════════════════════════════╝`,
-        `[*] Initialized neural terminal session. Type commands or natural queries below.`
+        `[*] Initialized interactive terminal session. Type commands or natural queries below.`
       ]);
       setAiSummary('');
       setPlaybookProgress(null);

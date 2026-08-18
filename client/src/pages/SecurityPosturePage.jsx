@@ -14,24 +14,24 @@ const SECURITY_LAYERS = [
     details: ['No Scan Retention', 'Ephemeral Sessions', 'Zero IP Tracking', 'Auto-Wipe Protocols']
   },
   {
-    title: 'Quantum-Safe Encryption',
-    desc: 'All data in transit and at rest is protected by AES-256-GCM and RSA-4096 algorithms, ensuring military-grade protection against brute force.',
+    title: 'High-Grade Encryption',
+    desc: 'All data is encrypted in transit and at rest using industry-standard AES-256-GCM and RSA algorithms to keep your data secure.',
     icon: '🔐',
     color: 'from-purple-500/20 to-pink-500/20',
     tag: 'DATA SEC',
-    details: ['AES-256-GCM', 'RSA-4096 Key Exchange', 'Bcrypt Hashing', 'Quantum-Resistant Layer']
+    details: ['AES-256-GCM', 'RSA-4096 Key Exchange', 'Bcrypt Hashing', 'TLS 1.3 Encryption']
   },
   {
-    title: 'AI Threat Hunting',
-    desc: 'Continuous real-time monitoring using neural networks to identify and block suspicious patterns before they reach your workspace.',
+    title: 'Real-Time Threat Detection',
+    desc: 'Continuous real-time monitoring to detect and flag suspicious activity before it reaches your systems.',
     icon: '🤖',
     color: 'from-cyber-green/20 to-emerald-500/20',
     tag: 'REAL-TIME',
-    details: ['Neural Pattern ID', 'Real-time WAF', 'DDoS Protection', 'Anomaly Detection']
+    details: ['Threat Pattern ID', 'Real-time WAF', 'DDoS Protection', 'Anomaly Detection']
   },
   {
     title: 'Multi-Layer Authentication',
-    desc: 'Enforce biometric and hardware-based MFA (U2F/WebAuthn) to ensure that only verified personnel can access the Nexus Command Center.',
+    desc: 'Enforce biometric and security key MFA (U2F/WebAuthn) to ensure only authorized users can access your account.',
     icon: '🆔',
     color: 'from-orange-500/20 to-red-500/20',
     tag: 'ACCESS',
@@ -80,7 +80,7 @@ export default function SecurityPosturePage() {
             animate={{ y: 0, opacity: 1 }}
             className="font-display text-4xl md:text-6xl font-black tracking-tighter mb-4 italic uppercase"
           >
-            Nexus Elite <span className="text-cyber-accent">Security Protocols</span>
+            CyberShield X <span className="text-cyber-accent">Security Standards</span>
           </motion.h1>
           <motion.p 
             initial={{ y: 20, opacity: 0 }}
@@ -88,7 +88,7 @@ export default function SecurityPosturePage() {
             transition={{ delay: 0.1 }}
             className="font-mono text-sm text-cyber-muted tracking-[0.2em] uppercase max-w-3xl mx-auto leading-relaxed"
           >
-            Transparently detailing the A-Z defensive architecture protecting the CyberShield X ecosystem.
+            A clear and transparent overview of how CyberShield X protects your data and scans.
           </motion.p>
         </header>
 

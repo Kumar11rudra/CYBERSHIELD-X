@@ -147,7 +147,7 @@ export default function ThreatIntelligencePage() {
                 className="border border-[#00bfff]/15 bg-[#0a1223]/80 rounded-xl p-8 text-center"
               >
                 <div className="w-8 h-8 border-2 border-cyan-400/20 border-t-cyan-400 rounded-full animate-spin mx-auto mb-4" />
-                <p className="text-xs uppercase text-cyan-400 animate-pulse tracking-widest">Running neural indicators correlation...</p>
+                <p className="text-xs uppercase text-cyan-400 animate-pulse tracking-widest">Analyzing threat indicators against global databases...</p>
               </motion.div>
             )}
 
@@ -194,7 +194,7 @@ export default function ThreatIntelligencePage() {
                   </span>
                   <div>
                     <h4 className="text-xs font-bold uppercase tracking-wider" style={{ color: getReputationColor(result.reputation) }}>
-                      {result.reputation >= 75 ? 'HIGH RISK THREAT INDICATOR' : result.reputation >= 40 ? 'SUSPICIOUS REPUTATION DETECTED' : 'PERIMETER SECURE / SAFE TARGET'}
+                      {result.reputation >= 75 ? 'HIGH RISK THREAT INDICATOR' : result.reputation >= 40 ? 'SUSPICIOUS REPUTATION DETECTED' : 'SAFE TARGET / NO THREATS DETECTED'}
                     </h4>
                     <p className="text-[11px] text-[#cbd5e1] mt-1.5 leading-relaxed">
                       {result.description}

@@ -64,9 +64,9 @@ export default function VerifyEmailPage() {
           </h2>
           
           <p className="mt-4 font-mono text-sm text-cyber-muted">
-            {status === 'verifying' && 'Synchronizing neural signatures with Nexus Core...'}
-            {status === 'success' && 'Your identity has been confirmed. Redirecting to registry...'}
-            {status === 'error' && 'The link is invalid or has expired. Please request a new code.'}
+            {status === 'verifying' && 'Verifying your email address...'}
+            {status === 'success' && 'Your email has been verified. Redirecting to your dashboard...'}
+            {status === 'error' && 'The link is invalid or has expired. Please request a new verification link.'}
           </p>
         </div>
 

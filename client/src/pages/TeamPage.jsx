@@ -10,9 +10,9 @@ const TEAM = [
     color: '00bfff',
     isFounder: true,
     initials: 'AK',
-    clearance: 'LEVEL 5 (ROOT)',
+    clearance: 'FOUNDER & LEAD',
     status: 'ONLINE',
-    focus: 'CYBER THREAT INTELLIGENCE & CORE ARCHITECTURE'
+    focus: 'THREAT INTELLIGENCE & CORE ARCHITECTURE'
   },
   {
     id: 'suryansh-pandey',
@@ -20,9 +20,9 @@ const TEAM = [
     role: 'Data Analyst',
     color: '00ff88',
     initials: 'SP',
-    clearance: 'LEVEL 4',
+    clearance: 'CORE SPECIALIST',
     status: 'ONLINE',
-    focus: 'DATA INTELLIGENCE & THREAT CORRELATION'
+    focus: 'DATA INTELLIGENCE & THREAT ANALYSIS'
   },
   {
     id: 'aryan-patel',
@@ -30,9 +30,9 @@ const TEAM = [
     role: 'AI & Machine Learning',
     color: 'ff8c00',
     initials: 'AP',
-    clearance: 'LEVEL 4',
+    clearance: 'CORE SPECIALIST',
     status: 'ONLINE',
-    focus: 'AI REASONING ENGINE & PREDICTIVE MODELS'
+    focus: 'AI SECURITY MODELS & THREAT DETECTION'
   },
   {
     id: 'pranav-kumar',
@@ -40,7 +40,7 @@ const TEAM = [
     role: 'Data Analyst',
     color: 'b400ff',
     initials: 'PK',
-    clearance: 'LEVEL 4',
+    clearance: 'CORE SPECIALIST',
     status: 'ONLINE',
     focus: 'DATA ANALYTICS & SECURITY TELEMETRY'
   },
@@ -50,9 +50,9 @@ const TEAM = [
     role: 'Network Analyst',
     color: 'ff2244',
     initials: 'AN',
-    clearance: 'LEVEL 4',
+    clearance: 'CORE SPECIALIST',
     status: 'ONLINE',
-    focus: 'NETWORK TOPOLOGY & FORENSICS AUDIT'
+    focus: 'NETWORK SECURITY & DIGITAL FORENSICS'
   },
   {
     id: 'sushant',
@@ -60,7 +60,7 @@ const TEAM = [
     role: 'Data Analyst',
     color: '00ff88',
     initials: 'SU',
-    clearance: 'LEVEL 4',
+    clearance: 'CORE SPECIALIST',
     status: 'ONLINE',
     focus: 'DATA ANALYTICS & THREAT CORRELATION'
   }
@@ -272,11 +272,11 @@ const CoreTeamCard = ({ member, onClick, idx }) => {
         </div>
       </div>
 
-      {/* BOTTOM SECURITY BAR: CLEARANCE & INTERACTIVE DOSSIER ACTION */}
+      {/* BOTTOM SECURITY BAR: CLEARANCE & INTERACTIVE ACTION */}
       <div className="mt-auto pt-2.5 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-cyber-muted relative z-10">
-        <span className="uppercase tracking-wider">CLEARANCE: <strong className="text-white font-bold">{member.clearance}</strong></span>
+        <span className="uppercase tracking-wider">ROLE: <strong className="text-white font-bold">{member.clearance}</strong></span>
         <span className={`${style.text} group-hover:translate-x-1 transition-transform inline-flex items-center gap-1 font-bold uppercase tracking-wider`}>
-          DOSSIER →
+          VIEW PROFILE →
         </span>
       </div>
     </motion.div>
@@ -314,7 +314,7 @@ export default function TeamPage() {
         <header className="text-center space-y-0.5">
           <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-[#00bfff]/10 border border-[#00bfff]/30 text-[#00bfff] text-[10px] uppercase tracking-[0.3em]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#00bfff] animate-pulse" />
-            NEXUS COMMAND CORE
+            LEADERSHIP & TALENT
           </div>
           <h1 className="text-xl sm:text-2xl md:text-3xl font-display font-black tracking-tight text-white uppercase">
             OUR <span className="text-[#00bfff] drop-shadow-[0_0_12px_rgba(0,191,255,0.4)]">CORE TEAM</span>
@@ -343,7 +343,7 @@ export default function TeamPage() {
                 
                 {/* Header Status Bar inside Founder Card */}
                 <div className="flex items-center justify-between text-[9px] text-cyber-muted uppercase tracking-widest mb-2 border-b border-white/10 pb-1.5">
-                  <span className="text-[#00bfff] font-bold">★ COMMAND CHIEF ★</span>
+                  <span className="text-[#00bfff] font-bold">★ FOUNDER & LEAD ★</span>
                   <span className="inline-flex items-center gap-1.5 text-[#00ff88] font-bold">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#00ff88] animate-ping" />
                     ● ONLINE
@@ -376,7 +376,7 @@ export default function TeamPage() {
                 </div>
 
                 <div className="mt-2 pt-1.5 border-t border-white/10 flex items-center justify-between text-[9px] text-cyber-muted font-mono relative z-10">
-                  <span>CLEARANCE: <strong className="text-white">{founder.clearance}</strong></span>
+                  <span>ROLE: <strong className="text-white">{founder.clearance}</strong></span>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
@@ -387,10 +387,10 @@ export default function TeamPage() {
                       className="px-2 py-0.5 rounded border border-red-500/40 bg-red-500/10 text-red-400 hover:bg-red-500/25 hover:border-red-400 transition-all font-bold uppercase tracking-wider inline-flex items-center gap-1 shadow-[0_0_8px_rgba(239,68,68,0.2)]"
                       title="Authorized Founder / SecOps Portal Access"
                     >
-                      NEXUS COMMAND →
+                      ADMIN CONSOLE →
                     </button>
                     <span className="text-[#00bfff] group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-1 font-bold uppercase">
-                      DOSSIER [ACCESS] →
+                      VIEW PROFILE →
                     </span>
                   </div>
                 </div>
@@ -410,7 +410,7 @@ export default function TeamPage() {
           <div className="relative bg-[#020814] px-4 flex items-center gap-2">
             <span className="text-[#00bfff] text-xs">★</span>
             <h2 className="font-display text-xs sm:text-sm font-black tracking-[0.25em] text-white uppercase">
-              CORE TEAM <span className="text-cyber-muted font-normal">| THE MINDS BEHIND THE MISSION</span>
+              CORE TEAM <span className="text-cyber-muted font-normal">| THE PEOPLE SECURING CYBERSHIELD X</span>
             </h2>
             <span className="text-[#00bfff] text-xs">★</span>
           </div>
@@ -434,10 +434,10 @@ export default function TeamPage() {
       <footer className="relative z-10 max-w-7xl mx-auto w-full pt-2 mt-1 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[9px] text-cyber-muted font-mono uppercase tracking-widest">
         <div className="flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-[#00ff88]" />
-          CYBERSHIELD X · COMMAND MATRIX ACTIVE
+          CYBERSHIELD X · CORE SECURITY TEAM
         </div>
         <div>
-          CLASSIFICATION: CONFIDENTIAL // AUTHORIZED PERSONNEL ONLY
+          CYBERSHIELD X LEADERSHIP & ENGINEERING
         </div>
       </footer>
 
@@ -489,11 +489,11 @@ export default function TeamPage() {
               {/* Dossier Security Metadata */}
               <div className="space-y-3 font-mono text-xs text-cyber-muted bg-black/40 p-4 rounded-xl border border-white/5">
                 <div className="flex justify-between items-center">
-                  <span className="uppercase text-[10px] tracking-wider">Classification Level:</span>
+                  <span className="uppercase text-[10px] tracking-wider">Role:</span>
                   <span className="text-white uppercase font-bold">{selectedMember.clearance}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="uppercase text-[10px] tracking-wider">Operational Status:</span>
+                  <span className="uppercase text-[10px] tracking-wider">Status:</span>
                   <span className="text-[#00ff88] uppercase font-bold flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#00ff88] animate-pulse" />
                     {selectedMember.status}
@@ -506,7 +506,7 @@ export default function TeamPage() {
               </div>
 
               <div className="mt-5 text-center text-[10px] text-cyber-muted uppercase tracking-widest">
-                CYBERSHIELD X PERSONNEL REGISTRY · VERIFIED
+                CYBERSHIELD X CORE TEAM · VERIFIED
               </div>
             </motion.div>
           </motion.div>

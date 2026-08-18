@@ -17,7 +17,7 @@ export default function AdminLoginPage() {
     setLoading(true);
     try {
       await adminLogin(identity, password);
-      toast.success('Central Command Access Granted');
+      toast.success('Admin Login Successful');
       navigate('/nexus-admin/dashboard');
     } catch (err) {
       toast.error(err.response?.data?.error || 'Authentication Failed');
@@ -81,19 +81,19 @@ export default function AdminLoginPage() {
             </span>
           </div>
           <h2 className="font-display text-5xl font-bold text-red-500 tracking-widest mb-4 uppercase" style={{ textShadow: '0 0 20px rgba(255,0,0,0.4)' }}>
-            NEXUS <br/><span className="text-white">COMMAND</span>
+            ADMIN <br/><span className="text-white">CONSOLE</span>
           </h2>
           <div className="w-16 h-1 bg-red-600 mx-auto mb-6 opacity-80" />
           <p className="text-sm text-red-400/70 leading-relaxed uppercase tracking-widest">
-            Level 5 Security Clearance Required. <br />
-            All telemetry is monitored and recorded.
+            Authorized Administrator Access Only. <br />
+            All administrative sessions are logged.
           </p>
         </div>
 
         <div className="absolute bottom-6 left-0 right-0 px-8 flex justify-between items-end border-t border-red-900/40 pt-4">
           <div>
             <p className="text-[10px] text-red-500 font-bold tracking-[0.3em] mb-1 animate-pulse">RESTRICTED AREA</p>
-            <p className="text-[9px] text-red-500/50 tracking-[0.3em] uppercase">Auth node protocol active</p>
+            <p className="text-[9px] text-red-500/50 tracking-[0.3em] uppercase">Secure Admin Session Active</p>
           </div>
           <div className="text-right">
              <p className="text-[10px] text-white/50 tracking-widest flex items-center gap-2">
@@ -118,7 +118,7 @@ export default function AdminLoginPage() {
               <BrandLogo size={60} color="#ef4444" />
             </div>
             <div className="flex items-center justify-center gap-2">
-              <h1 className="font-display text-3xl font-bold text-red-500 tracking-widest">NEXUS COMMAND</h1>
+              <h1 className="font-display text-3xl font-bold text-red-500 tracking-widest">ADMIN CONSOLE</h1>
               <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 border border-red-500/30">v33.0.0</span>
             </div>
           </div>

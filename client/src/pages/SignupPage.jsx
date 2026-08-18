@@ -226,16 +226,16 @@ export default function SignupPage() {
                 CYBERSHIELD X v33.0.0
               </span>
             </div>
-            <h1 className="font-display text-5xl font-black tracking-tighter uppercase leading-[0.9] text-white">Nexus</h1>
-            <h1 className="font-display text-5xl font-black tracking-tighter uppercase leading-[0.9] text-cyber-green">Registry</h1>
-            <p className="font-mono text-[10px] text-white/40 uppercase tracking-[0.4em] mt-4">Secure Identity Node</p>
+            <h1 className="font-display text-5xl font-black tracking-tighter uppercase leading-[0.9] text-white">Create</h1>
+            <h1 className="font-display text-5xl font-black tracking-tighter uppercase leading-[0.9] text-cyber-green">Account</h1>
+            <p className="font-mono text-[10px] text-white/40 uppercase tracking-[0.4em] mt-4">Simple & Secure Cybersecurity</p>
           </div>
         </div>
 
         {/* Decorative HUD Elements */}
         <div className="absolute bottom-10 left-10 border-l-2 border-cyber-green/40 pl-6">
           <p className="font-mono text-[10px] text-cyber-green tracking-[0.3em] mb-1 uppercase font-bold">Registration Status</p>
-          <p className="font-mono text-[10px] text-cyber-muted tracking-[0.3em] uppercase">Encrypting session data...</p>
+          <p className="font-mono text-[10px] text-cyber-muted tracking-[0.3em] uppercase">Secure session active</p>
         </div>
       </motion.div>
 
@@ -255,7 +255,7 @@ export default function SignupPage() {
           <div className="text-center mb-8 lg:hidden">
             <BrandLogo size={60} />
             <div className="flex items-center justify-center gap-2 mt-2">
-              <h2 className="font-display text-2xl font-bold text-white tracking-widest uppercase">Nexus Registry</h2>
+              <h2 className="font-display text-2xl font-bold text-white tracking-widest uppercase">Create Account</h2>
               <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyber-green/10 text-cyber-green border border-cyber-green/30">v33.0.0</span>
             </div>
           </div>
@@ -292,7 +292,7 @@ export default function SignupPage() {
                   
                   <div className="space-y-2">
                     <label className="font-mono text-[9px] text-white/50 uppercase tracking-widest">{t('auth.signup.emailAddress')}</label>
-                    <input type="email" value={form.email} onChange={e => updateForm('email', e.target.value)} className={`w-full bg-white/[0.03] border ${errors.email ? 'border-red-500/50' : 'border-white/10'} rounded-2xl px-5 py-4 font-mono text-sm outline-none focus:border-cyber-green/50 transition-colors`} placeholder="operator@nexus.io" />
+                    <input type="email" value={form.email} onChange={e => updateForm('email', e.target.value)} className={`w-full bg-white/[0.03] border ${errors.email ? 'border-red-500/50' : 'border-white/10'} rounded-2xl px-5 py-4 font-mono text-sm outline-none focus:border-cyber-green/50 transition-colors`} placeholder="user@example.com" />
                     {errors.email && <p className="text-red-500 text-xs font-mono">{errors.email}</p>}
                   </div>
                 </div>
@@ -335,19 +335,19 @@ export default function SignupPage() {
                   <div className={`w-5 h-5 border rounded flex items-center justify-center transition-all ${termsAccepted ? 'bg-cyber-green border-cyber-green text-black font-bold' : 'border-white/20'}`}>
                     {termsAccepted && "✓"}
                   </div>
-                  <span className="font-mono text-[9px] text-cyber-muted uppercase">Accept Protocols & Privacy Policy</span>
+                  <span className="font-mono text-[9px] text-cyber-muted uppercase">I agree to the Terms of Service & Privacy Policy</span>
                 </label>
                 {errors.terms && <p className="text-red-500 text-xs font-mono">{errors.terms}</p>}
               </div>
 
               <button type="submit" disabled={loading} className="w-full py-5 bg-cyber-green text-black font-mono font-black uppercase rounded-2xl transition-all active:scale-95 disabled:opacity-50 shadow-[0_0_20px_rgba(0,255,136,0.3)]">
-                {loading ? 'Initializing Protocol...' : 'Create Account'}
+                {loading ? 'Creating Account...' : 'Create Account'}
               </button>
 
               <div className="mt-8 pt-4 border-t border-white/10 text-center relative z-10">
                 <p className="font-mono text-[10px] text-cyber-muted">
                   Already a member?{' '}
-                  <Link to={`/login?returnTo=${encodeURIComponent(returnTo || '')}`} className="text-cyber-green hover:underline decoration-cyber-green/50 underline-offset-4">Login Registry →</Link>
+                  <Link to={`/login?returnTo=${encodeURIComponent(returnTo || '')}`} className="text-cyber-green hover:underline decoration-cyber-green/50 underline-offset-4">Sign In →</Link>
                 </p>
               </div>
             </form>
