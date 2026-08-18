@@ -1,11 +1,12 @@
 # CyberShield X - Project State
 
 ## Current Status
-- **Architecture Version**: V33.1.0 (Phase 35: Copy De-AI-ification & Simple US English Translation Across All Pages)
-- **Phase**: PHASE 35 — COPY DE-AI-IFICATION & SIMPLE US ENGLISH TRANSLATION (COMPLETED)
-- **Status**: Comprehensive frontend de-AI-ification completed. Replaced robotic, sci-fi, and overly academic jargon across `en.json` (763 lines), `hi.json`, `toolConfig.js`, `SignupPage.jsx`, `LoginPage.jsx`, `AdminLoginPage.jsx`, `SecurityPosturePage.jsx`, `TeamPage.jsx`, `ThreatIntelligencePage.jsx`, `VaultPage.jsx`, `VerifyEmailPage.jsx`, `SecurityCopilot.jsx`, and `CyberTerminalModal.jsx`. Clean, modern US English cybersecurity copy (aligned with Cloudflare / CrowdStrike / Snyk / VirusTotal style) is now active across all 110 tools, settings, auth forms, and dashboard views. Verified with clean production build (`npm run build`).
+- **Architecture Version**: V34.0.0 (Phase 36: Security Tool Catalog Expansion — Batch 1: Reconnaissance & Network Suite)
+- **Phase**: PHASE 36 — BATCH 1 RECON & NETWORK DEEP VISUAL SCANNERS (COMPLETED)
+- **Status**: Activated 5 high-demand security tools from upcoming to full Dedicated GUI Live status: `subfinder` (Subdomain Discovery via crt.sh & live DNS), `dnssec-audit` (DNSSEC Cryptographic Trust Chain Validator), `ipv6-checker` (IPv6 Dual-Stack & AAAA Connectivity Auditor), `mac-lookup` (MAC OUI Hardware Vendor & Format Parser), and `cve-lookup` (CVE Vulnerability & CVSS 3.1 Inspector). Built dedicated `networkToolService.js` with SSRF protection, sub-second offline CVE & OUI caches, and live DoH/CT API fallbacks. Enhanced `ScannerToolView.jsx` with real-time visual cards, subdomain lists with live IP badges, and IPv6 readiness gauges. Verified with 8/8 passing Jest test suite and clean client production build.
 
 ## Completed Phases
+- ✅ **Phase 36 (V34.0.0)**: Security Tool Catalog Expansion (Batch 1: Reconnaissance & Network Suite — Subdomain Discovery, DNSSEC Audit, IPv6 Readiness, MAC OUI Parser, CVE Vulnerability Inspector)
 - ✅ **Phase 35 (V33.1.0)**: Comprehensive Copy De-AI-ification, Simple US English Natural Language Transformation Across All Components, Pages, and Localization Bundles
 - ✅ **Phase 34 (V33.0.0)**: Brand Identity Perfection, Original Shield Restoration, In-Flow Footer Version Badge, Favicon Cache-Busting & Bot Avatar Suite Deployment
 - ✅ **Phase 33 (V32.0.0)**: Mandatory Auth Gate on Tools & Terminal, Automated Scan History Persistence (`/api/scan`), and 1-Click Executive Security Audit Dossier Export

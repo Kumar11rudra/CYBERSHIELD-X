@@ -9,6 +9,7 @@ const { isValidDomain, isValidURL } = require('../utils/validators');
 const toolsController = require('./toolsController');
 const breachController = require('./breachController');
 const remediationController = require('./remediationController');
+const networkToolService = require('../services/networkToolService');
 
 const sanitizeTarget = (target) => {
   if (typeof target !== 'string') throw new Error('Target must be a string');
@@ -26,7 +27,8 @@ const nextExecId = () => `nexus-${Date.now()}-${++_execCounter}`;
 const ACTIVE_TOOLS = new Set([
   'dns', 'whois', 'port', 'tech_detection', 'http', 'ssl', 'phishing',
   'service_fingerprint', 'remediation', 'url', 'breach', 'sms', 'upi',
-  'jwt-parser', 'base64-decoder', 'url-sanitizer'
+  'jwt-parser', 'base64-decoder', 'url-sanitizer',
+  'subfinder', 'dnssec-audit', 'ipv6-checker', 'mac-lookup', 'cve-lookup'
 ]);
 
 const parseDnsFromResponse = (resData) => {
@@ -93,6 +95,51 @@ const executeTool = async (req, res) => {
     if (toolId === 'remediation') {
       req.query.cve = cleanTarget;
       return remediationController.getRemediation(req, res);
+    }
+
+    // Batch 1: MAC OUI Parser
+    if (toolId === 'mac-lookup') {
+      const macResults = await networkToolService.lookupMac(cleanTarget);
+      return res.json({ success: true, results: macResults });
+    }
+
+    // Batch 1: CVE Vulnerability Inspector
+    if (toolId === 'cve-lookup') {
+      const cveResults = await networkToolService.lookupCve(cleanTarget);
+      return res.json({ success: true, results: cveResults });
+    }
+
+    // Batch 1: Subdomain Discovery
+    if (toolId === 'subfinder') {
+      if (!isValidDomain(cleanTarget) && !isValidURL(cleanTarget)) {
+        return res.status(400).json({ error: 'Enter a valid domain name.' });
+      }
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const subdomainResults = await networkToolService.findSubdomains(cleanTarget);
+      return res.json({ success: true, results: subdomainResults });
+    }
+
+    // Batch 1: DNSSEC Cryptographic Audit
+    if (toolId === 'dnssec-audit') {
+      if (!isValidDomain(cleanTarget) && !isValidURL(cleanTarget)) {
+        return res.status(400).json({ error: 'Enter a valid domain name.' });
+      }
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const dnssecResults = await networkToolService.auditDnssec(cleanTarget);
+      return res.json({ success: true, results: dnssecResults });
+    }
+
+    // Batch 1: IPv6 Dual-Stack Auditor
+    if (toolId === 'ipv6-checker') {
+      if (!isValidDomain(cleanTarget) && !isValidURL(cleanTarget)) {
+        return res.status(400).json({ error: 'Enter a valid domain name or hostname.' });
+      }
+      const isPrivate = await toolsController.isPrivateOrLoopback(cleanTarget);
+      if (isPrivate) return res.status(400).json({ error: 'Private or loopback targets are not permitted.' });
+      const ipv6Results = await networkToolService.checkIpv6(cleanTarget);
+      return res.json({ success: true, results: ipv6Results });
     }
 
     // SSRF validation for passive engines

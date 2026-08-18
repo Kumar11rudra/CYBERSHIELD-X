@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v34.0.0] - 2026-08-18
+### Phase 36: Security Tool Catalog Expansion (Batch 1: Reconnaissance & Network Suite)
+- **Subdomain Discovery Engine (`subfinder`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented live Certificate Transparency log ingestion (`crt.sh`) paired with DNS A-record resolvers, wildcard cleanup, and real-time live host identification.
+- **DNSSEC Cryptographic Trust Chain Validator (`dnssec-audit`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented DNS over HTTPS (DoH) DS and DNSKEY query engine with cryptographic delegation verification and actionable RFC 6781 guidance.
+- **IPv6 Dual-Stack & Connectivity Auditor (`ipv6-checker`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented AAAA record resolution, IPv4/IPv6 dual-stack readiness score calculation, and NAT64 compatibility insights.
+- **MAC OUI Hardware/Vendor Parser (`mac-lookup`)**: Upgraded to `TOOL_STATUS.LIVE`. Implemented offline database containing 40+ enterprise hardware vendors (Apple, Cisco, Dell, Intel, TP-Link, Espressif, Raspberry Pi, etc.) with live registry fallback.
+- **CVE Vulnerability & CVSS 3.1 Inspector (`cve-lookup`)**: Added to `VULNERABILITY ASSESSMENT` and upgraded to `TOOL_STATUS.LIVE`. Integrated instant offline high-severity CVE cache (Log4Shell, Spring4Shell, Heartbleed, EternalBlue, XZ Backdoor) with CIRCL live query fallback.
+- **Dedicated GUI Visual Cards (`ScannerToolView.jsx`)**: Enhanced scanner interface with dynamic visual cards for subdomains (live IP badges, copy actions) and IPv6 dual-stack readiness widgets alongside real-time terminal output.
+- **Security & SSRF Hardening (`networkToolService.js` & `toolkitController.js`)**: Guarded all live network probes with asynchronous hostname resolution and loopback/private IP blocks.
+- **Verification**: Created `server/tests/batch1_recon_network_tools.test.js` (8/8 tests passing) and confirmed production build (`npm run build` exit code 0).
+
 ## [v33.1.0] - 2026-08-18
 ### Phase 35: Copy De-AI-ification & Simple US English Translation Across All Pages
 - **Localization Overhaul (`en.json` & `hi.json`)**: Replaced robotic, sci-fi, and overly academic jargon across all 763 lines of `client/src/locales/en.json` and synchronized `client/src/locales/hi.json`. Removed terms like "Aegis", "Neural Node", "Nexus Command", "Self-Destruct", "Global Hive Feed", "Quantum Vault", replacing them with humanized, accessible cybersecurity terminology.

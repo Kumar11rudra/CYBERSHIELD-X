@@ -23,6 +23,7 @@ const ScannerToolView = ({ toolId }) => {
   const [error, setError] = useState(null);
   const terminalRef = useRef(null);
   const wsRef = useRef(null);
+  const [structuredData, setStructuredData] = useState(null);
 
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ const ScannerToolView = ({ toolId }) => {
       navigate('/login');
       return;
     }
-    exportToolReportPdf(tool.name, target, { rawAnalysis: results, riskLevel: 'safe', score: 0 }, user);
+    exportToolReportPdf(tool.name, target, { rawAnalysis: results, structured: structuredData, riskLevel: 'safe', score: 0 }, user);
   };
 
   // Auto-scroll terminal
@@ -66,6 +67,9 @@ const ScannerToolView = ({ toolId }) => {
           target: scanTarget,
         });
         const data = response.data;
+        if (data?.results && typeof data.results === 'object') {
+          setStructuredData(data.results);
+        }
         if (data?.output) {
           appendResult(data.output);
         } else if (data?.results) {
@@ -123,10 +127,7 @@ const ScannerToolView = ({ toolId }) => {
           executeScanHTTP(scanTarget);
         };
 
-        ws.onclose = (event) => {
-          if (event.wasClean) {
-            appendResult('\n[✓] Scan complete.\n');
-          }
+        ws.onclose = () => {
           setScanning(false);
           wsRef.current = null;
         };
@@ -143,6 +144,7 @@ const ScannerToolView = ({ toolId }) => {
     if (!trimmed) return;
 
     setResults('');
+    setStructuredData(null);
     setError(null);
     setScanning(true);
 
@@ -246,6 +248,88 @@ const ScannerToolView = ({ toolId }) => {
         </div>
       )}
 
+      {/* Structured Visual Cards for Subdomains & Network Discoveries */}
+      {structuredData?.subdomains && (
+        <div className="p-6 rounded-2xl bg-[#0a1424]/90 border border-cyber-accent/30 shadow-2xl space-y-4 font-mono">
+          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            <div>
+              <h3 className="text-sm font-bold text-white uppercase tracking-wider">Discovered Subdomains</h3>
+              <p className="text-[11px] text-cyber-muted mt-0.5">{structuredData.summary}</p>
+            </div>
+            <div className="flex items-center gap-3 text-xs">
+              <span className="px-3 py-1 bg-cyber-accent/10 border border-cyber-accent/30 rounded-lg text-cyber-accent font-bold">
+                Total: {structuredData.totalCount}
+              </span>
+              <span className="px-3 py-1 bg-[#00ff88]/10 border border-[#00ff88]/30 rounded-lg text-[#00ff88] font-bold">
+                Live IPs: {structuredData.liveCount}
+              </span>
+            </div>
+          </div>
+
+          <div className="max-h-72 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
+            {structuredData.subdomains.map((sub, idx) => (
+              <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-black/40 border border-white/5 hover:border-cyber-accent/40 transition-colors">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-[10px] text-slate-500 font-bold">#{idx + 1}</span>
+                  <span className="text-xs text-white font-bold truncate">{sub.subdomain}</span>
+                  <span className="text-[9px] px-2 py-0.5 rounded bg-white/5 text-slate-400 border border-white/10 uppercase">
+                    {sub.type}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className="text-xs font-mono text-cyan-400">{sub.ip}</span>
+                  <span className={`text-[9px] px-2 py-0.5 rounded font-bold uppercase ${sub.isLive ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-400'}`}>
+                    {sub.isLive ? '● Live' : '○ Passive'}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Structured Visual Cards for IPv6 & Connectivity */}
+      {structuredData?.hasIpv4 !== undefined && structuredData?.hasIpv6 !== undefined && (
+        <div className="p-6 rounded-2xl bg-[#0a1424]/90 border border-[#14b8a6]/30 shadow-2xl space-y-4 font-mono">
+          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            <div>
+              <h3 className="text-sm font-bold text-white uppercase tracking-wider">IPv6 Network Readiness</h3>
+              <p className="text-[11px] text-cyber-muted mt-0.5">{structuredData.summary}</p>
+            </div>
+            <span className={`px-3 py-1 rounded-lg text-xs font-bold uppercase border ${structuredData.isDualStack ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' : 'bg-amber-500/15 text-amber-400 border-amber-500/30'}`}>
+              {structuredData.status}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 rounded-xl bg-black/40 border border-white/5">
+              <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">IPv4 Addresses (A Records)</span>
+              <div className="mt-2 space-y-1">
+                {structuredData.ipv4Addresses?.length > 0 ? (
+                  structuredData.ipv4Addresses.map((ip, i) => (
+                    <div key={i} className="text-xs text-white font-mono">{ip}</div>
+                  ))
+                ) : (
+                  <span className="text-xs text-slate-500">None detected</span>
+                )}
+              </div>
+            </div>
+            <div className="p-4 rounded-xl bg-black/40 border border-white/5">
+              <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">IPv6 Addresses (AAAA Records)</span>
+              <div className="mt-2 space-y-1">
+                {structuredData.ipv6Addresses?.length > 0 ? (
+                  structuredData.ipv6Addresses.map((ip, i) => (
+                    <div key={i} className="text-xs text-cyan-400 font-mono break-all">{ip}</div>
+                  ))
+                ) : (
+                  <span className="text-xs text-amber-400/80">No IPv6 records configured</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Terminal output */}
       <div style={styles.terminalSection}>
         <div style={styles.terminalHeader}>
@@ -254,7 +338,7 @@ const ScannerToolView = ({ toolId }) => {
             <span style={styles.terminalDot('#febc2e')} />
             <span style={styles.terminalDot('#28c840')} />
             <span style={styles.terminalTitle}>
-              {scanning ? `Scanning ${target}…` : results ? 'Scan Results' : 'Output'}
+              {scanning ? `Scanning ${target}…` : results ? 'Scan Output Stream' : 'Output Terminal'}
             </span>
           </div>
           {results && !scanning && (
