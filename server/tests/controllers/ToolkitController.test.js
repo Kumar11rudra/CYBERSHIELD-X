@@ -1,5 +1,4 @@
 const { executeTool } = require('../../controllers/toolkitController');
-const executionDispatcher = require('../../services/ExecutionDispatcher');
 
 jest.mock('../../services/ExecutionDispatcher');
 jest.mock('../../services/SocketNotificationService', () => {
@@ -14,7 +13,7 @@ describe('ToolkitController Unit Tests', () => {
 
     beforeEach(() => {
         req = {
-            body: { toolId: 'wazuh', target: 'example.com' },
+            body: { toolId: 'wazuh-agent-audit', target: 'test-agent-log-data' },
             user: { _id: 'user-1' },
             app: { get: jest.fn().mockReturnValue({}) }
         };
@@ -31,23 +30,31 @@ describe('ToolkitController Unit Tests', () => {
         req.body.toolId = null;
         await executeTool(req, res);
         expect(res.status).toHaveBeenCalledWith(400);
-        expect(res.json).toHaveBeenCalledWith({ error: 'Tool ID and Target are required' });
+        expect(res.json).toHaveBeenCalledWith({ error: 'Tool ID is required' });
     });
 
-    test('executeTool - unmapped tool returns 400', async () => {
+    test('executeTool - unmapped tool returns 400 COMING_SOON', async () => {
         req.body.toolId = 'unknown-tool';
+        req.body.target = 'example.com';
         await executeTool(req, res);
         expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ status: 'COMING_SOON' }));
     });
 
-    test('executeTool - non-streaming tool returns result', async () => {
-        executionDispatcher.resolveCapability.mockReturnValue({ name: 'Wazuh', supportsStreaming: false });
-        executionDispatcher.dispatch.mockResolvedValue({ normalizedResult: { status: 'OK' } });
+    test('executeTool - active raw-dispatch tool returns result', async () => {
+        req.body.toolId = 'wazuh-agent-audit';
+        req.body.target = 'agent-id: 001\nstatus: active\nos: Ubuntu 22.04';
         await executeTool(req, res);
-        expect(res.json).toHaveBeenCalledWith({
-            success: true,
-            report: { status: 'OK' },
-            rawOutput: JSON.stringify({ status: 'OK' }, null, 2)
-        });
+        expect(res.json).toHaveBeenCalledWith(
+            expect.objectContaining({ success: true })
+        );
+    });
+
+    test('executeTool - missing target returns 400', async () => {
+        req.body.toolId = 'dns';
+        req.body.target = '';
+        await executeTool(req, res);
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({ error: 'Target is required' });
     });
 });

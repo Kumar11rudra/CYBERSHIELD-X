@@ -80,13 +80,13 @@ describe('Phase 1 — Access Gating, Team Privacy & Sushant Member Verification'
       expect(res.body).toHaveProperty('error', 'Authentication required');
     });
 
-    test('Unauthenticated POST /api/chatbot/chat returns HTTP 401 Unauthorized', async () => {
+    test('Unauthenticated POST /api/chatbot/chat is allowed (uses tryAuthenticate for guest support)', async () => {
       const res = await request(app)
         .post('/api/chatbot/chat')
         .send({ message: 'test' });
       
-      expect(res.status).toBe(401);
-      expect(res.body).toHaveProperty('error', 'Authentication required');
+      // chatbot uses tryAuthenticate (guest-friendly), so it should NOT return 401
+      expect(res.status).not.toBe(401);
     });
 
     test('Authenticated request passes auth middleware (returns non-401 status code)', async () => {

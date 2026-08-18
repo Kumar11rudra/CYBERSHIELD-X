@@ -168,7 +168,7 @@ const executeTool = async (req, res) => {
     }
     if (toolId === 'androguard') {
       const androResults = await mobileReverseToolService.disassembleAndroguard(target);
-      return res.json({ success: true, results: androguard });
+      return res.json({ success: true, results: androResults });
     }
     if (toolId === 'falco-logs') {
       const falcoResults = await mobileReverseToolService.inspectFalcoLogs(target);

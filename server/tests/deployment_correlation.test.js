@@ -134,6 +134,9 @@ describe('Phase 23 — Deployment Health Correlation & Config Readiness', () => 
 
   describe('DeploymentConfigValidator Diagnostic Readiness Engine', () => {
     it('8. Reports missing required variables when provider tokens are unconfigured', () => {
+      const savedGh = process.env.GITHUB_TOKEN;
+      delete process.env.GITHUB_TOKEN;
+
       const validator = new DeploymentConfigValidator();
       const result = validator.validateConfiguration();
 
@@ -143,6 +146,8 @@ describe('Phase 23 — Deployment Health Correlation & Config Readiness', () => 
       const gh = result.providers.find((p) => p.id === 'github');
       expect(gh.configured).toBe(false);
       expect(gh.missingVariables).toContain('GITHUB_TOKEN');
+
+      if (savedGh) process.env.GITHUB_TOKEN = savedGh;
     });
 
     it('9. Zero Credential Exposure — Output contains zero token values or secrets', () => {
