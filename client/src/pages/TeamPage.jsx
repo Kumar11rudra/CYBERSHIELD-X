@@ -255,7 +255,7 @@ const CoreTeamCard = ({ member, onClick, idx }) => {
         <CyberAvatar color={member.color} initials={member.initials} id={member.id} size={78} />
 
         {/* Member Name (High-Contrast Display Typography) */}
-        <h3 className="font-display text-base sm:text-lg font-black text-white uppercase tracking-wider group-hover:text-[#00bfff] transition-colors truncate w-full pt-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+        <h3 className="font-display text-sm sm:text-base font-black text-white uppercase tracking-wider group-hover:text-[#00bfff] transition-colors w-full pt-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] whitespace-normal">
           {member.name}
         </h3>
 

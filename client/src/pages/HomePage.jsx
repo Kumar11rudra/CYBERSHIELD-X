@@ -611,17 +611,17 @@ export default function HomePage() {
           ))}
         </div>
 
-        <div style={{ width: '100%', maxWidth: 1000, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14 }}>
-          {/* LEFT: Clean in-flow Tactical Version Badge in footer */}
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: '"JetBrains Mono", monospace', fontSize: 10 }}>
+        <div style={{ width: '100%', maxWidth: 1000, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 10, textAlign: 'center' }}>
+          {/* CENTER: Clean in-flow Tactical Version Badge in footer */}
+          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: '"JetBrains Mono", monospace', fontSize: 10 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00ff88', boxShadow: '0 0 6px #00ff88', display: 'inline-block' }} />
             <span style={{ color: '#94a3b8', fontWeight: 600, letterSpacing: '0.8px' }}>CYBERSHIELD X</span>
             <span style={{ color: 'rgba(0, 212, 255, 0.4)' }}>•</span>
             <span style={{ fontWeight: 700, color: '#00d4ff', background: 'rgba(0, 212, 255, 0.1)', padding: '2px 7px', borderRadius: 4, border: '1px solid rgba(0, 212, 255, 0.25)' }}>v33.0.0</span>
           </div>
 
-          {/* RIGHT: Legal & Copyright Links */}
-          <div style={{ color: '#64748b', fontSize: 10, letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          {/* CENTER: Legal & Copyright Links */}
+          <div style={{ color: '#64748b', fontSize: 10, letterSpacing: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}>
             <span>© {new Date().getFullYear()} CYBERSHIELD X. ALL RIGHTS RESERVED.</span>
             <span style={{ color: '#334155' }}>|</span>
             <Link to="/privacy" style={{ color: '#00bfff', textDecoration: 'none' }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>Privacy Policy</Link>
