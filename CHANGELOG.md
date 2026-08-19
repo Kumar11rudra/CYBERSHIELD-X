@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v56.0.0] - 2026-08-19
+### Phase 58: Enterprise Multi-Format Dossier Exporters (SARIF, STIX 2.1, CSV, JSON, Markdown)
+- **Multi-Format Export Engine (`ReportService.js`)**: Added `exportScanReport` generating OASIS SARIF v2.1.0, OASIS STIX 2.1 Threat Bundles, CSV spreadsheets, structured JSON, and Markdown summaries.
+- **Secure IDOR API Route (`reportController.js`, `routes/report.js`)**: Added `GET /api/reports/export/:format/:scanId` with direct stream download options (`?download=true`) and strict ownership verification.
+- **Frontend Exporter UI (`ScanDetailPage.jsx`)**: Added 1-click download actions for `SARIF`, `STIX 2.1`, `CSV`, `JSON`, `Browser PDF`, and `Server PDF`.
+- **Verification**: 134/134 backend test suites passing (658/658 tests green, including 9/9 in `reports_export.test.js`), client production build compiled cleanly.
+
 ## [v55.0.0] - 2026-08-19
 ### Phase 57: Cyber Terminal 110-Tool Command Matrix & Multi-Vector SOC Playbook Suite
 - **110-Tool Command Registry (`terminalExecutionService.js`)**: Expanded `COMMAND_MAP` to support all 110 tools across all 24 cybersecurity categories with CLI aliases and auto-discovery fallback.

@@ -129,9 +129,37 @@ export default function ScanDetailPage() {
   const [loading, setLoading] = useState(true);
   const { exportPdf, exporting } = usePdfExport();
   const [downloadingBackend, setDownloadingBackend] = useState(false);
+  const [exportingFormat, setExportingFormat] = useState(null);
   const [aiAnalysis, setAiAnalysis] = useState(null);
   const [savedAsAsset, setSavedAsAsset] = useState(false);
   const [savingAsset, setSavingAsset] = useState(false);
+
+  const handleExportFormat = async (format) => {
+    if (!scan?._id) return;
+    if (!user) {
+      toast.error('Authentication is required to download reports.');
+      navigate(`/login?returnTo=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+    setExportingFormat(format);
+    try {
+      const response = await api.get(`/reports/export/${format}/${scan._id}?download=true`, {
+        responseType: 'blob',
+      });
+      const ext = format === 'sarif' ? 'sarif' : format === 'stix' ? 'json' : format === 'csv' ? 'csv' : format === 'markdown' ? 'md' : 'json';
+      const blob = new Blob([response.data]);
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = `CyberShield_${format.toUpperCase()}_Dossier_${scan._id}.${ext}`;
+      link.click();
+      toast.success(`${format.toUpperCase()} dossier downloaded successfully.`);
+    } catch (err) {
+      console.error(err);
+      toast.error(`Failed to export ${format.toUpperCase()} dossier.`);
+    } finally {
+      setExportingFormat(null);
+    }
+  };
 
   const handleDownloadBackendPdf = async () => {
     if (!scan?._id) return;
@@ -298,7 +326,7 @@ export default function ScanDetailPage() {
               }
             />
 
-            <div className="flex items-center gap-3 mt-4 flex-wrap">
+            <div className="flex items-center gap-2.5 mt-4 flex-wrap">
               <button
                 onClick={() => exportPdf(scan, user, aiAnalysis)}
                 disabled={exporting}
@@ -311,28 +339,60 @@ export default function ScanDetailPage() {
                 onClick={handleDownloadBackendPdf}
                 disabled={downloadingBackend}
                 className="text-xs py-2 px-3 bg-gradient-to-r from-violet-600 to-indigo-600 border border-violet-500 hover:border-violet-400 text-white rounded-lg hover:shadow-[0_0_15px_rgba(139,92,246,0.3)] disabled:opacity-50 transition-all font-mono font-bold"
-                title="Compile enterprise-grade report on server (Recommended for mobile/large files)"
+                title="Compile enterprise-grade report on server"
               >
                 {downloadingBackend ? 'Compiling...' : '🏛️ Server PDF'}
               </button>
               <button
-                onClick={handleShareScan}
-                className={`text-xs py-2 px-3 border transition-colors ${scan.isPublic ? 'bg-cyber-accent/20 border-cyber-accent text-cyber-accent' : 'bg-transparent border-cyber-border text-cyber-muted hover:border-cyber-accent hover:text-cyber-accent'}`}
+                onClick={() => handleExportFormat('sarif')}
+                disabled={exportingFormat === 'sarif'}
+                className="text-xs py-2 px-2.5 bg-white/5 border border-cyan-500/30 hover:border-cyan-400 hover:bg-cyan-500/10 text-cyan-300 rounded-lg disabled:opacity-50 transition-all font-mono font-bold"
+                title="Export findings in OASIS SARIF v2.1.0 JSON format for GitHub/GitLab Security"
               >
-                {scan.isPublic ? '🔗 Shared (Click to Make Private)' : 'Share Scan'}
+                {exportingFormat === 'sarif' ? 'Exporting...' : '🛡️ SARIF'}
+              </button>
+              <button
+                onClick={() => handleExportFormat('stix')}
+                disabled={exportingFormat === 'stix'}
+                className="text-xs py-2 px-2.5 bg-white/5 border border-emerald-500/30 hover:border-emerald-400 hover:bg-emerald-500/10 text-emerald-300 rounded-lg disabled:opacity-50 transition-all font-mono font-bold"
+                title="Export Threat Objects in OASIS STIX 2.1 JSON format for SIEM/SOAR/MISP"
+              >
+                {exportingFormat === 'stix' ? 'Exporting...' : '⚡ STIX 2.1'}
+              </button>
+              <button
+                onClick={() => handleExportFormat('csv')}
+                disabled={exportingFormat === 'csv'}
+                className="text-xs py-2 px-2.5 bg-white/5 border border-amber-500/30 hover:border-amber-400 hover:bg-amber-500/10 text-amber-300 rounded-lg disabled:opacity-50 transition-all font-mono font-bold"
+                title="Export tabular findings in CSV spreadsheet format"
+              >
+                {exportingFormat === 'csv' ? 'Exporting...' : '📊 CSV'}
+              </button>
+              <button
+                onClick={() => handleExportFormat('json')}
+                disabled={exportingFormat === 'json'}
+                className="text-xs py-2 px-2.5 bg-white/5 border border-white/10 hover:border-white/30 text-slate-300 rounded-lg disabled:opacity-50 transition-all font-mono font-bold"
+                title="Export raw structured JSON audit dossier"
+              >
+                {exportingFormat === 'json' ? 'Exporting...' : '{ } JSON'}
+              </button>
+              <button
+                onClick={handleShareScan}
+                className={`text-xs py-2 px-3 border transition-colors rounded-lg font-mono ${scan.isPublic ? 'bg-cyber-accent/20 border-cyber-accent text-cyber-accent' : 'bg-transparent border-cyber-border text-cyber-muted hover:border-cyber-accent hover:text-cyber-accent'}`}
+              >
+                {scan.isPublic ? '🔗 Public' : 'Share'}
               </button>
               <button
                 onClick={handleSaveAsAsset}
                 disabled={savingAsset || savedAsAsset}
-                className={`text-xs py-2 px-3 border transition-all rounded-lg font-mono font-bold ${savedAsAsset ? 'bg-green-500/10 border-green-500/30 text-green-400 cursor-not-allowed font-semibold' : 'bg-transparent border-[#00bfff]/30 text-cyan-400 hover:bg-[#00bfff]/10 hover:border-cyan-400'}`}
+                className={`text-xs py-2 px-3 border transition-all rounded-lg font-mono font-bold ${savedAsAsset ? 'bg-green-500/10 border-green-500/30 text-green-400 cursor-not-allowed' : 'bg-transparent border-[#00bfff]/30 text-cyan-400 hover:bg-[#00bfff]/10 hover:border-cyan-400'}`}
               >
-                {savingAsset ? 'Saving...' : (savedAsAsset ? '🛡️ Managed Asset' : '➕ Save as Managed Asset')}
+                {savingAsset ? 'Saving...' : (savedAsAsset ? '🛡️ Managed Asset' : '➕ Asset')}
               </button>
               <button onClick={handleCopyTarget} className="font-mono text-xs text-cyber-accent hover:underline uppercase tracking-widest">
                 Copy Target
               </button>
               <Link to="/history" className="font-mono text-xs text-cyber-muted hover:text-cyber-text uppercase tracking-widest transition-colors">
-                ← Back to History
+                ← Back
               </Link>
             </div>
           </div>
