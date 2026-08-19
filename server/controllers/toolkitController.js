@@ -28,6 +28,7 @@ const memoryReverseForensicsService = require('../services/memoryReverseForensic
 const wirelessTyposquatService = require('../services/wirelessTyposquatService');
 const enterpriseVulnPhishService = require('../services/enterpriseVulnPhishService');
 const aiRedteamPlaybookService = require('../services/aiRedteamPlaybookService');
+const { toolkitCacheService } = require('../services/ToolkitCacheService');
 
 const sanitizeTarget = (target) => {
   if (typeof target !== 'string') throw new Error('Target must be a string');
@@ -77,10 +78,12 @@ const parseDnsFromResponse = (resData) => {
 };
 
 const executeTool = async (req, res) => {
-  const { toolId, target, socketId } = req.body;
+  const { toolId, target, socketId, forceRefresh } = req.body;
   const io = req.app.get('io');
   const userId = req.user ? req.user._id : null;
   const notifier = new SocketNotificationService(io);
+  const startTime = Date.now();
+  const shouldBypassCache = Boolean(forceRefresh || req.headers?.['x-force-refresh']);
 
   try {
     if (!toolId) return res.status(400).json({ error: 'Tool ID is required' });
@@ -100,6 +103,37 @@ const executeTool = async (req, res) => {
         message: 'This capability is not enabled for execution. Backend integration and container sandboxing are planned for a future release.'
       });
     }
+
+    // ⚡ Fast LRU Cache Interceptor for repeat queries (< 10ms execution)
+    const cachedData = await toolkitCacheService.get(toolId, target, shouldBypassCache);
+    if (cachedData) {
+      const latencyMs = Date.now() - startTime;
+      return res.json({
+        success: true,
+        results: cachedData.results,
+        _telemetry: {
+          cached: true,
+          cachedAt: cachedData.cachedAt,
+          expiresInSeconds: cachedData.expiresInSeconds,
+          latencyMs
+        }
+      });
+    }
+
+    // Transparently intercept res.json to attach telemetry and store cache
+    const originalJson = res.json;
+    res.json = function(body) {
+      const latencyMs = Date.now() - startTime;
+      if (body && body.success && body.results !== undefined && !body._telemetry) {
+        body._telemetry = {
+          cached: false,
+          latencyMs
+        };
+        toolkitCacheService.set(toolId, target, body.results).catch(() => {});
+      }
+      res.json = originalJson;
+      return originalJson.apply(this, arguments);
+    };
 
     // Batch 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 & 18: Tools that accept raw multi-line code / XML / YAML / JSON / Tokens / Specs / Lockfiles / Binaries / Manifests / Hex / EML / Prompts / Logs / Audits / Hashes / Images / Queries / Samples / Dumps / Opcodes / Caps / Interfaces / Campaigns
     if (toolId === 'saml-decoder') {

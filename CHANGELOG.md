@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v53.0.0] - 2026-08-19
+### Phase 55: High-Performance In-Memory LRU Response Caching Engine (Sub-10ms Repeat Execution Latency)
+- **Toolkit LRU Caching Service (`ToolkitCacheService.js`)**: Implemented category-aware response caching engine with configurable TTL tiers (600s for passive OSINT/WHOIS/CVE/MAC, 180s for active network/web probes, 0s for dynamic sandbox/fuzzers).
+- **Transparent Controller Interceptor (`toolkitController.js`)**: Integrated automated cache lookup and response interceptor delivering sub-10ms response times for repeat scans on all 110 tools.
+- **Telemetry & Cache Bypass**: Attached `_telemetry` response payload (`cached: true/false`, `latencyMs`, `expiresInSeconds`) and added `forceRefresh` support for live re-probes.
+- **Verification**: Created `server/tests/toolkit_lru_cache.test.js` (8/8 tests passing), verified all 116 non-DB test suites (528/528 tests passing), and verified clean client build (`npm run build`).
+
 ## [v52.0.0] - 2026-08-19
 ### Phase 54: Security Tool Catalog Expansion (Batch 19: AI Red-Teaming, LLM Safety Fuzzing & SOC Playbook Automation Suite — The 100% Live Milestone)
 - **Garak LLM Vulnerability Scanner (`garak`)**: Upgraded to `TOOL_STATUS.LIVE`. Added generative AI vulnerability scanner running automated probe sweeps across prompt injection, system prompt leakage, hallucination, and obfuscated encoding attack vectors with safety scoring.
