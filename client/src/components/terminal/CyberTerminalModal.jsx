@@ -22,7 +22,8 @@ import {
   executeSingleTool, 
   executeChainedPlaybook, 
   parseNaturalLanguagePrompt,
-  COMMAND_MAP 
+  COMMAND_MAP,
+  PLAYBOOK_DEFINITIONS 
 } from '../../services/terminalExecutionService';
 
 export default function CyberTerminalModal({ isOpen, onClose, initialTool = null, initialTarget = '' }) {
@@ -30,6 +31,7 @@ export default function CyberTerminalModal({ isOpen, onClose, initialTool = null
   const navigate = useNavigate();
 
   const [mode, setMode] = useState('single'); // 'single' | 'playbook' | 'copilot'
+  const [selectedPlaybookKey, setSelectedPlaybookKey] = useState('perimeter');
   const [targetInput, setTargetInput] = useState(initialTarget || '');
   const [selectedTool, setSelectedTool] = useState(initialTool);
   const [outputLogs, setOutputLogs] = useState([]);
@@ -59,8 +61,8 @@ export default function CyberTerminalModal({ isOpen, onClose, initialTool = null
       }
       setOutputLogs([
         `╔══════════════════════════════════════════════════════════════════════════════╗`,
-        `║  CYBERSHIELD X — ADVANCED CYBERSOC INTERACTIVE TERMINAL v33.0.0             ║`,
-        `║  Target Interface: Authenticated Zero Trust Sandbox [STABLE]                 ║`,
+        `║  CYBERSHIELD X — ADVANCED CYBERSOC INTERACTIVE TERMINAL v54.0.0             ║`,
+        `║  Target Interface: Authenticated Zero Trust Sandbox [110 TOOLS LIVE]         ║`,
         `╚══════════════════════════════════════════════════════════════════════════════╝`,
         `[*] Initialized interactive terminal session. Type commands or natural queries below.`
       ]);
@@ -70,13 +72,14 @@ export default function CyberTerminalModal({ isOpen, onClose, initialTool = null
   }, [isOpen, initialTool, initialTarget]);
 
   // Execute current command or tool
-  const handleExecute = async (overrideTarget = null, overrideMode = null) => {
+  const handleExecute = async (overrideTarget = null, overrideMode = null, overridePlaybookKey = null) => {
     if (!user) {
       return; // Handled by Auth Gateway UI
     }
 
     const rawTarget = (overrideTarget !== null ? overrideTarget : targetInput).trim();
     const activeMode = overrideMode || mode;
+    const activePlaybookKey = overridePlaybookKey || selectedPlaybookKey;
     if (!rawTarget || isRunning) return;
 
     setIsRunning(true);
@@ -87,7 +90,7 @@ export default function CyberTerminalModal({ isOpen, onClose, initialTool = null
     setOutputLogs(prev => [
       ...prev,
       ``,
-      `nexus@cybershield:~$ ${activeMode === 'playbook' ? `playbook --target ${rawTarget} --all` : activeMode === 'copilot' ? `copilot "${rawTarget}"` : `${selectedTool?.id || 'scan'} ${rawTarget}`}`,
+      `nexus@cybershield:~$ ${activeMode === 'playbook' ? `playbook --name ${activePlaybookKey} --target ${rawTarget}` : activeMode === 'copilot' ? `copilot "${rawTarget}"` : `${selectedTool?.id || 'scan'} ${rawTarget}`}`,
       `[*] [${new Date().toLocaleTimeString()}] Spawning execution threads in isolated sandbox...`
     ]);
 
@@ -98,7 +101,7 @@ export default function CyberTerminalModal({ isOpen, onClose, initialTool = null
         // Option 8: Automated Chained Playbook
         const res = await executeChainedPlaybook(rawTarget, (progress) => {
           setPlaybookProgress(progress);
-        });
+        }, activePlaybookKey);
         setOutputLogs(prev => [...prev, ...res.logs]);
         setAiSummary(res.aiSummary);
         finalSummary = res.aiSummary;
@@ -345,23 +348,55 @@ export default function CyberTerminalModal({ isOpen, onClose, initialTool = null
             </div>
           </div>
 
+          {/* Specialized Playbook Selector (When in Playbook Mode) */}
+          {mode === 'playbook' && (
+            <div className="bg-[#030919] px-4 py-2 border-b border-[#00ff88]/20 flex items-center gap-2 overflow-x-auto whitespace-nowrap scrollbar-none flex-shrink-0">
+              <span className="text-[10px] font-mono text-[#00ff88] font-bold uppercase tracking-wider flex items-center gap-1">
+                <Layers size={11} /> Playbooks:
+              </span>
+              {Object.values(PLAYBOOK_DEFINITIONS).map((pb) => (
+                <button
+                  key={pb.id}
+                  onClick={() => {
+                    setSelectedPlaybookKey(pb.id);
+                    setTargetInput(pb.defaultTarget);
+                  }}
+                  className={`px-2.5 py-1 rounded-md text-[10px] font-mono transition-all flex items-center gap-1 ${
+                    selectedPlaybookKey === pb.id
+                      ? 'bg-[#00ff88]/20 border border-[#00ff88] text-[#00ff88] font-bold shadow-[0_0_10px_rgba(0,255,136,0.3)]'
+                      : 'bg-white/5 border border-white/10 text-cyber-muted hover:border-white/30 hover:text-white'
+                  }`}
+                  title={pb.description}
+                >
+                  <span>{pb.name.split('&')[0].trim()}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* Quick Command Suggestions */}
           <div className="bg-[#020713] px-4 py-2 border-b border-white/5 flex items-center gap-2 overflow-x-auto whitespace-nowrap scrollbar-none flex-shrink-0">
             <span className="text-[10px] font-mono text-white/30 uppercase tracking-wider">Quick Presets:</span>
             {[
-              { label: 'Nmap Port Scan', cmd: 'nmap -sV scanme.nmap.org', target: 'scanme.nmap.org', m: 'single', tool: { id: 'port', name: 'Port Scanner' } },
-              { label: 'DNS Dig', cmd: 'dig +trace example.com', target: 'example.com', m: 'single', tool: { id: 'dns', name: 'DNS Recon' } },
-              { label: 'SSL/TLS Audit', cmd: 'ssl-check github.com', target: 'github.com', m: 'single', tool: { id: 'ssl', name: 'SSL Checker' } },
-              { label: '⚡ Full Pentest Playbook', cmd: 'playbook tesla.com --all', target: 'tesla.com', m: 'playbook' },
-              { label: '🤖 Copilot: Check Subdomains', cmd: 'find subdomains for apple.com', target: 'find subdomains for apple.com', m: 'copilot' },
+              { label: 'Nmap Port Scan', target: 'scanme.nmap.org', m: 'single', tool: { id: 'port', name: 'Port Scanner' } },
+              { label: 'DNS Dig', target: 'example.com', m: 'single', tool: { id: 'dns', name: 'DNS Recon' } },
+              { label: 'SSL/TLS Audit', target: 'github.com', m: 'single', tool: { id: 'ssl', name: 'SSL Checker' } },
+              { label: 'Garak LLM Scan', target: 'llama3:latest', m: 'single', tool: { id: 'garak', name: 'Garak LLM Scanner' } },
+              { label: 'Prowler Cloud CIS', target: 'arn:aws:iam::123456789012:root', m: 'single', tool: { id: 'prowler', name: 'Prowler AWS' } },
+              { label: '⚡ Perimeter Playbook', target: 'example.com', m: 'playbook', pbKey: 'perimeter' },
+              { label: '⚡ Web DAST Playbook', target: 'https://example.com', m: 'playbook', pbKey: 'web' },
+              { label: '⚡ Cloud DevSec Playbook', target: 'k8s-cluster', m: 'playbook', pbKey: 'cloud' },
+              { label: '⚡ AI Redteam Playbook', target: 'llama3:latest', m: 'playbook', pbKey: 'ai' },
+              { label: '🤖 Copilot: Check S3 Leaks', target: 'find s3 bucket leaks for company', m: 'copilot' },
             ].map((preset, idx) => (
               <button
                 key={idx}
                 onClick={() => {
                   setTargetInput(preset.target);
                   setMode(preset.m);
+                  if (preset.pbKey) setSelectedPlaybookKey(preset.pbKey);
                   if (preset.tool) setSelectedTool(preset.tool);
-                  handleExecute(preset.target, preset.m);
+                  handleExecute(preset.target, preset.m, preset.pbKey);
                 }}
                 className="px-2.5 py-1 rounded border border-white/10 bg-white/5 text-[10px] font-mono text-cyber-muted hover:border-cyber-accent hover:text-white hover:bg-cyber-accent/10 transition-all"
               >
