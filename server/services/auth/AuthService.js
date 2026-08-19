@@ -119,28 +119,45 @@ class AuthService {
     }
 
     /**
-     * Login user
+     * Login user (Universal 3-Way Lookup: Username, Email, or Mobile Number)
      */
     async login({ email, identity, password, ip, userAgent }) {
-        const loginIdentifier = String(email || identity || '').toLowerCase().trim();
-        if (!loginIdentifier || !password) {
-            throw new Error('Email or Username and password are required');
+        const rawLogin = String(email || identity || '').trim();
+        if (!rawLogin || !password) {
+            throw new Error('Username, Email, or Mobile Number and password are required');
         }
 
-        // 1. Lookup by SHA-256 emailHash
-        const emailHash = crypto.createHash('sha256').update(loginIdentifier).digest('hex');
-        let user = await this.userRepo.findOne({ emailHash });
+        const loginIdentifier = rawLogin.toLowerCase();
+        const digits = rawLogin.replace(/\D/g, '');
 
-        // 2. Fallback: Lookup by username
+        let user = null;
+
+        // 1. Lookup by SHA-256 emailHash or raw email
+        const emailHash = crypto.createHash('sha256').update(loginIdentifier).digest('hex');
+        user = await this.userRepo.findOne({ emailHash });
+        if (!user) {
+            user = await this.userRepo.findOne({ email: loginIdentifier });
+        }
+
+        // 2. Fallback: Lookup by username (case-insensitive)
         if (!user) {
             user = await this.userRepo.findOne({ username: loginIdentifier });
+        }
+
+        // 3. Fallback: Lookup by mobile number (hash or clean digits regex)
+        if (!user && digits.length >= 7) {
+            const mobileHash = crypto.createHash('sha256').update(digits).digest('hex');
+            user = await this.userRepo.findOne({ mobileHash });
+            if (!user) {
+                user = await this.userRepo.findOne({ mobileNumber: new RegExp(digits + '$') });
+            }
         }
 
         if (!user) {
             await this.eventPublisher.publish({
                 type: 'UserLoginFailed',
                 source: 'AuthService',
-                payload: { identifier: loginIdentifier, reason: 'User not found', ip }
+                payload: { identifier: rawLogin, reason: 'User not found', ip }
             });
             throw new Error('Invalid credentials');
         }
@@ -155,7 +172,7 @@ class AuthService {
             await this.eventPublisher.publish({
                 type: 'UserLoginFailed',
                 source: 'AuthService',
-                payload: { email, reason: 'Invalid password', ip }
+                payload: { identifier: rawLogin, reason: 'Invalid password', ip }
             });
             throw new Error('Invalid credentials');
         }

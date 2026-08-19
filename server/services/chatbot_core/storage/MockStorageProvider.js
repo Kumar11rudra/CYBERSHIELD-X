@@ -35,7 +35,12 @@ class MockStorageProvider extends IStorageProvider {
             if (key.startsWith(prefix)) {
                 let match = true;
                 for (const [qKey, qVal] of Object.entries(query)) {
-                    if (doc[qKey] !== qVal) {
+                    if (qVal instanceof RegExp) {
+                        if (!qVal.test(String(doc[qKey] || ''))) {
+                            match = false;
+                            break;
+                        }
+                    } else if (doc[qKey] !== qVal) {
                         match = false;
                         break;
                     }

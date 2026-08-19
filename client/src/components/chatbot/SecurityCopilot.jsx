@@ -15,22 +15,60 @@ const QUICK_PROMPTS = [
   "How do I secure HTTP headers?"
 ];
 
-// Offline / Direct Knowledge Base Fallback
-const KNOWLEDGE_BASE = {
-  'subdomain': "To map subdomains, use **Subfinder** or our **DNS Recon Engine** in the Tools Hub (`/toolkit`). You can also run `subfinder -d example.com` directly in our interactive terminal!",
-  'ssl': "You can check SSL/TLS certificate validity using our **SSL Certificate Audit** tool or run `ssl-check <domain>` in the terminal. It inspects certificate expiry dates, issuer CA trust, SANs, and TLS 1.3 protocol status.",
-  'upi': "A **UPI VPA Check** verifies the authenticity of a Virtual Payment Address against NPCI routing formats and known financial cyber fraud blacklist databases to prevent payment fraud.",
-  'http': "To secure HTTP headers, implement **HSTS** (`Strict-Transport-Security: max-age=31536000`), **CSP** (`Content-Security-Policy`), **Clickjacking defense** (`X-Frame-Options: DENY`), and **MIME sniffing prevention** (`X-Content-Type-Options: nosniff`). You can audit headers with our **HTTP Security Headers** tool or `curl -ILsS <domain>`.",
-  'nmap': "**Nmap Port Scanner** actively probes target TCP/UDP sockets to identify open ports, service banners, and daemon versions. Run it via `nmap -sV <target>` in our terminal.",
-  'breach': "Our **Dark Web Breach Checker** uses NIST SP 800-63B SHA-1 k-Anonymity queries against compromised database dumps to check if your credentials have been leaked."
-};
+// Offline / Neural Knowledge Base Fallback
+const KNOWLEDGE_BASE_ENTRIES = [
+  {
+    triggers: ['hi', 'hello', 'hey', 'namaste', 'greetings', 'sup', 'good morning', 'good evening', 'how are you', 'kaise ho', 'kya haal', 'kese ho'],
+    reply: "Hello! I am CyberBot, your AI Cybersecurity Assistant for CyberShield X. I'm doing great and ready to assist! How can I help you with security audits, threat scans, or exploring our 110 cybersecurity tools today?"
+  },
+  {
+    triggers: ['who are you', 'what are you', 'about cybershield', 'what is cybershield', 'introduce yourself', 'help me', 'what can you do'],
+    reply: "**CyberShield X** is a next-generation cybersecurity intelligence platform featuring:\n- **110 Live Security Tools** across 24 specialized categories.\n- **Interactive CyberSOC Terminal** with CLI commands and NLP intent parsing.\n- **7 Multi-Vector Automated Playbooks** (Perimeter Recon, Web DAST, API Security, Cloud CIS, Threat Forensics, Phishing Defense, AI Red-Teaming).\n- **Enterprise Dossier Exporters** (OASIS SARIF v2.1.0, OASIS STIX 2.1, CSV, JSON, Markdown, PDF).\n\nWhat target or security tool would you like to explore?"
+  },
+  {
+    triggers: ['tools', 'what tools', 'catalog', 'list tools', 'categories', 'all tools'],
+    reply: "CyberShield X offers **110 live tools** organized across 24 categories:\n1. **Reconnaissance & OSINT** (Subfinder, Shodan, Censys, theHarvester, Dirsearch)\n2. **Web & DAST Security** (SQLMap, Nikto, Burp Suite, WPScan, OWASP ZAP, CORS/CSP)\n3. **Network & Wireless** (Nmap, Aircrack-ng, Kismet, Wifite, Wireshark, Traceroute)\n4. **Cloud & DevSecOps** (Prowler AWS CIS, Kube-Bench, Snyk, Gitleaks, Docker Bench)\n5. **Malware & Forensics** (YARA, PEframe, Volatility, Ghidra, Radare2, Autopsy)\n6. **AI Security & Red-Teaming** (Garak LLM Scanner, Adversarial Redteam, Prompt Fuzzer, Prompt Guard)\n7. **Identity & Phishing** (Dark Web Breach Checker, Phishing Analyzer, Email SPF/DMARC)\n\nYou can access every tool in the **Tools Hub** (`/toolkit`) or run CLI commands directly in the **CyberSOC Terminal**."
+  },
+  {
+    triggers: ['playbook', 'playbooks', 'automated', 'chain', 'chained'],
+    reply: "We offer **7 Multi-Vector Automated SOC Playbooks** in our CyberSOC Terminal:\n1. 🌐 **Perimeter Reconnaissance**: DNS -> Ports -> SSL -> Headers -> Threat Feeds\n2. 🛡️ **Web Application DAST**: Tech Stack -> Nikto -> CORS -> CSP -> SQLMap\n3. 🔑 **API Security & Cryptography**: OpenAPI Linter -> JWT Entropy -> API Fuzzer -> Postman -> IAM\n4. ☁️ **Cloud Posture & DevSecOps**: Prowler AWS CIS -> Kube-Bench -> Snyk -> Gitleaks -> Docker Bench\n5. 🔬 **Threat & Memory Forensics**: VirusShare -> YARA -> PEframe -> Volatility -> MISP\n6. 🎣 **Phishing & Identity Defense**: Phishing Analyzer -> Evilginx -> Email SPF/DMARC -> Breach Check\n7. 🤖 **AI Red-Teaming**: Garak Probes -> Prompt Fuzzer -> GCG Redteam -> PII Guard -> AI Remediation\n\nOpen the **Terminal** (`/toolkit` -> Cyber Terminal) to launch any playbook with 1 click!"
+  },
+  {
+    triggers: ['export', 'sarif', 'stix', 'pdf', 'csv', 'report'],
+    reply: "You can export comprehensive security audit dossiers directly from any Scan Details page (`/scan/:id`):\n- 🛡️ **OASIS SARIF v2.1.0**: For GitHub Code Scanning & GitLab CI/CD pipelines.\n- ⚡ **OASIS STIX 2.1**: For SIEM, SOAR, OpenCTI, and MISP threat sharing.\n- 📊 **CSV**: Tabular spreadsheets with all findings and severity ratings.\n- **{ } JSON**: Raw structured audit payload.\n- 📄 **Browser & Server PDF**: Publication-ready executive audit reports."
+  },
+  {
+    triggers: ['subdomain', 'subfinder'],
+    reply: "To map subdomains, use **Subfinder** or our **DNS Recon Engine** in the Tools Hub (`/toolkit`). You can also execute `subfinder -d example.com` in the interactive CyberSOC terminal!"
+  },
+  {
+    triggers: ['nmap', 'port', 'open socket'],
+    reply: "Our **Nmap Port Scanner** actively probes target TCP/UDP sockets to identify open ports, service banners, and daemon versions. Run it via `nmap -sV <target>` in our terminal or `/toolkit`."
+  },
+  {
+    triggers: ['ssl', 'cert', 'tls'],
+    reply: "You can check SSL/TLS certificate validity using our **SSL Certificate Audit** tool or run `ssl-check <domain>` in the terminal. It inspects certificate expiry dates, issuer CA trust, SANs, and TLS 1.3 protocol status."
+  },
+  {
+    triggers: ['breach', 'leak', 'dark web'],
+    reply: "Our **Dark Web Breach Checker** uses NIST SP 800-63B SHA-1 k-Anonymity queries against compromised database dumps to check if your credentials have been leaked without exposing your password."
+  },
+  {
+    triggers: ['upi'],
+    reply: "A **UPI VPA Check** verifies the authenticity of a Virtual Payment Address against NPCI routing formats and known financial cyber fraud blacklist databases to prevent payment fraud."
+  },
+  {
+    triggers: ['http', 'header', 'csp', 'hsts'],
+    reply: "To secure HTTP headers, implement **HSTS** (`Strict-Transport-Security: max-age=31536000`), **CSP** (`Content-Security-Policy`), **Clickjacking defense** (`X-Frame-Options: DENY`), and **MIME sniffing prevention** (`X-Content-Type-Options: nosniff`). Audit headers with our **HTTP Security Headers** tool or `curl -ILsS <domain>`."
+  }
+];
 
 const getFallbackReply = (query) => {
-  const q = query.toLowerCase();
-  for (const [key, answer] of Object.entries(KNOWLEDGE_BASE)) {
-    if (q.includes(key)) return answer;
+  const q = (query || '').toLowerCase().trim();
+  for (const entry of KNOWLEDGE_BASE_ENTRIES) {
+    if (entry.triggers.some(t => q.includes(t))) return entry.reply;
   }
-  return `I have processed your security query regarding "${query}". You can run live diagnostics for this vector using our **Tools Hub** or launch the **CyberSOC Interactive Terminal** to execute live scans!`;
+  return `I'm specialized in cybersecurity intelligence and the **CyberShield X** platform.\n\nI can help you with:\n- Running security scans (DNS, Open Ports, SSL, Tech Stack, HTTP Headers)\n- Analyzing threats (Phishing URLs, Dark Web Breaches, Malware Hashes, SMS fraud)\n- Navigating our **110 cybersecurity tools** across 24 categories\n- Running **7 Automated SOC Playbooks** in our CyberSOC Terminal\n- Exporting audit dossiers in **SARIF, STIX 2.1, CSV, JSON, or PDF**\n\nWhat target domain, IP, or security task would you like help with?`;
 };
 
 export default function SecurityCopilot() {

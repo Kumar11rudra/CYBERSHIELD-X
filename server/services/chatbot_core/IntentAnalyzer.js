@@ -14,8 +14,17 @@ class IntentAnalyzer {
       let confidence = 0.9;
       const entities = {};
 
-      // Basic regex intent matching for Phase 3
-      if (msg.includes('scan') || msg.includes('nmap') || msg.includes('recon')) {
+      // Comprehensive intent classification
+      if (msg.includes('hi') || msg.includes('hello') || msg.includes('hey') || msg.includes('how are you') || msg.includes('kaise ho')) {
+        intent = 'greeting';
+        confidence = 0.95;
+      } else if (msg.includes('who are you') || msg.includes('what is cybershield') || msg.includes('about')) {
+        intent = 'platform_info';
+        confidence = 0.95;
+      } else if (msg.includes('playbook') || msg.includes('chained') || msg.includes('orchestrat')) {
+        intent = 'playbook_execution';
+        confidence = 0.9;
+      } else if (msg.includes('scan') || msg.includes('nmap') || msg.includes('recon') || msg.includes('subfinder')) {
         intent = 'execute_scan';
         confidence = 0.85;
       } else if (msg.includes('remediate') || msg.includes('fix') || msg.includes('heal')) {
@@ -24,9 +33,12 @@ class IntentAnalyzer {
       } else if (msg.includes('status') || msg.includes('health') || msg.includes('check')) {
         intent = 'query_status';
         confidence = 0.9;
-      } else if (msg.includes('analyze') || msg.includes('investigate')) {
+      } else if (msg.includes('analyze') || msg.includes('investigate') || msg.includes('threat')) {
         intent = 'analyze_threat';
         confidence = 0.85;
+      } else if (msg.includes('tool') || msg.includes('catalog')) {
+        intent = 'tool_lookup';
+        confidence = 0.9;
       }
 
       return {

@@ -164,7 +164,7 @@ export default function LoginPage() {
                   <form onSubmit={doLogin} className="space-y-5 relative z-10" autoComplete="on">
                     <div className="relative group">
                       <label className="block font-mono text-[10px] text-cyber-muted uppercase tracking-[0.2em] mb-1.5 group-focus-within:text-cyber-green transition-colors">
-                        {t('auth.login.emailUsernamePhone')}
+                        Username, Email, or Mobile Number
                       </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -174,8 +174,8 @@ export default function LoginPage() {
                           type="text"
                           value={identity}
                           onChange={(e) => setIdentity(e.target.value)}
-                          className="w-full bg-black/40 border border-white/10 rounded-lg pl-10 pr-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-cyber-green focus:ring-1 focus:ring-cyber-green transition-all placeholder:text-white/20"
-                          placeholder="user@example.com"
+                          className="w-full bg-black/40 border border-white/10 rounded-lg pl-10 pr-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-cyber-green focus:ring-1 focus:ring-cyber-green transition-all placeholder:text-white/30"
+                          placeholder="username / email / +919876543210"
                           required
                           autoFocus
                         />
