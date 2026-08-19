@@ -12,24 +12,15 @@ const Organization = require('../../models/Organization');
 const Membership = require('../../models/Membership');
 const { isPrivateOrLoopback } = require('../../controllers/toolsController');
 
+const { connectTestDb, closeTestDb } = require('../helpers/testDbHelper');
+
 // ─── Test DB connection ────────────────────────────────────────────────────────
 beforeAll(async () => {
-  const testDbUri = process.env.MONGODB_TEST_URI || 'mongodb://localhost:27017/cybershield-test';
-  if (mongoose.connection.readyState === 0) {
-    await mongoose.connect(testDbUri);
-  }
+  await connectTestDb();
 });
 
 afterAll(async () => {
-  // Clean up database records
-  const db = mongoose.connection.db;
-  if (db) {
-    await db.collection('users').deleteMany({ email: /@cybershield-test-hardened\.com$/ });
-    await db.collection('scans').deleteMany({ target: 'cybershield-test-target.com' });
-    await db.collection('organizations').deleteMany({ name: 'Test Org Hardened' });
-    await db.collection('memberships').deleteMany({});
-  }
-  await mongoose.disconnect();
+  await closeTestDb();
 });
 
 // ─── Helper redirect validation ────────────────────────────────────────────────
@@ -118,14 +109,13 @@ describe('Phase 17 — Authentication & Hardening Gates', () => {
     expect(res.body.error).toBe('Invalid credentials');
   });
 
-  // 4. GUEST / PUBLIC ACCESS
-  it('POST /api/scan is accessible anonymously (returns 400 for validation instead of 401)', async () => {
+  // 4. GUEST / PUBLIC ACCESS (PHASE 33 AUTH GATE)
+  it('POST /api/scan blocks unauthenticated requests with 401', async () => {
     const res = await request(app)
       .post('/api/scan')
-      .send({}); // Missing target fails validators instead of auth
+      .send({});
 
-    expect(res.statusCode).toBe(400);
-    expect(res.body.error).toBe('Validation failed');
+    expect(res.statusCode).toBe(401);
   });
 
   // 5. REPORT DOWNLOAD GATE & IDOR PREVENTION

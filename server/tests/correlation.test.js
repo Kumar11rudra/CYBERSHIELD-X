@@ -103,11 +103,10 @@ const setupDefaultAxiosMock = () => {
   });
 };
 
+const { connectTestDb, closeTestDb } = require('./helpers/testDbHelper');
+
 beforeAll(async () => {
-  const testDbUri = process.env.MONGODB_TEST_URI || 'mongodb://localhost:27017/cybershield-test';
-  if (mongoose.connection.readyState === 0) {
-    await mongoose.connect(testDbUri);
-  }
+  await connectTestDb();
 
   // Ensure clean test environment users (by both email and username)
   await User.deleteMany({
@@ -145,20 +144,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await User.deleteMany({
-    $or: [
-      { email: 'admin-corr@cybershield-test.com' },
-      { email: 'user-corr@cybershield-test.com' },
-      { username: 'admincorr' },
-      { username: 'usercorr' }
-    ]
-  });
-  await Asset.deleteMany({ userId: testUserId });
-  await Scan.deleteMany({ userId: testUserId });
-  await IOCRecord.deleteMany({});
-  await ThreatFeedRecord.deleteMany({});
-  await CorrelationRecord.deleteMany({});
-  await mongoose.disconnect();
+  await closeTestDb();
 });
 
 describe('Threat Intelligence and Correlation Engine Tests (Phase 5)', () => {

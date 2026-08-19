@@ -10,14 +10,13 @@ const User = require('../../models/User');
 const authRoutes = require('../../routes/auth');
 const seedAdmin = require('../../scripts/seedAdmin');
 
+const { connectTestDb, closeTestDb } = require('../helpers/testDbHelper');
+
 describe('Nexus Command & Founder Admin Access Flow Security Audit', () => {
   let app;
 
   beforeAll(async () => {
-    const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/cybershield';
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(mongoUri);
-    }
+    await connectTestDb();
 
     app = express();
     app.use(express.json());
@@ -46,16 +45,7 @@ describe('Nexus Command & Founder Admin Access Flow Security Audit', () => {
   });
 
   afterAll(async () => {
-    await User.deleteMany({
-      $or: [
-        { role: 'admin' },
-        { username: { $in: ['normal_nexus_user', 'founder_admin'] } },
-        { email: { $in: ['normal_nexus@test.com', 'official.cybershieldx@gmail.com'] } }
-      ]
-    });
-    if (mongoose.connection.readyState !== 0) {
-      await mongoose.disconnect();
-    }
+    await closeTestDb();
   });
 
   test('TEST 1: Production safety gate fails fast if MONGODB_URI missing in production', async () => {

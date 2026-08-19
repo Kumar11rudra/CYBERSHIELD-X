@@ -7,15 +7,14 @@ const mongoose = require('mongoose');
 const { MemoryQueue } = require('../workers/queueProvider');
 const { checkOllamaStatus, getDetailedHealth } = require('../services/healthService');
 
+const { connectTestDb, closeTestDb } = require('./helpers/testDbHelper');
+
 beforeAll(async () => {
-  const testDbUri = process.env.MONGODB_TEST_URI || 'mongodb://localhost:27017/cybershield-test';
-  if (mongoose.connection.readyState === 0) {
-    await mongoose.connect(testDbUri);
-  }
+  await connectTestDb();
 });
 
 afterAll(async () => {
-  await mongoose.disconnect();
+  await closeTestDb();
 });
 
 describe('QueueProvider Workers, Retries & DLQ', () => {

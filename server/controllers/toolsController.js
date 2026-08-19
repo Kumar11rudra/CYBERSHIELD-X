@@ -12,6 +12,9 @@ const WhoisService = require('../services/defensive/whoisService');
 const SslService = require('../services/defensive/sslService');
 const PhishingService = require('../services/defensive/phishingService');
 
+const { isPrivateOrLoopback } = require('../utils/ssrfValidator');
+exports.isPrivateOrLoopback = isPrivateOrLoopback;
+
 let _execCounter = 0;
 const nextExecId = () => `nexus-${Date.now()}-${++_execCounter}`;
 

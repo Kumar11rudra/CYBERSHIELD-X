@@ -171,9 +171,17 @@ CRITICAL SECURITY DIRECTIVES:
   return plan;
 };
 
+const clearCache = () => {
+  const provider = cache.getProvider ? cache.getProvider() : null;
+  if (provider && provider.clear) {
+    provider.clear();
+  }
+};
+
 module.exports = {
   generateRemediationPlan,
   getFallbackRemediation,
   cleanJsonResponse,
+  clearCache,
   REMEDIATION_CACHE_TTL_SECONDS,
 };

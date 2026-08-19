@@ -7,15 +7,14 @@ const playbookEngine = require('../services/playbookEngine');
 const remediationService = require('../services/remediationService');
 const actionQueue = require('../integrations/actionQueue');
 
+const { connectTestDb, closeTestDb } = require('./helpers/testDbHelper');
+
 beforeAll(async () => {
-  const testDbUri = process.env.MONGODB_TEST_URI || 'mongodb://localhost:27017/cybershield-test';
-  if (mongoose.connection.readyState === 0) {
-    await mongoose.connect(testDbUri);
-  }
+  await connectTestDb();
 });
 
 afterAll(async () => {
-  await mongoose.disconnect();
+  await closeTestDb();
 });
 
 describe('SOAR Security Automation & Integrations (Phase 8)', () => {

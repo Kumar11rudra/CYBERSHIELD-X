@@ -10,14 +10,13 @@ const IOCRecord = require('../models/IOCRecord');
 const { generateToken } = require('../utils/jwt');
 const { executeScheduleJob } = require('../services/cronService');
 
+const { connectTestDb, closeTestDb } = require('./helpers/testDbHelper');
+
 const testUserId = new mongoose.Types.ObjectId();
 let authToken = '';
 
 beforeAll(async () => {
-  const testDbUri = process.env.MONGODB_TEST_URI || 'mongodb://localhost:27017/cybershield-test';
-  if (mongoose.connection.readyState === 0) {
-    await mongoose.connect(testDbUri);
-  }
+  await connectTestDb();
 
   // Ensure clean test user
   await User.deleteMany({
@@ -48,13 +47,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await User.deleteMany({ _id: testUserId });
-  await Asset.deleteMany({ $or: [{ userId: testUserId }, { createdBy: testUserId }, { hostname: 'soc-monitor.local' }] });
-  await ScheduledScan.deleteMany({ $or: [{ userId: testUserId }, { createdBy: testUserId }, { target: 'soc-monitor.local' }] });
-  await Notification.deleteMany({ userId: testUserId });
-  await Scan.deleteMany({ userId: testUserId });
-  await IOCRecord.deleteMany({});
-  await mongoose.disconnect();
+  await closeTestDb();
 });
 
 describe('SOC Platform integration tests', () => {

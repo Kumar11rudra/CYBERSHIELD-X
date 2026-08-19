@@ -27,16 +27,15 @@ const analystId = new mongoose.Types.ObjectId();
 const viewerId = new mongoose.Types.ObjectId();
 const outsiderId = new mongoose.Types.ObjectId();
 
+const { connectTestDb, closeTestDb } = require('./helpers/testDbHelper');
+
 let ownerToken, adminToken, analystToken, viewerToken, outsiderToken;
 let testOrgId, testTeamId, testAssetId, testWebhookId, testVulnId;
 
 const TEST_EMAIL_PREFIX = 'saas-test-';
 
 beforeAll(async () => {
-  const testDbUri = process.env.MONGODB_TEST_URI || 'mongodb://localhost:27017/cybershield-test';
-  if (mongoose.connection.readyState === 0) {
-    await mongoose.connect(testDbUri);
-  }
+  await connectTestDb();
 
   // Clean up any stale test data
   await User.deleteMany({ username: { $regex: /^saas-test-/ } });
@@ -70,20 +69,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  // Full cleanup
-  await User.deleteMany({ username: { $regex: /^saas-test-/ } });
-  await Organization.deleteMany({ name: { $regex: /^TestOrg/ } });
-  await OrganizationSettings.deleteMany({});
-  await Membership.deleteMany({});
-  await Team.deleteMany({});
-  await Invitation.deleteMany({});
-  await Webhook.deleteMany({});
-  await Vulnerability.deleteMany({});
-  await Asset.deleteMany({ hostname: { $regex: /^saas-test-/ } });
-
-  if (mongoose.connection.readyState === 1) {
-    await mongoose.connection.close();
-  }
+  await closeTestDb();
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════

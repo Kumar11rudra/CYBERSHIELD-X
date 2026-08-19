@@ -32,9 +32,10 @@ let testOrgId, testAssetId, testVulnId, criticalVulnId;
 
 const PREFIX = 'p7test-';
 
+const { connectTestDb, closeTestDb } = require('./helpers/testDbHelper');
+
 beforeAll(async () => {
-  const uri = process.env.MONGODB_TEST_URI || 'mongodb://localhost:27017/cybershield-test';
-  if (mongoose.connection.readyState === 0) await mongoose.connect(uri);
+  await connectTestDb();
 
   // Cleanup
   await User.deleteMany({ username: { $regex: /^p7test-/ } });
@@ -116,12 +117,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await User.deleteMany({ username: { $regex: /^p7test-/ } });
-  await Organization.deleteMany({ name: 'P7TestOrg' });
-  await Membership.deleteMany({ organizationId: testOrgId });
-  await Asset.deleteMany({ hostname: { $regex: /^p7-/ } });
-  await Vulnerability.deleteMany({ cve: { $regex: /^CVE-P7/ } });
-  if (mongoose.connection.readyState === 1) await mongoose.connection.close();
+  await closeTestDb();
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

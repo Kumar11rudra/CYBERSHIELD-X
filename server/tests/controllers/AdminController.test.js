@@ -37,17 +37,17 @@ app.use((err, req, res, next) => {
     res.status(err.status || 500).json({ error: err.message });
 });
 
+const { connectTestDb, closeTestDb } = require('../helpers/testDbHelper');
+
 describe('AdminController', () => {
     let mockUserId;
 
     beforeAll(async () => {
-        const url = 'mongodb://127.0.0.1:27017/cybershield_test_admin';
-        await mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+        await connectTestDb();
     });
 
     afterAll(async () => {
-        await mongoose.connection.dropDatabase();
-        await mongoose.connection.close();
+        await closeTestDb();
     });
 
     beforeEach(async () => {

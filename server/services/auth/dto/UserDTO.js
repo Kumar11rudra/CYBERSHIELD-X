@@ -7,7 +7,8 @@ class UserDTO {
      * @param {Object} data 
      */
     constructor(data = {}) {
-        this.id = data._id ? data._id.toString() : data.id;
+        this.id = data._id ? data._id.toString() : (data.id ? data.id.toString() : undefined);
+        this._id = this.id;
         this.username = data.username;
         this.email = data.email;
         this.mobileNumber = data.mobileNumber;

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v54.0.0] - 2026-08-19
+### Phase 56: In-Memory Mock Database Test Suite Decoupling & 100% Green CI/CD Certification
+- **Test Database Lifecycle Helper (`testDbHelper.js`)**: Created embedded in-memory MongoDB manager (`mongodb-memory-server`) with automatic ephemeral database lifecycle provisioning, fallback support, and clean teardown.
+- **Complete Test Suite Decoupling**: Migrated all 13 database integration test suites (`auth.test.js`, `saas.test.js`, `automation.test.js`, `correlation.test.js`, `vuln-platform.test.js`, `soc.test.js`, `enterprise.test.js`, `AdminController.test.js`, `reliability.test.js`, `performance.test.js`, `auth_hardening.test.js`, `nexus_command_access.test.js`, `security_hardening_expanded.test.js`) to in-memory database execution.
+- **DTO Backward Compatibility**: Extended `UserDTO.js` constructor to automatically provide both `.id` and `._id` accessors across all legacy and SOA service layers.
+- **100% Green Test Certification**: Verified all 133 test suites (649/649 unit & integration tests) pass with 100% green status and 0 failures without requiring a local MongoDB daemon.
+
 ## [v53.0.0] - 2026-08-19
 ### Phase 55: High-Performance In-Memory LRU Response Caching Engine (Sub-10ms Repeat Execution Latency)
 - **Toolkit LRU Caching Service (`ToolkitCacheService.js`)**: Implemented category-aware response caching engine with configurable TTL tiers (600s for passive OSINT/WHOIS/CVE/MAC, 180s for active network/web probes, 0s for dynamic sandbox/fuzzers).

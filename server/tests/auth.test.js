@@ -7,23 +7,15 @@
 const request = require('supertest');
 const mongoose = require('mongoose');
 const { app } = require('../index');
+const { connectTestDb, closeTestDb } = require('./helpers/testDbHelper');
 
 // ─── Test DB connection ────────────────────────────────────────────────────────
 beforeAll(async () => {
-  const testDbUri = process.env.MONGODB_TEST_URI || 'mongodb://localhost:27017/cybershield-test';
-  if (mongoose.connection.readyState === 0) {
-    await mongoose.connect(testDbUri);
-  }
+  await connectTestDb();
 });
 
 afterAll(async () => {
-  // Clean up test data
-  const db = mongoose.connection.db;
-  if (db) {
-    await db.collection('users').deleteMany({ email: /@cybershield-test\.com$/ });
-    await db.collection('activitylogs').deleteMany({ action: /^TEST_/ });
-  }
-  await mongoose.disconnect();
+  await closeTestDb();
 });
 
 // ─── Helper ────────────────────────────────────────────────────────────────────
@@ -199,14 +191,13 @@ describe('Security — Headers', () => {
 });
 
 // ══════════════════════════════════════════════════════════════════════════════
-// SCAN — Input Validation (Phase 17 Public-First Zero-Cost Access)
+// SCAN — Input Validation (Phase 33 Mandatory Auth Gate)
 // ══════════════════════════════════════════════════════════════════════════════
 describe('Scan — Input Validation (Unauthenticated)', () => {
-  it('POST /api/scan without auth should be accessible anonymously (Phase 17)', async () => {
+  it('POST /api/scan without auth should return 401 (Phase 33 Auth Gate)', async () => {
     const res = await request(app)
       .post('/api/scan')
       .send({ target: 'http://example.com' });
-    expect(res.statusCode).toBe(200);
-    expect(res.body.success).toBe(true);
+    expect(res.statusCode).toBe(401);
   });
 });

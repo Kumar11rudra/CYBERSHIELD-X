@@ -129,6 +129,8 @@ describe('Phase 18 — CORS Security Configuration Tests', () => {
   });
 });
 
+const { connectTestDb, closeTestDb } = require('../helpers/testDbHelper');
+
 describe('Phase 18 — Admin Roles Access & IDOR Verification', () => {
   const uniqueId = Date.now();
   let adminToken = '';
@@ -136,10 +138,7 @@ describe('Phase 18 — Admin Roles Access & IDOR Verification', () => {
   let scanId = '';
 
   beforeAll(async () => {
-    const testDbUri = process.env.MONGODB_TEST_URI || 'mongodb://localhost:27017/cybershield-test';
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(testDbUri);
-    }
+    await connectTestDb();
 
     await User.deleteMany({ email: /@sec-hardening-test\.com$/ });
 
@@ -255,5 +254,9 @@ describe('Phase 18 — Admin Roles Access & IDOR Verification', () => {
     
     expect(res.statusCode).toBe(400);
     expect(res.body.error).toContain('Invalid scan identifier format');
+  });
+
+  afterAll(async () => {
+    await closeTestDb();
   });
 });
