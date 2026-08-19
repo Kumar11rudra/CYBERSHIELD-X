@@ -7,10 +7,11 @@ class ReportService {
         if (orgId) {
             await RBACService.requirePermission(orgId, userId, 'canView');
         }
+        const resourceId = orgId || reportOptions?.scanId || 'audit';
         return {
             success: true,
             format: 'pdf',
-            url: `https://cybershieldx.in/reports/${reportOptions?.scanId || 'audit'}/latest.pdf`,
+            url: `https://cybershieldx.in/reports/${resourceId}/latest.pdf`,
             generatedAt: new Date()
         };
     }
