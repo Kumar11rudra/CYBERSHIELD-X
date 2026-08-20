@@ -190,10 +190,13 @@ const userSchema = new mongoose.Schema(
 
 // Hash password + trim trustedDevices before save
 userSchema.pre('save', async function (next) {
-  // Hash password only when changed
-  if (this.isModified('password')) {
-    const salt = await bcrypt.genSalt(12);
-    this.password = await bcrypt.hash(this.password, salt);
+  // Hash password only when changed and not already a bcrypt hash
+  if (this.isModified('password') && this.password) {
+    const isAlreadyBcrypt = typeof this.password === 'string' && /^\$2[aby]\$\d{2}\$[./A-Za-z0-9]{53}$/.test(this.password);
+    if (!isAlreadyBcrypt) {
+      const salt = await bcrypt.genSalt(12);
+      this.password = await bcrypt.hash(this.password, salt);
+    }
   }
 
   // Generate Search Hashes for encrypted fields
