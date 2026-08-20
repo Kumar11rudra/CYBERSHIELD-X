@@ -61,7 +61,7 @@ class StagingChecker {
   checkCors() {
     const isCloudflarePagesOrigin = (origin) => {
       if (typeof origin !== 'string') return false;
-      return /^https:\/\/[a-zA-Z0-9-]+\.pages\.dev$/.test(origin);
+      return /^https:\/\/([a-zA-Z0-9-]+\.)+pages\.dev$/.test(origin);
     };
 
     const canonicalPassed = isCloudflarePagesOrigin('https://cybershieldx.pages.dev');

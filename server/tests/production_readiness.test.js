@@ -43,6 +43,14 @@ describe('Phase 24 — Production Readiness & Operational Hardening', () => {
       expect(res.headers['access-control-allow-origin']).toBe('https://preview-123.pages.dev');
     });
 
+    it('2b. Accepts multi-segment Cloudflare Pages preview branch alias origin (https://8fccc2b2.cybershield-x.pages.dev)', async () => {
+      const res = await request(app)
+        .options('/health')
+        .set('Origin', 'https://8fccc2b2.cybershield-x.pages.dev')
+        .set('Access-Control-Request-Method', 'GET');
+      expect(res.headers['access-control-allow-origin']).toBe('https://8fccc2b2.cybershield-x.pages.dev');
+    });
+
     it('3. Rejects unrelated malicious origin (https://evil-hacker.com)', async () => {
       const res = await request(app)
         .options('/health')
