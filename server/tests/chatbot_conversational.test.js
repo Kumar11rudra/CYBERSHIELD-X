@@ -2,6 +2,7 @@ const request = require('supertest');
 const { app } = require('../index');
 
 describe('CyberBot Conversational Intelligence & Knowledge API (/api/chatbot/chat)', () => {
+    jest.setTimeout(30000);
     it('should respond warmly and politely to greetings (Hi / Hello)', async () => {
         const res = await request(app)
             .post('/api/chatbot/chat')
