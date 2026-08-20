@@ -443,6 +443,13 @@ if (require.main === module) {
   httpServer.listen(PORT, HOST, () => {
     logger.info(`[NEXUS-CORE] Platform active on ${HOST}:${PORT}`);
     logger.info(`[ENV] Deployment Mode: ${isProduction ? 'PRODUCTION' : 'DEVELOPMENT'}`);
+    
+    try {
+      const { startThreatBroadcaster } = require('./services/ThreatBroadcaster');
+      startThreatBroadcaster(io);
+    } catch (err) {
+      logger.error('Failed to start ThreatBroadcaster:', err.message);
+    }
   });
 }
 
