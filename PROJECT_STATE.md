@@ -7,8 +7,8 @@
 
 # CyberShield-X — Single Source of Truth (SSOT)
 
-> **Platform Version**: `v58.1.0`
-> **AI Architecture Version**: `v58.1.0`
+> **Platform Version**: `v58.2.0`
+> **AI Architecture Version**: `v58.2.0`
 > **Status**: `PRODUCTION_READY` | `ALL_TESTS_GREEN`
 > **Last Synchronized & Audited**: 2026-08-20
 > **Lead Architect**: Lead Architect (ChatGPT)
@@ -18,10 +18,11 @@
 
 ## 🚀 Recent Core Milestone Highlights
 
-- ✅ **Phase 60 — Mongoose Bcrypt Idempotency & Universal Auth Stability (v58.1.0)**:
+- ✅ **Phase 60 — Mongoose Bcrypt Idempotency & Universal Auth Stability (v58.2.0)**:
   - Fixed double-hashing bug in `server/models/User.js` pre-save hook where already-hashed passwords passed by `AuthService.register()` were getting re-hashed during user document creation.
   - Added regex-based Bcrypt idempotency verification in `User.js` (`/^\$2[aby]\$\d{2}\$[./A-Za-z0-9]{53}$/`).
   - Fixed CORS regex mismatch on backend `server/index.js` where Cloudflare Pages preview domains containing multiple subdomain segments (e.g. `https://8fccc2b2.cybershield-x.pages.dev`) were rejected by CORS, causing browser "Network Error" on signup.
+  - Fixed production API and Socket URL resolution in `client/src/config.js` by ignoring localhost env fallbacks when the application is loaded on non-localhost production/preview hosts.
   - Verified 3-way universal login (`username`, `email`, `mobileNumber`) now seamlessly logs in all new registered users without "Invalid credentials" error.
   - 100% backend test suites passing (668/668 tests green). Client build 100% clean.
 - ✅ **Phase 59 (V57.0.0)**: Universal 3-Identifier Authentication (Username / Email / Mobile Number) & Conversational CyberBot Intelligence Upgrade (Natural Greetings, 110-Tool Knowledge, Automated SOC Playbooks, Multi-Format Dossiers)
