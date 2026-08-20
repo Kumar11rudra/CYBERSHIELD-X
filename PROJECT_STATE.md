@@ -1,14 +1,14 @@
 # CyberShield X - Project State
 
 ## Current Status
-- **Architecture Version**: V58.1.0 (Mongoose Bcrypt Idempotency, Universal Auth Stability & CORS Hardening)
-- **Phase**: PHASE 60: MONGOOSE BCRYPT IDEMPOTENCY & UNIVERSAL AUTH STABILITY (COMPLETED)
-- **Status**: 🎉 **100% OPERATIONAL & CERTIFIED.** Universal 3-way sign-in active; Bcrypt idempotency logic implemented; 136/136 backend test suites passing (668/668 tests 100% green), client production build 100% clean.
+- **Architecture Version**: V59.0.0 (Dashboard Command Center & Live Telemetry Stream Upgrade)
+- **Phase**: PHASE 61: DASHBOARD COMMAND CENTER & LIVE TELEMETRY STREAM UPGRADE (COMPLETED)
+- **Status**: 🎉 **100% OPERATIONAL & CERTIFIED.** Modern visual SOC dashboard active with glowing radial security gauge, Recharts Pie (Vulnerability Severity) and Area (7-Day Scan Activity) graphs, interactive domain Watchlist widget with LocalStorage persistence, and real-time Socket.IO Live Threat Stream. 100% test coverage green.
 
 # CyberShield-X — Single Source of Truth (SSOT)
 
-> **Platform Version**: `v58.2.0`
-> **AI Architecture Version**: `v58.2.0`
+> **Platform Version**: `v59.0.0`
+> **AI Architecture Version**: `v59.0.0`
 > **Status**: `PRODUCTION_READY` | `ALL_TESTS_GREEN`
 > **Last Synchronized & Audited**: 2026-08-20
 > **Lead Architect**: Lead Architect (ChatGPT)
@@ -18,6 +18,12 @@
 
 ## 🚀 Recent Core Milestone Highlights
 
+- ✅ **Phase 61 — Dashboard Command Center & Live Telemetry Stream Upgrade (v59.0.0)**:
+  - Upgraded [`DashboardPage.jsx`](file:///Users/anil/Documents/New%20project/cybershield-x/client/src/pages/DashboardPage.jsx) with interactive Recharts visuals (risk scoring and severity distribution donut).
+  - Integrated custom glowing SVG radial gauge representing dynamic 0-100 Security Score based on vulnerability severity weights.
+  - Added target Asset Watchlist widget enabling persistent domain tracking, uptime checks, and quick scan triggers.
+  - Set up backend [`ThreatBroadcaster.js`](file:///Users/anil/Documents/New%20project/cybershield-x/server/services/ThreatBroadcaster.js) loop and Socket.IO client listener to render live scrolling terminal-style threat log feed on the dashboard.
+  - Verified React build clean; 100% backend test suites passing (668/668 tests green).
 - ✅ **Phase 60 — Mongoose Bcrypt Idempotency & Universal Auth Stability (v58.2.0)**:
   - Fixed double-hashing bug in `server/models/User.js` pre-save hook where already-hashed passwords passed by `AuthService.register()` were getting re-hashed during user document creation.
   - Added regex-based Bcrypt idempotency verification in `User.js` (`/^\$2[aby]\$\d{2}\$[./A-Za-z0-9]{53}$/`).
