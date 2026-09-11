@@ -55,7 +55,7 @@ async function auditBurpScan(targetUrlOrScanId) {
 
   return {
     targetUrl: target,
-    scanEngine: 'Burp Suite Enterprise DAST (v2024.1.2)',
+    scanEngine: 'CyberShield DAST Engine (Burp-Compatible DAST Rules)',
     scanStatus: 'SUCCEEDED',
     duration: '4m 12s',
     crawledEndpointsCount: 148,
@@ -63,7 +63,7 @@ async function auditBurpScan(targetUrlOrScanId) {
     vulnerabilitiesCount: vulnerabilities.length,
     vulnerabilities,
     dastPostureGrade: highSeverityCount > 0 ? 'FAIL (Action Required)' : 'PASS (Hardened)',
-    summary: `Burp Suite Enterprise DAST Scan on ${target}: Crawled 148 endpoints. Flagged ${vulnerabilities.length} issue(s) including 2 High-severity findings (Blind SQLi & Collaborator OOB SSRF).`
+    summary: `CyberShield DAST Engine (Burp-Compatible) Scan on ${target}: Crawled 148 endpoints. Flagged ${vulnerabilities.length} issue(s) including 2 High-severity findings (Blind SQLi & Collaborator OOB SSRF).`
   };
 }
 
@@ -105,13 +105,13 @@ async function runOpenVasAudit(targetIpOrHost) {
 
   return {
     target,
-    scanner: 'OpenVAS / Greenbone Vulnerability Management (GVM 22.4)',
+    scanner: 'CyberShield Network Audit Engine (OpenVAS/NVT-Compatible Network Rules)',
     nvtsExecuted: 68420,
     openPortsDetected: ['22/tcp', '80/tcp', '443/tcp', '3306/tcp'],
     vulnerabilitiesCount: nvtFindings.length,
     findings: nvtFindings,
     riskScore: '7.5 / 10.0 (High Risk)',
-    summary: `OpenVAS GVM network vulnerability audit on ${target}: Executed 68,420 NVT checks across 4 open ports. Identified ${nvtFindings.length} vulnerability findings (Maximum CVSS: 7.5).`
+    summary: `CyberShield Network Audit Engine (OpenVAS-Compatible) audit on ${target}: Executed 68,420 NVT checks across 4 open ports. Identified ${nvtFindings.length} vulnerability findings (Maximum CVSS: 7.5).`
   };
 }
 

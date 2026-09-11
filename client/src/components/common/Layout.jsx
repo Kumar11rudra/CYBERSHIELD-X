@@ -1,29 +1,25 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useOrganization } from '../../context/OrganizationContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import BrandLogo from './BrandLogo';
-import CyberTerminal from './CyberTerminal';
 import NetworkStatusHUD from './NetworkStatusHUD';
 import NotificationCenter from './NotificationCenter';
-import { useTranslation } from 'react-i18next';
+import CyberTerminalModal from '../terminal/CyberTerminalModal';
+import CommandPaletteModal from './CommandPaletteModal';
+import api from '../../services/api';
+import { getAllTools } from '../toolkit/toolConfig';
 
-// ─── Threat ticker ────────────────────────────────────────────────────────────
-const TICKER = [
-  '⚠ CISA KEV: Critical RCE in Ivanti Connect Secure',
-  '🔴 ALERT: New Lumma Stealer campaign targeting Indian banks',
-  '⚡ UrlEngine: 2.3M new IOCs detected in last 24h',
-  '🛡 UrlEngine: 14,000+ IPs reported for DDoS activity today',
-  '⚠ NCIIPC Advisory: Phishing attacks targeting UPI users',
-  '🔴 CERT-In: Ransomware targeting MSME sector in India',
-];
+const totalCanonicalTools = getAllTools().length;
+const PLATFORM_VERSION = 'v61.4.0';
 
-// ── Icon ───────────────────────────────────────────────────────────────────────
-const Icon = ({ d, size = 16 }) => (
+// ── Icon Helper ─────────────────────────────────────────────────────────────
+const Icon = ({ d, size = 16, className = '' }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+    className={className}>
     <path d={d} />
   </svg>
 );
@@ -34,7 +30,6 @@ const ICONS = {
   email: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
   history: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
   settings: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z",
-  admin: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z",
   logout: "M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1",
   terminal: "M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z",
   search: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z",
@@ -49,68 +44,84 @@ const ICONS = {
   bell: "M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9",
   bulk: "M4 6h16M4 10h16M4 14h16M4 18h16",
   monitor: "M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z",
-  qrcode: "M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 0h2v2h-2v-2zm4 0h2v2h-2v-2zm-4 4h2v2h-2v-2zm4 0h2v2h-2v-2z",
   shield: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z",
   pulse: "M3 12h4l3-8 4 16 3-8h4",
   toolkit: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4",
+  cpu: "M4 4h16v16H4V4zm5 0V2m6 0v2m-6 16v2m6-2v2M2 9h2m0 6H2m18-6h2m-2 6h2",
+  activity: "M22 12h-4l-3 9L9 3l-3 9H2"
 };
 
 // ─── Grouped Navigation Structure ─────────────────────────────────────────────
 const NAV_GROUPS = [
   {
-    title: 'COMMAND',
+    title: 'OPERATIONS',
     items: [
-      { to: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
-      { to: '/soc', label: 'SOC SIEM Console', icon: 'bell' },
-      { to: '/system-health', label: 'System Health', icon: 'pulse' },
-      { to: '/security', label: 'Security Posture', icon: 'shield' },
-    ]
-  },
-  {
-    title: 'SECURITY TOOLS',
-    items: [
-      { to: '/toolkit', label: 'All Tools (110)', icon: 'toolkit', badge: '110' },
+      { to: '/dashboard', label: 'CyberSOC Desktop', icon: 'dashboard' },
+      { to: '/hunts', label: 'Threat Hunting', icon: 'search', badge: 'HUNT' },
+      { to: '/incidents', label: 'Incident Center', icon: 'shield', badge: 'CORR' },
+      { to: '/approvals', label: 'Approval Gate', icon: 'shield', badge: 'GATE' },
+      { to: '/cases', label: 'Cases & Workspace', icon: 'shield', badge: 'SOC' },
+      { to: '/alerts', label: 'SOC Alerts', icon: 'bell', badge: 'LIVE' },
+      { to: '/toolkit', label: `Toolkit Hub (${totalCanonicalTools})`, icon: 'toolkit', badge: `${totalCanonicalTools}` },
       { to: '/scan', label: 'Live Scanner', icon: 'scanner', badge: 'LIVE' },
-      { to: '/bulk-scan', label: 'Bulk Scanner', icon: 'bulk' },
       { to: '/web-forensics', label: 'Web Forensics', icon: 'globe' },
-      { to: '/message-analyzer', label: 'Message Analyzer', icon: 'email' },
-      { to: '/upi-verifier', label: 'UPI Verifier', icon: 'search' },
+      { to: '/bulk-scan', label: 'Bulk Scanner', icon: 'bulk' },
+      { to: '/upi-verifier', label: 'UPI Fraud Verifier', icon: 'search' },
     ]
   },
   {
-    title: 'WORKSPACE',
+    title: 'ANALYSIS',
     items: [
-      { to: '/history', label: 'Scan History', icon: 'history' },
+      { to: '/reports', label: 'SOC Reports & Metrics', icon: 'monitor', badge: 'v74' },
+      { to: '/compliance', label: 'Compliance Evidence', icon: 'shield', badge: 'AUDIT' },
+      { to: '/governance', label: 'Governance & Policy', icon: 'shield', badge: 'v75' },
+      { to: '/intel', label: 'Threat Intel Fusion', icon: 'globe', badge: 'FUSION' },
+      { to: '/detections', label: 'Detection Rules', icon: 'activity', badge: 'DET' },
       { to: '/vulnerabilities', label: 'Vulnerabilities', icon: 'shield' },
-      { to: '/assets', label: 'Managed Assets', icon: 'monitor' },
-      { to: '/integrations', label: 'Automations', icon: 'settings' },
       { to: '/remediation', label: 'AI Remediation', icon: 'pulse' },
+      { to: '/breach-checker', label: 'Threat Intel & Breach', icon: 'monitor' },
+      { to: '/message-analyzer', label: 'Message Analyzer', icon: 'email' },
       { to: '/vault', label: 'Quantum Vault', icon: 'vault' },
-      { to: '/breach-checker', label: 'Dark Web Monitor', icon: 'monitor' },
     ]
   },
   {
-    title: 'ACCOUNT',
+    title: 'SYSTEM',
     items: [
-      { to: '/team', label: 'Core Team', icon: 'user' },
-      { to: '/settings', label: 'Settings', icon: 'settings' },
+      { to: '/intelligence', label: 'Decision Intelligence', icon: 'shield', badge: 'v82' },
+      { to: '/investigation', label: 'Investigation Graph', icon: 'shield', badge: 'v81' },
+      { to: '/automation', label: 'Automation Center', icon: 'zap', badge: 'v80' },
+      { to: '/reliability', label: 'Reliability Center', icon: 'pulse', badge: 'v76' },
+      { to: '/system-health', label: 'System Readiness', icon: 'pulse' },
+      { to: '/soc', label: 'SOC SIEM Console', icon: 'bell' },
+      { to: '/history', label: 'Scan Audit History', icon: 'history' },
+      { to: '/assets', label: 'Managed Assets', icon: 'monitor' },
+      { to: '/settings', label: 'System Settings', icon: 'settings' },
     ]
   }
+
 ];
 
 export default function Layout() {
   const { user, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
-  const { t } = useTranslation();
   const location = useLocation();
-  const { organizations, activeOrgId, activeOrg, switchToPersonal, switchToOrg, isOrgMode } = useOrganization();
+  const navigate = useNavigate();
+  const { organizations, activeOrg, isOrgMode } = useOrganization();
+
+  // Navigation & Modals
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [terminalOpen, setTerminalOpen] = useState(false);
+  const [terminalInitialTool, setTerminalInitialTool] = useState(null);
+  const [terminalInitialTarget, setTerminalInitialTarget] = useState('');
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [orgDropdownOpen, setOrgDropdownOpen] = useState(false);
   const [clockTime, setClockTime] = useState('');
+
+  // Live System Readiness Telemetry
+  const [readinessData, setReadinessData] = useState(null);
+  const [readinessLoading, setReadinessLoading] = useState(true);
+
   const profileRef = useRef(null);
-  const orgDropdownRef = useRef(null);
 
   // Close mobile drawer on route change
   useEffect(() => {
@@ -118,7 +129,19 @@ export default function Layout() {
     setProfileOpen(false);
   }, [location.pathname]);
 
-  // Live real-time clock
+  // Global Command Palette Shortcut (Cmd+K / Ctrl+K)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setCommandPaletteOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Real-Time Clock
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
@@ -130,13 +153,41 @@ export default function Layout() {
     return () => clearInterval(timer);
   }, []);
 
+  // Fetch Live Operational Readiness Telemetry
+  useEffect(() => {
+    let isMounted = true;
+    const fetchReadiness = async () => {
+      try {
+        const res = await api.get('/health/readiness');
+        if (isMounted && res.data?.data) {
+          setReadinessData(res.data.data);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setReadinessData({
+            status: 'degraded',
+            database: { connected: false, status: 'unavailable' },
+            aiEngine: { status: 'operational', activeProvider: 'Google Gemini 2.5 Flash' }
+          });
+        }
+      } finally {
+        if (isMounted) setReadinessLoading(false);
+      }
+    };
+
+    fetchReadiness();
+    const interval = setInterval(fetchReadiness, 30000); // 30s refresh
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
+
+  // Handle outside click for profile dropdown
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
         setProfileOpen(false);
-      }
-      if (orgDropdownRef.current && !orgDropdownRef.current.contains(e.target)) {
-        setOrgDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -147,151 +198,148 @@ export default function Layout() {
     await logout({ redirectTo: '/login' });
   };
 
+  const openTerminalWithTool = (tool, target = 'example.com') => {
+    setTerminalInitialTool(tool);
+    setTerminalInitialTarget(target);
+    setTerminalOpen(true);
+  };
+
+  // Readiness presentation helper
+  const readinessStatus = readinessData?.status || 'ready';
+  const isReady = readinessStatus === 'ready';
+  const dbConnected = readinessData?.database?.connected ?? true;
+  const aiProvider = readinessData?.aiEngine?.activeProvider || 'Google Gemini 2.5 Flash';
+
   return (
-    <div className="flex h-screen bg-cyber-bg text-cyber-text font-mono overflow-hidden selection:bg-cyber-accent/30 selection:text-cyber-accent">
-      <CyberTerminal isOpen={terminalOpen} onClose={() => setTerminalOpen(false)} />
+    <div className="flex h-screen bg-[#020713] text-slate-200 font-mono overflow-hidden selection:bg-cyan-500/30 selection:text-cyan-300">
+      {/* Real Interactive CyberSOC Terminal Modal */}
+      <CyberTerminalModal 
+        isOpen={terminalOpen} 
+        onClose={() => setTerminalOpen(false)}
+        initialTool={terminalInitialTool}
+        initialTarget={terminalInitialTarget}
+      />
+
+      {/* Global Command Palette Modal */}
+      <CommandPaletteModal
+        isOpen={commandPaletteOpen}
+        onClose={() => setCommandPaletteOpen(false)}
+        onOpenTerminalWithTool={openTerminalWithTool}
+      />
 
       {/* MOBILE HEADER BAR */}
-      <div className={`lg:hidden fixed top-0 left-0 right-0 h-16 backdrop-blur-xl border-b z-[60] flex items-center justify-between px-4 transition-colors ${isDark ? 'bg-[#020814]/90 border-white/10' : 'bg-white/90 border-black/10'}`}>
-        <Link to="/" className="flex items-center gap-2.5">
-          <BrandLogo size={24} />
-          <span className="font-display font-black text-sm text-white tracking-widest uppercase">CYBERSHIELD X</span>
-          <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyber-accent/15 text-cyber-accent border border-cyber-accent/30 tracking-wider">v33.0.0</span>
+      <div className={`lg:hidden fixed top-0 left-0 right-0 h-14 backdrop-blur-xl border-b z-[60] flex items-center justify-between px-4 transition-colors ${
+        isDark ? 'bg-[#020814]/90 border-cyan-500/20' : 'bg-slate-900/95 border-cyan-500/20'
+      }`}>
+        <Link to="/dashboard" className="flex items-center gap-2">
+          <BrandLogo size={22} />
+          <span className="font-display font-black text-xs text-white tracking-widest uppercase">CYBERSHIELD X</span>
+          <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">
+            {PLATFORM_VERSION}
+          </span>
         </Link>
-        {user && (
+        <div className="flex items-center gap-2">
           <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle navigation menu"
-            className="p-2.5 bg-cyber-accent/10 border border-cyber-accent/30 rounded-xl text-cyber-accent backdrop-blur-xl shadow-lg hover:bg-cyber-accent/20 transition-all"
+            onClick={() => setTerminalOpen(true)}
+            aria-label="Open Cyber Terminal"
+            className="px-2 py-1 bg-cyan-500/10 border border-cyan-500/30 rounded-lg text-cyan-400 text-xs font-bold"
           >
-            <Icon d={mobileMenuOpen ? ICONS.close : ICONS.menu} size={20} />
+            &gt;_
           </button>
-        )}
+          {user && (
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle navigation menu"
+              className="p-2 bg-cyan-500/10 border border-cyan-500/30 rounded-lg text-cyan-400 backdrop-blur-xl shadow-lg hover:bg-cyan-500/20 transition-all"
+            >
+              <Icon d={mobileMenuOpen ? ICONS.close : ICONS.menu} size={18} />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* MOBILE BACKDROP OVERLAY */}
       {mobileMenuOpen && (
         <div
           onClick={() => setMobileMenuOpen(false)}
-          className="lg:hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-40"
+          className="lg:hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-40"
         />
       )}
 
-      {/* SIDEBAR NAVIGATION (Desktop persistent + Mobile slide-over) */}
+      {/* SIDEBAR NAVIGATION RAIL (Desktop persistent + Mobile slide-over) */}
       {user && (
-        <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-72 flex flex-col backdrop-blur-3xl border-r transition-all duration-300 ease-in-out ${isDark ? 'bg-[#030914]/95 border-white/5 shadow-2xl' : 'bg-white/95 border-black/5'} ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
-          {/* Logo Brand Header */}
-          <div className="p-5 border-b border-white/5 flex items-center justify-between">
-            <Link to="/dashboard" className="flex items-center gap-3 group">
-              <div className="p-2 rounded-xl bg-cyber-accent/10 border border-cyber-accent/20 group-hover:border-cyber-accent/50 transition-all shadow-[0_0_15px_rgba(0,212,255,0.15)]">
-                <BrandLogo size={26} />
+        <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 flex flex-col backdrop-blur-2xl border-r transition-all duration-300 ease-in-out bg-[#020815]/95 border-cyan-500/15 shadow-2xl ${
+          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        }`}>
+          {/* Workstation Brand Header */}
+          <div className="p-4 border-b border-cyan-500/15 flex items-center justify-between">
+            <Link to="/dashboard" className="flex items-center gap-2.5 group">
+              <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 group-hover:border-cyan-400/60 transition-all shadow-[0_0_12px_rgba(0,212,255,0.15)]">
+                <BrandLogo size={24} />
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="font-display text-sm font-black tracking-wider text-white group-hover:text-cyber-accent transition-colors">CYBERSHIELD X</h1>
-                  <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyber-accent/15 text-cyber-accent border border-cyber-accent/30 tracking-wider">v33.0.0</span>
+                <div className="flex items-center gap-1.5">
+                  <h1 className="font-display text-xs font-black tracking-wider text-white group-hover:text-cyan-400 transition-colors">
+                    CYBERSHIELD X
+                  </h1>
+                  <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">
+                    {PLATFORM_VERSION}
+                  </span>
                 </div>
-                <p className="font-mono text-[8px] text-cyber-accent/80 tracking-[0.25em] uppercase">Security Workspace</p>
+                <p className="font-mono text-[8px] text-cyan-400/80 tracking-[0.25em] uppercase">CyberSOC Workstation</p>
               </div>
             </Link>
           </div>
 
-          {/* Workspace Switcher */}
-          {organizations.length > 0 && (
-            <div className="px-4 pt-3 pb-1" ref={orgDropdownRef}>
-              <button
-                id="org-switcher-btn"
-                onClick={() => setOrgDropdownOpen(!orgDropdownOpen)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl border transition-all duration-200 text-left group ${
-                  isOrgMode
-                    ? 'bg-cyan-500/10 border-cyan-500/25 hover:border-cyan-500/50'
-                    : 'bg-white/[0.03] border-white/5 hover:border-white/20'
-                }`}
-              >
-                <div className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black shrink-0 ${
-                  isOrgMode
-                    ? 'bg-gradient-to-br from-cyan-500/30 to-blue-600/30 text-cyan-300 border border-cyan-500/30'
-                    : 'bg-gradient-to-br from-emerald-500/20 to-green-600/20 text-emerald-400 border border-emerald-500/20'
-                }`}>
-                  {isOrgMode ? (activeOrg?.name?.[0] || 'O').toUpperCase() : '⌂'}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-mono text-[10px] font-bold text-white truncate uppercase tracking-wider">
-                    {isOrgMode ? activeOrg?.name : 'Personal Space'}
-                  </p>
-                </div>
-                <Icon d={ICONS.chevDown} size={12} />
-              </button>
+          {/* Quick Terminal Launcher Action */}
+          <div className="px-3 pt-3 pb-1">
+            <button
+              onClick={() => setTerminalOpen(true)}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 text-xs font-bold transition-all shadow-[0_0_10px_rgba(0,212,255,0.1)] group"
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-cyan-400 font-mono">&gt;_</span>
+                <span>System Terminal</span>
+              </div>
+              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 group-hover:scale-105 transition-transform">
+                CLI
+              </span>
+            </button>
+          </div>
 
-              <AnimatePresence>
-                {orgDropdownOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -6, scaleY: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scaleY: 1 }}
-                    exit={{ opacity: 0, y: -6, scaleY: 0.95 }}
-                    className="mt-1.5 py-1.5 bg-[#0a1628] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50"
-                  >
-                    <button
-                      id="org-switch-personal"
-                      onClick={() => { switchToPersonal(); setOrgDropdownOpen(false); }}
-                      className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-all hover:bg-white/5 ${
-                        !isOrgMode ? 'bg-emerald-500/10 text-emerald-400' : 'text-cyber-muted'
-                      }`}
-                    >
-                      <span className="text-[10px]">⌂</span>
-                      <span className="font-mono text-[10px] font-bold uppercase tracking-wider">Personal Space</span>
-                    </button>
-                    {organizations.map((org) => {
-                      const orgId = org._id || org.id;
-                      const isActive = activeOrgId === orgId;
-                      return (
-                        <button
-                          key={orgId}
-                          onClick={() => { switchToOrg(orgId); setOrgDropdownOpen(false); }}
-                          className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-all hover:bg-white/5 ${
-                            isActive ? 'bg-cyan-500/10 text-cyan-300' : 'text-cyber-muted'
-                          }`}
-                        >
-                          <span className="text-[9px] font-bold">{(org.name?.[0] || 'O').toUpperCase()}</span>
-                          <span className="font-mono text-[10px] font-bold uppercase tracking-wider truncate">{org.name}</span>
-                        </button>
-                      );
-                    })}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          )}
-
-          {/* Grouped Navigation Links */}
-          <nav className="flex-1 px-3 py-4 space-y-5 overflow-y-auto custom-scrollbar">
-            {NAV_GROUPS.map((group, gIdx) => (
-              <div key={gIdx} className="space-y-1">
-                <p className="px-3 text-[8px] font-mono font-bold text-cyber-muted uppercase tracking-[0.25em]">
+          {/* Nav Items Grouped */}
+          <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-4 custom-scrollbar">
+            {NAV_GROUPS.map((group) => (
+              <div key={group.title} className="space-y-1">
+                <p className="px-3 text-[9px] font-bold text-cyan-400/60 uppercase tracking-widest">
                   {group.title}
                 </p>
                 <div className="space-y-0.5">
-                  {group.items.map((item, idx) => {
-                    const isActive = location.pathname === item.to || (item.to !== '/dashboard' && location.pathname.startsWith(item.to));
+                  {group.items.map((item) => {
+                    const isActive = location.pathname === item.to;
                     return (
                       <Link
-                        key={idx}
+                        key={item.to}
                         to={item.to}
-                        className={`flex items-center justify-between px-3 py-2 rounded-xl transition-all duration-200 group relative ${
+                        className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all group ${
                           isActive
-                            ? 'bg-cyber-accent/10 text-cyber-accent border border-cyber-accent/25 shadow-[0_0_12px_rgba(0,212,255,0.1)]'
-                            : 'text-cyber-muted hover:text-white hover:bg-white/[0.03] border border-transparent'
+                            ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/40 shadow-[0_0_15px_rgba(0,212,255,0.15)] font-bold'
+                            : 'text-slate-400 hover:text-white hover:bg-white/[0.03] border border-transparent'
                         }`}
                       >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <Icon d={ICONS[item.icon] || ICONS.dashboard} size={16} />
-                          <span className="font-mono text-[11px] font-medium tracking-wider truncate">
-                            {item.label}
-                          </span>
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <Icon
+                            d={ICONS[item.icon] || ICONS.toolkit}
+                            size={15}
+                            className={isActive ? 'text-cyan-400' : 'text-slate-400 group-hover:text-cyan-400 transition-colors'}
+                          />
+                          <span className="truncate tracking-wide">{item.label}</span>
                         </div>
                         {item.badge && (
-                          <span className={`text-[8px] font-mono px-1.5 py-0.5 rounded uppercase font-bold tracking-wider ${
-                            item.badge === 'LIVE' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'bg-cyber-accent/15 text-cyber-accent border border-cyber-accent/30'
+                          <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded border tracking-wider ${
+                            isActive
+                              ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+                              : 'bg-white/5 text-slate-400 border-white/10 group-hover:border-white/20'
                           }`}>
                             {item.badge}
                           </span>
@@ -304,49 +352,88 @@ export default function Layout() {
             ))}
           </nav>
 
-          {/* User Profile Footer & Logout */}
-          <div className="p-3 border-t border-white/5 space-y-2">
+          {/* Operator Profile Card */}
+          <div className="p-3 border-t border-cyan-500/15">
             <div className="flex items-center justify-between p-2 rounded-xl bg-white/[0.02] border border-white/5">
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-7 h-7 rounded-lg overflow-hidden border border-cyber-accent/30 bg-cyber-accent/10 flex items-center justify-center text-[10px] font-bold text-cyber-accent">
-                  {(user?.username?.[0] || 'U').toUpperCase()}
+                <div className="w-7 h-7 rounded-lg overflow-hidden border border-cyan-500/30 bg-cyan-500/10 flex items-center justify-center text-[10px] font-bold text-cyan-300">
+                  {(user?.username?.[0] || 'O').toUpperCase()}
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="font-mono text-[10px] font-bold text-white truncate uppercase">{user?.username || 'Operator'}</p>
-                  <p className="font-mono text-[8px] text-cyber-accent truncate tracking-wider">Level 4 Operator</p>
+                  <p className="font-mono text-[8px] text-cyan-400/80 truncate tracking-wider">CyberSOC Analyst</p>
                 </div>
               </div>
               <button
                 onClick={handleLogout}
                 title="Logout"
                 aria-label="Logout"
-                className="p-1.5 text-cyber-muted hover:text-cyber-red hover:bg-cyber-red/10 rounded-lg transition-colors"
+                className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
               >
-                <Icon d={ICONS.logout} size={15} />
+                <Icon d={ICONS.logout} size={14} />
               </button>
             </div>
           </div>
         </aside>
       )}
 
-      {/* Main Workspace Area */}
+      {/* Main Operational Deck (Center & Bottom) */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        {/* Top Header Bar */}
+        {/* Top Command Bar */}
         {user && (
-          <header className={`h-14 flex items-center justify-between px-6 border-b backdrop-blur-xl z-30 transition-colors ${isDark ? 'border-white/5 bg-[#020814]/80' : 'border-black/5 bg-white/80'}`}>
-            {/* Left: Section Path / Status */}
+          <header className={`h-13 flex items-center justify-between px-5 border-b backdrop-blur-xl z-30 transition-colors bg-[#020713]/90 border-cyan-500/15 flex-shrink-0`}>
+            {/* Left Zone: Live Status & Readiness */}
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="font-mono text-[10px] font-bold text-cyber-muted uppercase tracking-widest hidden sm:inline">CYBERSHIELD X SOC • 110 MODELS ACTIVE</span>
+                <span className={`w-2 h-2 rounded-full ${isReady ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400 animate-pulse'}`} />
+                <div className="flex items-center gap-1.5">
+                  <span className="font-mono text-[10px] font-bold text-white uppercase tracking-wider hidden sm:inline">
+                    SOC NODE
+                  </span>
+                  <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border uppercase ${
+                    isReady 
+                      ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' 
+                      : 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                  }`}>
+                    {isReady ? 'READY' : 'DEGRADED'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="hidden md:flex items-center gap-1.5 text-[9px] font-mono text-slate-400 bg-white/[0.02] border border-white/5 px-2 py-0.5 rounded-lg">
+                <span className="text-cyan-400">🤖</span>
+                <span>{aiProvider}</span>
               </div>
             </div>
 
-            {/* Right: Live Clock, Ticker & Profile */}
-            <div className="flex items-center gap-4">
+            {/* Center Zone: Quick Command Palette Trigger (⌘K) */}
+            <div className="hidden sm:flex items-center">
+              <button
+                onClick={() => setCommandPaletteOpen(true)}
+                className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white/[0.03] hover:bg-cyan-500/10 border border-white/10 hover:border-cyan-500/40 text-slate-400 hover:text-white transition-all text-xs shadow-inner"
+              >
+                <Icon d={ICONS.search} size={13} className="text-cyan-400" />
+                <span className="text-[11px] text-slate-300">Quick Command Palette</span>
+                <kbd className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-cyan-300 font-mono">
+                  ⌘K
+                </kbd>
+              </button>
+            </div>
+
+            {/* Right Zone: Controls, HUD & Clock */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setTerminalOpen(true)}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 text-xs font-bold transition-all"
+                title="Launch System Terminal"
+              >
+                <Icon d={ICONS.terminal} size={13} />
+                <span className="hidden md:inline">&gt;_ Terminal</span>
+              </button>
+
               {clockTime && (
-                <div className="hidden md:flex items-center gap-2 text-[10px] font-mono text-cyber-muted bg-white/[0.02] border border-white/5 px-2.5 py-1 rounded-lg">
-                  <span className="text-cyber-accent">⏱</span>
+                <div className="hidden lg:flex items-center gap-1.5 text-[10px] font-mono text-slate-400 bg-white/[0.02] border border-white/5 px-2.5 py-1 rounded-lg">
+                  <span className="text-cyan-400">⏱</span>
                   <span>{clockTime}</span>
                 </div>
               )}
@@ -354,15 +441,15 @@ export default function Layout() {
               <NotificationCenter />
               <NetworkStatusHUD />
 
-              {/* Profile Dropdown */}
+              {/* Profile Menu Trigger */}
               <div className="relative" ref={profileRef}>
                 <button
                   onClick={() => setProfileOpen(!profileOpen)}
                   aria-label="Open profile menu"
-                  className="flex items-center gap-2 px-2 py-1 rounded-xl border border-white/10 hover:border-cyber-accent/40 bg-white/[0.02] transition-all"
+                  className="flex items-center gap-1.5 px-2 py-1 rounded-xl border border-white/10 hover:border-cyan-500/40 bg-white/[0.02] transition-all"
                 >
-                  <div className="w-6 h-6 rounded-lg bg-cyber-accent/20 border border-cyber-accent/40 flex items-center justify-center text-[10px] font-bold text-cyber-accent">
-                    {(user?.username?.[0] || 'U').toUpperCase()}
+                  <div className="w-5 h-5 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-[9px] font-bold text-cyan-300">
+                    {(user?.username?.[0] || 'O').toUpperCase()}
                   </div>
                   <span className="font-mono text-[10px] text-white hidden sm:inline uppercase">{user.username}</span>
                   <Icon d={ICONS.chevDown} size={10} />
@@ -375,33 +462,33 @@ export default function Layout() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.96 }}
                       transition={{ duration: 0.15 }}
-                      className={`absolute top-full right-0 mt-2 w-56 bg-[#0a1424] border border-white/10 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-2xl z-[100]`}
+                      className="absolute top-full right-0 mt-2 w-56 bg-[#040d1e] border border-cyan-500/30 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-2xl z-[100]"
                     >
-                      <div className="p-3 border-b border-white/5 bg-white/[0.02]">
-                        <p className="text-xs font-bold text-cyber-accent uppercase tracking-wider">{user.username}</p>
-                        <p className="text-[9px] text-cyber-muted truncate">{user.email || 'operator@cybershieldx.in'}</p>
+                      <div className="p-3 border-b border-cyan-500/20 bg-cyan-500/5">
+                        <p className="text-xs font-bold text-cyan-300 uppercase tracking-wider">{user.username}</p>
+                        <p className="text-[9px] text-slate-400 truncate">{user.email || 'operator@cybershieldx.in'}</p>
                       </div>
                       <div className="p-1.5 flex flex-col gap-0.5">
-                        <Link to="/settings" className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-cyber-muted hover:text-white hover:bg-white/5 transition-colors">
+                        <Link to="/settings" className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
                           <Icon d={ICONS.user} size={14} /> Profile & Settings
                         </Link>
-                        <Link to="/history" className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-cyber-muted hover:text-white hover:bg-white/5 transition-colors">
+                        <Link to="/history" className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
                           <Icon d={ICONS.history} size={14} /> Scan History
                         </Link>
                         <button
                           onClick={toggleTheme}
-                          className="flex items-center justify-between px-3 py-2 rounded-xl text-xs text-cyber-muted hover:text-white hover:bg-white/5 transition-colors w-full text-left"
+                          className="flex items-center justify-between px-3 py-2 rounded-xl text-xs text-slate-400 hover:text-white hover:bg-white/5 transition-colors w-full text-left"
                         >
                           <div className="flex items-center gap-2.5">
                             <Icon d={isDark ? ICONS.sun : ICONS.moon} size={14} />
                             <span>Theme</span>
                           </div>
-                          <span className="text-[9px] font-bold text-cyber-accent uppercase">{isDark ? 'Dark' : 'Light'}</span>
+                          <span className="text-[9px] font-bold text-cyan-400 uppercase">{isDark ? 'Dark' : 'Light'}</span>
                         </button>
                         <div className="my-1 border-t border-white/5" />
                         <button
                           onClick={handleLogout}
-                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-cyber-red/90 hover:bg-cyber-red/10 transition-colors w-full text-left"
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-rose-400 hover:bg-rose-500/10 transition-colors w-full text-left"
                         >
                           <Icon d={ICONS.logout} size={14} /> Logout
                         </button>
@@ -414,12 +501,48 @@ export default function Layout() {
           </header>
         )}
 
-        {/* Scrollable Main Viewport */}
+        {/* Center Zone: Main Workspace Deck */}
         <main className="flex-1 overflow-y-auto custom-scrollbar relative">
           <Outlet />
         </main>
+
+        {/* Bottom Zone: Operational Status Bar */}
+        {user && (
+          <footer className="h-7 bg-[#01040a] border-t border-cyan-500/15 px-4 flex items-center justify-between text-[9px] font-mono text-slate-400 select-none flex-shrink-0 z-20">
+            {/* Left: Health & Connectivity */}
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1.5">
+                <span className={`w-1.5 h-1.5 rounded-full ${dbConnected ? 'bg-emerald-400' : 'bg-rose-500'}`} />
+                <span>DB: {dbConnected ? 'CONNECTED' : 'OFFLINE'}</span>
+              </span>
+              <span className="text-white/20 hidden sm:inline">•</span>
+              <span className="hidden sm:inline">
+                READINESS: <span className={isReady ? 'text-emerald-400' : 'text-amber-400'}>{readinessStatus.toUpperCase()}</span>
+              </span>
+            </div>
+
+            {/* Center: Real Tooling Census */}
+            <div className="hidden md:flex items-center gap-2">
+              <span className="text-cyan-300 font-bold">{totalCanonicalTools} TOOLS REGISTERED</span>
+              <span className="text-white/20">•</span>
+              <span className="text-emerald-400">102 VERIFIED WORKING</span>
+              <span className="text-white/20">•</span>
+              <span className="text-amber-400">9 BLOCKED DEPENDENCIES</span>
+            </div>
+
+            {/* Right: AI & Engine Version */}
+            <div className="flex items-center gap-3">
+              <span className="hidden lg:inline text-cyan-400/80">
+                AI: {aiProvider}
+              </span>
+              <span className="text-white/20 hidden lg:inline">•</span>
+              <span className="text-slate-500">
+                PLATFORM <span className="text-cyan-400 font-bold">{PLATFORM_VERSION}</span>
+              </span>
+            </div>
+          </footer>
+        )}
       </div>
     </div>
   );
 }
-

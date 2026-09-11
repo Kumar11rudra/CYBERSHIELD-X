@@ -149,6 +149,38 @@ const io = new Server(httpServer, {
 });
 
 app.set('io', io);
+const terminalJobService = require('./services/TerminalJobService');
+terminalJobService.setIO(io);
+const incidentCorrelationEngine = require('./services/soc/IncidentCorrelationEngine');
+incidentCorrelationEngine.setSocketIO(io);
+const safePlaybookAutomationService = require('./services/soc/SafePlaybookAutomationService');
+safePlaybookAutomationService.setSocketIO(io);
+const incidentResponseService = require('./services/soc/IncidentResponseService');
+incidentResponseService.setSocketIO(io);
+const evidenceLifecycleService = require('./services/soc/EvidenceLifecycleService');
+evidenceLifecycleService.setSocketIO(io);
+const caseOrchestrationService = require('./services/soc/CaseOrchestrationService');
+caseOrchestrationService.setSocketIO(io);
+const detectionLifecycleService = require('./services/soc/DetectionLifecycleService');
+detectionLifecycleService.setIO(io);
+const detectionTestingService = require('./services/soc/DetectionTestingService');
+detectionTestingService.setIO(io);
+const detectionGapService = require('./services/soc/DetectionGapService');
+detectionGapService.setIO(io);
+const governancePolicyService = require('./services/soc/GovernancePolicyService');
+governancePolicyService.setIO(io);
+const dataLifecycleService = require('./services/soc/DataLifecycleService');
+dataLifecycleService.setIO(io);
+const breakGlassService = require('./services/soc/BreakGlassService');
+breakGlassService.setIO(io);
+const serviceHealthService = require('./services/observability/ServiceHealthService');
+serviceHealthService.setSocketIO(io);
+const sloService = require('./services/observability/SLOService');
+sloService.setSocketIO(io);
+const capacityService = require('./services/observability/CapacityService');
+capacityService.setSocketIO(io);
+const disasterRecoveryService = require('./services/observability/DisasterRecoveryService');
+disasterRecoveryService.setSocketIO(io);
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -253,6 +285,18 @@ const aiLimiter = rateLimit({
   handler: createRateLimitHandler('ai')
 });
 
+const terminalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 60, // Max 60 native tool executions per 15 minutes
+  skip: (req) => req.path === '/cancel' || req.path.startsWith('/check-tool') || req.path === '/host-capabilities' || req.method === 'OPTIONS',
+  message: {
+    success: false,
+    error: 'Terminal execution rate limit exceeded. Please wait before executing further commands.',
+    code: 'RATE_LIMITED'
+  },
+  handler: createRateLimitHandler('terminal')
+});
+
 // Debug Logger to track all incoming requests
 app.use((req, res, next) => {
   next();
@@ -305,7 +349,39 @@ app.use('/api/playbooks', require('./routes/playbook'));
 app.use('/api/integrations', require('./routes/integration'));
 app.use('/api/remediations', require('./routes/remediation'));
 app.use('/api/health', require('./routes/health'));
+app.use('/api/readiness', (req, res, next) => {
+  req.url = '/readiness';
+  require('./routes/health')(req, res, next);
+});
 app.use('/api/chatbot', require('./routes/chatbot')); // Added Chatbot route
+app.use('/api/terminal', terminalLimiter, require('./routes/terminal')); // System-Aware Terminal & Host Capabilities
+app.use('/api/cases', require('./routes/case'));
+app.use('/api/findings', require('./routes/finding'));
+app.use('/api/alerts', require('./routes/alert'));
+app.use('/api/search', require('./routes/search'));
+app.use('/api/detections', require('./routes/detection'));
+app.use('/api/detection-packs', require('./routes/detectionPack'));
+app.use('/api/detection-gaps', require('./routes/detectionGap'));
+app.get('/api/detection-coverage', require('./controllers/detectionController').getCoverage);
+app.get('/api/attack-coverage', require('./controllers/detectionController').getCoverage);
+app.get('/api/detection-health', require('./controllers/detectionController').getHealthMetrics);
+app.get('/api/detection-tests', require('./controllers/detectionController').runRegressionSuite);
+app.post('/api/detection-tests', require('./controllers/detectionController').runRegressionSuite);
+app.use('/api/incidents', require('./routes/incident'));
+app.use('/api/approvals', require('./routes/approval'));
+app.use('/api/iocs', require('./routes/ioc'));
+app.use('/api/hunts', require('./routes/hunt'));
+app.use('/api/hunt-executions', require('./routes/huntExecution'));
+app.use('/api/intel', require('./routes/intel'));
+app.use('/api/compliance', require('./routes/compliance'));
+app.use('/api/governance', require('./routes/governance'));
+app.use('/api/observability', require('./routes/observability'));
+app.use('/api/reliability', require('./routes/observability'));
+app.use('/api/automation', require('./routes/automation'));
+app.use('/api/data-fabric', require('./routes/dataFabric'));
+app.use('/api/intelligence', require('./routes/intelligence'));
+
+
 
 const {
     capabilityResolver,
@@ -399,6 +475,24 @@ const shutdown = async (signal, exitCode = 0) => {
   isShuttingDown = true;
   logger.info(`[SHUTDOWN] Signal ${signal} received. Powering down Nexus Core...`);
   
+  // Terminate any active child processes to prevent zombies
+  try {
+    const hostEnv = require('./services/HostEnvironmentService');
+    if (hostEnv && hostEnv.activeProcesses && hostEnv.activeProcesses.size > 0) {
+      logger.info(`[SHUTDOWN] Terminating ${hostEnv.activeProcesses.size} active child process(es)...`);
+      for (const [execId, record] of hostEnv.activeProcesses.entries()) {
+        if (record.proc && !record.proc.killed) {
+          try {
+            record.proc.kill('SIGKILL');
+          } catch {}
+        }
+      }
+      hostEnv.activeProcesses.clear();
+    }
+  } catch (procErr) {
+    logger.warn('[SHUTDOWN] Notice during child process cleanup:', procErr.message);
+  }
+
   httpServer.close(async () => {
     logger.info('[SHUTDOWN] HTTP/Socket.io gateways closed.');
     try {

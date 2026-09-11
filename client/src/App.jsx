@@ -62,18 +62,44 @@ const AcceptableUsePolicyPage  = lazy(() => import('./pages/AcceptableUsePolicyP
 const SecurityInformationPage  = lazy(() => import('./pages/SecurityInformationPage'));
 const ContactPage              = lazy(() => import('./pages/ContactPage'));
 const TeamPage                 = lazy(() => import('./pages/TeamPage'));
+const CaseWorkspacePage        = lazy(() => import('./pages/CaseWorkspacePage'));
+const AlertsPage               = lazy(() => import('./pages/AlertsPage'));
+const DetectionRulesPage       = lazy(() => import('./pages/DetectionRulesPage'));
+const IncidentCenterPage       = lazy(() => import('./pages/IncidentCenterPage'));
+const ApprovalCenterPage       = lazy(() => import('./pages/ApprovalCenterPage'));
+const ThreatHuntingPage        = lazy(() => import('./pages/ThreatHuntingPage'));
+const ThreatIntelPage          = lazy(() => import('./pages/ThreatIntelPage'));
+const ReportingCenterPage      = lazy(() => import('./pages/ReportingCenterPage'));
+const ComplianceCenterPage     = lazy(() => import('./pages/ComplianceCenterPage'));
+const GovernanceCenterPage     = lazy(() => import('./pages/GovernanceCenterPage'));
+const ReliabilityCenterPage    = lazy(() => import('./pages/ReliabilityCenterPage'));
+const AutomationCenterPage     = lazy(() => import('./pages/AutomationCenterPage'));
+const InvestigationGraphPage   = lazy(() => import('./pages/InvestigationGraphPage'));
+const DecisionIntelligencePage = lazy(() => import('./pages/DecisionIntelligencePage'));
+
+
 
 // Helper Components
 const PrivateRoute = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, loading, authState, AUTH_STATE } = useAuth();
   const location = useLocation();
-  if (loading) return <LoadingScreen />;
+
+  if (loading || authState === AUTH_STATE?.UNKNOWN || authState === AUTH_STATE?.AUTHENTICATING || authState === AUTH_STATE?.REFRESHING) {
+    return <LoadingScreen />;
+  }
+
+  if (authState === AUTH_STATE?.SESSION_EXPIRED) {
+    return <Navigate to={`/login?expired=1&returnTo=${encodeURIComponent(location.pathname + location.search)}`} replace />;
+  }
+
   return user ? children : <Navigate to={`/login?returnTo=${encodeURIComponent(location.pathname + location.search)}`} replace />;
 };
 
 const AdminRoute = ({ children }) => {
-  const { user, loading } = useAuth();
-  if (loading) return <LoadingScreen />;
+  const { user, loading, authState, AUTH_STATE } = useAuth();
+  if (loading || authState === AUTH_STATE?.UNKNOWN || authState === AUTH_STATE?.AUTHENTICATING || authState === AUTH_STATE?.REFRESHING) {
+    return <LoadingScreen />;
+  }
   return user && user.role === 'admin' ? children : <Navigate to="/nexus-admin" />;
 };
 
@@ -113,6 +139,22 @@ const AppRoutes = () => (
       <Route path="membership" element={<PrivateRoute><MembershipPage /></PrivateRoute>} />
       <Route path="assets" element={<PrivateRoute><AssetsPage /></PrivateRoute>} />
       <Route path="soc" element={<PrivateRoute><SOCPage /></PrivateRoute>} />
+      <Route path="cases" element={<PrivateRoute><CaseWorkspacePage /></PrivateRoute>} />
+      <Route path="alerts" element={<PrivateRoute><AlertsPage /></PrivateRoute>} />
+      <Route path="detections" element={<PrivateRoute><DetectionRulesPage /></PrivateRoute>} />
+      <Route path="incidents" element={<PrivateRoute><IncidentCenterPage /></PrivateRoute>} />
+      <Route path="approvals" element={<PrivateRoute><ApprovalCenterPage /></PrivateRoute>} />
+      <Route path="hunts" element={<PrivateRoute><ThreatHuntingPage /></PrivateRoute>} />
+      <Route path="intel" element={<PrivateRoute><ThreatIntelPage /></PrivateRoute>} />
+      <Route path="reports" element={<PrivateRoute><ReportingCenterPage /></PrivateRoute>} />
+      <Route path="compliance" element={<PrivateRoute><ComplianceCenterPage /></PrivateRoute>} />
+      <Route path="governance" element={<PrivateRoute><GovernanceCenterPage /></PrivateRoute>} />
+      <Route path="reliability" element={<PrivateRoute><ReliabilityCenterPage /></PrivateRoute>} />
+      <Route path="automation" element={<PrivateRoute><AutomationCenterPage /></PrivateRoute>} />
+      <Route path="investigation" element={<PrivateRoute><InvestigationGraphPage /></PrivateRoute>} />
+      <Route path="intelligence" element={<PrivateRoute><DecisionIntelligencePage /></PrivateRoute>} />
+
+
       <Route path="vulnerabilities" element={<PrivateRoute><VulnerabilityPage /></PrivateRoute>} />
       <Route path="integrations" element={<PrivateRoute><IntegrationsPage /></PrivateRoute>} />
       <Route path="remediation" element={<PrivateRoute><RemediationPage /></PrivateRoute>} />
@@ -163,6 +205,15 @@ const ROUTE_TITLES = {
   '/membership': 'Membership — CyberShield X',
   '/assets': 'Managed Assets — CyberShield X',
   '/soc': 'SOC SIEM Console — CyberShield X',
+  '/cases': 'Case Workspace — CyberShield X',
+  '/alerts': 'SOC Alert Center — CyberShield X',
+  '/detections': 'Detection Rules — CyberShield X',
+  '/incidents': 'Incident Center — CyberShield X',
+  '/approvals': 'Approval Center — CyberShield X',
+  '/hunts': 'Threat Hunting Workbench — CyberShield X',
+  '/intel': 'Threat Intelligence Fusion — CyberShield X',
+  '/reports': 'Enterprise SOC Reporting — CyberShield X',
+  '/compliance': 'Compliance & Audit Evidence — CyberShield X',
   '/vulnerabilities': 'Vulnerability Management — CyberShield X',
   '/integrations': 'Security Automations — CyberShield X',
   '/remediation': 'AI Remediation — CyberShield X',

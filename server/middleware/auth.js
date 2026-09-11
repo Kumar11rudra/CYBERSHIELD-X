@@ -29,7 +29,12 @@ const authenticate = async (req, res, next) => {
     }
 
     if (!token) {
-      return res.status(401).json({ error: 'Authentication required' });
+      return res.status(401).json({
+        success: false,
+        error: 'Authentication required',
+        code: 'AUTH_TOKEN_MISSING',
+        errorDetails: { code: 'AUTH_TOKEN_MISSING', message: 'Authentication required' }
+      });
     }
 
     const decoded = verifyToken(token);
@@ -39,7 +44,12 @@ const authenticate = async (req, res, next) => {
       const sessionService = require('../services/sessionService');
       const isSessionValid = await sessionService.isValid(decoded.sessionId);
       if (!isSessionValid) {
-        return res.status(401).json({ error: 'Session has been revoked. Please re-authenticate.', code: 'SESSION_REVOKED' });
+        return res.status(401).json({
+          success: false,
+          error: 'Session has been revoked. Please re-authenticate.',
+          code: 'AUTH_SESSION_EXPIRED',
+          errorDetails: { code: 'AUTH_SESSION_EXPIRED', message: 'Session has been revoked. Please re-authenticate.' }
+        });
       }
     }
 
@@ -49,28 +59,45 @@ const authenticate = async (req, res, next) => {
       const isSafeMethod = ['get', 'head', 'options'].includes(req.method.toLowerCase());
       
       if (!nexusToken && !isSafeMethod) {
-        return res.status(401).json({ error: 'Session fingerprint missing. Please re-authenticate.' });
+        return res.status(401).json({
+          success: false,
+          error: 'Session fingerprint missing. Please re-authenticate.',
+          code: 'AUTH_TOKEN_INVALID',
+          errorDetails: { code: 'AUTH_TOKEN_INVALID', message: 'Session fingerprint missing. Please re-authenticate.' }
+        });
       }
       
       if (nexusToken) {
         const currentHash = crypto.createHash('sha256').update(nexusToken).digest('hex');
         if (currentHash !== decoded.fingerprintHash) {
           console.warn(`[SECURITY] Session Hijacking Attempt? Token fingerprint mismatch for user ${decoded.id}`);
-          return res.status(401).json({ error: 'Session context mismatch. Please re-authenticate.' });
+          return res.status(401).json({
+            success: false,
+            error: 'Session context mismatch. Please re-authenticate.',
+            code: 'AUTH_TOKEN_INVALID',
+            errorDetails: { code: 'AUTH_TOKEN_INVALID', message: 'Session context mismatch. Please re-authenticate.' }
+          });
         }
       }
     }
 
     const user = await resolveUser(decoded.id);
     if (!user) {
-      return res.status(401).json({ error: 'User not found or no longer exists' });
+      return res.status(401).json({
+        success: false,
+        error: 'User not found or no longer exists',
+        code: 'AUTH_UNAUTHORIZED',
+        errorDetails: { code: 'AUTH_UNAUTHORIZED', message: 'User not found or no longer exists' }
+      });
     }
 
     // ─── BANNED USER CHECK ─────────────────────────────────────────────────────
     if (user.isBanned) {
       return res.status(403).json({
+        success: false,
         error: 'Your account has been suspended. Please contact support.',
-        code: 'ACCOUNT_BANNED',
+        code: 'AUTH_ACCOUNT_DISABLED',
+        errorDetails: { code: 'AUTH_ACCOUNT_DISABLED', message: 'Your account has been suspended. Please contact support.' }
       });
     }
 
@@ -94,10 +121,20 @@ const authenticate = async (req, res, next) => {
     next();
   } catch (error) {
     if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({ error: 'Invalid token' });
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid token',
+        code: 'AUTH_TOKEN_INVALID',
+        errorDetails: { code: 'AUTH_TOKEN_INVALID', message: 'Invalid token' }
+      });
     }
     if (error.name === 'TokenExpiredError') {
-      return res.status(401).json({ error: 'Token expired', code: 'TOKEN_EXPIRED' });
+      return res.status(401).json({
+        success: false,
+        error: 'Token expired',
+        code: 'AUTH_SESSION_EXPIRED',
+        errorDetails: { code: 'AUTH_SESSION_EXPIRED', message: 'Token expired' }
+      });
     }
     next(error);
   }
@@ -157,7 +194,12 @@ const getCapabilityAuthorizationService = () => {
 const requireRole = (role) => {
   return async (req, res, next) => {
     if (!req.user) {
-      return res.status(401).json({ error: 'Authentication required' });
+      return res.status(401).json({
+        success: false,
+        error: 'Authentication required',
+        code: 'AUTH_UNAUTHORIZED',
+        errorDetails: { code: 'AUTH_UNAUTHORIZED', message: 'Authentication required' }
+      });
     }
     const authorizationService = getAuthorizationService();
     const result = await authorizationService.authorize({
@@ -168,7 +210,12 @@ const requireRole = (role) => {
 
     if (!result.isGranted) {
       const errorMsg = role === 'admin' ? 'Admin access required' : (result.reason || 'Access denied');
-      return res.status(403).json({ error: errorMsg });
+      return res.status(403).json({
+        success: false,
+        error: errorMsg,
+        code: 'AUTH_FORBIDDEN',
+        errorDetails: { code: 'AUTH_FORBIDDEN', message: errorMsg }
+      });
     }
     next();
   };
@@ -177,7 +224,12 @@ const requireRole = (role) => {
 const requirePermission = (permission) => {
   return async (req, res, next) => {
     if (!req.user) {
-      return res.status(401).json({ error: 'Authentication required' });
+      return res.status(401).json({
+        success: false,
+        error: 'Authentication required',
+        code: 'AUTH_UNAUTHORIZED',
+        errorDetails: { code: 'AUTH_UNAUTHORIZED', message: 'Authentication required' }
+      });
     }
     const authorizationService = getAuthorizationService();
     const result = await authorizationService.authorize({
@@ -187,7 +239,12 @@ const requirePermission = (permission) => {
     }, req.user, { ip: req.ip });
 
     if (!result.isGranted) {
-      return res.status(403).json({ error: result.reason || 'Access denied' });
+      return res.status(403).json({
+        success: false,
+        error: result.reason || 'Access denied',
+        code: 'AUTH_FORBIDDEN',
+        errorDetails: { code: 'AUTH_FORBIDDEN', message: result.reason || 'Access denied' }
+      });
     }
     next();
   };

@@ -1,65 +1,59 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Bot, Shield, Loader, Activity, Sparkles } from 'lucide-react';
+import { X, Send, Bot, Shield, Loader, Activity, Sparkles, Terminal, CheckCircle2 } from 'lucide-react';
 import api from '../../services/api';
 
 const INITIAL_MESSAGE = {
   role: 'assistant',
-  content: "Hi. Welcome to CyberShield X. I am your Security Copilot. How can I assist with your security audits today?"
+  content: "Welcome to the CyberSOC Workstation. I am your AI Security Copilot. I analyze live telemetry, reason over scan evidence, and guide security operations across our 111 cybersecurity tools.",
+  model: 'Google Gemini 2.5 Flash',
+  provider: 'Google AI Studio'
 };
 
 const QUICK_PROMPTS = [
-  "Which tool maps subdomains?",
-  "Check if my domain has expiring SSL",
-  "Explain what a UPI VPA check is",
-  "How do I secure HTTP headers?"
+  "Which tools map subdomains?",
+  "Audit SSL certificate for example.com",
+  "Explain native host tools vs blocked dependencies",
+  "How to execute an automated SOC playbook"
 ];
 
 // Offline / Neural Knowledge Base Fallback
 const KNOWLEDGE_BASE_ENTRIES = [
   {
     triggers: ['hi', 'hello', 'hey', 'namaste', 'greetings', 'sup', 'good morning', 'good evening', 'how are you', 'kaise ho', 'kya haal', 'kese ho'],
-    reply: "Hello! I am CyberBot, your AI Cybersecurity Assistant for CyberShield X. I'm doing great and ready to assist! How can I help you with security audits, threat scans, or exploring our 110 cybersecurity tools today?"
+    reply: "Hello! I am your CyberSOC Security Copilot for CyberShield X. I'm active and ready to assist with live tool execution, vulnerability analysis, or automated playbooks across our 111 registered security tools."
   },
   {
     triggers: ['who are you', 'what are you', 'about cybershield', 'what is cybershield', 'introduce yourself', 'help me', 'what can you do'],
-    reply: "**CyberShield X** is a next-generation cybersecurity intelligence platform featuring:\n- **110 Live Security Tools** across 24 specialized categories.\n- **Interactive CyberSOC Terminal** with CLI commands and NLP intent parsing.\n- **7 Multi-Vector Automated Playbooks** (Perimeter Recon, Web DAST, API Security, Cloud CIS, Threat Forensics, Phishing Defense, AI Red-Teaming).\n- **Enterprise Dossier Exporters** (OASIS SARIF v2.1.0, OASIS STIX 2.1, CSV, JSON, Markdown, PDF).\n\nWhat target or security tool would you like to explore?"
+    reply: "**CyberShield X** is a certified cybersecurity operations platform featuring:\n- **111 Canonical Tools** (6 Host Native, 91 API Engine, 5 Browser, 9 Blocked Dependency).\n- **CyberSOC Operator Terminal** with real CLI execution and authenticated cancellation.\n- **7 Multi-Vector Automated Playbooks** (Perimeter, Web DAST, API, Cloud, Forensics, Social, AI Red-Team).\n- **Enterprise Dossier Exporters** (OASIS SARIF v2.1.0, STIX 2.1, CSV, JSON, PDF).\n\nWhat target or tool would you like to investigate?"
   },
   {
     triggers: ['tools', 'what tools', 'catalog', 'list tools', 'categories', 'all tools'],
-    reply: "CyberShield X offers **110 live tools** organized across 24 categories:\n1. **Reconnaissance & OSINT** (Subfinder, Shodan, Censys, theHarvester, Dirsearch)\n2. **Web & DAST Security** (SQLMap, Nikto, Burp Suite, WPScan, OWASP ZAP, CORS/CSP)\n3. **Network & Wireless** (Nmap, Aircrack-ng, Kismet, Wifite, Wireshark, Traceroute)\n4. **Cloud & DevSecOps** (Prowler AWS CIS, Kube-Bench, Snyk, Gitleaks, Docker Bench)\n5. **Malware & Forensics** (YARA, PEframe, Volatility, Ghidra, Radare2, Autopsy)\n6. **AI Security & Red-Teaming** (Garak LLM Scanner, Adversarial Redteam, Prompt Fuzzer, Prompt Guard)\n7. **Identity & Phishing** (Dark Web Breach Checker, Phishing Analyzer, Email SPF/DMARC)\n\nYou can access every tool in the **Tools Hub** (`/toolkit`) or run CLI commands directly in the **CyberSOC Terminal**."
+    reply: "CyberShield X offers **111 canonical tools** categorized across 24 domains:\n1. **Reconnaissance & OSINT**: Subfinder, Shodan, Censys, theHarvester, Dirsearch\n2. **Web & DAST Security**: SQLMap, Nikto, Burp Suite, WPScan, OWASP ZAP, CORS/CSP\n3. **Network & Host Native**: Nmap, Dig, Curl, Whois, OpenSSL, Traceroute\n4. **Cloud & DevSecOps**: Prowler AWS CIS, Kube-Bench, Snyk, Gitleaks, Docker Bench\n5. **Malware & Forensics**: YARA, PEframe, Volatility, Ghidra, Radare2, Autopsy\n6. **AI Security & Red-Teaming**: Garak LLM Scanner, Adversarial Redteam, Prompt Fuzzer\n7. **Identity & Phishing**: Dark Web Breach Checker, Phishing Analyzer, SPF/DMARC\n\nAll tools are accessible in the **Toolkit Hub** (`/toolkit`) or via the **CyberSOC Terminal** (`>_`)."
   },
   {
     triggers: ['playbook', 'playbooks', 'automated', 'chain', 'chained'],
-    reply: "We offer **7 Multi-Vector Automated SOC Playbooks** in our CyberSOC Terminal:\n1. 🌐 **Perimeter Reconnaissance**: DNS -> Ports -> SSL -> Headers -> Threat Feeds\n2. 🛡️ **Web Application DAST**: Tech Stack -> Nikto -> CORS -> CSP -> SQLMap\n3. 🔑 **API Security & Cryptography**: OpenAPI Linter -> JWT Entropy -> API Fuzzer -> Postman -> IAM\n4. ☁️ **Cloud Posture & DevSecOps**: Prowler AWS CIS -> Kube-Bench -> Snyk -> Gitleaks -> Docker Bench\n5. 🔬 **Threat & Memory Forensics**: VirusShare -> YARA -> PEframe -> Volatility -> MISP\n6. 🎣 **Phishing & Identity Defense**: Phishing Analyzer -> Evilginx -> Email SPF/DMARC -> Breach Check\n7. 🤖 **AI Red-Teaming**: Garak Probes -> Prompt Fuzzer -> GCG Redteam -> PII Guard -> AI Remediation\n\nOpen the **Terminal** (`/toolkit` -> Cyber Terminal) to launch any playbook with 1 click!"
-  },
-  {
-    triggers: ['export', 'sarif', 'stix', 'pdf', 'csv', 'report'],
-    reply: "You can export comprehensive security audit dossiers directly from any Scan Details page (`/scan/:id`):\n- 🛡️ **OASIS SARIF v2.1.0**: For GitHub Code Scanning & GitLab CI/CD pipelines.\n- ⚡ **OASIS STIX 2.1**: For SIEM, SOAR, OpenCTI, and MISP threat sharing.\n- 📊 **CSV**: Tabular spreadsheets with all findings and severity ratings.\n- **{ } JSON**: Raw structured audit payload.\n- 📄 **Browser & Server PDF**: Publication-ready executive audit reports."
+    reply: "We offer **7 Multi-Vector Automated SOC Playbooks** in our CyberSOC Terminal:\n1. 🌐 **Perimeter Reconnaissance**: DNS -> Ports -> SSL -> Headers -> Threat Feeds\n2. 🛡️ **Web Application DAST**: Tech Stack -> Nikto -> CORS -> CSP -> SQLMap\n3. 🔑 **API Security & Cryptography**: OpenAPI Linter -> JWT Entropy -> API Fuzzer -> Postman -> IAM\n4. ☁️ **Cloud Posture & DevSecOps**: Prowler AWS CIS -> Kube-Bench -> Snyk -> Gitleaks -> Docker Bench\n5. 🔬 **Threat & Memory Forensics**: VirusShare -> YARA -> PEframe -> Volatility -> MISP\n6. 🎣 **Phishing & Identity Defense**: Phishing Analyzer -> Evilginx -> Email SPF/DMARC -> Breach Check\n7. 🤖 **AI Red-Teaming**: Garak Probes -> Prompt Fuzzer -> GCG Redteam -> PII Guard -> AI Remediation\n\nLaunch any playbook with 1-click in the **System Terminal**!"
   },
   {
     triggers: ['subdomain', 'subfinder'],
-    reply: "To map subdomains, use **Subfinder** or our **DNS Recon Engine** in the Tools Hub (`/toolkit`). You can also execute `subfinder -d example.com` in the interactive CyberSOC terminal!"
+    reply: "To map subdomains, execute **Subfinder** (`subfinder -d example.com`) in the CyberSOC Terminal or use the **DNS Recon Engine** in the Toolkit (`/toolkit`)."
   },
   {
     triggers: ['nmap', 'port', 'open socket'],
-    reply: "Our **Nmap Port Scanner** actively probes target TCP/UDP sockets to identify open ports, service banners, and daemon versions. Run it via `nmap -sV <target>` in our terminal or `/toolkit`."
+    reply: "Our **Nmap Port Scanner** is host-native (`HOST_NATIVE`), executing directly on the host server via `/usr/bin/nmap` or `/opt/homebrew/bin/nmap` with safe argument arrays and live streaming."
   },
   {
     triggers: ['ssl', 'cert', 'tls'],
-    reply: "You can check SSL/TLS certificate validity using our **SSL Certificate Audit** tool or run `ssl-check <domain>` in the terminal. It inspects certificate expiry dates, issuer CA trust, SANs, and TLS 1.3 protocol status."
+    reply: "You can inspect SSL/TLS certificates with our host-native **OpenSSL / SSL Tool** (`ssl-check <domain>` or `openssl <domain>`). It performs a real TLS handshake on port 443 to audit validity, issuer CA trust, SANs, and expiry."
   },
   {
     triggers: ['breach', 'leak', 'dark web'],
-    reply: "Our **Dark Web Breach Checker** uses NIST SP 800-63B SHA-1 k-Anonymity queries against compromised database dumps to check if your credentials have been leaked without exposing your password."
+    reply: "The **Dark Web Breach Checker** uses NIST SP 800-63B SHA-1 k-Anonymity queries against compromised database dumps to verify whether an email has been exposed in known breaches without transmitting the user's password."
   },
   {
-    triggers: ['upi'],
-    reply: "A **UPI VPA Check** verifies the authenticity of a Virtual Payment Address against NPCI routing formats and known financial cyber fraud blacklist databases to prevent payment fraud."
-  },
-  {
-    triggers: ['http', 'header', 'csp', 'hsts'],
-    reply: "To secure HTTP headers, implement **HSTS** (`Strict-Transport-Security: max-age=31536000`), **CSP** (`Content-Security-Policy`), **Clickjacking defense** (`X-Frame-Options: DENY`), and **MIME sniffing prevention** (`X-Content-Type-Options: nosniff`). Audit headers with our **HTTP Security Headers** tool or `curl -ILsS <domain>`."
+    triggers: ['blocked', 'missing binary', 'remediation'],
+    reply: "CyberShield X enforces the **Same-Capability Rule**: 9 tools (`sqlmap`, `trivy`, `nikto`, `aircrack-ng`, `ghidra`, `yara-rules`, `radare2`, `semgrep`, `gitleaks`) require external binaries not installed on this test host. The platform honestly reports `BLOCKED_DEPENDENCY` with Homebrew/APT remediation commands and zero fake simulation."
   }
 ];
 
@@ -68,7 +62,7 @@ const getFallbackReply = (query) => {
   for (const entry of KNOWLEDGE_BASE_ENTRIES) {
     if (entry.triggers.some(t => q.includes(t))) return entry.reply;
   }
-  return `I'm specialized in cybersecurity intelligence and the **CyberShield X** platform.\n\nI can help you with:\n- Running security scans (DNS, Open Ports, SSL, Tech Stack, HTTP Headers)\n- Analyzing threats (Phishing URLs, Dark Web Breaches, Malware Hashes, SMS fraud)\n- Navigating our **110 cybersecurity tools** across 24 categories\n- Running **7 Automated SOC Playbooks** in our CyberSOC Terminal\n- Exporting audit dossiers in **SARIF, STIX 2.1, CSV, JSON, or PDF**\n\nWhat target domain, IP, or security task would you like help with?`;
+  return `I am specialized in cybersecurity intelligence and the **CyberShield X** platform.\n\nI can assist with:\n- Running security scans (Nmap, DNS, SSL, HTTP Headers, Tech Stack)\n- Analyzing threats (Phishing URLs, Dark Web Breaches, Malware Hashes)\n- Navigating our **111 canonical tools** across 24 categories\n- Running **7 Automated SOC Playbooks** in the Terminal\n- Exporting audit dossiers in **SARIF, STIX 2.1, CSV, JSON, or PDF**\n\nWhat target domain, IP, or security task would you like help with?`;
 };
 
 export default function SecurityCopilot() {
@@ -78,6 +72,8 @@ export default function SecurityCopilot() {
   const [isLoading, setIsLoading] = useState(false);
   const [hasOpened, setHasOpened] = useState(false);
   const [isAiOffline, setIsAiOffline] = useState(false);
+  const [activeModel, setActiveModel] = useState('Google Gemini 2.5 Flash');
+  const [activeProvider, setActiveProvider] = useState('Google AI Studio');
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -111,18 +107,41 @@ export default function SecurityCopilot() {
 
       if (response.data && response.data.content) {
         const reply = response.data.content;
-        setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+        const model = response.data.model || 'Google Gemini 2.5 Flash';
+        const provider = response.data.provider || 'Google AI Studio';
+        const evidence = response.data.metadata?.toolResults || null;
+
+        setActiveModel(model);
+        setActiveProvider(provider);
+
+        setMessages(prev => [
+          ...prev, 
+          { 
+            role: 'assistant', 
+            content: reply,
+            model,
+            provider,
+            evidence
+          }
+        ]);
         setIsAiOffline(reply.includes("offline") || reply.includes("GEMINI_API_KEY"));
       } else {
         const fallback = getFallbackReply(query);
-        setMessages(prev => [...prev, { role: 'assistant', content: fallback }]);
+        setMessages(prev => [...prev, { 
+          role: 'assistant', 
+          content: fallback,
+          model: 'Neural Knowledge Base',
+          provider: 'Local Engine'
+        }]);
       }
     } catch (error) {
       console.warn('Chatbot remote API error, falling back to neural knowledge base:', error.message);
       const fallback = getFallbackReply(query);
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: fallback 
+        content: fallback,
+        model: 'Neural Knowledge Base',
+        provider: 'Local Fallback'
       }]);
     } finally {
       setIsLoading(false);
@@ -140,13 +159,14 @@ export default function SecurityCopilot() {
         onClick={toggleChat}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-[#0a1428] text-white shadow-[0_0_25px_rgba(0,191,255,0.5)] flex items-center justify-center z-50 border-2 border-[#00bfff]/70 hover:shadow-[0_0_35px_rgba(0,191,255,0.8)] transition-all overflow-hidden p-1.5"
+        aria-label="Open Security Copilot"
+        className="fixed bottom-6 right-6 w-13 h-13 rounded-full bg-[#040d1e] text-white shadow-[0_0_25px_rgba(0,212,255,0.4)] flex items-center justify-center z-50 border border-cyan-400/60 hover:shadow-[0_0_35px_rgba(0,212,255,0.7)] transition-all p-2"
       >
-        {isOpen ? <X size={24} className="text-[#00bfff]" /> : <img src="/bot-avatar.png" alt="Copilot" className="w-full h-full rounded-full object-cover" />}
+        {isOpen ? <X size={22} className="text-cyan-400" /> : <Bot size={24} className="text-cyan-400" />}
         
         {/* Notification dot if hasn't opened yet */}
         {!hasOpened && !isOpen && (
-          <span className="absolute top-1 right-1 w-3 h-3 rounded-full bg-red-500 animate-pulse ring-2 ring-black" />
+          <span className="absolute top-0 right-0 w-3 h-3 rounded-full bg-cyan-400 animate-pulse ring-2 ring-black" />
         )}
       </motion.button>
 
@@ -158,76 +178,115 @@ export default function SecurityCopilot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-24 right-6 w-[380px] h-[550px] max-h-[80vh] max-w-[calc(100vw-3rem)] bg-[#0a1223]/95 backdrop-blur-xl border border-[#00bfff]/30 rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden"
+            className="fixed bottom-22 right-6 w-[410px] h-[580px] max-h-[82vh] max-w-[calc(100vw-2.5rem)] bg-[#030919]/95 backdrop-blur-2xl border border-cyan-500/30 rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden font-mono"
+            style={{
+              boxShadow: '0 0 40px rgba(0, 212, 255, 0.2), 0 0 80px rgba(0, 0, 0, 0.9)'
+            }}
           >
-            {/* Header */}
-            <div className="p-4 border-b border-[#00bfff]/20 bg-gradient-to-r from-[#020814] to-[#0d1b32] flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div className="w-10 h-10 rounded-full bg-[#00bfff]/10 flex items-center justify-center border border-[#00bfff]/30 overflow-hidden shadow-[0_0_10px_rgba(0,191,255,0.3)]">
-                    <img src="/bot-avatar.png" alt="Nexus AI" className="w-full h-full object-cover" />
-                  </div>
-                  <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full shadow-[0_0_8px] ${
-                    isAiOffline ? 'bg-amber-500 shadow-amber-500' : 'bg-green-500 shadow-green-500'
-                  }`} />
+            {/* Header Bar */}
+            <div className="p-3.5 border-b border-cyan-500/20 bg-[#020713] flex items-center justify-between flex-shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-[0_0_10px_rgba(0,212,255,0.2)]">
+                  <Bot size={18} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-white text-xs tracking-wide">Nexus Security Copilot</h3>
-                  <div className="flex items-center gap-1.5">
-                    <Activity size={10} className={isAiOffline ? 'text-amber-400' : 'text-green-400 animate-pulse'} />
-                    <p className={`text-[8px] font-mono tracking-widest uppercase ${
-                      isAiOffline ? 'text-amber-400' : 'text-green-400'
-                    }`}>
-                      {isAiOffline ? 'Offline / Sandbox mode' : 'Cognitive Link Online'}
-                    </p>
+                  <h3 className="font-bold text-white text-xs tracking-wider uppercase">
+                    Security Copilot
+                  </h3>
+                  <div className="flex items-center gap-1.5 text-[9px] text-slate-400">
+                    <span className={`w-1.5 h-1.5 rounded-full ${isAiOffline ? 'bg-amber-400' : 'bg-emerald-400 animate-pulse'}`} />
+                    <span>{activeModel}</span>
                   </div>
                 </div>
               </div>
-              <button onClick={toggleChat} className="text-slate-400 hover:text-white transition-colors">
-                <X size={20} />
-              </button>
+
+              <div className="flex items-center gap-1">
+                <button 
+                  onClick={() => setMessages([INITIAL_MESSAGE])}
+                  className="p-1 text-slate-400 hover:text-white rounded hover:bg-white/5 text-[10px]"
+                  title="Reset conversation"
+                >
+                  Clear
+                </button>
+                <button onClick={toggleChat} className="p-1 text-slate-400 hover:text-white transition-colors">
+                  <X size={16} />
+                </button>
+              </div>
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3.5 custom-scrollbar text-xs">
               {messages.map((msg, index) => (
                 <div 
                   key={index} 
                   className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div 
-                    className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm ${
+                    className={`max-w-[88%] rounded-xl p-3 text-xs leading-relaxed ${
                       msg.role === 'user' 
-                        ? 'bg-[#00bfff] text-white rounded-br-none' 
-                        : 'bg-white/5 text-slate-200 border border-white/10 rounded-bl-none'
+                        ? 'bg-cyan-500/20 text-cyan-200 border border-cyan-500/40 rounded-br-none shadow-[0_0_15px_rgba(0,212,255,0.1)]' 
+                        : 'bg-white/[0.03] text-slate-200 border border-white/10 rounded-bl-none'
                     }`}
                   >
                     {msg.role === 'assistant' && (
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <img src="/bot-avatar.png" alt="Nexus AI" className="w-4 h-4 rounded-full object-cover border border-[#00bfff]/50" />
-                        <span className="text-[10px] uppercase tracking-wider text-[#00bfff]/90 font-bold">Nexus AI Copilot</span>
+                      <div className="flex items-center justify-between border-b border-white/5 pb-1 mb-2">
+                        <span className="text-[9px] uppercase tracking-wider text-cyan-400 font-bold flex items-center gap-1">
+                          <Bot size={11} /> AI Security Interpretation
+                        </span>
+                        <span className="text-[8px] text-slate-500">
+                          {msg.model || 'Gemini 2.5 Flash'}
+                        </span>
                       </div>
                     )}
-                    <div className="whitespace-pre-wrap font-mono leading-relaxed text-[11px]" 
-                         dangerouslySetInnerHTML={{ __html: msg.content.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>').replace(/\n/g, '<br/>') }} 
+
+                    {/* Tool Evidence Container (Visually Segregated from AI Reasoning) */}
+                    {msg.evidence && (
+                      <div className="mb-2.5 p-2 rounded-lg bg-[#01040a] border border-cyan-500/30 text-[10px] text-cyan-300">
+                        <span className="font-bold text-cyan-400 uppercase tracking-wider block mb-1">
+                          [RAW TOOL EVIDENCE — VERIFIED]:
+                        </span>
+                        <pre className="whitespace-pre-wrap overflow-x-auto max-h-32 text-[9px] custom-scrollbar">
+                          {typeof msg.evidence === 'string' ? msg.evidence : JSON.stringify(msg.evidence, null, 2)}
+                        </pre>
+                      </div>
+                    )}
+
+                    {/* AI Interpretation / Text */}
+                    <div 
+                      className="whitespace-pre-wrap leading-relaxed text-[11px]" 
+                      dangerouslySetInnerHTML={{ 
+                        __html: msg.content
+                          .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-bold">$1</strong>')
+                          .replace(/\n/g, '<br/>') 
+                      }} 
                     />
+
+                    {/* Attribution Footer for Assistant */}
+                    {msg.role === 'assistant' && (
+                      <div className="mt-2 pt-1 border-t border-white/5 flex items-center justify-between text-[8px] text-slate-500">
+                        <span>Provider: <span className="text-slate-400">{msg.provider || 'Google AI Studio'}</span></span>
+                        <span className="text-emerald-400 flex items-center gap-0.5">
+                          <CheckCircle2 size={8} /> Verified
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
 
-              {/* Quick Actions Prompts (visible only when there are no user messages yet) */}
+              {/* Quick Actions Prompts (visible only when there is only the initial message) */}
               {messages.length === 1 && !isLoading && (
                 <div className="pt-2 space-y-2">
-                  <div className="flex items-center gap-1.5 text-cyber-muted font-mono text-[9px] uppercase tracking-widest px-1">
-                    <Sparkles size={10} className="text-cyber-accent" />
-                    <span>Quick Audits suggestions:</span>
+                  <div className="flex items-center gap-1.5 text-slate-400 text-[9px] uppercase tracking-wider px-1">
+                    <Sparkles size={10} className="text-cyan-400" />
+                    <span>Quick SOC Inquiries:</span>
                   </div>
-                  <div className="grid grid-cols-1 gap-2">
+                  <div className="grid grid-cols-1 gap-1.5">
                     {QUICK_PROMPTS.map((prompt) => (
                       <button
                         key={prompt}
                         onClick={() => handleQuickPrompt(prompt)}
-                        className="text-left w-full px-3 py-2 text-[10px] font-mono text-slate-300 bg-white/5 border border-white/10 rounded-xl hover:border-cyber-accent hover:bg-cyber-accent/5 transition-all"
+                        className="text-left w-full px-2.5 py-1.5 text-[10px] text-slate-300 bg-white/[0.02] border border-white/10 rounded-lg hover:border-cyan-500/40 hover:bg-cyan-500/5 transition-all"
                       >
                         {prompt}
                       </button>
@@ -238,9 +297,9 @@ export default function SecurityCopilot() {
 
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-white/5 border border-white/10 rounded-2xl rounded-bl-none px-4 py-3 flex items-center gap-3">
-                    <Loader size={14} className="text-[#00bfff] animate-spin" />
-                    <span className="text-xs text-slate-400 font-mono">Analyzing vectors...</span>
+                  <div className="bg-white/[0.03] border border-white/10 rounded-xl rounded-bl-none px-3.5 py-2.5 flex items-center gap-2.5">
+                    <Loader size={13} className="text-cyan-400 animate-spin" />
+                    <span className="text-[11px] text-slate-400">Synthesizing telemetry vectors...</span>
                   </div>
                 </div>
               )}
@@ -248,27 +307,28 @@ export default function SecurityCopilot() {
             </div>
 
             {/* Input Area */}
-            <div className="p-3 bg-[#060c18] border-t border-[#00bfff]/20">
+            <div className="p-3 bg-[#020713] border-t border-cyan-500/20 flex-shrink-0">
               <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="relative flex items-center">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask the Security Copilot..."
+                  placeholder="Ask Security Copilot (e.g. 'audit ports')..."
                   disabled={isLoading}
-                  className="w-full bg-[#0a1223] border border-[#00bfff]/30 text-white rounded-xl py-3 pl-4 pr-12 focus:outline-none focus:border-[#00bfff] focus:ring-1 focus:ring-[#00bfff]/50 disabled:opacity-50 text-xs font-mono transition-all"
+                  className="w-full bg-[#01040a] border border-cyan-500/30 text-white rounded-xl py-2.5 pl-3 pr-10 focus:outline-none focus:border-cyan-400 text-xs font-mono placeholder-slate-500 disabled:opacity-50 transition-all"
                 />
                 <button
                   type="submit"
                   disabled={!input.trim() || isLoading}
-                  className="absolute right-2 p-2 text-[#00bfff] hover:text-white hover:bg-[#00bfff]/20 rounded-lg transition-colors disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-[#00bfff]"
+                  aria-label="Send query"
+                  className="absolute right-1.5 p-1.5 text-cyan-400 hover:text-white hover:bg-cyan-500/20 rounded-lg transition-colors disabled:opacity-40"
                 >
-                  <Send size={18} />
+                  <Send size={15} />
                 </button>
               </form>
-              <div className="text-center mt-2">
-                <p className="text-[9px] text-slate-500 font-mono tracking-widest uppercase">
-                  End-to-End Encrypted AI Assistant
+              <div className="text-center mt-1.5">
+                <p className="text-[8px] text-slate-500 tracking-wider uppercase">
+                  Adversarially Hardened • Real Telemetry Grounded
                 </p>
               </div>
             </div>

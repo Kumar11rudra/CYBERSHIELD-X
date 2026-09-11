@@ -1,0 +1,46 @@
+{
+  "phase": "PHASE_70_SOC_INTELLIGENCE",
+  "platformVersion": "v61.4.0",
+  "certifiedAt": "2026-09-09T18:31:13.389Z",
+  "overallStatus": "OPERATIONAL",
+  "telemetry": {
+    "activeRules": 2,
+    "draftRules": 12,
+    "totalIncidents": 3,
+    "pendingApprovals": 12,
+    "riskModelWeights": {
+      "severity": 0.35,
+      "assetCriticality": 0.2,
+      "exploitability": 0.15,
+      "threatIntelConfidence": 0.15,
+      "correlatedEvents": 0.15
+    }
+  },
+  "supportedOperators": [
+    "equals",
+    "not_equals",
+    "contains",
+    "regex",
+    "greater_than",
+    "less_than",
+    "in"
+  ],
+  "supportedActionLevels": [
+    "LOW_RISK",
+    "USER_APPROVED",
+    "PRIVILEGED"
+  ],
+  "iocNormalizationTypes": [
+    "ipv4",
+    "ipv6",
+    "domain",
+    "hostname",
+    "url",
+    "hash_sha256",
+    "hash_sha1",
+    "hash_md5",
+    "email",
+    "cve",
+    "cert_fingerprint"
+  ]
+}

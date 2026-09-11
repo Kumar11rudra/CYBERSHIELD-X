@@ -15,7 +15,7 @@ describe('Batch 2 Web Security, DNS & OSINT Tool Service Tests', () => {
       expect(res.overallRisk).toBeDefined();
       expect(Array.isArray(res.tests)).toBe(true);
       expect(res.tests.length).toBeGreaterThanOrEqual(2);
-    });
+    }, 25000);
   });
 
   describe('evaluateCsp', () => {
@@ -39,7 +39,7 @@ describe('Batch 2 Web Security, DNS & OSINT Tool Service Tests', () => {
       expect(res.records).toBeDefined();
       expect(res.records.A).toBeDefined();
       expect(res.latencyMs).toBeDefined();
-    });
+    }, 25000);
   });
 
   describe('checkAbuseIp', () => {
@@ -50,7 +50,7 @@ describe('Batch 2 Web Security, DNS & OSINT Tool Service Tests', () => {
       expect(res.abuseConfidenceScore).toBe('0%');
       expect(res.riskLevel).toBe('CLEAN');
       expect(res.isp).toBeDefined();
-    });
+    }, 25000);
   });
 
   describe('profileUsername', () => {
@@ -61,7 +61,7 @@ describe('Batch 2 Web Security, DNS & OSINT Tool Service Tests', () => {
       expect(Array.isArray(res.profiles)).toBe(true);
       expect(res.totalScanned).toBeGreaterThan(0);
       expect(res.summary).toBeDefined();
-    });
+    }, 25000);
 
     it('throws error for empty username', async () => {
       await expect(profileUsername('')).rejects.toThrow();

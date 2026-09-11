@@ -2,6 +2,585 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v62.2.0] - 2026-09-11
+### Phase 79: Enterprise SOC Intelligence, Risk Synthesis & Analyst Decision Support
+- **Multi-Source Risk Synthesis Engine**:
+  - Implemented `RiskSynthesisService.js`, `RiskAssessment.js`, and `RiskSnapshot.js` deterministically calculating composite risk scores across 12 platform domains (Incidents, Alerts, Findings, Detections, IOCs, Assets, Threat Hunts, Governance, Compliance, Reliability, Automation, Audit).
+  - Enforced exact factor contributions, weights, source record citations, and negative/positive evidence lists.
+  - Enforced zero synthetic risk: empty telemetry returns `UNKNOWN` risk band and `INSUFFICIENT_EVIDENCE` determination.
+  - Added immutable point-in-time `RiskSnapshot.js` with SHA-256 content hashes and snapshot comparison delta detection.
+- **Analyst Prioritization Queue Engine**:
+  - Implemented `AnalystPriorityService.js` ranking active platform entities (Incidents, Alerts, Findings, Cases, Threat Hunts, Detection Gaps, Assets) using a deterministic multi-factor scoring algorithm.
+  - Provided machine-readable factor explanations and rank breakdowns.
+- **Safe Next-Best-Action Recommendations Engine**:
+  - Implemented `InvestigationRecommendationService.js` and `AnalystRecommendation.js` generating context-aware investigation recommendations across 9 operational vectors.
+  - Integrated Phase 77 automation authorization classification (`EXECUTABLE`, `APPROVAL_REQUIRED`, `MANUAL_ONLY`, `NOT_SUPPORTED`) and preserved human analyst feedback (`ACCEPTED`, `REJECTED`, `EXECUTED`).
+- **Campaign Activity Clustering & Attribution Guard**:
+  - Implemented `CampaignClusteringService.js` discovering connected components directly from the Phase 78 Security Data Fabric graph.
+  - Enforced Strict Attribution Guard: attacker attribution is strictly `UNKNOWN` with an explicit disclaimer, preventing fabricated actor attributions.
+- **Investigation Hypotheses Lifecycle Engine**:
+  - Implemented `InvestigationHypothesis.js` supporting an analyst-driven lifecycle (`OPEN`, `SUPPORTED`, `REFUTED`, `CLOSED`).
+  - Preserved both supporting and contradicting forensic evidence to eliminate confirmation bias.
+- **Machine-Readable Decision Explanation Engine**:
+  - Implemented `DecisionExplanationService.js` and `DecisionAssessment.js` delivering transparent explanations detailing conclusions, observed facts, derived factors, unresolved uncertainty, and telemetry limitations.
+- **Bounded AI Decision Copilot**:
+  - Added 5 advisory AI endpoints (`/summarize`, `/explain-risk`, `/prioritize`, `/suggest-investigation`, `/summarize-cluster`) wrapped in `<<<UNTRUSTED_INTELLIGENCE_DATA>>>` delimiters and barred from autonomous state mutations.
+- **Enterprise Frontend Workstation**:
+  - Implemented `client/src/pages/DecisionIntelligencePage.jsx` (`/intelligence`) featuring 11 operational views: Executive Posture, Subject Risk Evaluator, Prioritized Queue, Next-Best Actions, Activity Clusters, Hypotheses Tracker, Decision Explanations, Snapshot History, Audit Timeline, Bounded AI Copilot Drawer, and Navigation.
+- **Acceptance Battery & Certification**:
+  - `server/scripts/run_phase79_acceptance.js` passed **55/55 checks (100.0%)**, certifying platform as `SOC_DECISION_INTELLIGENCE_CERTIFIED`.
+  - Canonical 111 tools certified (111/111), Jest tests (10/10 PASS), Auth Reliability (34/34 PASS), Phase 78 acceptance (50/50 PASS), and clean client production build.
+- **Post-Phase 79 Master Continuity & Architecture Gap Audit**:
+  - Implemented `run_update_function_audit.js` certifying 24/24 update-function integrity checks across positive and negative mutation chains (Phases 65–79).
+  - Formulated `CYBERSHIELD_X_MASTER_ROADMAP.md` establishing the permanent continuity single source of truth (SSOT).
+  - Executed consolidated Phase 80–90 gap audit: eliminated 4 duplicate/unjustified candidates and streamlined future progression into 3 required phases.
+  - Defined 18 permanent platform exit criteria to govern final architectural completion.
+
+## [v62.1.0] - 2026-09-11
+### Phase 78: Enterprise Security Data Fabric, Event Correlation & Unified Investigation Graph
+- **Canonical Graph Core**:
+  - Implemented `SecurityGraphNode.js`, `SecurityGraphEdge.js`, and `SecurityGraphService.js` materializing graph nodes and evidence-backed edges.
+  - Enforced explicit provenance tracking (`DIRECT_RECORD_REFERENCE`, `PERSISTED_FOREIGN_KEY`, `AUDIT_REFERENCE`, `EVIDENCE_REFERENCE`, `DETERMINISTIC_CORRELATION`, `TEMPORAL_ASSOCIATION`). Enforced zero synthetic relationships.
+- **Entity Normalization Engine**:
+  - Implemented `EntityNormalizationService.js` normalizing heterogeneous platform records across 14 domains into standard Security Graph representations with identity deduplication.
+- **Deterministic Correlation Engine**:
+  - Implemented `CorrelationService.js`, `CorrelationRule.js`, and `CorrelationResult.js` executing rules-based correlation across Identity, Asset, IOC, Detection, Threat Hunt, Automation, Governance, and Reliability domains without synthetic black-box scores.
+- **Bounded Graph Query Service**:
+  - Implemented `InvestigationQueryService.js` providing bounded graph operations (neighborhood expansion, shortest path discovery, entity-centric subgraphs, unified timeline fusion, ATT&CK mapping) with strict server-side bounds (max depth: 3, max nodes: 200, max edges: 500, timeout: 5000ms).
+- **Immutable Investigation Graph Snapshots**:
+  - Implemented `InvestigationGraphSnapshot.js` supporting append-only investigation graph snapshots with SHA-256 integrity checksums, evidence linkage, and delta tracking across snapshots.
+- **Bounded AI Investigation Copilot**:
+  - Added 4 advisory AI endpoints (`/summarize`, `/explain-relationship`, `/suggest-pivots`, `/summarize-timeline`) enclosed in `<<<UNTRUSTED_INVESTIGATION_DATA>>>` delimiters and barred from autonomous execution.
+- **Frontend Workstation**:
+  - Implemented `client/src/pages/InvestigationGraphPage.jsx` (`/investigation`) with 10 operational views.
+- **Acceptance Battery & Certification**:
+  - `server/scripts/run_phase78_acceptance.js` passed **50/50 checks (100.0%)**, certifying platform as `SECURITY_DATA_FABRIC_CERTIFIED`.
+
+## [v62.0.0] - 2026-09-10
+### Phase 77: Enterprise Security Operations Automation, Orchestration & Continuous Control Validation
+- **Continuous Control Validation Engine**:
+  - Implemented `ControlValidationService.js` and `ControlValidation.js` evaluating security controls across Governance Policies, Detection Engineering, Compliance Evidence, Reliability Signals, and Integration Metadata.
+  - Enforced zero synthetic state (`NOT_CONFIGURED`, `PASS`, `FAIL`).
+- **Security Drift Detection Engine**:
+  - Implemented `DriftDetectionService.js` and `SecurityDrift.js` detecting configuration drift between active runtime objects and approved baseline revisions.
+- **Approval-Aware Remediation Engine**:
+  - Implemented `RemediationService.js` classifying remediations into `AUTO_ALLOWED`, `APPROVAL_REQUIRED`, `MANUAL_ONLY`, `BLOCKED`, `NOT_SUPPORTED`.
+  - Enforced server-side post-action verification before updating drift status to `REMEDIATED`.
+- **Immutable Playbook Lifecycle & Revision Engine**:
+  - Implemented `PlaybookService.js`, `AutomationPlaybook.js`, and `AutomationPlaybookRevision.js`.
+  - Enforced state machine (`DRAFT → REVIEW → APPROVED → ACTIVE → DISABLED → RETIRED`), append-only SHA-256 revision snapshots, and stale-approval hash validation (`approvedRevisionHash`).
+- **Idempotent Bounded Execution Engine**:
+  - Implemented `AutomationExecutionEngine.js` and `AutomationExecution.js` enforcing mandatory idempotency keys, step timeout/concurrency bounds, evidence references, and deterministic rollback (`RemediationService.executeRollback`).
+- **Automation Recovery & Failure Handling**:
+  - Implemented `AutomationRecoveryService.js` scanning timed-out executions, managing cancellations, and computing automation success telemetry.
+- **Bounded AI Automation Copilot**:
+  - Added 4 advisory AI endpoints (`/summarize`, `/explain-drift`, `/recommend-remediation`, `/draft-playbook`) enclosed in `<<<UNTRUSTED_AUTOMATION_DATA>>>` delimiters and barred from autonomous execution.
+- **Frontend Workstation**:
+  - Implemented `client/src/pages/AutomationCenterPage.jsx` (`/automation`) with 9 operational views.
+- **Acceptance Battery & Certification**:
+  - `server/scripts/run_phase77_acceptance.js` passed **50/50 checks (100.0%)**, certifying platform as `SECURITY_AUTOMATION_CERTIFIED`.
+
+## [v61.9.0] - 2026-09-10
+### Phase 76: Enterprise Observability, Reliability, Capacity & Disaster Recovery
+- **Subsystem & Dependency Health Engine**:
+  - Implemented `ServiceHealthSnapshot.js` and `ServiceHealthService.js` probing live platform subsystems: API Server, MongoDB connection pool and latencies, Socket.IO event system, Terminal async jobs, scheduled reports, threat-hunt executions, and canonical 111-tool runtime state.
+  - Enforced Permanent Constitution rule: Zero synthetic uptime. Unmeasured or telemetry-lacking services strictly report `UNKNOWN`, `NOT_CONFIGURED`, or `BLOCKED_DEPENDENCY`.
+- **API Telemetry & Sensitive Credential Redaction**:
+  - Implemented `APIObservabilityService.js` Express middleware recording real request counts, status-code distributions, and rolling ring-buffer percentiles (p50, p95, p99).
+  - Enforced strict credential redaction scrubbing `Authorization`, `Cookie`, `Set-Cookie`, `x-api-key`, `password`, `token`, and secret fields before telemetry persistence or event broadcast.
+  - Point-in-time `PlatformMetricSnapshot.js` persistence.
+- **Database Health & Bounded Diagnostics**:
+  - Implemented real bounded read-only Mongoose ping probes with a hard 2000ms timeout ceiling, recording ping latencies and connection pool readyState.
+- **Job & Queue Reliability**:
+  - Tracked real asynchronous execution states, active terminal jobs (`TerminalJobService`), and background queue backlogs.
+- **Canonical 111-Tool Runtime Census Preservation**:
+  - Integrated runtime observations from the certified capability engine while preserving the authoritative census: 102 certified working tools and 9 strictly blocked dependency tools (`sqlmap`, `trivy`, `nikto`, `aircrack-ng`, `ghidra`, `yara-rules`, `radare2`, `semgrep`, `gitleaks`).
+- **SLO / SLI Measurement & Error Budget Engine**:
+  - Implemented `SLODefinition.js`, `SLOEvaluation.js`, and `SLOService.js` evaluating sliding window objectives (`API_AVAILABILITY`, `API_LATENCY`, `DB_AVAILABILITY`, `JOB_COMPLETION_RATE`, `REPORT_GENERATION_SUCCESS`, `TOOL_RUNTIME_AVAILABILITY`).
+  - Adhered to Permanent Constitution: Returns `NOT_MEASURED` or `INSUFFICIENT_DATA` when sample count is below threshold, never fabricating compliance percentages.
+- **Capacity & Saturation Engine**:
+  - Implemented `CapacityService.js` inspecting Node.js process memory (`heapUsed`, `heapTotal`, `rss`), event loop lag, and host CPU load averages.
+  - Classified system state into `NORMAL`, `WARNING`, `SATURATED`, or `UNKNOWN`.
+- **Reliability & SOC Incident Correlation**:
+  - Implemented `ReliabilityCorrelationService.js` correlating service degradations and error spikes with concurrent SOC incidents within 15-minute windows (`CORRELATED`, `TEMPORALLY_ASSOCIATED`, `NO_CORRELATION_FOUND`).
+  - Included explicit disclaimers: correlations represent observed temporal proximity and do not establish unverified causal root causes.
+- **Disaster Recovery & Safe Isolated Restore Testing**:
+  - Implemented `BackupVerification.js`, `RecoveryExercise.js`, and `DisasterRecoveryService.js`.
+  - Discovered backup sources and computed cryptographic SHA-256 integrity checksums.
+  - Implemented safe, non-destructive restore testing executing exclusively inside an isolated temporary sandbox namespace (`_restore_sandbox_*`) with zero production database mutation.
+  - Managed Disaster Recovery exercise workflow (`PLANNED → APPROVED → RUNNING → COMPLETED / FAILED → CLOSED`) recording real observed RTO and RPO in seconds.
+- **Graceful Degradation & Reliability Alerting**:
+  - Emitted real Socket.IO events (`health:updated`, `service:degraded`, `service:recovered`, `slo:at-risk`, `slo:breached`, `capacity:warning`, `backup:verification-failed`, `recovery:started`, `recovery:completed`).
+  - Generated deterministic reliability alerts for breached SLOs, capacity warnings, and backup failures while preserving core operational workflows.
+- **Bounded AI Advisory Reliability Copilot**:
+  - Added 4 advisory AI endpoints (`/api/chatbot/reliability/summarize`, `/explain-health`, `/explain-slo`, `/recommend-remediation`) enclosed in strict boundary delimiters (`<<<UNTRUSTED_RELIABILITY_DATA>>>`).
+  - Responses declared strictly advisory; barred from autonomous mutations.
+- **Frontend Workstation**:
+  - Delivered modern Reliability Center (`/reliability`) mounted in React application with 10 operational views.
+- **Acceptance Battery & Platform Regression**:
+  - Acceptance runner `server/scripts/run_phase76_acceptance.js` passed **50/50 checks (100.0%)** with verdict `PLATFORM_RELIABILITY_CERTIFIED`.
+  - Jest test suite `server/tests/phase76_reliability.test.js` passed **17/17 tests (100.0%)**.
+  - Emitted artifacts: `server/scripts/reliability_status_v76.json`, `server/scripts/phase76_reliability.json`, and `docs/PHASE76_RELIABILITY.md`.
+  - Client production build compiled cleanly with 0 errors. All historical regression suites passing (111 canonical tools, Auth Reliability 34/34, Phase 70 22/22, Phase 71 33/33, Phase 72 36/36, Phase 73 36/36, Phase 74 39/39, Phase 75 40/40).
+
+## [v61.8.0] - 2026-09-09
+### Phase 75: Enterprise Multi-Tenant Governance, Policy Administration & Data Lifecycle
+- **Deterministic Policy Lifecycle Engine**:
+  - Implemented `GovernancePolicy.js` and `GovernancePolicyService.js` enforcing lifecycle transitions: `DRAFT → REVIEW → APPROVED → ACTIVE → SUSPENDED → RETIRED`, plus `REJECTED`.
+  - Stored SHA-256 configuration checksums to track all configuration modifications.
+- **Immutable Append-Only Revision History**:
+  - Implemented `GovernancePolicyRevision.js` capturing complete immutable snapshots on policy creation, modification, and rollback, recording change summaries and author provenance.
+- **Critical Stale-Approval Cryptographic Verification**:
+  - Approvals bind to the exact revision hash (`approvedRevisionHash`). Any subsequent configuration edit invalidates the approval and resets status to `DRAFT`.
+  - Attempted activation with a mismatched or missing approval hash is definitively rejected (`STALE_APPROVAL_HASH_MISMATCH`).
+- **Bounded Data Lifecycle Engine**:
+  - Implemented `DataLifecycleService.js` and `RetentionPolicy.js` governing 11 operational entity types (`audit_events`, `reports`, `evidence_packages`, `incidents`, `cases`, `findings`, `alerts`, `threat_hunts`, `threat_hunt_executions`, `detection_rules`, `metric_snapshots`).
+  - Supported retention tiers (`HOT`, `ARCHIVE`, `EXPIRE`, `LEGAL_HOLD`).
+  - Non-mutating dry run calculates real eligibility counts and sample IDs without modifying database records.
+  - Enforced a hard server-side batch ceiling of 500 records per execution.
+- **Legal Hold Mutation Protection**:
+  - Active legal holds (`legalHoldActive`) evaluated before execution and at the mutation boundary, aborting any destructive deletion attempts and preventing race conditions.
+- **Privileged Break-Glass Emergency Access**:
+  - Implemented `BreakGlassService.js` and `BreakGlassSession.js` supporting time-bounded (5–240 min) emergency elevation with mandatory administrative approval.
+  - Enforced narrow, explicit capability scopes (no blanket admin role elevation), auto-expiration, and continuous action audit trail.
+- **Integration Credential Metadata Governance**:
+  - Implemented `IntegrationCredentialMetadata.js` tracking third-party connectors (SIEM, SOAR, EDR, CLOUD, WEBHOOK).
+  - Enforced zero raw secret storage; tracked SHA-256 key fingerprints, expiry timestamps, and rotation schedules.
+- **Truthful Governance Posture & Gap Evaluation**:
+  - Implemented `GovernanceEvaluationService.js` evaluating real platform state across 8 canonical policy domains.
+  - Truthfully assigned statuses (`COMPLIANT`, `PARTIAL`, `NON_COMPLIANT`, `NOT_CONFIGURED`, `INSUFFICIENT_DATA`, `NOT_MEASURED`) without synthetic fabrication.
+- **Bounded AI Advisory Governance Copilot**:
+  - Added 4 bounded AI endpoints (`/api/chatbot/governance/summarize`, `/explain-policy`, `/explain-gap`, `/recommend-remediation`) enclosed in strict boundary delimiters (`<<<UNTRUSTED_GOVERNANCE_DATA>>>`).
+  - Responses declared strictly advisory; barred from autonomous mutations.
+- **Frontend Workstation**:
+  - Delivered modern, responsive Governance Center (`/governance`) with 7 views: Overview & Posture, Policy Administration, Revisions & Approvals, Data Retention & Legal Holds, Break-Glass Access, Integration Governance, and AI Copilot.
+- **Acceptance Battery & Platform Regression**:
+  - Acceptance runner `server/scripts/run_phase75_acceptance.js` passed **40/40 checks (100%)** with verdict `ENTERPRISE_GOVERNANCE_CERTIFIED`.
+  - Unit/integration test suite `server/tests/phase75_governance.test.js` passed **16/16 tests (100%)**.
+  - Emitted artifacts: `server/scripts/governance_status_v75.json`, `server/scripts/phase75_governance.json`, and `docs/PHASE75_GOVERNANCE.md`.
+  - Client production build compiles cleanly with 0 errors. All historical regression suites passing.
+
+## [v61.7.0] - 2026-09-09
+### Phase 74: Enterprise SOC Reporting, Compliance Evidence, Executive Intelligence & Operational Metrics
+- **9 Standardized Versioned SOC Report Types**:
+  - Implemented `SOCReport.js` and `SOCReportService.js` supporting 9 report types: `EXECUTIVE_SUMMARY`, `SOC_OPERATIONS`, `INCIDENT_REPORT`, `CASE_DOSSIER`, `THREAT_HUNT_REPORT`, `DETECTION_COVERAGE`, `THREAT_INTELLIGENCE`, `COMPLIANCE_EVIDENCE`, and `AUDIT_ACTIVITY`.
+  - Non-destructive versioning: generating an updated report increments the version number (`v1` → `v2`) while preserving all prior revisions intact.
+  - Computes and embeds cryptographic SHA-256 content checksums ensuring zero post-generation data alterations.
+- **Multi-Format Export Engine**:
+  - Structured JSON export, flattened tabular CSV export with standardized column headers, and real binary PDF streaming (`%PDF` header via `pdfkit`) with cryptographic checksums embedded in the document footer.
+- **Authentic Operational Metrics Engine**:
+  - Implemented `SOCMetricsService.js` calculating genuine Mean Time To Acknowledge (MTTA: `acknowledgedAt - createdAt`) and Mean Time To Resolve (MTTR: `resolvedAt - createdAt`).
+  - Transparently discloses sample sizes and counts of excluded incomplete/ongoing records.
+  - Zero-Fabrication Rule: empty or unmeasured datasets truthfully return `INSUFFICIENT_DATA`, `NO_DATA`, or `NOT_MEASURED` with zero synthetic timers.
+- **Real-Time SLA Governance**:
+  - Dynamically evaluates SLA performance (`ON_TRACK`, `AT_RISK`, `BREACHED`) from real persisted incident timers and calculates authentic historical breach rates.
+- **Deterministic Executive Risk Composite**:
+  - Implemented `ExecutiveRiskService.js` computing an explainable 0–100 risk score based on open incidents, active detection gaps, unresolved findings, SLA breaches, and unverified actions.
+  - Exposes verifiable record citations linking top-level risk metrics directly to underlying platform records.
+- **Canonical Compliance Framework & Zero-Trust Evaluation**:
+  - Pre-seeded 9 canonical security controls in `ComplianceControl.js` across 9 modular domains: `ACCESS_CONTROL`, `LOGGING_MONITORING`, `VULNERABILITY_MANAGEMENT`, `INCIDENT_RESPONSE`, `CHANGE_MANAGEMENT`, `ASSET_MANAGEMENT`, `DATA_PROTECTION`, `THREAT_DETECTION`, and `BUSINESS_CONTINUITY`.
+  - Implemented `ComplianceEvidenceService.js` evaluating live platform records to assign compliance statuses: `EVIDENCE_PRESENT`, `PARTIAL_EVIDENCE`, or `NO_EVIDENCE`.
+- **Cryptographic Sealed Evidence Packages**:
+  - Implemented `ComplianceEvidence.js` storing sealed point-in-time compliance snapshots with SHA-256 checksums over source records, enabling cryptographic tamper verification for auditors.
+- **Decoupled Report Scheduling**:
+  - Implemented `ReportSchedule.js` with automated recurring execution (`DAILY`, `WEEKLY`, `MONTHLY`, `ON_DEMAND`).
+  - Decoupled report generation status (`SUCCESS`/`FAILED`) from downstream delivery status (`PENDING`/`SENT`/`FAILED`).
+- **Bounded AI Reporting & Compliance Advisory Copilot**:
+  - Added 5 bounded AI endpoints (`/api/chatbot/reports/summarize`, `/executive`, `/explain-metric`, `/explain-control`, `/recommend-actions`) enclosed in strict boundary delimiters (`<<<UNTRUSTED_REPORT_DATA>>> ... <<<END_UNTRUSTED_REPORT_DATA>>>`).
+  - AI responses declared strictly advisory and barred from altering database records or certifying compliance.
+- **Frontend Workstations**:
+  - Delivered modern, responsive Reporting Center (`/reports`) and Compliance Center (`/compliance`) with live metrics, snapshot viewers, export downloads, and cryptographic verification modals.
+- **Acceptance Battery & Platform Regression**:
+  - Acceptance runner `server/scripts/run_phase74_acceptance.js` passed **39/39 checks (100%)** with verdict `SOC_REPORTING_COMPLIANCE_CERTIFIED`.
+  - Emitted artifacts: `server/scripts/metrics_status_v74.json`, `server/scripts/phase74_reporting_compliance.json`, and `docs/PHASE74_REPORTING_COMPLIANCE.md`.
+  - Unit/integration suite `server/tests/phase74_reporting_compliance.test.js` passed **18/18 tests (100%)**.
+  - All 11 platform regression suites passed clean; client production build succeeded with exit code 0.
+
+## [v61.6.0] - 2026-09-09
+### Phase 73: Enterprise Detection Engineering, Content Lifecycle & Threat Coverage
+- **Detection Content Library & Immutable Revisions**:
+  - Extended `DetectionRule.js` with `contentId` (`DET-RULE-...`), semantic versioning, compound tenant indexes (`organizationId`, `ruleId`), `healthStatus`, and review history.
+  - Implemented `DetectionRuleRevision.js` preserving complete immutable snapshots on every rule mutation, recording diffs, author identity, and change justifications.
+- **Deterministic Fixture Execution & Health Evaluation**:
+  - Implemented `DetectionTestingService.js` supporting isolated `executeFixture` with `detectionRuleEngine.testRule` for non-alerting evaluations.
+  - Dynamically computes and updates health status (`HEALTHY`, `FAILING_TESTS`, `NEEDS_TEST`, `EXPIRED_DEPENDENCY`, `DISABLED`).
+  - Implemented `getQualityMetrics` calculating total, active, draft, and healthy rules from real database records.
+  - Implemented `runRegressionSuite` testing all detection fixtures across tenant rules.
+- **Promotion Lifecycle State Machine & Review Governance**:
+  - Implemented `DetectionLifecycleService.js` enforcing legal state transitions: `DRAFT` → `TESTING` → `REVIEW` → `APPROVED` → `ACTIVE` → `DISABLED` / `RETIRED`.
+  - Enforced strict gate: transitions to `REVIEW` are blocked unless 100% of test fixtures pass.
+  - Rules cannot be activated without explicit authorized operator review and approval.
+- **Rollback Discipline**:
+  - Implemented `rollbackRule` in `DetectionLifecycleService.js`, reverting rules to any prior approved revision while recording a new immutable revision preserving complete audit history.
+- **Safe Rule Import & Injection Guard**:
+  - Implemented `validateAndImportRule` enforcing allowed operators (`equals`, `not_equals`, `contains`, `regex`, `greater_than`, `less_than`, `in`) and rejecting dangerous MongoDB operators (`$where`, `$eval`, `$expr`, `child_process`, `exec`) and shell execution strings.
+  - Imported rules start strictly in `DRAFT` status with `enabled: false`.
+- **5 Canonical Content Packs (`ContentPackService.js`, `DetectionContentPack.js`)**:
+  - Idempotently seeded 5 canonical packs (`PACK-CORE-SOC`, `PACK-NETWORK`, `PACK-IDENTITY`, `PACK-ENDPOINT`, `PACK-THREAT-INTEL`) with real SHA-256 integrity checksums, structural schema validation, fixture testing, and tenant activation.
+- **Ground-Truth MITRE ATT&CK Coverage Matrix (`DetectionCoverageService.js`)**:
+  - Authoritatively maps 28 canonical techniques across 12 tactics.
+  - Calculates coverage based on active, healthy rules with verified passing fixtures (`COVERED`), active rules with missing/failing fixtures (`UNTESTED`), and missing rules (`NOT_COVERED`).
+- **Evidence-Backed Detection Gap Engine (`DetectionGapService.js`, `DetectionGap.js`)**:
+  - Discovers detection gaps from uncovered ATT&CK techniques, observed security incidents, and Phase 72 post-incident reviews (PIR).
+  - Implemented `createCandidateRuleFromGap` generating candidate rules strictly in `DRAFT` status with `enabled: false`.
+- **Expiring Detection Suppressions (`DetectionSuppression.js`)**:
+  - Time-bounded suppressions matching event attributes or techniques with real timestamp expiration.
+- **Bounded AI Advisory Endpoints (`chatbotController.js`)**:
+  - Mounted 3 bounded advisory endpoints (`POST /api/chatbot/detection/review`, `/tune`, `/map-attack`) protected by strict delimiters (`<<<UNTRUSTED_DETECTION_DATA>>> ... <<<END_UNTRUSTED_DATA>>>`) and advisory notices; zero autonomous rule mutation authority.
+- **Detection Engineering Center UI (`DetectionRulesPage.jsx`)**:
+  - Delivered comprehensive workstation with 6 tabs: Rules Library, Revisions, Testing & Quality Metrics, Content Packs, ATT&CK Coverage Matrix, and Gap Analysis.
+- **Multi-Tenant Isolation & Audit Logging**:
+  - Scoped `DetectionRule`, `DetectionRuleRevision`, `DetectionContentPack`, `DetectionGap`, and `AuditEvent` to `organizationId`.
+- **Acceptance Battery & Certification**:
+  - Executed `server/scripts/run_phase73_acceptance.js` passing **36/36 checks (100%)**, generating `detection_health_v73.json`, `phase73_detection_engineering.json`, and `docs/PHASE73_DETECTION_ENGINEERING.md` with verdict: `DETECTION_ENGINEERING_CERTIFIED`.
+  - Dedicated unit/integration suite `server/tests/phase73_detection_engineering.test.js` passed **21/21 checks (100%)**.
+  - Passed full 12-suite platform regression and client production build.
+
+## [v61.5.0] - 2026-09-09
+### Phase 72: Full Incident Response, Case Orchestration & Evidence Lifecycle
+- **14-State Incident State Machine**:
+  - Extended `Incident.js` with comprehensive server-side lifecycle states: `DETECTED`, `TRIAGING`, `INVESTIGATING`, `CONTAINMENT_PENDING`, `CONTAINED`, `ERADICATION_PENDING`, `ERADICATING`, `RECOVERING`, `VALIDATION`, `RESOLVED`, `CLOSED`, `REOPENED`, `CANCELLED`, `FAILED`.
+  - Implemented `IncidentResponseService.js` enforcing legal state transitions, recording previous state, new state, actor, reason, timestamp, evidence reference, and immutable `AuditEvent` logs.
+  - Rejects illegal transitions and state jumps server-side with standard error codes.
+- **Deterministic 6-Factor Incident Priority**:
+  - Implemented transparent priority calculation preserving explainable risk scores: Severity (30%), Criticality (20%), Exploitability (15%), Scope / Assets (15%), Asset Criticality (10%), and Threat Intel (10%).
+  - Deterministically maps to `INFORMATIONAL`, `LOW`, `MEDIUM`, `HIGH`, or `CRITICAL`.
+- **Real-Timestamp SLA Engine**:
+  - Implemented continuous SLA tracking computing exact deadline timestamps for acknowledgement, investigation, containment, and resolution based on policy.
+  - Dynamically evaluates SLA states (`ON_TRACK`, `AT_RISK`, `BREACHED`, `COMPLETED`) using real wall-clock comparisons.
+- **Incident Task Subsystem (`IncidentTask.js`)**:
+  - Created tenant-scoped task management supporting statuses (`TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE`, `CANCELLED`), task dependencies (blocking completion until prerequisites resolve), checklists, due dates, assignee tracking, and audit attribution.
+- **Immutable Evidence Lifecycle & Cryptographic Tamper Verification (`EvidenceRecord.js`, `EvidenceLifecycleService.js`)**:
+  - Created immutable evidence schema computing SHA-256 hashes upon registration, tracking chain of custody, and isolating analyst notes from raw payloads.
+  - Real byte-level tamper verification comparing recomputed hashes to stored hashes (`VALID`, `TAMPER_DETECTED`, `UNAVAILABLE`, `PENDING_VERIFICATION`).
+  - Safe native tool evidence collection via `HostEnvironmentService.executeNativeTool` without shell strings.
+- **Decoupled Response Action Lifecycle & Independent Verification**:
+  - Integrated privileged response workflows into `PendingApproval` human gates (`AWAITING_APPROVAL` → `APPROVED` → `EXECUTING` → `SUCCEEDED` / `FAILED`).
+  - Critical Decoupling: exit code 0 marks the command `SUCCEEDED` while verification remains strictly `UNVERIFIED`. Remediation requires independent follow-up verification (`PASS`, `FAIL`, `INCONCLUSIVE`) backed by diagnostic probes or hunts.
+- **Mandatory Post-Incident Review (PIR) & Structured Reopening**:
+  - High/Critical incidents require root cause, impact assessment, containment/eradication summaries, lessons learned, and detection gaps before closure.
+  - Reopening closed incidents requires actor attribution, justification, and real triggering evidence references while preserving closure history.
+- **Detection Gap Feedback Loop**:
+  - Closed incidents draft candidate `ThreatHunt` and `DetectionRule` records locked in `DRAFT` status with `enabled: false`. Prohibits automated activation.
+- **Unified Case Orchestration & Dossier Compilation (`Case.js`, `CaseOrchestrationService.js`)**:
+  - Reused `Case` as the unified operational container linking Incidents, Threat Hunts, Tasks, Alerts, Approvals, and Evidence with parent/child case hierarchies.
+  - Full dossier export compiles exclusively from real persisted DB records with zero AI hallucination.
+- **Bounded AI Incident Copilot (`chatbotController.js`)**:
+  - Added 6 advisory endpoints (`/summarize`, `/triage`, `/investigate`, `/recommend-containment`, `/draft-tasks`, `/postmortem`) protected by strict untrusted-data delimiters (`<<<UNTRUSTED_INCIDENT_DATA>>> ... <<<END_UNTRUSTED_DATA>>>`) and zero autonomous execution authority.
+- **Workstation Frontends**:
+  - Upgraded `/incidents` (`IncidentCenterPage.jsx`) into an 8-tab Incident Command Center (Overview, Timeline, Evidence, Tasks, Response & Remediation, Threat Intel, Underlying Entities, Postmortem & Closure + Bounded AI Copilot drawer).
+  - Upgraded `/cases` (`CaseWorkspacePage.jsx`) with parent/child hierarchies, incident & hunt orchestration, and one-click full dossier export.
+- **Automated Acceptance & Regression Certification**:
+  - Executed `server/scripts/run_phase72_acceptance.js` passing **36/36 checks (100%)**, generating `incident_status_v72.json`, `phase72_incident_response.json`, and `docs/PHASE72_INCIDENT_RESPONSE.md` with verdict: `INCIDENT_RESPONSE_CERTIFIED`.
+  - Dedicated unit test suite `server/tests/phase72_incident_response.test.js` passed 13/13 checks (100%).
+  - Certified full platform regression: Canonical 111 tools (111/111), Auth Reliability (34/34), Phase 71 (33/33), Phase 70 (22/22), Phase 69 (20/20), Phase 68 (DEPLOYMENT_READY), Phase 67 (17/17), Phase 65 E2E (35/35), Terminal Hardening (10/10); client production build compiles cleanly.
+
+## [v61.4.0] - 2026-09-09
+### Phase 71: Threat Hunting, Threat Intelligence Fusion & Investigation Workbench
+- **Threat Hunting Core & Safe Query AST Compiler**:
+  - Implemented `ThreatHuntQueryEngine.js` validating structured AST conditions across 11 target entities (`finding`, `alert`, `incident`, `asset`, `terminal_job`, `network_connection`, `dns_query`, `process_execution`, `file_modification`, `auth_event`, `ioc_record`) with 7 deterministic operators (`equals`, `not_equals`, `contains`, `regex`, `greater_than`, `less_than`, `in`).
+  - Prohibits arbitrary MongoDB operator injection (`$where`, `$eval`, `$expr`, etc.), raw queries, and shell commands.
+  - Enforces bounded time horizons (15m, 1h, 24h, 7d, 30d max clamp) and a strict 250-record output cap.
+- **Asynchronous Execution State Machine & Real-Time Telemetry**:
+  - Implemented `ThreatHuntExecutionService.js` tracking execution state (`RUNNING` → `MATCHED`, `NO_MATCH`, `FAILED`) with active cancellation (`CANCELLED`).
+  - Broadcasts real-time Socket.IO SOC events: `hunt:started`, `hunt:completed`, `hunt:failed`, and `hunt:cancelled`.
+- **Canonical Hunt Templates Catalog**:
+  - Pre-configured library of 7 canonical hunt scenarios (`ThreatHuntTemplate.js`) covering IOC sweeps, auth anomalies, DNS/DGA, C2 beacons, exploit faults, vulnerabilities, and malicious hashes with idempotent database seeding.
+- **Threat Intelligence Fusion Center & Cross-Entity Platform Matching**:
+  - Implemented `ThreatIntelFusionService.js` with 11-format IOC normalization, authentic provider enrichment (OTX, CIRCL, DNS), and truthful status reporting (`CONFIRMED`, `MATCHED`, `NOT_FOUND`, `UNAVAILABLE`, `PARTIAL`) without synthetic scoring.
+  - Cross-correlates indicators across Assets, Findings, Alerts, Incidents, and Terminal executions with exact field matching.
+- **Investigation Timeline Engine**:
+  - Implemented `InvestigationTimelineService.js` aggregating heterogeneous events across disparate platform entities in chronological order without synthetic artifact insertion.
+- **Threat Actor & Campaign Modeling**:
+  - Implemented `ThreatActorProfile.js` and `Campaign.js` models mapped to the MITRE ATT&CK enterprise matrix with strict attribution status enforcement (`OBSERVED`, `REPORTED`, `ANALYST_ASSESSMENT`).
+- **Evidence Promotion & Candidate Detection Feedback Loop**:
+  - Implemented promotion of observed evidence to new Findings (`FIND-HUNT-XXXXXX`) or Incidents (`INC-HUNT-XXXXXX`) with immutable provenance lineage.
+  - Drafts candidate Detection Rules locked strictly in `DRAFT` status with `enabled: false`.
+- **Bounded AI Threat Hunting Copilot**:
+  - Mounted specialized AI Copilot endpoints for hypotheses, queries, evidence explanations, summaries, and next steps with strict delimiter defense and zero privileged self-execution.
+- **Workstation Frontends**:
+  - Delivered Threat Hunting Workbench (`client/src/pages/ThreatHuntingPage.jsx`, `/hunts`) and Threat Intelligence Fusion Center (`client/src/pages/ThreatIntelPage.jsx`, `/intel`).
+  - Mounted routes in `App.jsx` and added `/hunts` (OPERATIONS) and `/intel` (ANALYSIS) to `Layout.jsx` navigation rail.
+- **Acceptance & Regression Certification**:
+  - Automated 33-point acceptance runner `server/scripts/run_phase71_acceptance.js` passed **33/33 checks (100%)**, generating `server/scripts/hunt_status_v71.json`, `server/scripts/phase71_threat_hunting.json`, and `docs/PHASE71_THREAT_HUNTING.md` with verdict: `THREAT_HUNTING_CERTIFIED`.
+  - Dedicated unit test suite `server/tests/phase71_threat_hunting.test.js` passed 16/16 checks (100%).
+  - Full platform regression suite verified: 111-tool census (111/111), Auth Reliability (34/34), Phase 70 (22/22), Phase 69 (20/20), Phase 68 (DEPLOYMENT_READY), Phase 65 E2E (35/35), terminal hardening (10/10); client production build 100% clean.
+
+### Authentication Reliability & Identity Hardening Directive
+- **Permanent Resolution of Recurring Auth Lifecycle Failures**:
+  - Identified and permanently resolved the 7-part recurring root cause: Interceptor Asymmetry, Missing LocalStorage Sync on Refresh, Refresh Storms & Rotation Race, Hardcoded HTTPS Cookie Dropping on HTTP Dev, Premature Redirect Loops on Reload, Bypassed Email Uniqueness (AES-256 random IV without unique hash index), and Lack of Multi-Tab Synchronization.
+- **Canonical 7-State Frontend State Machine**:
+  - Implemented single authoritative auth state model in `AuthContext.jsx`: `UNKNOWN`, `AUTHENTICATING`, `AUTHENTICATED`, `UNAUTHENTICATED`, `REFRESHING`, `SESSION_EXPIRED`, `AUTH_ERROR`.
+  - Updated `App.jsx` route guards (`PrivateRoute`, `AdminRoute`) to render `<LoadingScreen />` while in `UNKNOWN`, `AUTHENTICATING`, or `REFRESHING` states, completely preventing premature redirect loops on page reload.
+  - Handled `SESSION_EXPIRED` state with automatic navigation to `/login?expired=1` and dedicated visual alert.
+- **Single-Flight Refresh Mutex & Lock with Header Updates**:
+  - Implemented a single-flight refresh queue in `client/src/services/api.js`. If 10 concurrent requests return 401, only 1 refresh network request is sent; subsequent requests wait and are retried with the freshly rotated token.
+  - Crucially fixed the original request authorization header (`originalRequest.headers['Authorization'] = 'Bearer ' + newAccessToken`) to prevent immediate secondary 401 failures upon retry.
+  - Synced rotated tokens to `localStorage.cybershield_token` and `cybershield_refresh_token` synchronously.
+  - Enforced strict retry bounds (`!originalRequest._retry`) to prevent infinite 401 refresh loops.
+- **Dual-Transport Refresh with HTTPS-Aware Cookie Handling**:
+  - Updated `authController.js` and `AuthService.js` to accept refresh tokens via `req.cookies?.refreshToken`, `req.body?.refreshToken`, or `req.headers['x-refresh-token']`.
+  - Implemented dynamic HTTPS-aware cookie options helper (`_getCookieOptions`): applies `sameSite: 'lax'` / `secure: false` in plain HTTP localhost development and `sameSite: 'none'` / `secure: true` in production HTTPS, preventing silent cookie drops.
+- **Database Consistency & Email Uniqueness Hardening**:
+  - Enforced `{ unique: true, index: true }` on `emailHash` in `server/models/User.js`. Handled duplicate-key race conditions (Mongo code 11000) with deterministic `AUTH_ACCOUNT_EXISTS` error responses.
+  - Removed duplicate index on `expiresAt` in `server/models/Session.js` while retaining the TTL index.
+- **Structured Claims & Token Governance**:
+  - Hardened JWT creation and verification in `server/utils/jwt.js` with `JWT_ISSUER = 'cybershield-x'`, `JWT_AUDIENCE = 'cybershield-x-api'`, and a 10-second clock tolerance window.
+- **Standardized Error Contracts**:
+  - Updated `auth.js` middleware, `authController.js`, and `validators.js` with canonical machine-readable error codes: `AUTH_INVALID_CREDENTIALS`, `AUTH_ACCOUNT_EXISTS`, `AUTH_ACCOUNT_DISABLED`, `AUTH_SESSION_EXPIRED`, `AUTH_TOKEN_INVALID`, `AUTH_TOKEN_MISSING`, `AUTH_REFRESH_FAILED`, `AUTH_UNAUTHORIZED`, `AUTH_FORBIDDEN`, `AUTH_RATE_LIMITED`.
+- **Multi-Tab Synchronization & Cache Isolation**:
+  - Integrated `storage` event listeners in `AuthContext.jsx` to synchronize session invalidation across multiple browser tabs in real time.
+  - Thorough cache reset on logout (purging `cybershield_token`, `cybershield_refresh_token`, auth context state, and user profile data) ensuring Zero User A to User B data leakage.
+- **UI Double-Click Submit Protection**:
+  - Added deterministic submit disabling and active request guards on both `LoginPage.jsx` and `SignupPage.jsx` (`if (loading) return;`).
+- **Comprehensive Documentation & Runbooks**:
+  - Authored `docs/AUTHENTICATION_ARCHITECTURE.md` detailing token lifecycle, state machine, single-flight refresh sequence, and failure recovery.
+  - Authored `docs/AUTHENTICATION_OPERATIONS.md` detailing operational runbooks, credential rotation, session inspection, and incident responses.
+- **Acceptance & Regression Certification**:
+  - Automated 34-point acceptance runner `server/scripts/run_authentication_reliability.js` passed **34/34 checks (100%)**, generating `server/scripts/authentication_health_v71.json` with verdict: `AUTHENTICATION_RELIABILITY_CERTIFIED`.
+  - Dedicated unit test suite `server/tests/authentication_reliability.test.js` passed 18/18 checks (100%).
+  - Full platform regression suites passed: 111-tool census (111/111), Phase 70 (22/22), Phase 69 (20/20), Phase 68 (DEPLOYMENT_READY), Phase 65 E2E (35/35), terminal hardening (10/10), legacy auth suites (36/36).
+  - Client production build compiled cleanly with 0 errors.
+
+### Phase 70: SOC Intelligence, Correlation Engine, Detection Rules & Safe Automation
+- **Deterministic Detection Rule Engine & Test Harness**:
+  - Implemented `DetectionRuleEngine.js` supporting 7 operators: `equals`, `not_equals`, `contains`, `regex`, `greater_than`, `less_than`, `in`.
+  - Nested dot-notation property resolution across findings, alerts, and tool outputs.
+  - Isolated test execution endpoint (`POST /api/detections/test`) evaluating rule logic without polluting production security state.
+  - Strict rule governance (`DRAFT → TESTING → APPROVED → ACTIVE / DISABLED`). Machine/AI-suggested rules are marked `aiDraft: true` and locked in `DRAFT` state with `enabled: false`, requiring explicit analyst approval.
+- **Suppression Engine with Auto-Expiration**:
+  - Implemented `DetectionSuppression.js` with mandatory actor attribution, justification, and expiration timestamp (`expiresAt`).
+  - Active suppression checks dynamically filter matching signals without modifying or destroying underlying evidence; detections automatically resume once expiration passes.
+- **IOC Normalization & Truthful Multi-Provider Enrichment**:
+  - Implemented `IOCNormalizationService.js` normalizing IPv4, IPv6, FQDNs, domains, hostnames, URLs, hashes (MD5/SHA1/SHA256), CVEs, and certificate fingerprints.
+  - Truthful enrichment via live DNS, CIRCL HashLookup, and AlienVault OTX. Unconfigured or absent providers return honest `NOT_FOUND` or `EXTERNAL_SERVICE_UNAVAILABLE` status without fabricating synthetic reputation.
+- **Incident Correlation & Explainable 5-Factor Risk Scoring**:
+  - Implemented `IncidentCorrelationEngine.js` clustering security events across assets, IPs, domains, and execution IDs.
+  - Transparent 0–100 risk scoring with documented weights: Severity (35%), Asset Criticality (20%), Exploitability (15%), Threat Intel (15%), Correlated Events (15%).
+  - Evidence-backed attack-chain graph generation (`Asset → Service → Vulnerability → IOC → Finding → Alert → Incident → Response`).
+- **Idempotent Alert Deduplication**:
+  - Ingests recurring security signals idempotently, incrementing `occurrenceCount` and updating `lastSeen` while preserving immutable `firstSeen` and historical evidence.
+- **Safe Response Automation & Human Approval Gate**:
+  - Implemented `SafePlaybookAutomationService.js` classifying actions into `LOW_RISK`, `USER_APPROVED`, and `PRIVILEGED`.
+  - High-risk operations pause at `AWAITING_APPROVAL` requiring operator review. Prohibits arbitrary shell invocation; all native tool executions route exclusively through `HostEnvironmentService.executeNativeTool`.
+- **Bounded AI Detection Engineering**:
+  - Chatbot endpoints (`POST /api/chatbot/detection/analyze`, `/correlate`, `/draft-rule`, `/summarize-incident`) bound AI assistance to `ANALYSIS_ONLY` with strict delimiter protection against prompt injection. Zero self-authorization or autonomous execution.
+- **SOC Workstation UIs**:
+  - Built Detection Rules Center (`/detections`), Incident Center (`/incidents`), and Approval Center (`/approvals`).
+  - Integrated real-time Socket.IO telemetry stream in CyberSOC Desktop (`DashboardPage.jsx`).
+- **Phase 70 Acceptance & Certification**:
+  - Automated acceptance runner `server/scripts/run_phase70_acceptance.js` passed 22/22 checks (100%), generating `detection_status_v70.json`, `phase70_soc_intelligence.json`, and `docs/PHASE70_SOC_INTELLIGENCE.md`.
+  - Full regression pipeline passed cleanly.
+
+### Phase 69: Native Capability Expansion, Dependency Management & Advanced SOC Operations
+- **Native Dependency Management & Remediation Engine**:
+  - Implemented the full approved dependency lifecycle (`DETECT → EXPLAIN → APPROVE → CONFIGURE/INSTALL → VERIFY → REGISTER → CERTIFY`) across all 111 canonical tools.
+  - Endpoints: `GET /api/terminal/tool-health` and `GET /api/terminal/dependencies` return real binary version, path, OS, architecture, compatibility, and remediation metadata.
+  - Prohibits binary existence alone as capability proof; requires genuine version detection, platform compatibility inspection, and safe non-shell execution probes (`spawnSync(resolvedPath, [flag], { shell: false })`). Prohibits `sh -c` and `bash -c`.
+  - Operator-authorized remediation route `POST /api/terminal/remediate/:toolId` safely triggers verification probe and records immutable audit event.
+- **Advanced Terminal Operations (History, Autocomplete, Presets, Jobs)**:
+  - Implemented persistent per-user command history (`GET /api/terminal/history`, `DELETE /api/terminal/history`) with tool, target, duration, exitCode, and executionId tracking. Non-blocking persistence prevents database latency from stalling terminal responses.
+  - Implemented canonical tool autocomplete (`GET /api/terminal/autocomplete`) suggestions across 111 canonical tools with category, execution target, and availability status. Blocked tools clearly display `BLOCKED_DEPENDENCY` status.
+  - Implemented safe execution presets (`GET /api/terminal/presets`): `WHOIS DOMAIN`, `DNS DOMAIN`, `SSL HOST`, and `PORT HOST`. Presets continue through standard backend validation and security pipelines.
+- **Asynchronous Terminal Job Engine (`TerminalJobService.js`)**:
+  - Real async job lifecycle (`QUEUED → RUNNING → COMPLETED / FAILED / TIMEOUT / CANCELLING → CANCELLED`) with output buffer ceiling (512KB) and real-time Socket.IO status broadcasting (`job:status`).
+  - Strict execution ID discipline: retry actions generate guaranteed new `executionId`s without reusing process identities.
+- **Case Management & Findings Workspace**:
+  - Implemented comprehensive Case Management (`/api/cases`, `/cases`) with severity, status, assets, findings, evidence attachments, AI notes, and auditable timeline events.
+  - Implemented normalized Findings (`/api/findings`) with immutable `rawEvidence`. Strict rule: raw tool evidence cannot be altered or overwritten by analyst notes or AI interpretation. Evidence integrity verified via SHA-256 digests.
+- **Real-Time SOC Alert Center (`AlertsPage.jsx`)**:
+  - Operational alert lifecycle (`NEW → ACKNOWLEDGED → INVESTIGATING → RESOLVED`) with live Socket.IO feed (`alert:new`) and RBAC-controlled state transitions.
+- **Bounded AI Investigation Assistant (`chatbotController.js`)**:
+  - Implemented `POST /api/chatbot/investigate` categorizing action proposals into 3 bounded levels: `ANALYSIS_ONLY` (no execution), `USER_APPROVED_TOOL_ACTION` (operator confirmation required), and `PRIVILEGED_ACTION` (admin authorization required).
+  - Delimiter protection against prompt injection; zero autonomous execution of privileged actions.
+- **Granular Server-Side RBAC & Compliance Audit Logging**:
+  - Implemented role hierarchy: `VIEWER: 10`, `ANALYST: 20`, `OPERATOR: 30`, `ADMIN: 40`.
+  - Implemented non-blocking compliance audit logger (`auditLogger.js`) with recursive credential redaction (`password`, `token`, `secret`, `jwt`, `apiKey`, `mongoUri`).
+- **Global Multi-Entity Search**:
+  - Implemented RBAC-aware search (`GET /api/search?q=...`) across tools, cases, findings, alerts, and jobs without leaking unauthorized entities.
+- **Phase 69 Acceptance Runner & Certification**:
+  - Created and executed `server/scripts/run_phase69_acceptance.js` passing 20/20 checks (100%), generating `capability_status_v69.json`, `phase69_capability_expansion.json`, and `docs/PHASE69_CAPABILITY_EXPANSION.md`.
+  - All regression suites passed (canonical 111 tools, terminal hardening, Phase 65 E2E, Phase 67 reality audit, Phase 68 readiness); client production build 100% clean.
+
+### Phase 68: Production Deployment, Environment Readiness, Operations & Launch Certification
+- **Production Operations Runbook (`docs/PRODUCTION_OPERATIONS_RUNBOOK.md`)**:
+  - Authored comprehensive, copyable Standard Operating Procedure covering: System Topology, Prerequisites, Environment Configuration, Production Startup (Native, PM2, Docker), Graceful Shutdown & Zombie Elimination, Liveness & Readiness Probes, Structured Logging & Forensics, Database Administration & Hardening, Backup & Restore Procedures, Rollback Strategies, and Incident Response Playbooks.
+- **Dedicated Terminal Rate Limiting & Safety Enforcement**:
+  - Implemented `terminalLimiter` middleware on `/api/terminal` (60 requests per 15-minute window) returning normalized `RATE_LIMITED` error codes.
+  - Exempted emergency cancellation (`POST /api/terminal/cancel`), tool checks (`/check-tool/:toolId`), and capabilities (`/host-capabilities`) from the limiter to guarantee operators can terminate runaway executions even under heavy load.
+- **Graceful Shutdown & Zombie Process Elimination**:
+  - Enhanced server shutdown sequence in `server/index.js` to iterate `HostEnvironmentService.activeProcesses` and issue guaranteed `SIGKILL` signals to all active child processes, completely preventing orphaned zombie native processes on host.
+  - Structured shutdown drains connection pools, closes HTTP/Socket.IO servers, and cleanly disconnects Mongoose with zero unhandled rejections.
+- **Database Production Hardening**:
+  - Enhanced `server/utils/database.js` with production connection pooling (`maxPoolSize: 50`, `minPoolSize: 5`), socket timeouts (`45,000ms`), and resilient connection listeners (`reconnected`, `disconnected`, `error`).
+  - Supports honest degraded state reporting without exposing database credentials or internal connection strings.
+- **Automated Deployment Readiness Runner (`run_production_readiness_v68.js`)**:
+  - Implemented automated gate evaluating 22 ground-truth operational checks across: Secret & Environment Safety, Separation & Ingress, Database Hardening, Terminal Hardening & Rate Limiting, Graceful Shutdown, Frontend Production Build, 12-Point Live Smoke Tests, Native Binary Policy, Backup/Restore Schema Integrity, and Disaster Recovery.
+  - Emits machine-generated `server/scripts/production_deployment_readiness_v68.json` with dynamic verdict derivation: `DEPLOYMENT_READY`, `ENVIRONMENT_READY`, 0 blockers, 0 warnings.
+- **Zero-Secret Leakage Guarantee**:
+  - Created sanitized root `.env.example` blueprint and sanitized `server/.env.example` placeholders. Confirmed zero real credentials committed to codebase, documentation, or frontend bundles.
+- **Regression & Certification**:
+  - Full backend test suites passing (139/139 suites, 821/821 tests green).
+  - Client production build compiled cleanly with 0 errors.
+
+### Phase 67: Final Product Reality Audit, Live System Verification & Gap Closure
+- **Ground-Truth Reality Audit Engine (`run_phase67_reality_audit.js`)**:
+  - Implemented and executed automated reality audit harness reading actual runtime endpoints, OS processes, and MongoDB models.
+  - Certified canonical 111-tool census directly derived from `toolConfig.js` AST: 6 Host Native, 91 API Engine, 5 Client Browser, 9 Blocked Dependency (`6 + 91 + 5 + 9 = 111`).
+  - Exercised end-to-end execution traces for all 4 target classes: Host Native (`whois`), API Engine (`queryAlienVaultOtx`), Client Browser (`inspectHexEditor` + SHA-256), and Blocked Dependency (`sqlmap`/`trivy`).
+  - Terminal process lifecycle validated across execution, active tracking, graceful `SIGTERM` cancellation, strict 10s `SIGKILL` timeout fallback, and uninstalled binary refusal.
+  - Tested security boundaries: command injection metacharacter rejection, link-local and cloud-metadata SSRF blocking (`169.254.169.254`, `metadata.google.internal`), process cancellation session isolation (`PERMISSION_DENIED`), and 512KB output buffer ceiling.
+  - Verified AI Copilot live generation with model/provider attribution and defeated prompt injection exfiltration attacks.
+  - Audited telemetry origin: verified that `/api/dashboard` queries real MongoDB collections (`Scan`, `Asset`, `Vulnerability`) via `DashboardAggregationService`.
+  - Conducted secret leakage audit across all runtime responses and verified zero exposure of JWT secrets, Gemini API keys, or admin passwords.
+  - Verified zero-simulation in client code (zero mock trend curves or artificial delays).
+  - Generated machine-readable audit report `server/scripts/final_product_reality_audit_v67.json` (`FINAL_AUDIT_PASSED`, 17/17 PASS, 0 blockers) and release document `docs/PHASE67_FINAL_PRODUCT_AUDIT.md`.
+  - Full regression gate passed: 139/139 backend test suites (821/821 tests green), client build 100% clean.
+
+### Phase 66: CyberSOC Desktop + System Terminal Visual Redesign & UX Modernization
+- **CyberSOC Desktop Shell & Workstation Rail (`Layout.jsx`)**:
+  - Re-architected application shell into 4 distinct operational zones: Left Workstation Rail, Top Command Bar, Center Main Operational Deck, and Bottom Status Bar.
+  - Workstation Rail organized into dedicated cybersecurity operator groups: OPERATIONS, ANALYSIS, and SYSTEM.
+  - Top Command Bar displays real-time readiness status badge (`READY` / `DEGRADED` dynamically polled from `/api/health/readiness`), AI provider attribution (`Google Gemini 2.5 Flash`), and 1-click triggers for Command Palette (`⌘K`) and System Terminal (`>_`).
+  - Bottom Operational Status Bar displays MongoDB connection status, platform readiness, canonical tool counts (102 verified working, 9 blocked dependencies), active AI engine, and release version (`v61.4.0`).
+  - Reconciled stale `v33.0.0` badges to `v61.4.0`.
+- **7-Panel Bento Grid CyberSOC Command Center (`DashboardPage.jsx`)**:
+  - Transformed the primary dashboard into a Bento Grid workstation:
+    1. *Tactical Quick Execution Deck*: Target input with dynamic execution target badge (`[HOST_NATIVE]`, `[CYBERSHIELD_API_ENGINE]`) and quick launcher chips for native tools (`nmap`, `dig`, `curl`, `whois`, `traceroute`, `ssl`, `subfinder`, `cve-lookup`, `syscheck`).
+    2. *Live Platform Readiness & Host Telemetry*: Real-time probe of `/api/health/readiness` and `/api/terminal/host-capabilities` showing Node version, heap memory, uptime, database connectivity, and native CLI tool detection.
+    3. *Canonical Tooling Census*: Dynamic breakdown of all 111 canonical tools (6 Host Native, 91 API Engine, 5 Client Browser, 9 Blocked Dependency).
+    4. *Security Posture & Vulnerability Distribution*: Interactive Recharts donut visualization based on real database vulnerability statistics (`critical`, `high`, `medium`, `low`) and dynamic 0-100 security scoring.
+    5. *Recent Operations & Execution Telemetry*: Real scan records from `stats.recentScans` showing target node, tool, threat score, risk level, and 1-click re-audit actions.
+    6. *Live Threat Intelligence Stream*: Connected directly to backend Socket.IO `threat:new` broadcaster events.
+    7. *Perimeter Asset Watchlist*: Persistent asset monitoring with quick terminal audit triggers.
+  - Eliminated synthetic 7-day trend mock curve and simulated passive check delays.
+- **Operator Console Terminal Redesign (`CyberTerminalModal.jsx`)**:
+  - Redesigned the terminal into a first-class security operator console with high-contrast tactical styling.
+  - Integrated real process lifecycle state tracking (`IDLE`, `RUNNING`, `CANCELLING`, `CANCELLED`, `COMPLETED`, `FAILED`, `TIMEOUT`).
+  - Added Execution Telemetry Bar displaying `EXEC_ID`, `TOOL`, `TARGET`, and live millisecond elapsed timer.
+  - Added immediate red **[Abort Execution (SIGTERM)]** cancellation button calling `cancelTerminalExecution` (`POST /api/terminal/cancel`).
+  - Translated backend error codes into understandable operational messages: `DEPENDENCY_MISSING`, `SSRF_BLOCKED`, `TIMEOUT`, and `CANCELLED`.
+  - Reconciled stale `v60.0.0` and `v31.0.0` strings to `v61.4.0`.
+- **Command Palette Modernization (`CommandPaletteModal.jsx`)**:
+  - Added execution target badges (`[HOST_NATIVE]`, `[CYBERSHIELD_API_ENGINE]`, `[CLIENT_BROWSER]`, `[BLOCKED_DEPENDENCY]`) across all 111 indexed tools.
+  - Differentiated blocked tools with amber warning indicators and missing binary alerts to prevent deceptive native execution expectations.
+- **AI Security Copilot Modernization (`SecurityCopilot.jsx`)**:
+  - Integrated transparent model and provider attribution (`Google Gemini 2.5 Flash` / `Google AI Studio`).
+  - Visually segregated raw tool evidence (`[RAW TOOL EVIDENCE — VERIFIED]`) from conversational AI reasoning and interpretation text.
+  - Preserved prompt-injection defenses and updated quick prompts toward real platform capabilities.
+- **Certification Artifacts**:
+  - Generated `docs/PHASE66_UI_UX_CERTIFICATION.md` and `server/scripts/ui_ux_acceptance_v66.json`.
+- **Release Verification**:
+  - All 139 backend test suites passing (821/821 tests green).
+  - Client production build compiled cleanly with 0 errors.
+
+## [v61.3.0] - 2026-09-09
+### Phase 65: Real-World End-to-End Validation, AI Functionality & Production Acceptance Gate
+- **End-to-End Acceptance Battery & Production Acceptance Matrix**:
+  - Implemented automated acceptance gate runner `server/scripts/run_phase65_e2e_acceptance.js` exercising 35 comprehensive end-to-end scenarios covering the full user lifecycle: User → CyberSOC Desktop → Command Palette / Terminal / Toolkit → Canonical tool resolution → Execution target → Real capability → Normalized evidence → AI interpretation → UI rendering → Persistence → Failure recovery.
+  - Generated machine-verifiable evidence artifact `server/scripts/e2e_acceptance_results_v65.json` (35/35 scenarios PASS - 100.0%).
+  - Generated machine-verifiable matrix artifact `server/scripts/production_acceptance_v65.json` covering Product, Execution, Reliability, Security, and Observability.
+- **AI Copilot Behavioral & Adversarial Validation**:
+  - Validated live generative AI analysis with transparent model and provider attribution (`Google Gemini 2.5 Flash`, Ollama transparent fallback).
+  - Validated context-aware reasoning: AI accurately references provided security scan evidence (e.g. expiring SSL certificates, open ports, BlueKeep risk) without hallucinating phantom assets.
+  - Behaviorally tested and defeated 3 adversarial prompt injection attacks: indirect prompt injection inside scan results (`<untrusted_scan_data>`), direct terminal authorization privilege hijack attempts, and system prompt/credential exfiltration attempts.
+  - Resolved substring collision bug in `AIOrchestrator.js` where short triggers (e.g., `'hi'`) collided with words like `this` and `phishing`.
+  - Updated `chatbotController.js` to return `model` and `provider` attribution in responses.
+- **Host Native & Terminal Lifecycle Verification**:
+  - Verified live subprocess execution of all 6 catalog host-native tools (`dns` [dig], `whois` [whois], `port` [nmap], `http` [curl], `ssl` [openssl], `traceroute` [traceroute]) plus auxiliary diagnostic `ping` with exitCode 0 and non-empty output.
+  - Combined stdout and stderr in `HostEnvironmentService.js` to support tools outputting handshake details to stderr (`openssl`).
+  - Verified authenticated cancellation pipeline (`POST /api/terminal/cancel`) with immediate process map eviction, `SIGTERM` followed by `SIGKILL`, and `status: 'CANCELLED'` resolution.
+  - Verified server-side SSRF blocking (`169.254.169.254`, `metadata.google.internal`) and shell metacharacter rejection (`;&|$\`()<>`).
+- **Real API Capabilities Across 19 Specialized Service Layers**:
+  - Exercised live OTX pulses, CIRCL HashLookup malware identification, Censys TLS handshakes, S3/GCP bucket HEAD checks, OWASP API fuzz vectors, ZAP DAST header audits, Wazuh agent audits, and PE binary analysis. Zero mock outputs.
+- **Client Browser Cryptographic Tools**:
+  - Validated client-side execution for all 5 browser utilities (`jwt-parser`, `base64-decoder`, `url-sanitizer`, `hash-generator`, `hex-editor`) with zero backend overhead.
+- **Blocked Dependency Truthfulness (Same-Capability Rule)**:
+  - Verified all 9 missing CLI tools (`sqlmap`, `trivy`, `nikto`, `aircrack-ng`, `ghidra`, `yara-rules`, `radare2`, `semgrep`, `gitleaks`) honestly report `DEPENDENCY_MISSING` and specify exact Homebrew/APT remediation commands.
+- **Database & System Observability**:
+  - Standardized `database_integration.test.js` to clean Jest suite (4/4 PASS). Verified `/api/health/readiness` and `/api/readiness` truthful degradation and zero secret exposure.
+- **Release Regression**: 139/139 backend test suites passing (821/821 tests green, including new `phase65_e2e_acceptance.test.js` 28/28 PASS); client production build compiled cleanly with 0 errors.
+
+## [v61.2.0] - 2026-09-08
+### Phase 64: Production Hardening, Real Capability Verification & Release Certification
+- **Terminal Production Hardening & Asynchronous Cancellation**:
+  - Implemented real-time active process tracking via `this.activeProcesses = new Map()` in `HostEnvironmentService.js`.
+  - Added authenticated cancellation endpoint `POST /api/terminal/cancel` with owner/session isolation, preventing unauthorized termination.
+  - Implemented graceful `SIGTERM` followed by a guaranteed `SIGKILL` timeout fallback and timer cleanup.
+  - Implemented 512KB stdout buffer ceiling (`MAX_OUTPUT_BYTES = 512 * 1024`) preventing server memory exhaustion during large command output streams.
+  - Enforced strict `{ shell: false }` across all child process spawns with explicit array-based arguments.
+  - Enforced strict shell metacharacter rejection (`/[;&|`$\(\)<>\n\r\t\\!'"]/`) and comprehensive SSRF/cloud-metadata blocking (`169.254.169.254`, `metadata.google.internal`, `100.100.100.200`, `169.254.x.x`).
+- **Real API Capability Hardening (Zero Mock Outputs)**:
+  - Upgraded `threatIntelOsintService.js`: `searchVirusShare` now executes live queries against CIRCL HashLookup REST API (`https://hashlookup.circl.lu/lookup/`); `queryAlienVaultOtx` performs live OTX API lookups with honest status on failure; `runTheHarvester` resolves live DNS TXT/SPF, DMARC, MX, and subdomains; `searchHunterDomain` verifies DNS MX infrastructure and security.txt.
+  - Upgraded `osintCryptoToolService.js`: `searchCensysHost` establishes a live TLS socket connection to port 443 of the target and extracts real peer certificate, cipher, protocol, and ALPN.
+  - Upgraded `cloudAuditApiFuzzService.js`: `findCloudStorageBuckets` performs real HTTP HEAD requests against S3 and GCP bucket endpoints; `queryIntelxArchive` attributes local breach indexes honestly without synthetic claims.
+  - Upgraded `vulnDastScannerService.js`: `runZapDastScan` performs real HTTP GET checks against target security headers (CSP, HSTS, X-Frame-Options, cookies); `runNucleiTemplateScan` accurately describes signatures.
+  - Upgraded `enterpriseVulnPhishService.js`: accurately labelled compatibility engines as `CyberShield DAST Engine (Burp-Compatible DAST Rules)` and `CyberShield Network Audit Engine (OpenVAS/NVT-Compatible Network Rules)`.
+- **Capability Evidence Level Architecture**:
+  - Categorized all 111 canonical tools into validated evidence levels: `REAL_EXECUTION` (6), `REAL_EXTERNAL_LOOKUP` (11), `REAL_LOCAL_ANALYSIS` (77), `REAL_PARSER` (2), `REAL_CRYPTOGRAPHIC_OPERATION` (5), `REAL_COMPOSITION` (1), and `DEPENDENCY_BLOCKED` (9).
+  - Explicitly banned `HTTP_200_ONLY`, `MOCK_ONLY`, and `SIMULATED` outputs.
+- **Health & Readiness Observability Endpoints**:
+  - Implemented `GET /api/readiness` and `GET /api/health/readiness` distinguishing core platform health, MongoDB status, AI engine availability, and native host readiness.
+- **AI Delimiter Defense & Parity**:
+  - Delimited all untrusted user messages and scan results with `<user_untrusted_input>` and `<untrusted_scan_data>` tags.
+  - System instructions assert that untrusted data cannot override security policy or bypass execution restrictions.
+  - Updated all platform descriptions from 110 to 111 canonical tools across `Layout.jsx` and `SecurityCopilot.jsx`.
+- **Certification Artifacts Generated**:
+  - `server/scripts/certification_results_v64.json` (111 canonical tools + auxiliary ping)
+  - `server/scripts/production_readiness_v64.json` (Platform verdict: `PRODUCTION_READY_AND_TRUTHFUL`)
+- **Regression Health**: 138 backend test suites (including new `terminal_production_hardening.test.js`), frontend production build compiled cleanly with 0 errors.
+
+## [v61.1.0] - 2026-09-08
+### Phase 63.1: Native Count Reconciliation & 111-Tool Evidence Integrity Gate
+- **Authoritative Native Tool Reconciliation**: Reconciled previous discrepancy claiming "7 native tools" when only 6 canonical catalog tools in `toolConfig.js` map to native binaries (`dns` [dig], `whois` [whois], `port` [nmap], `http` [curl], `ssl` [openssl], `traceroute` [traceroute]). Confirmed that `ping` is an auxiliary Terminal CLI diagnostic command rather than a catalog tool, and confirmed `ssl` utilizes `/opt/homebrew/bin/openssl`.
+- **Authoritative Target Accounting**:
+  - `HOST_NATIVE`: 6 tools
+  - `CYBERSHIELD_API_ENGINE`: 91 tools (19 service layers, CSI engines)
+  - `CLIENT_BROWSER`: 5 tools (`jwt-parser`, `base64-decoder`, `url-sanitizer`, `hash-generator`, `hex-editor`)
+  - `BLOCKED_DEPENDENCY`: 9 tools (`sqlmap`, `trivy`, `nikto`, `aircrack-ng`, `ghidra`, `yara-rules`, `radare2`, `semgrep`, `gitleaks`)
+  - Total Target Sum: `6 + 91 + 5 + 9 = 111 tools`
+- **Dynamic Certification Census**:
+  - `VERIFIED_WORKING`: 102 tools (6 Host Native, 91 API Protocol Engines, 5 Client Browser)
+  - `VERIFIED_BLOCKED_DEPENDENCY`: 9 tools
+  - `VERIFIED_UNAVAILABLE_EXTERNAL_SERVICE`: 0 tools
+  - `FAILED`: 0 tools
+  - `NOT_TESTED`: 0 tools
+  - Total Certification Sum: `102 + 9 + 0 + 0 + 0 = 111 tools` (100% mathematical parity)
+- **Host Binary Allowlist & Live Verification**: All 7 binaries in `HostEnvironmentService.NATIVE_EXECUTABLE_TOOLS` (`nmap`, `dig`, `curl`, `whois`, `openssl`, `ping`, `traceroute`) executed and verified live with `exitCode: 0`.
+- **Automated Evidence Persistence**: Created `server/scripts/certify_111_tools.js` producing complete machine-generated 111-row certification record in `server/scripts/certification_results_v63_1.json`.
+- **Full Verification Health**: 137/137 backend test suites passing (780/780 tests green); client production build passes cleanly.
+
+## [v61.0.0] - 2026-09-08
+### Phase 63: Final 111-Tool Individual Execution & Certification Gate
+- **100% Individual Execution Certification**: Individually exercised and certified every single one of the 111 tools in the authoritative catalog through real production code paths (`scripts/certify_111_tools.js`).
+- **Dynamic Certification Census (111 Tools Audited)**:
+  - `VERIFIED_WORKING`: **102 Tools** (7 Host Native, 90 API Protocol Service Engines, 5 Client Browser Utilities).
+  - `VERIFIED_BLOCKED_DEPENDENCY`: **9 Tools** (`sqlmap`, `trivy`, `nikto`, `aircrack-ng`, `ghidra`, `yara-rules`, `radare2`, `semgrep`, `gitleaks`) strictly adhering to the Same-Capability Rule (dependencies verified missing; honest error reporting with Homebrew/APT remediation commands; zero simulated results).
+  - `VERIFIED_UNAVAILABLE_EXTERNAL_SERVICE`: **0 Tools**.
+  - `FAILED`: **0 Tools**.
+  - `NOT_TESTED`: **0 Tools**.
+  - `Sum Validation`: `102 + 9 + 0 + 0 + 0 = 111 tools` (100% exact parity with canonical inventory).
+- **Native CLI Process Verification**: Confirmed live native execution with exit code 0 on safe targets for `nmap 7.98`, `dig`, `curl`, `whois`, `openssl s_client`, `ping` (tuned waittime flags for macOS Darwin), and `traceroute`.
+- **Client-Side Cryptographic & String Execution**: Verified real computation for `jwt-parser`, `base64-decoder`, `url-sanitizer`, `hash-generator` (real 256-bit SHA-256 digests), and `hex-editor`.
+- **AI Connectivity & Transparent Fallback Routing**: Tested `POST /api/chatbot/chat` live against Google Gemini 2.5 Flash (200 OK); verified local Ollama offline reachability probe and transparent routing with visible attribution (`ai_provider_routing.test.js` 5/5 PASS).
+- **Regression Suite**: 137/137 backend test suites passed (780/780 tests green); frontend production build clean (0 errors, 0 warnings).
+
+## [v60.0.0] - 2026-09-08
+### Phase 62: Canonical 111-Tool Real Execution, System-Aware Terminal & Host Capability Engine
+- **Canonical 111-Tool Inventory Reconciled (`toolConfig.js`)**: Discovered exact inventory of 111 tools across 24 categories with unique IDs, schemas, and execution targets (`HOST_NATIVE`, `CYBERSHIELD_API_ENGINE`, `CLIENT_BROWSER`, `BLOCKED_DEPENDENCY`).
+- **HostEnvironmentService (`server/services/HostEnvironmentService.js`)**: Implemented dynamic host system auditing, binary path detection across 28 monitored CLI tools, host readiness scoring, and safe native execution for authorized tools (`nmap`, `dig`, `curl`, `whois`, `openssl`, `ping`, `traceroute`) with shell metacharacter rejection and 10s execution deadlines.
+- **Terminal Host Capability API (`server/routes/terminal.js`)**: Added endpoints `GET /api/terminal/host-capabilities`, `GET /api/terminal/check-tool/:toolId`, and `POST /api/terminal/execute-native`.
+- **System-Aware Cyber Terminal (`terminalExecutionService.js`, `CyberTerminalModal.jsx`)**: Integrated `syscheck`/`doctor` commands, pre-flight host audit banner, OS status badge, explicit execution target badges (`[TARGET: HOST_NATIVE]`, `[TARGET: CYBERSHIELD_API_ENGINE]`, `[TARGET: CLIENT_BROWSER]`, `[TARGET: BLOCKED_DEPENDENCY]`), client-side cryptographic utilities (`jwt-parser`, `base64-decoder`, `url-sanitizer`, `hash-generator`, `hex-editor`), and honest blocked state reporting with zero simulated success.
+- **Global Spotlight Command Palette (`CommandPaletteModal.jsx`)**: Added `Cmd+K` / `Ctrl+K` keyboard shortcut modal enabling instant search across all 111 tools, direct terminal launch, and system actions.
+- **Transparent AI Model Routing (`AIOrchestrator.js`)**: Actively tested Google Gemini 2.5 Flash, added reachability probe for local Ollama, and implemented transparent routing with explicit attribution when fallback occurs.
+- **Verification**: Created `server/tests/terminal_host_capabilities.test.js` (10/10 PASS) and `server/tests/canonical_111_tool_registry.test.js` (4/4 PASS). All 136 backend suites pass (775/775 tests green). Client build compiles with 0 errors.
+
+## [v59.0.0] - 2026-08-20
+### Phase 61: Dashboard Command Center & Live Telemetry Stream Upgrade
+- **Visual Analytics HUD (`DashboardPage.jsx`)**: Added interactive Recharts severity breakdown donut, 7-day scan activity chart, and radial SVG security score gauge.
+- **Target Watchlist Widget**: LocalStorage-backed asset tracking with quick scan actions.
+- **Live Threat Feed Stream (`ThreatBroadcaster.js`)**: Real-time Socket.IO event emitter streaming simulated and live security telemetry to the dashboard console.
+
 ## [v57.0.0] - 2026-08-19
 ### Phase 59: Universal 3-Identifier Authentication & Conversational CyberBot Intelligence Upgrade
 - **Universal 3-Way Authentication (`AuthService.js`, `validators.js`)**: Enabled frictionless login allowing users to sign in with **Username**, **Email Address**, OR **Mobile Number** (raw digits or full E.164 country code) interchangeably with their password.

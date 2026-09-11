@@ -34,6 +34,7 @@ const userSchema = new mongoose.Schema(
     },
     emailHash: {
       type: String,
+      unique: true,
       index: true,
     },
     mobileHash: {

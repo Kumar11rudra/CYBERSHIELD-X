@@ -1,0 +1,280 @@
+{
+  "verdict": "SOC_REPORTING_COMPLIANCE_CERTIFIED",
+  "passedCount": 39,
+  "failedCount": 0,
+  "results": [
+    {
+      "id": 1,
+      "category": "Operational KPIs",
+      "name": "Total incidents derived from real records",
+      "status": "PASS",
+      "details": "Count: 3"
+    },
+    {
+      "id": 2,
+      "category": "Operational KPIs",
+      "name": "Critical incidents count verified",
+      "status": "PASS",
+      "details": "Critical: 1"
+    },
+    {
+      "id": 3,
+      "category": "Operational KPIs",
+      "name": "Active open incidents verified",
+      "status": "PASS",
+      "details": "Open: 2"
+    },
+    {
+      "id": 4,
+      "category": "Operational KPIs",
+      "name": "Resolved incidents count verified",
+      "status": "PASS",
+      "details": "Resolved: 1"
+    },
+    {
+      "id": 5,
+      "category": "Operational KPIs",
+      "name": "Alerts and Findings telemetry verified",
+      "status": "PASS",
+      "details": "Alerts: 2, Findings: 1"
+    },
+    {
+      "id": 6,
+      "category": "Operational KPIs",
+      "name": "Threat hunts and matched execution counts verified",
+      "status": "PASS",
+      "details": "Hunts: 2"
+    },
+    {
+      "id": 7,
+      "category": "Operational KPIs",
+      "name": "Detection rules and gaps verified",
+      "status": "PASS",
+      "details": "Rules: 1, Gaps: 1"
+    },
+    {
+      "id": 8,
+      "category": "MTTA / MTTR",
+      "name": "MTTA computed from genuine timestamps",
+      "status": "PASS",
+      "details": "Mean: 15m"
+    },
+    {
+      "id": 9,
+      "category": "MTTA / MTTR",
+      "name": "MTTA sample size reflects verified acknowledged records",
+      "status": "PASS",
+      "details": "SampleSize: 3"
+    },
+    {
+      "id": 10,
+      "category": "MTTR Calculation",
+      "name": "MTTR computed strictly from resolved records",
+      "status": "PASS",
+      "details": "Mean: 60m"
+    },
+    {
+      "id": 11,
+      "category": "MTTR Calculation",
+      "name": "Transparent disclosure of open/unresolved exclusions",
+      "status": "PASS",
+      "details": "Excluded: 2"
+    },
+    {
+      "id": 12,
+      "category": "SLA Performance",
+      "name": "SLA governed incident tracking verified",
+      "status": "PASS",
+      "details": "Governed: 3"
+    },
+    {
+      "id": 13,
+      "category": "SLA Performance",
+      "name": "Authentic breach rate calculation verified",
+      "status": "PASS",
+      "details": "BreachRate: 0%"
+    },
+    {
+      "id": 14,
+      "category": "Executive Risk",
+      "name": "Composite risk score calculated (0-100)",
+      "status": "PASS",
+      "details": "Score: 23"
+    },
+    {
+      "id": 15,
+      "category": "Executive Risk",
+      "name": "Cites underlying raw incident records",
+      "status": "PASS",
+      "details": "Citations: 1"
+    },
+    {
+      "id": 16,
+      "category": "Executive Risk",
+      "name": "Cites detection gaps and unresolved findings",
+      "status": "PASS",
+      "details": "Gaps: 1, Findings: 1"
+    },
+    {
+      "id": 17,
+      "category": "Compliance Framework",
+      "name": "9 Canonical Controls seeded across 9 modular domains",
+      "status": "PASS",
+      "details": "Count: 9"
+    },
+    {
+      "id": 18,
+      "category": "Compliance Evidence",
+      "name": "Maps platform records to INCIDENT_RESPONSE control",
+      "status": "PASS",
+      "details": "Status: EVIDENCE_PRESENT, Records: 3"
+    },
+    {
+      "id": 19,
+      "category": "Compliance Evidence",
+      "name": "Truthfully identifies missing or partial evidence without false certification",
+      "status": "PASS",
+      "details": "Evaluated: 9 controls"
+    },
+    {
+      "id": 20,
+      "category": "Evidence Package",
+      "name": "Immutable package generated with SHA-256 hash",
+      "status": "PASS",
+      "details": "Hash: 956cbb5487c9ae8b..."
+    },
+    {
+      "id": 21,
+      "category": "Evidence Package",
+      "name": "Cryptographic proof matches sealed record state",
+      "status": "PASS",
+      "details": "Zero Tampering Verified"
+    },
+    {
+      "id": 22,
+      "category": "Audit Reporting",
+      "name": "Generates AUDIT_ACTIVITY report with actor provenance",
+      "status": "PASS",
+      "details": "Events: 2"
+    },
+    {
+      "id": 23,
+      "category": "Audit Reporting",
+      "name": "Strict redaction of sensitive credentials and tokens",
+      "status": "PASS",
+      "details": "Redaction Verified"
+    },
+    {
+      "id": 24,
+      "category": "Domain Reports",
+      "name": "INCIDENT_REPORT reflects persisted incident timeline",
+      "status": "PASS",
+      "details": "Incidents: 3"
+    },
+    {
+      "id": 25,
+      "category": "Domain Reports",
+      "name": "DETECTION_COVERAGE report maps MITRE ATT&CK coverage",
+      "status": "PASS",
+      "details": "MITRE Mapped"
+    },
+    {
+      "id": 26,
+      "category": "Domain Reports",
+      "name": "THREAT_HUNT_REPORT details actual sweep executions",
+      "status": "PASS",
+      "details": "Hunts: 2"
+    },
+    {
+      "id": 27,
+      "category": "Report Versioning",
+      "name": "Automatic version incrementing (v1 -> v2)",
+      "status": "PASS",
+      "details": "v1=1, v2=2"
+    },
+    {
+      "id": 28,
+      "category": "Report Immutability",
+      "name": "Prior report version v1 preserved without destructive overwrite",
+      "status": "PASS",
+      "details": "v1 Immutable"
+    },
+    {
+      "id": 29,
+      "category": "Report Exports",
+      "name": "Valid JSON export data present",
+      "status": "PASS",
+      "details": "JSON Ready"
+    },
+    {
+      "id": 30,
+      "category": "Report Exports",
+      "name": "Tabular CSV export structured with headers",
+      "status": "PASS",
+      "details": "CSV Ready"
+    },
+    {
+      "id": 31,
+      "category": "Report Exports",
+      "name": "Real binary PDF generated with valid header (%PDF)",
+      "status": "PASS",
+      "details": "PDF Size: 4493 bytes"
+    },
+    {
+      "id": 32,
+      "category": "Report Scheduling",
+      "name": "Scheduled generation lifecycle completes successfully",
+      "status": "PASS",
+      "details": "Generated Report: REP-SOC_-1789035633685-55QJ"
+    },
+    {
+      "id": 33,
+      "category": "Delivery Separation",
+      "name": "Report generation success recorded separately from delivery status",
+      "status": "PASS",
+      "details": "Gen: SUCCESS, Deliv: PENDING"
+    },
+    {
+      "id": 34,
+      "category": "AI Safety Enclosure",
+      "name": "AI report summary declared strictly advisory",
+      "status": "PASS",
+      "details": "Advisory Enforced"
+    },
+    {
+      "id": 35,
+      "category": "AI Safety Enclosure",
+      "name": "AI barred from certifying compliance or altering records",
+      "status": "PASS",
+      "details": "Boundaries Enforced"
+    },
+    {
+      "id": 36,
+      "category": "Tenant Isolation",
+      "name": "Organization B cannot see Organization A operational KPIs",
+      "status": "PASS",
+      "details": "Org B Incidents: 0"
+    },
+    {
+      "id": 37,
+      "category": "Tenant Isolation",
+      "name": "Organization B reports library strictly isolated",
+      "status": "PASS",
+      "details": "Org B Reports: 0"
+    },
+    {
+      "id": 38,
+      "category": "Truthfulness Guarantee",
+      "name": "Empty datasets return INSUFFICIENT_DATA instead of zero or synthetic timer",
+      "status": "PASS",
+      "details": "Truthful Fallbacks"
+    },
+    {
+      "id": 39,
+      "category": "Truthfulness Guarantee",
+      "name": "Zero-coverage ATT&CK reported as NOT_MEASURED",
+      "status": "PASS",
+      "details": "No Synthetic Baselines"
+    }
+  ]
+}

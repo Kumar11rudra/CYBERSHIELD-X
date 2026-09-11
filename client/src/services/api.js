@@ -67,7 +67,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// ─── Response Interceptor: Silent Token Refresh ───────────────────────────────
+// ─── Response Interceptor: Single-Flight Token Refresh Lock ─────────────────
 let isRefreshing = false;
 let failedQueue = [];
 
@@ -83,12 +83,23 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url.includes('/auth/refresh')) {
+    if (!originalRequest) return Promise.reject(error);
+
+    const isAuthRoute = originalRequest.url && (
+      originalRequest.url.includes('/auth/refresh') ||
+      originalRequest.url.includes('/auth/login') ||
+      originalRequest.url.includes('/auth/signup') ||
+      originalRequest.url.includes('/auth/admin-login')
+    );
+
+    // Only intercept 401 on non-auth requests that have not been retried yet
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
           .then((token) => {
+            originalRequest.headers = originalRequest.headers || {};
             originalRequest.headers['Authorization'] = 'Bearer ' + token;
             return api(originalRequest);
           })
@@ -99,14 +110,51 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, {}, { withCredentials: true });
-        processQueue(null, data.token);
+        let fallbackRefreshToken = null;
+        try {
+          fallbackRefreshToken = localStorage.getItem('cybershield_refresh_token');
+        } catch {}
+
+        const { data } = await axios.post(
+          `${API_BASE_URL}/auth/refresh`,
+          { refreshToken: fallbackRefreshToken },
+          { withCredentials: true }
+        );
+
+        const newAccessToken = data.token;
+        if (newAccessToken) {
+          try {
+            localStorage.setItem('cybershield_token', newAccessToken);
+            if (data.refreshToken) {
+              localStorage.setItem('cybershield_refresh_token', data.refreshToken);
+            }
+          } catch {}
+        }
+
+        // CRITICAL FIX: Set updated Authorization header on the originating request before retrying
+        originalRequest.headers = originalRequest.headers || {};
+        originalRequest.headers['Authorization'] = 'Bearer ' + newAccessToken;
+
+        processQueue(null, newAccessToken);
         isRefreshing = false;
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
         isRefreshing = false;
-        // Optional: window.location.href = '/login';
+
+        // Clear expired credentials from local storage
+        try {
+          localStorage.removeItem('cybershield_token');
+          localStorage.removeItem('cybershield_refresh_token');
+        } catch {}
+
+        // Notify application of session expiration
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('cybershield:session-expired', {
+            detail: { code: 'AUTH_SESSION_EXPIRED', message: 'Session expired' }
+          }));
+        }
+
         return Promise.reject(refreshError);
       }
     }

@@ -397,6 +397,7 @@ const executeTool = async (req, res) => {
       return breachController.checkEmail(req, res);
     }
     if (toolId === 'remediation') {
+      req.query = req.query || {};
       req.query.cve = cleanTarget;
       return remediationController.getRemediation(req, res);
     }

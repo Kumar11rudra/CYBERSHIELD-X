@@ -14,7 +14,8 @@ const TTL_TIERS = {
   NON_CACHEABLE: 0     // Never cached: Fuzzing, Sandbox detonation, Playbook orchestrations
 };
 
-// Tool-specific TTL mappings for all 110 tools
+// Tool-specific TTL mappings for all 111 tools
+// Dynamic tools get shorter TTLs, static tools get longer TTLs
 const TOOL_TTL_MAP = {
   // Non-cacheable dynamic / state-modifying / random tools (TTL = 0)
   'cuckoo-sandbox': TTL_TIERS.NON_CACHEABLE,

@@ -1,0 +1,216 @@
+{
+  "metadata": {
+    "runner": "run_production_readiness_v68.js",
+    "version": "v61.4.0",
+    "timestamp": "2026-09-09T15:44:05.327Z",
+    "platform": "darwin",
+    "arch": "arm64",
+    "nodeVersion": "v24.14.0",
+    "pid": 17529
+  },
+  "environmentClassification": {
+    "REQUIRED": [
+      "NODE_ENV",
+      "PORT",
+      "MONGO_URI",
+      "JWT_SECRET",
+      "JWT_REFRESH_SECRET",
+      "CLIENT_URL"
+    ],
+    "OPTIONAL": [
+      "GEMINI_API_KEY",
+      "OLLAMA_BASE_URL",
+      "ALIENVAULT_API_KEY",
+      "SHODAN_API_KEY",
+      "CENSYS_API_ID",
+      "CENSYS_API_SECRET",
+      "LOG_LEVEL"
+    ],
+    "DEVELOPMENT_ONLY": [
+      "DEBUG",
+      "VITE_DEBUG"
+    ],
+    "TEST_ONLY": [
+      "JEST_WORKER_ID",
+      "CI"
+    ],
+    "PRODUCTION_ONLY": [
+      "FORCE_HTTPS",
+      "SECURE_COOKIE",
+      "MONGO_MAX_POOL_SIZE",
+      "MONGO_CONNECT_TIMEOUT_MS"
+    ]
+  },
+  "secretAudit": {},
+  "separationAudit": {},
+  "terminalHardening": {},
+  "gracefulShutdown": {},
+  "databaseHardening": {},
+  "buildValidation": {},
+  "smokeTests": [
+    {
+      "checkName": "1. Application Reachable (GET /health)",
+      "status": "PASS",
+      "details": {
+        "latencyMs": 2,
+        "body": {
+          "status": "healthy",
+          "service": "CyberShield X Nexus API",
+          "version": "v61.4.0",
+          "timestamp": "2026-09-09T15:44:06.174Z"
+        }
+      },
+      "timestamp": "2026-09-09T15:44:06.175Z"
+    },
+    {
+      "checkName": "2. Authentication Workflow (POST /api/auth/login)",
+      "status": "PASS",
+      "details": {
+        "latencyMs": 239,
+        "userRole": "admin",
+        "tokenIssued": true
+      },
+      "timestamp": "2026-09-09T15:44:06.414Z"
+    },
+    {
+      "checkName": "3. Readiness Observability (GET /api/health/readiness)",
+      "status": "PASS",
+      "details": {
+        "latencyMs": 3,
+        "readinessStatus": "healthy"
+      },
+      "timestamp": "2026-09-09T15:44:06.417Z"
+    },
+    {
+      "checkName": "4. SOC Dashboard Real Telemetry (GET /api/dashboard)",
+      "status": "PASS",
+      "details": {
+        "latencyMs": 102,
+        "status": 200
+      },
+      "timestamp": "2026-09-09T15:44:06.519Z"
+    },
+    {
+      "checkName": "5. Host Capabilities Ground-Truth (GET /api/terminal/host-capabilities)",
+      "status": "PASS",
+      "details": {
+        "latencyMs": 68,
+        "platform": "darwin",
+        "installedCount": 11,
+        "missingCount": 17,
+        "postureGrade": "HYBRID_CAPABILITY"
+      },
+      "timestamp": "2026-09-09T15:44:06.587Z"
+    },
+    {
+      "checkName": "6. Safe Native Execution (POST /api/terminal/execute-native)",
+      "status": "PASS",
+      "details": {
+        "latencyMs": 1058,
+        "executionId": "exec_1788968646660_cxs0yhq5z",
+        "exitCode": 0
+      },
+      "timestamp": "2026-09-09T15:44:07.645Z"
+    },
+    {
+      "checkName": "7. API-Engine Capability (queryAlienVaultOtx)",
+      "status": "PASS",
+      "details": {
+        "latencyMs": 907,
+        "target": "1.1.1.1",
+        "pulseCount": 1,
+        "source": "AlienVault OTX API (Live Query)"
+      },
+      "timestamp": "2026-09-09T15:44:08.552Z"
+    },
+    {
+      "checkName": "8. Browser Tool Engine Logic (Hex/Crypto Hashes)",
+      "status": "PASS",
+      "details": {
+        "latencyMs": 1,
+        "cryptoCertified": true
+      },
+      "timestamp": "2026-09-09T15:44:08.553Z"
+    },
+    {
+      "checkName": "9. Blocked Dependency Truthful Check (check-tool/sqlmap)",
+      "status": "PASS",
+      "details": {
+        "latencyMs": 96,
+        "checkData": {
+          "toolId": "sqlmap",
+          "binaryName": "sqlmap",
+          "installed": false,
+          "path": null,
+          "executionTarget": "BLOCKED_DEPENDENCY",
+          "remediation": "brew install sqlmap"
+        }
+      },
+      "timestamp": "2026-09-09T15:44:08.649Z"
+    },
+    {
+      "checkName": "10. AI Copilot Truthful Attribution (POST /api/chatbot/chat)",
+      "status": "PASS",
+      "details": {
+        "latencyMs": 8513,
+        "provider": "Google AI",
+        "model": "gemini-2.5-flash",
+        "replyReceived": true
+      },
+      "timestamp": "2026-09-09T15:44:17.162Z"
+    },
+    {
+      "checkName": "11. Socket.IO Real-time Threat Engine Initialization",
+      "status": "PASS",
+      "details": {
+        "latencyMs": 0,
+        "threatBroadcasterReady": true
+      },
+      "timestamp": "2026-09-09T15:44:17.162Z"
+    },
+    {
+      "checkName": "12. Session Invalidation & Logout (POST /api/auth/logout)",
+      "status": "PASS",
+      "details": {
+        "latencyMs": 92,
+        "logoutSuccess": true
+      },
+      "timestamp": "2026-09-09T15:44:17.254Z"
+    }
+  ],
+  "nativeBinaryPolicy": {
+    "REQUIRED": [
+      "curl"
+    ],
+    "OPTIONAL": [
+      "whois",
+      "dig",
+      "ping",
+      "traceroute"
+    ],
+    "BLOCKED_DEPENDENCY": [
+      "sqlmap",
+      "trivy",
+      "nikto",
+      "aircrack-ng",
+      "ghidra",
+      "yara-rules",
+      "radare2",
+      "semgrep",
+      "gitleaks"
+    ]
+  },
+  "backupRestoreValidation": {},
+  "rollbackValidation": {},
+  "crashRecoveryValidation": {},
+  "warnings": [],
+  "blockers": [],
+  "verdict": "DEPLOYMENT_READY",
+  "summary": {
+    "totalChecks": 22,
+    "warningsCount": 0,
+    "blockersCount": 0,
+    "durationMs": 12319
+  },
+  "environmentState": "ENVIRONMENT_READY"
+}

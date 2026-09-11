@@ -14,14 +14,13 @@ async function connectTestDb() {
     return;
   }
 
-  // If external test URI is provided and reachable, try it first
-  if (process.env.MONGODB_TEST_URI) {
-    try {
-      await mongoose.connect(process.env.MONGODB_TEST_URI, { serverSelectionTimeoutMS: 2000 });
-      return;
-    } catch {
-      // Fallback to in-memory server
-    }
+  // Try local running MongoDB first (instant connection, avoids download overhead)
+  const candidateUri = process.env.MONGODB_TEST_URI || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/cybershield_test';
+  try {
+    await mongoose.connect(candidateUri, { serverSelectionTimeoutMS: 1500 });
+    return;
+  } catch {
+    // Fallback to in-memory server
   }
 
   try {
@@ -66,5 +65,7 @@ async function clearTestDb() {
 module.exports = {
   connectTestDb,
   closeTestDb,
-  clearTestDb
+  clearTestDb,
+  connect: connectTestDb,
+  disconnect: closeTestDb
 };

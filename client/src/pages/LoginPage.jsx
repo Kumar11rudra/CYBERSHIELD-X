@@ -18,11 +18,19 @@ export default function LoginPage() {
   const [otp, setOtp] = useState('');
   const [otpLoad, setOtpLoad] = useState(false);
 
-  const { login } = useAuth();
+  const { login, authError } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const returnTo = searchParams.get('returnTo');
+  const isExpired = searchParams.get('expired') === '1';
+
+  // Inform user if redirected due to expired session
+  React.useEffect(() => {
+    if (isExpired) {
+      toast.error('Your session has expired. Please sign in again.', { id: 'session-expired' });
+    }
+  }, [isExpired]);
 
   const getSafeReturnUrl = (url) => {
     if (!url) return '/dashboard';
@@ -34,6 +42,7 @@ export default function LoginPage() {
 
   const doLogin = async (e) => {
     e.preventDefault();
+    if (loading) return; // Prevent double-submission / race conditions
     setLoading(true);
     try {
       await login(identity, password);
@@ -50,7 +59,12 @@ export default function LoginPage() {
         }
         setStep('otp');
       } else {
-        toast.error(d?.error || t('auth.login.failed'));
+        const errorMsg = d?.code === 'AUTH_ACCOUNT_DISABLED'
+          ? 'Account is suspended or locked. Please contact support.'
+          : (d?.code === 'AUTH_RATE_LIMITED'
+            ? 'Too many login attempts. Please wait a few minutes before retrying.'
+            : (d?.error || t('auth.login.failed')));
+        toast.error(errorMsg);
       }
     } finally {
       setLoading(false);

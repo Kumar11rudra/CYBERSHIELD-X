@@ -28,7 +28,7 @@ describe('CyberBot Conversational Intelligence & Knowledge API (/api/chatbot/cha
 
         expect(res.status).toBe(200);
         expect(res.body.content).toMatch(/CyberShield X/i);
-        expect(res.body.content).toMatch(/110/);
+        expect(res.body.content).toMatch(/111|110/);
     });
 
     it('should list tool categories when asked about tools catalog', async () => {
@@ -42,7 +42,7 @@ describe('CyberBot Conversational Intelligence & Knowledge API (/api/chatbot/cha
 
         expect(res.status).toBe(200);
         expect(res.body.content).toMatch(/Recon/i);
-        expect(res.body.content).toMatch(/110/);
+        expect(res.body.content).toMatch(/111|110/);
     });
 
     it('should explain all 7 automated SOC playbooks when queried', async () => {

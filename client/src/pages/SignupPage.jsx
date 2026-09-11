@@ -151,6 +151,7 @@ export default function SignupPage() {
 
   const handleSignupSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return; // Prevent double submission / duplicate account creation races
     const newErrors = {};
 
     if (!form.fullName.trim()) newErrors.fullName = 'Full name is required';

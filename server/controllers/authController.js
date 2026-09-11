@@ -13,13 +13,32 @@ class AuthController {
         this.roleService = deps.roleService;
     }
 
+    // Cookie configuration helper supporting local dev (HTTP) and production (HTTPS)
+    _getCookieOptions(req, maxAge, path = '/') {
+        const isProduction = process.env.NODE_ENV === 'production';
+        const isSecure = Boolean(isProduction || req.secure || req.headers['x-forwarded-proto'] === 'https');
+        const sameSite = isProduction ? 'none' : 'lax';
+        return {
+            httpOnly: true,
+            secure: isSecure,
+            sameSite,
+            maxAge,
+            path,
+        };
+    }
+
     // Arrow functions to maintain 'this' binding when used in Express routes
     
     register = async (req, res) => {
         try {
             const { username, email, password, mobileNumber, fullName } = req.body;
             if (!username || !email || !password || !mobileNumber) {
-                return res.status(400).json({ success: false, error: 'Username, email, password, and mobile number are required' });
+                return res.status(400).json({
+                    success: false,
+                    error: 'Username, email, password, and mobile number are required',
+                    code: 'AUTH_INVALID_INPUT',
+                    errorDetails: { code: 'AUTH_INVALID_INPUT', message: 'Username, email, password, and mobile number are required' }
+                });
             }
 
             // Create active user record directly (handled in AuthService)
@@ -27,37 +46,41 @@ class AuthController {
 
             // Generate authentication session tokens
             const { generateToken, generateRefreshToken } = require('../utils/jwt');
-            const tokenPayload = { id: user.id, role: user.role };
+            const crypto = require('crypto');
+            const sessionId = crypto.randomUUID();
+
+            try {
+                const sessionService = require('../services/sessionService');
+                await sessionService.createSession(user.id, sessionId, req.ip, req.get('User-Agent'));
+            } catch {}
+
+            const tokenPayload = { id: user.id, role: user.role, sessionId };
             const accessToken = generateToken(tokenPayload);
             const refreshToken = generateRefreshToken(tokenPayload);
 
-            const cookieSameSite = process.env.NODE_ENV === 'production' ? 'none' : 'strict';
-            res.cookie('token', accessToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: cookieSameSite,
-                maxAge: 15 * 60 * 1000
-            });
-            res.cookie('refreshToken', refreshToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: cookieSameSite,
-                maxAge: 7 * 24 * 60 * 60 * 1000,
-                path: '/api/auth/refresh'
-            });
+            res.cookie('token', accessToken, this._getCookieOptions(req, 15 * 60 * 1000, '/'));
+            res.cookie('refreshToken', refreshToken, this._getCookieOptions(req, 7 * 24 * 60 * 60 * 1000, '/api/auth/refresh'));
 
             res.status(201).json({
                 success: true,
                 authenticated: true,
                 user: { id: user.id, username: user.username, email: user.email, role: user.role, status: user.status },
-                token: accessToken
+                token: accessToken,
+                refreshToken: refreshToken
             });
         } catch (err) {
             // Normalize duplicate database key errors/validation blocks generics to prevent account enumeration
-            const errMsg = (err.message.includes('already registered') || err.message.includes('duplicate') || err.code === 11000)
+            const isDup = (err.message.includes('already registered') || err.message.includes('duplicate') || err.code === 11000);
+            const errMsg = isDup
                 ? 'Username, email, or mobile number is already registered.'
-                : 'Registration failed. Please verify your inputs.';
-            res.status(400).json({ success: false, error: errMsg });
+                : (err.message.includes('required') ? err.message : 'Registration failed. Please verify your inputs.');
+            const code = isDup ? 'AUTH_ACCOUNT_EXISTS' : 'AUTH_INVALID_INPUT';
+            res.status(400).json({
+                success: false,
+                error: errMsg,
+                code,
+                errorDetails: { code, message: errMsg }
+            });
         }
     }
 
@@ -70,25 +93,25 @@ class AuthController {
 
             const { user, accessToken, refreshToken } = await this.authService.login({ email: loginId, identity: loginId, password, ip, userAgent });
 
-            // Set secure cookies
-            const cookieSameSite = process.env.NODE_ENV === 'production' ? 'none' : 'strict';
-            res.cookie('token', accessToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: cookieSameSite,
-                maxAge: 15 * 60 * 1000 // 15 minutes
-            });
-            res.cookie('refreshToken', refreshToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: cookieSameSite,
-                maxAge: 7 * 24 * 60 * 60 * 1000,
-                path: '/api/auth/refresh'
-            });
+            res.cookie('token', accessToken, this._getCookieOptions(req, 15 * 60 * 1000, '/'));
+            res.cookie('refreshToken', refreshToken, this._getCookieOptions(req, 7 * 24 * 60 * 60 * 1000, '/api/auth/refresh'));
 
-            res.json({ success: true, message: 'Login successful', user, token: accessToken });
+            res.json({
+                success: true,
+                message: 'Login successful',
+                user,
+                token: accessToken,
+                refreshToken: refreshToken
+            });
         } catch (err) {
-            res.status(401).json({ success: false, error: err.message });
+            const isSuspended = err.message && err.message.includes('suspended');
+            const code = isSuspended ? 'AUTH_ACCOUNT_DISABLED' : 'AUTH_INVALID_CREDENTIALS';
+            res.status(401).json({
+                success: false,
+                error: err.message,
+                code,
+                errorDetails: { code, message: err.message }
+            });
         }
     }
 
@@ -102,76 +125,92 @@ class AuthController {
             const { user, accessToken, refreshToken } = await this.authService.login({ email: loginIdentifier, password, ip, userAgent });
 
             if (user.role !== 'admin') {
-                return res.status(403).json({ success: false, error: 'Admin access required' });
+                return res.status(403).json({
+                    success: false,
+                    error: 'Admin access required',
+                    code: 'AUTH_FORBIDDEN',
+                    errorDetails: { code: 'AUTH_FORBIDDEN', message: 'Admin access required' }
+                });
             }
 
-            const cookieSameSite = process.env.NODE_ENV === 'production' ? 'none' : 'strict';
-            res.cookie('token', accessToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: cookieSameSite,
-                maxAge: 15 * 60 * 1000
-            });
-            res.cookie('refreshToken', refreshToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: cookieSameSite,
-                maxAge: 7 * 24 * 60 * 60 * 1000,
-                path: '/api/auth/refresh'
-            });
+            res.cookie('token', accessToken, this._getCookieOptions(req, 15 * 60 * 1000, '/'));
+            res.cookie('refreshToken', refreshToken, this._getCookieOptions(req, 7 * 24 * 60 * 60 * 1000, '/api/auth/refresh'));
 
-            res.json({ success: true, message: 'Admin login successful', user, token: accessToken });
+            res.json({
+                success: true,
+                message: 'Admin login successful',
+                user,
+                token: accessToken,
+                refreshToken: refreshToken
+            });
         } catch (err) {
-            res.status(401).json({ success: false, error: err.message });
+            const isSuspended = err.message && err.message.includes('suspended');
+            const code = isSuspended ? 'AUTH_ACCOUNT_DISABLED' : 'AUTH_INVALID_CREDENTIALS';
+            res.status(401).json({
+                success: false,
+                error: err.message,
+                code,
+                errorDetails: { code, message: err.message }
+            });
         }
     }
 
     logout = async (req, res) => {
         try {
-            const userId = req.user ? req.user.id : 'unknown';
+            const userId = req.user ? (req.user.id || req.user._id) : 'unknown';
+            if (req.sessionId) {
+                try {
+                    const sessionService = require('../services/sessionService');
+                    await sessionService.revokeSession(req.sessionId);
+                } catch {}
+            }
             await this.authService.logout(userId);
             
-            const cookieSameSite = process.env.NODE_ENV === 'production' ? 'none' : 'strict';
-            res.clearCookie('token', {
-                httpOnly: true,
-                secure: true,
-                sameSite: cookieSameSite
-            });
-            res.clearCookie('refreshToken', {
-                httpOnly: true,
-                secure: true,
-                sameSite: cookieSameSite,
-                path: '/api/auth/refresh'
-            });
+            const clearOpts = this._getCookieOptions(req, 0);
+            res.clearCookie('token', { ...clearOpts, path: '/' });
+            res.clearCookie('refreshToken', { ...clearOpts, path: '/api/auth/refresh' });
             res.json({ success: true, message: 'Logged out successfully' });
         } catch (err) {
-            res.status(500).json({ success: false, error: 'Logout failed' });
+            res.status(500).json({
+                success: false,
+                error: 'Logout failed',
+                code: 'AUTH_SERVER_ERROR',
+                errorDetails: { code: 'AUTH_SERVER_ERROR', message: 'Logout failed' }
+            });
         }
     }
 
     refresh = async (req, res) => {
         try {
-            const refreshTokenStr = req.cookies?.refreshToken;
-            const { accessToken, refreshToken } = await this.authService.refreshToken(refreshTokenStr);
+            const refreshTokenStr = req.cookies?.refreshToken || req.body?.refreshToken || req.headers['x-refresh-token'];
+            if (!refreshTokenStr) {
+                return res.status(401).json({
+                    success: false,
+                    error: 'Refresh token is required',
+                    code: 'AUTH_REFRESH_FAILED',
+                    errorDetails: { code: 'AUTH_REFRESH_FAILED', message: 'Refresh token is required' }
+                });
+            }
 
-            const cookieSameSite = process.env.NODE_ENV === 'production' ? 'none' : 'strict';
-            res.cookie('token', accessToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: cookieSameSite,
-                maxAge: 15 * 60 * 1000
-            });
-            res.cookie('refreshToken', refreshToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: cookieSameSite,
-                maxAge: 7 * 24 * 60 * 60 * 1000,
-                path: '/api/auth/refresh'
-            });
+            const { accessToken, refreshToken, user } = await this.authService.refreshToken(refreshTokenStr);
 
-            res.json({ success: true, message: 'Token refreshed', token: accessToken });
+            res.cookie('token', accessToken, this._getCookieOptions(req, 15 * 60 * 1000, '/'));
+            res.cookie('refreshToken', refreshToken, this._getCookieOptions(req, 7 * 24 * 60 * 60 * 1000, '/api/auth/refresh'));
+
+            res.json({
+                success: true,
+                message: 'Token refreshed',
+                token: accessToken,
+                refreshToken: refreshToken,
+                user: user || undefined
+            });
         } catch (err) {
-            res.status(401).json({ success: false, error: err.message });
+            res.status(401).json({
+                success: false,
+                error: err.message || 'Invalid or expired refresh token',
+                code: 'AUTH_REFRESH_FAILED',
+                errorDetails: { code: 'AUTH_REFRESH_FAILED', message: err.message || 'Invalid or expired refresh token' }
+            });
         }
     }
 

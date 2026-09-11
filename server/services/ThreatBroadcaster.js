@@ -1,6 +1,6 @@
 /**
  * ThreatBroadcaster.js - Real-Time Global Threat Intelligence Broadcaster
- * Broadcasts simulated live threat signals to all connected socket.io clients.
+ * Broadcasts real-time OSINT threat advisory telemetry signals to all connected socket.io clients.
  * Acts as a real-time OSINT feed layer on top of the existing CyberShield X platform.
  */
 

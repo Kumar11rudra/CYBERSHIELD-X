@@ -1,0 +1,249 @@
+{
+  "version": "v61.4.0",
+  "directive": "Authentication Reliability & Identity Hardening Directive",
+  "executedAt": "2026-09-11T04:41:50.960Z",
+  "verdict": "AUTHENTICATION_RELIABILITY_CERTIFIED",
+  "totalChecks": 34,
+  "passedChecks": 34,
+  "failedChecks": 0,
+  "checks": [
+    {
+      "id": 1,
+      "category": "CORE",
+      "name": "Signup success",
+      "status": "PASS",
+      "details": "HTTP 201"
+    },
+    {
+      "id": 2,
+      "category": "CORE",
+      "name": "Signup duplicate protection",
+      "status": "PASS",
+      "details": "Code: AUTH_ACCOUNT_EXISTS"
+    },
+    {
+      "id": 3,
+      "category": "CORE",
+      "name": "Login success",
+      "status": "PASS",
+      "details": "HTTP 200"
+    },
+    {
+      "id": 4,
+      "category": "CORE",
+      "name": "Invalid login rejection",
+      "status": "PASS",
+      "details": "Code: AUTH_INVALID_CREDENTIALS"
+    },
+    {
+      "id": 5,
+      "category": "CORE",
+      "name": "Logout success",
+      "status": "PASS",
+      "details": "HTTP 200"
+    },
+    {
+      "id": 6,
+      "category": "CORE",
+      "name": "Protected endpoint access",
+      "status": "PASS",
+      "details": "User: rel_op_1789101710999"
+    },
+    {
+      "id": 7,
+      "category": "CORE",
+      "name": "Expired access token handling",
+      "status": "PASS",
+      "details": "Code: AUTH_SESSION_EXPIRED"
+    },
+    {
+      "id": 8,
+      "category": "CORE",
+      "name": "Token refresh success",
+      "status": "PASS",
+      "details": "New Token Generated"
+    },
+    {
+      "id": 9,
+      "category": "CORE",
+      "name": "Refresh failure rejection",
+      "status": "PASS",
+      "details": "Code: AUTH_REFRESH_FAILED"
+    },
+    {
+      "id": 10,
+      "category": "CORE",
+      "name": "No infinite 401 loop",
+      "status": "PASS",
+      "details": "Deterministic 401 without recursion"
+    },
+    {
+      "id": 11,
+      "category": "RELIABILITY",
+      "name": "Concurrent 401 single-flight refresh",
+      "status": "PASS",
+      "details": "Dispatched exactly 1 refresh call"
+    },
+    {
+      "id": 12,
+      "category": "RELIABILITY",
+      "name": "Page reload auth bootstrap",
+      "status": "PASS",
+      "details": "User reconstructed: rel_op_1789101710999"
+    },
+    {
+      "id": 13,
+      "category": "RELIABILITY",
+      "name": "Slow network handling",
+      "status": "PASS",
+      "details": "Request timeout guard active at 15s"
+    },
+    {
+      "id": 14,
+      "category": "RELIABILITY",
+      "name": "Backend restart recovery",
+      "status": "PASS",
+      "details": "Session persists in MongoDB TTL store"
+    },
+    {
+      "id": 15,
+      "category": "RELIABILITY",
+      "name": "Double-click login protection",
+      "status": "PASS",
+      "details": "Parallel logins resolve idempotently"
+    },
+    {
+      "id": 16,
+      "category": "RELIABILITY",
+      "name": "Double-submit signup protection",
+      "status": "PASS",
+      "details": "1 Accepted (201), 1 Rejected (400)"
+    },
+    {
+      "id": 17,
+      "category": "SECURITY",
+      "name": "Token claims validation",
+      "status": "PASS",
+      "details": "iss: cybershield-x, aud: cybershield-x-api"
+    },
+    {
+      "id": 18,
+      "category": "SECURITY",
+      "name": "Role enforcement (RBAC)",
+      "status": "PASS",
+      "details": "Status: 403, Code: AUTH_FORBIDDEN"
+    },
+    {
+      "id": 19,
+      "category": "SECURITY",
+      "name": "Tenant isolation",
+      "status": "PASS",
+      "details": "User context bound to token identity"
+    },
+    {
+      "id": 20,
+      "category": "SECURITY",
+      "name": "Password/credential redaction",
+      "status": "PASS",
+      "details": "Passwords omitted from JSON and audit logs"
+    },
+    {
+      "id": 21,
+      "category": "SECURITY",
+      "name": "Rate limiting protection",
+      "status": "PASS",
+      "details": "authLimiter mounted on /api/auth"
+    },
+    {
+      "id": 22,
+      "category": "SECURITY",
+      "name": "Session invalidation",
+      "status": "PASS",
+      "details": "Revoked session denied immediately"
+    },
+    {
+      "id": 23,
+      "category": "BROWSER_UX",
+      "name": "Login UI recovery state",
+      "status": "PASS",
+      "details": "Deterministic AUTH_INVALID_CREDENTIALS error"
+    },
+    {
+      "id": 24,
+      "category": "BROWSER_UX",
+      "name": "Signup UI recovery state",
+      "status": "PASS",
+      "details": "Input validation feedback contract returned"
+    },
+    {
+      "id": 25,
+      "category": "BROWSER_UX",
+      "name": "Logout + refresh unauthenticated state",
+      "status": "PASS",
+      "details": "Session cleanly cleared"
+    },
+    {
+      "id": 26,
+      "category": "BROWSER_UX",
+      "name": "Multi-tab session synchronization",
+      "status": "PASS",
+      "details": "Storage event listener active in AuthContext"
+    },
+    {
+      "id": 27,
+      "category": "BROWSER_UX",
+      "name": "User switching without stale cache",
+      "status": "PASS",
+      "details": "Logout purges credentials and active tenant scope"
+    },
+    {
+      "id": 28,
+      "category": "REGRESSION",
+      "name": "Existing 111-tool certification",
+      "status": "PASS",
+      "details": "111 canonical tools certified"
+    },
+    {
+      "id": 29,
+      "category": "REGRESSION",
+      "name": "Phase 69 capability expansion",
+      "status": "PASS",
+      "details": "20/20 checks certified"
+    },
+    {
+      "id": 30,
+      "category": "REGRESSION",
+      "name": "Phase 70 SOC intelligence acceptance",
+      "status": "PASS",
+      "details": "22/22 checks certified"
+    },
+    {
+      "id": 31,
+      "category": "REGRESSION",
+      "name": "Existing Phase 65 E2E acceptance",
+      "status": "PASS",
+      "details": "35/35 checks certified"
+    },
+    {
+      "id": 32,
+      "category": "REGRESSION",
+      "name": "Phase 68 production readiness",
+      "status": "PASS",
+      "details": "DEPLOYMENT_READY"
+    },
+    {
+      "id": 33,
+      "category": "REGRESSION",
+      "name": "Client production build",
+      "status": "PASS",
+      "details": "build/index.html compiled successfully"
+    },
+    {
+      "id": 34,
+      "category": "REGRESSION",
+      "name": "Authentication reliability test suite",
+      "status": "PASS",
+      "details": "18/18 Jest checks green"
+    }
+  ]
+}

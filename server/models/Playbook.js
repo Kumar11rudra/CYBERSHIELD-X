@@ -7,6 +7,8 @@ const PLAYBOOK_EVENTS = [
   'critical_ioc',             // critical IOC correlation hit
   'ssl_expired',              // SSL certificate expired alert
   'scan_completed',           // any scan completes
+  'detection_matched',        // detection rule triggered
+  'incident_created',         // incident escalated
   'manual',                   // manual trigger only
 ];
 
@@ -22,6 +24,12 @@ const PLAYBOOK_ACTION_TYPES = [
   'create_audit_entry',
   'create_notification',
   'generic_webhook',
+  'run_diagnostic_tool',
+  'create_case',
+  'create_alert',
+  'quarantine_item',
+  'enrich_ioc',
+  'case_escalation',
 ];
 
 const conditionSchema = new mongoose.Schema({
@@ -58,9 +66,8 @@ const actionSchema = new mongoose.Schema({
 const playbookSchema = new mongoose.Schema(
   {
     organizationId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Organization',
-      required: true,
+      type: mongoose.Schema.Types.Mixed,
+      required: false,
       index: true,
     },
     name: {

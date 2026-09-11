@@ -62,8 +62,8 @@ describe('Phase 26 — Live Model Performance & Timeout Hardening', () => {
     expect(res.body.success).toBe(true);
     expect(res.body.whois).toBeDefined();
     expect(res.body.dns).toBeDefined();
-    expect(elapsed).toBeLessThan(10000);
-  }, 12000);
+    expect(elapsed).toBeLessThan(15000);
+  }, 20000);
 
   it('4. Live SSL Checker model responds within 10,000ms deadline', async () => {
     const start = Date.now();

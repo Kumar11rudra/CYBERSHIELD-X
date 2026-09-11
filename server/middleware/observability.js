@@ -10,7 +10,12 @@ const metrics = {
   endpointStats: {}
 };
 
+const apiObservabilityService = require('../services/observability/APIObservabilityService');
+
 const observabilityMiddleware = (req, res, next) => {
+  // Delegate to Phase 76 Enterprise APIObservabilityService
+  apiObservabilityService.middleware(req, res, () => {});
+
   const start = process.hrtime();
   metrics.requestsTotal++;
 

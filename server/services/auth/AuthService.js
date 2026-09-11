@@ -177,8 +177,14 @@ class AuthService {
             throw new Error('Invalid credentials');
         }
 
-        // Generate tokens
-        const tokenPayload = { id: user.id, role: user.role };
+        // Generate session ID and tokens
+        const sessionId = crypto.randomUUID();
+        try {
+            const sessionService = require('../sessionService');
+            await sessionService.createSession(user.id, sessionId, ip, userAgent);
+        } catch {}
+
+        const tokenPayload = { id: user.id, role: user.role, sessionId };
         const accessToken = generateToken(tokenPayload);
         const refreshToken = generateRefreshToken(tokenPayload);
 
@@ -214,11 +220,30 @@ class AuthService {
             throw new Error('User not found');
         }
 
-        const tokenPayload = { id: user.id, role: user.role };
+        if (user.status === 'suspended' || user.isBanned) {
+            throw new Error('Account has been suspended. Please contact support.');
+        }
+
+        // Verify session is valid if sessionId is present
+        if (decoded.sessionId) {
+            try {
+                const sessionService = require('../sessionService');
+                const isSessionValid = await sessionService.isValid(decoded.sessionId);
+                if (!isSessionValid) {
+                    throw new Error('Session has been revoked');
+                }
+            } catch (sessErr) {
+                if (sessErr.message.includes('revoked')) throw sessErr;
+            }
+        }
+
+        const sessionId = decoded.sessionId || crypto.randomUUID();
+        const tokenPayload = { id: user.id, role: user.role, sessionId };
         const newAccessToken = generateToken(tokenPayload);
         const newRefreshToken = generateRefreshToken(tokenPayload);
 
-        return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+        const userDTO = { id: user.id, username: user.username, email: user.email, role: user.role, status: user.status };
+        return { accessToken: newAccessToken, refreshToken: newRefreshToken, user: userDTO };
     }
 
     /**

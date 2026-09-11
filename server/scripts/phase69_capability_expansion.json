@@ -1,0 +1,322 @@
+{
+  "generatedAt": "2026-09-09T15:43:58.261Z",
+  "platformVersion": "v61.4.0",
+  "phase": 69,
+  "verdict": "CAPABILITY_EXPANSION_PASSED",
+  "durationMs": 2188,
+  "metrics": {
+    "totalTests": 20,
+    "passed": 20,
+    "failed": 0,
+    "successRate": "100.0%"
+  },
+  "checks": [
+    {
+      "id": 1,
+      "name": "Dependency Detection",
+      "category": "DEPENDENCY_MANAGEMENT",
+      "passed": true,
+      "status": "PASS",
+      "timestamp": "2026-09-09T15:43:57.164Z",
+      "details": {
+        "totalAudited": 28,
+        "installedCount": 11,
+        "missingCount": 17,
+        "sampleInstalled": [
+          "nmap",
+          "dig",
+          "curl",
+          "openssl",
+          "whois"
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "name": "Version Inspection & Compatibility",
+      "category": "DEPENDENCY_MANAGEMENT",
+      "passed": true,
+      "status": "PASS",
+      "timestamp": "2026-09-09T15:43:57.164Z",
+      "details": {
+        "versionedCount": 11,
+        "inspections": [
+          {
+            "executable": "nmap",
+            "version": "7.98",
+            "minSupported": "7.80"
+          },
+          {
+            "executable": "dig",
+            "version": "detected",
+            "minSupported": "9.11.0"
+          },
+          {
+            "executable": "curl",
+            "version": "8.7.1",
+            "minSupported": "7.68.0"
+          },
+          {
+            "executable": "openssl",
+            "version": "3.6.3",
+            "minSupported": "1.1.1"
+          },
+          {
+            "executable": "whois",
+            "version": "detected",
+            "minSupported": "5.0.0"
+          },
+          {
+            "executable": "ping",
+            "version": "detected",
+            "minSupported": "1.0.0"
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "name": "Safe Remediation Probe Verification",
+      "category": "DEPENDENCY_MANAGEMENT",
+      "passed": true,
+      "status": "PASS",
+      "timestamp": "2026-09-09T15:43:57.197Z",
+      "details": {
+        "tool": "curl",
+        "binary": "curl",
+        "safeProbeSuccess": true,
+        "unlocked": true
+      }
+    },
+    {
+      "id": 4,
+      "name": "Persistent Terminal History",
+      "category": "TERMINAL_OPERATIONS",
+      "passed": true,
+      "status": "PASS",
+      "timestamp": "2026-09-09T15:43:57.234Z",
+      "details": {
+        "recordsFound": 11,
+        "sampleCommand": "whois example.com"
+      }
+    },
+    {
+      "id": 5,
+      "name": "Canonical Capabilities Autocomplete",
+      "category": "TERMINAL_OPERATIONS",
+      "passed": true,
+      "status": "PASS",
+      "timestamp": "2026-09-09T15:43:57.237Z",
+      "details": {
+        "totalCanonical": 111,
+        "nativeCount": 6,
+        "blockedCount": 9,
+        "blockedIdentified": [
+          "nikto",
+          "sqlmap",
+          "trivy",
+          "semgrep",
+          "gitleaks"
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "name": "Terminal Presets Availability",
+      "category": "TERMINAL_OPERATIONS",
+      "passed": true,
+      "status": "PASS",
+      "timestamp": "2026-09-09T15:43:57.238Z",
+      "details": {
+        "presetCount": 4,
+        "presets": [
+          "whois -> example.com",
+          "dns -> google.com",
+          "ssl -> google.com",
+          "port -> 127.0.0.1"
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "name": "Async Job Lifecycle & Execution ID Discipline",
+      "category": "JOB_OPERATIONS",
+      "passed": true,
+      "status": "PASS",
+      "timestamp": "2026-09-09T15:43:57.539Z",
+      "details": {
+        "jobId": "job_1788968637238_1d821c07",
+        "firstExecutionId": "exec_1788968637238_ef822ea1",
+        "retriedExecutionId": "exec_1788968637539_7fdf9e07",
+        "identityDisciplinePreserved": true
+      }
+    },
+    {
+      "id": 8,
+      "name": "SOC Case Management Lifecycle",
+      "category": "CASE_MANAGEMENT",
+      "passed": true,
+      "status": "PASS",
+      "timestamp": "2026-09-09T15:43:57.571Z",
+      "details": {
+        "caseId": "CASE-ACC-MTU9QJ4Z",
+        "status": "OPEN",
+        "assets": [
+          "portal.cybershield.local",
+          "192.168.10.50"
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "name": "Finding & Raw Evidence Integrity",
+      "category": "EVIDENCE_INTEGRITY",
+      "passed": true,
+      "status": "PASS",
+      "timestamp": "2026-09-09T15:43:57.605Z",
+      "details": {
+        "findingId": "FND-ACC-MTU9QJ60",
+        "hashStored": "ad282837865e97b508408102405d975c2ee1b390468bf83e70539adb8e7c0ea4",
+        "evidencePreserved": true
+      }
+    },
+    {
+      "id": 10,
+      "name": "SOC Alert Lifecycle & Resolution",
+      "category": "ALERT_OPERATIONS",
+      "passed": true,
+      "status": "PASS",
+      "timestamp": "2026-09-09T15:43:57.610Z",
+      "details": {
+        "alertId": "ALT-ACC-MTU9QJ6T",
+        "finalStatus": "RESOLVED",
+        "resolutionNotes": "Internal test confirmed safe"
+      }
+    },
+    {
+      "id": 11,
+      "name": "Bounded AI Investigation Synthesis",
+      "category": "AI_OPERATIONS",
+      "passed": true,
+      "status": "PASS",
+      "timestamp": "2026-09-09T15:43:57.622Z",
+      "details": {
+        "aiSummaryGenerated": true,
+        "aiActionsClassified": true
+      }
+    },
+    {
+      "id": 12,
+      "name": "AI Action Boundaries & Adversarial Guardrails",
+      "category": "SECURITY_BOUNDARIES",
+      "passed": true,
+      "status": "PASS",
+      "timestamp": "2026-09-09T15:43:57.623Z",
+      "details": {
+        "injectionNeutralized": true
+      }
+    },
+    {
+      "id": 13,
+      "name": "Role-Based Access Control (RBAC)",
+      "category": "SECURITY_BOUNDARIES",
+      "passed": true,
+      "status": "PASS",
+      "timestamp": "2026-09-09T15:43:57.623Z",
+      "details": {
+        "viewerBlocked": true,
+        "operatorAllowed": true
+      }
+    },
+    {
+      "id": 14,
+      "name": "Audit Logging & Secret Sanitization",
+      "category": "AUDIT_COMPLIANCE",
+      "passed": true,
+      "status": "PASS",
+      "timestamp": "2026-09-09T15:43:57.625Z",
+      "details": {
+        "auditLogged": true,
+        "secretsRedacted": true
+      }
+    },
+    {
+      "id": 15,
+      "name": "Global Multi-Entity Search",
+      "category": "SEARCH_OPERATIONS",
+      "passed": true,
+      "status": "PASS",
+      "timestamp": "2026-09-09T15:43:57.669Z",
+      "details": {
+        "totalFound": 20,
+        "resultsBreakdown": {
+          "cases": 10,
+          "findings": 10,
+          "alerts": 0
+        }
+      }
+    },
+    {
+      "id": "16.A",
+      "name": "Workflow A: Safe Tool Remediation & Verification Probe",
+      "category": "SOC_WORKFLOWS",
+      "passed": true,
+      "status": "PASS",
+      "timestamp": "2026-09-09T15:43:57.698Z",
+      "details": {
+        "tool": "curl",
+        "verified": true,
+        "auditLogged": true
+      }
+    },
+    {
+      "id": "16.B",
+      "name": "Workflow B: End-to-End Investigation Lifecycle",
+      "category": "SOC_WORKFLOWS",
+      "passed": true,
+      "status": "PASS",
+      "timestamp": "2026-09-09T15:43:57.939Z",
+      "details": {
+        "caseId": "CASE-WFB-MTU9QJ9E",
+        "evidenceHash": "98f68cdbdec219119598e01f86cf239ddf111a3b7dc8d642985f0e303f41219b",
+        "timelineEvents": 1
+      }
+    },
+    {
+      "id": "16.C",
+      "name": "Workflow C: Terminal Native Execution & History Traceability",
+      "category": "SOC_WORKFLOWS",
+      "passed": true,
+      "status": "PASS",
+      "timestamp": "2026-09-09T15:43:58.019Z",
+      "details": {
+        "executionId": "exec_wfc_1788968637939",
+        "durationMs": 76,
+        "historyRecorded": true
+      }
+    },
+    {
+      "id": "16.D",
+      "name": "Workflow D: Alert Ingestion, Triage & Resolution",
+      "category": "SOC_WORKFLOWS",
+      "passed": true,
+      "status": "PASS",
+      "timestamp": "2026-09-09T15:43:58.023Z",
+      "details": {
+        "alertId": "ALT-WFD-MTU9QJIB",
+        "resolved": true
+      }
+    },
+    {
+      "id": "16.E",
+      "name": "Workflow E: Bounded AI Investigation with Operator Approval Gate",
+      "category": "SOC_WORKFLOWS",
+      "passed": true,
+      "status": "PASS",
+      "timestamp": "2026-09-09T15:43:58.027Z",
+      "details": {
+        "boundedApprovalGateEnforced": true
+      }
+    }
+  ]
+}

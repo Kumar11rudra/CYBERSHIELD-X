@@ -1,0 +1,587 @@
+{
+  "generatedAt": "2026-09-09T15:43:58.027Z",
+  "platformVersion": "v61.4.0",
+  "phase": 69,
+  "verdict": "CAPABILITY_EXPANSION_PASSED",
+  "host": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpus": 8,
+    "totalMemoryBytes": 8589934592
+  },
+  "inventoryAccounting": {
+    "totalCanonicalTools": 111,
+    "targetBreakdown": {
+      "HOST_NATIVE": 6,
+      "CYBERSHIELD_API_ENGINE": 91,
+      "CLIENT_BROWSER": 5,
+      "BLOCKED_DEPENDENCY": 9
+    },
+    "formulaCheck": "6 HOST_NATIVE + 91 API_ENGINE + 5 CLIENT_BROWSER + 9 BLOCKED_DEPENDENCY = 111"
+  },
+  "monitoredBinaries": [
+    {
+      "toolId": "nmap",
+      "executable": "nmap",
+      "detectedPath": "/Applications/nmap.app/Contents/Resources/bin/nmap",
+      "installedVersion": "7.98",
+      "minSupportedVersion": "7.80",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install nmap",
+      "remediationCommand": null,
+      "status": "INSTALLED",
+      "executionTarget": "HOST_NATIVE",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.052Z"
+    },
+    {
+      "toolId": "dig",
+      "executable": "dig",
+      "detectedPath": "/usr/bin/dig",
+      "installedVersion": "detected",
+      "minSupportedVersion": "9.11.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install dig",
+      "remediationCommand": null,
+      "status": "INSTALLED",
+      "executionTarget": "HOST_NATIVE",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.068Z"
+    },
+    {
+      "toolId": "curl",
+      "executable": "curl",
+      "detectedPath": "/usr/bin/curl",
+      "installedVersion": "8.7.1",
+      "minSupportedVersion": "7.68.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install curl",
+      "remediationCommand": null,
+      "status": "INSTALLED",
+      "executionTarget": "HOST_NATIVE",
+      "unlocked": true,
+      "lastChecked": "2026-09-09T15:43:58.079Z"
+    },
+    {
+      "toolId": "openssl",
+      "executable": "openssl",
+      "detectedPath": "/opt/homebrew/bin/openssl",
+      "installedVersion": "3.6.3",
+      "minSupportedVersion": "1.1.1",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install openssl",
+      "remediationCommand": null,
+      "status": "INSTALLED",
+      "executionTarget": "HOST_NATIVE",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.095Z"
+    },
+    {
+      "toolId": "whois",
+      "executable": "whois",
+      "detectedPath": "/usr/bin/whois",
+      "installedVersion": "detected",
+      "minSupportedVersion": "5.0.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install whois",
+      "remediationCommand": null,
+      "status": "INSTALLED",
+      "executionTarget": "HOST_NATIVE",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.107Z"
+    },
+    {
+      "toolId": "ping",
+      "executable": "ping",
+      "detectedPath": "/sbin/ping",
+      "installedVersion": "detected",
+      "minSupportedVersion": "1.0.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install ping",
+      "remediationCommand": null,
+      "status": "INSTALLED",
+      "executionTarget": "HOST_NATIVE",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.119Z"
+    },
+    {
+      "toolId": "traceroute",
+      "executable": "traceroute",
+      "detectedPath": "/usr/sbin/traceroute",
+      "installedVersion": "detected",
+      "minSupportedVersion": "1.0.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install traceroute",
+      "remediationCommand": null,
+      "status": "INSTALLED",
+      "executionTarget": "HOST_NATIVE",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.132Z"
+    },
+    {
+      "toolId": "python3",
+      "executable": "python3",
+      "detectedPath": "/usr/bin/python3",
+      "installedVersion": "3.9.6",
+      "minSupportedVersion": "3.8.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install python3",
+      "remediationCommand": null,
+      "status": "INSTALLED",
+      "executionTarget": "CYBERSHIELD_API_ENGINE",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.155Z"
+    },
+    {
+      "toolId": "node",
+      "executable": "node",
+      "detectedPath": "/usr/local/bin/node",
+      "installedVersion": "24.14.0",
+      "minSupportedVersion": "18.0.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install node",
+      "remediationCommand": null,
+      "status": "INSTALLED",
+      "executionTarget": "CYBERSHIELD_API_ENGINE",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.175Z"
+    },
+    {
+      "toolId": "git",
+      "executable": "git",
+      "detectedPath": "/usr/bin/git",
+      "installedVersion": "2.50.1",
+      "minSupportedVersion": "2.25.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install git",
+      "remediationCommand": null,
+      "status": "INSTALLED",
+      "executionTarget": "CYBERSHIELD_API_ENGINE",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.193Z"
+    },
+    {
+      "toolId": "docker",
+      "executable": "docker",
+      "detectedPath": "/usr/local/bin/docker",
+      "installedVersion": "29.6.1",
+      "minSupportedVersion": "20.10.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install docker",
+      "remediationCommand": null,
+      "status": "INSTALLED",
+      "executionTarget": "CYBERSHIELD_API_ENGINE",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.260Z"
+    },
+    {
+      "toolId": "sqlmap",
+      "executable": "sqlmap",
+      "detectedPath": null,
+      "installedVersion": null,
+      "minSupportedVersion": "1.5.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install sqlmap",
+      "remediationCommand": "brew install sqlmap",
+      "status": "MISSING",
+      "executionTarget": "BLOCKED_DEPENDENCY",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.260Z"
+    },
+    {
+      "toolId": "trivy",
+      "executable": "trivy",
+      "detectedPath": null,
+      "installedVersion": null,
+      "minSupportedVersion": "0.30.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install trivy",
+      "remediationCommand": "brew install trivy",
+      "status": "MISSING",
+      "executionTarget": "BLOCKED_DEPENDENCY",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.260Z"
+    },
+    {
+      "toolId": "nikto",
+      "executable": "nikto",
+      "detectedPath": null,
+      "installedVersion": null,
+      "minSupportedVersion": "2.1.6",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install nikto",
+      "remediationCommand": "brew install nikto",
+      "status": "MISSING",
+      "executionTarget": "BLOCKED_DEPENDENCY",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.260Z"
+    },
+    {
+      "toolId": "aircrack-ng",
+      "executable": "aircrack-ng",
+      "detectedPath": null,
+      "installedVersion": null,
+      "minSupportedVersion": "1.6",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install aircrack-ng",
+      "remediationCommand": "brew install aircrack-ng",
+      "status": "MISSING",
+      "executionTarget": "BLOCKED_DEPENDENCY",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.260Z"
+    },
+    {
+      "toolId": "ghidra",
+      "executable": "ghidra",
+      "detectedPath": null,
+      "installedVersion": null,
+      "minSupportedVersion": "10.0.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install --cask ghidra",
+      "remediationCommand": "brew install --cask ghidra",
+      "status": "MISSING",
+      "executionTarget": "BLOCKED_DEPENDENCY",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.260Z"
+    },
+    {
+      "toolId": "yara",
+      "executable": "yara",
+      "detectedPath": null,
+      "installedVersion": null,
+      "minSupportedVersion": "4.0.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install yara",
+      "remediationCommand": "brew install yara",
+      "status": "MISSING",
+      "executionTarget": "BLOCKED_DEPENDENCY",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.260Z"
+    },
+    {
+      "toolId": "radare2",
+      "executable": "radare2",
+      "detectedPath": null,
+      "installedVersion": null,
+      "minSupportedVersion": "5.0.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install radare2",
+      "remediationCommand": "brew install radare2",
+      "status": "MISSING",
+      "executionTarget": "BLOCKED_DEPENDENCY",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.260Z"
+    },
+    {
+      "toolId": "semgrep",
+      "executable": "semgrep",
+      "detectedPath": null,
+      "installedVersion": null,
+      "minSupportedVersion": "1.0.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install semgrep",
+      "remediationCommand": "brew install semgrep",
+      "status": "MISSING",
+      "executionTarget": "BLOCKED_DEPENDENCY",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.260Z"
+    },
+    {
+      "toolId": "gitleaks",
+      "executable": "gitleaks",
+      "detectedPath": null,
+      "installedVersion": null,
+      "minSupportedVersion": "8.0.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install gitleaks",
+      "remediationCommand": "brew install gitleaks",
+      "status": "MISSING",
+      "executionTarget": "BLOCKED_DEPENDENCY",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.260Z"
+    },
+    {
+      "toolId": "subfinder",
+      "executable": "subfinder",
+      "detectedPath": null,
+      "installedVersion": null,
+      "minSupportedVersion": "2.5.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install subfinder",
+      "remediationCommand": "brew install subfinder",
+      "status": "MISSING",
+      "executionTarget": "BLOCKED_DEPENDENCY",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.260Z"
+    },
+    {
+      "toolId": "masscan",
+      "executable": "masscan",
+      "detectedPath": null,
+      "installedVersion": null,
+      "minSupportedVersion": "1.3.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install masscan",
+      "remediationCommand": "brew install masscan",
+      "status": "MISSING",
+      "executionTarget": "BLOCKED_DEPENDENCY",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.260Z"
+    },
+    {
+      "toolId": "gobuster",
+      "executable": "gobuster",
+      "detectedPath": null,
+      "installedVersion": null,
+      "minSupportedVersion": "3.1.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install gobuster",
+      "remediationCommand": "brew install gobuster",
+      "status": "MISSING",
+      "executionTarget": "BLOCKED_DEPENDENCY",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.260Z"
+    },
+    {
+      "toolId": "dirsearch",
+      "executable": "dirsearch",
+      "detectedPath": null,
+      "installedVersion": null,
+      "minSupportedVersion": "0.4.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install dirsearch",
+      "remediationCommand": "brew install dirsearch",
+      "status": "MISSING",
+      "executionTarget": "BLOCKED_DEPENDENCY",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.260Z"
+    },
+    {
+      "toolId": "theharvester",
+      "executable": "theharvester",
+      "detectedPath": null,
+      "installedVersion": null,
+      "minSupportedVersion": "4.0.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install theharvester",
+      "remediationCommand": "brew install theharvester",
+      "status": "MISSING",
+      "executionTarget": "BLOCKED_DEPENDENCY",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.260Z"
+    },
+    {
+      "toolId": "wafw00f",
+      "executable": "wafw00f",
+      "detectedPath": null,
+      "installedVersion": null,
+      "minSupportedVersion": "2.1.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install wafw00f",
+      "remediationCommand": "brew install wafw00f",
+      "status": "MISSING",
+      "executionTarget": "BLOCKED_DEPENDENCY",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.260Z"
+    },
+    {
+      "toolId": "sherlock",
+      "executable": "sherlock",
+      "detectedPath": null,
+      "installedVersion": null,
+      "minSupportedVersion": "0.14.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install sherlock",
+      "remediationCommand": "brew install sherlock",
+      "status": "MISSING",
+      "executionTarget": "BLOCKED_DEPENDENCY",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.260Z"
+    },
+    {
+      "toolId": "hydra",
+      "executable": "hydra",
+      "detectedPath": null,
+      "installedVersion": null,
+      "minSupportedVersion": "9.1.0",
+      "operatingSystemSupport": [
+        "darwin",
+        "linux"
+      ],
+      "architectureCompatibility": [
+        "arm64"
+      ],
+      "installationMethod": "brew install hydra",
+      "remediationCommand": "brew install hydra",
+      "status": "MISSING",
+      "executionTarget": "BLOCKED_DEPENDENCY",
+      "unlocked": false,
+      "lastChecked": "2026-09-09T15:43:58.260Z"
+    }
+  ],
+  "unlockedDependencies": [
+    "curl"
+  ]
+}

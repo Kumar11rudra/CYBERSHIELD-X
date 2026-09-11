@@ -18,4 +18,22 @@ router.get('/details', async (req, res) => {
   res.json(health);
 });
 
+// Full System Readiness Check
+router.get('/readiness', async (req, res) => {
+  try {
+    const readiness = await healthService.getDetailedReadiness();
+    const statusCode = readiness.status === 'ready' || readiness.status === 'degraded' ? 200 : 503;
+    res.status(statusCode).json({
+      success: true,
+      data: readiness
+    });
+  } catch (err) {
+    res.status(503).json({
+      success: false,
+      error: 'Readiness check failed',
+      details: err.message
+    });
+  }
+});
+
 module.exports = router;
