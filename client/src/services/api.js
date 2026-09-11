@@ -89,7 +89,12 @@ api.interceptors.response.use(
       originalRequest.url.includes('/auth/refresh') ||
       originalRequest.url.includes('/auth/login') ||
       originalRequest.url.includes('/auth/signup') ||
-      originalRequest.url.includes('/auth/admin-login')
+      originalRequest.url.includes('/auth/admin-login') ||
+      originalRequest.url.includes('/auth/check-username') ||
+      originalRequest.url.includes('/auth/forgot-password') ||
+      originalRequest.url.includes('/auth/reset-password') ||
+      originalRequest.url.includes('/auth/verify-email') ||
+      originalRequest.url.includes('/auth/2fa')
     );
 
     // Only intercept 401 on non-auth requests that have not been retried yet
@@ -106,15 +111,23 @@ api.interceptors.response.use(
           .catch((err) => Promise.reject(err));
       }
 
+      let fallbackRefreshToken = null;
+      let hasAccessToken = false;
+      try {
+        fallbackRefreshToken = localStorage.getItem('cybershield_refresh_token');
+        hasAccessToken = !!localStorage.getItem('cybershield_token');
+      } catch {}
+
+      // If user has neither an access token nor a refresh token, they are an unauthenticated guest.
+      // Do not attempt /auth/refresh to avoid false "Refresh token is required" error popups.
+      if (!fallbackRefreshToken && !hasAccessToken) {
+        return Promise.reject(error);
+      }
+
       originalRequest._retry = true;
       isRefreshing = true;
 
       try {
-        let fallbackRefreshToken = null;
-        try {
-          fallbackRefreshToken = localStorage.getItem('cybershield_refresh_token');
-        } catch {}
-
         const { data } = await axios.post(
           `${API_BASE_URL}/auth/refresh`,
           { refreshToken: fallbackRefreshToken },
@@ -139,7 +152,18 @@ api.interceptors.response.use(
         isRefreshing = false;
         return api(originalRequest);
       } catch (refreshError) {
-        processQueue(refreshError, null);
+        // Build user-friendly session expiration error instead of raw technical "Invalid refresh token"
+        const friendlyError = new Error('Your session has expired. Please sign in again.');
+        friendlyError.isSessionExpired = true;
+        friendlyError.response = {
+          status: 401,
+          data: {
+            code: 'AUTH_SESSION_EXPIRED',
+            error: 'Your session has expired. Please sign in again.'
+          }
+        };
+
+        processQueue(friendlyError, null);
         isRefreshing = false;
 
         // Clear expired credentials from local storage
@@ -151,11 +175,11 @@ api.interceptors.response.use(
         // Notify application of session expiration
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new CustomEvent('cybershield:session-expired', {
-            detail: { code: 'AUTH_SESSION_EXPIRED', message: 'Session expired' }
+            detail: { code: 'AUTH_SESSION_EXPIRED', message: 'Your session has expired. Please sign in again.' }
           }));
         }
 
-        return Promise.reject(refreshError);
+        return Promise.reject(friendlyError);
       }
     }
     return Promise.reject(error);

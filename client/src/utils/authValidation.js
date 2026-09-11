@@ -52,5 +52,12 @@ export const formatApiError = (error, fallbackMessage) => {
     }
   }
 
-  return error?.response?.data?.error || error?.message || fallbackMessage;
+  const rawError = error?.response?.data?.error || error?.message || fallbackMessage;
+
+  // Clean guard: Never expose technical refresh token errors directly to end users
+  if (typeof rawError === 'string' && (rawError.toLowerCase().includes('refresh token') || rawError.includes('AUTH_REFRESH_FAILED'))) {
+    return 'Your session has expired. Please sign in again.';
+  }
+
+  return rawError;
 };

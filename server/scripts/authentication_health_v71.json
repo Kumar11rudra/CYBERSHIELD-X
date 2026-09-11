@@ -1,7 +1,7 @@
 {
   "version": "v61.4.0",
   "directive": "Authentication Reliability & Identity Hardening Directive",
-  "executedAt": "2026-09-11T04:41:50.960Z",
+  "executedAt": "2026-09-11T05:35:05.655Z",
   "verdict": "AUTHENTICATION_RELIABILITY_CERTIFIED",
   "totalChecks": 34,
   "passedChecks": 34,
@@ -47,7 +47,7 @@
       "category": "CORE",
       "name": "Protected endpoint access",
       "status": "PASS",
-      "details": "User: rel_op_1789101710999"
+      "details": "User: rel_op_1789104905697"
     },
     {
       "id": 7,
@@ -89,7 +89,7 @@
       "category": "RELIABILITY",
       "name": "Page reload auth bootstrap",
       "status": "PASS",
-      "details": "User reconstructed: rel_op_1789101710999"
+      "details": "User reconstructed: rel_op_1789104905697"
     },
     {
       "id": 13,
