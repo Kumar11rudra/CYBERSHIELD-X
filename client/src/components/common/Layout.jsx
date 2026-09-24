@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import BrandLogo from './BrandLogo';
 import NetworkStatusHUD from './NetworkStatusHUD';
 import NotificationCenter from './NotificationCenter';
-import CyberTerminalModal from '../terminal/CyberTerminalModal';
 import CommandPaletteModal from './CommandPaletteModal';
 import api from '../../services/api';
 import { getAllTools } from '../toolkit/toolConfig';
@@ -48,57 +47,38 @@ const ICONS = {
   pulse: "M3 12h4l3-8 4 16 3-8h4",
   toolkit: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4",
   cpu: "M4 4h16v16H4V4zm5 0V2m6 0v2m-6 16v2m6-2v2M2 9h2m0 6H2m18-6h2m-2 6h2",
-  activity: "M22 12h-4l-3 9L9 3l-3 9H2"
+  activity: "M22 12h-4l-3 9L9 3l-3 9H2",
+  graph: "M18 4a3 3 0 100 6 3 3 0 000-6zM6 9a3 3 0 100 6 3 3 0 000-6zm12 7a3 3 0 100 6 3 3 0 000-6zM8.59 13.51l6.83 3.98m-.01-10.98l-6.82 3.98",
+  report: "M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
 };
 
-// ─── Grouped Navigation Structure ─────────────────────────────────────────────
-const NAV_GROUPS = [
+// ─── Approved 2-Section Navigation Architecture (Exactly 14 Primary Items) ────
+const NAV_SECTIONS = [
   {
-    title: 'OPERATIONS',
+    title: 'WORKSPACE',
     items: [
-      { to: '/dashboard', label: 'CyberSOC Desktop', icon: 'dashboard' },
-      { to: '/hunts', label: 'Threat Hunting', icon: 'search', badge: 'HUNT' },
-      { to: '/incidents', label: 'Incident Center', icon: 'shield', badge: 'CORR' },
-      { to: '/approvals', label: 'Approval Gate', icon: 'shield', badge: 'GATE' },
-      { to: '/cases', label: 'Cases & Workspace', icon: 'shield', badge: 'SOC' },
-      { to: '/alerts', label: 'SOC Alerts', icon: 'bell', badge: 'LIVE' },
-      { to: '/toolkit', label: `Toolkit Hub (${totalCanonicalTools})`, icon: 'toolkit', badge: `${totalCanonicalTools}` },
+      { to: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
+      { to: '/terminal', label: 'Terminal', icon: 'terminal', badge: 'NATIVE' },
+      { to: '/toolkit', label: 'Security Tools', icon: 'toolkit', badge: totalCanonicalTools ? `${totalCanonicalTools}` : '111' },
       { to: '/scan', label: 'Live Scanner', icon: 'scanner', badge: 'LIVE' },
       { to: '/web-forensics', label: 'Web Forensics', icon: 'globe' },
-      { to: '/bulk-scan', label: 'Bulk Scanner', icon: 'bulk' },
-      { to: '/upi-verifier', label: 'UPI Fraud Verifier', icon: 'search' },
-    ]
-  },
-  {
-    title: 'ANALYSIS',
-    items: [
-      { to: '/reports', label: 'SOC Reports & Metrics', icon: 'monitor', badge: 'v74' },
-      { to: '/compliance', label: 'Compliance Evidence', icon: 'shield', badge: 'AUDIT' },
-      { to: '/governance', label: 'Governance & Policy', icon: 'shield', badge: 'v75' },
-      { to: '/intel', label: 'Threat Intel Fusion', icon: 'globe', badge: 'FUSION' },
-      { to: '/detections', label: 'Detection Rules', icon: 'activity', badge: 'DET' },
-      { to: '/vulnerabilities', label: 'Vulnerabilities', icon: 'shield' },
-      { to: '/remediation', label: 'AI Remediation', icon: 'pulse' },
-      { to: '/breach-checker', label: 'Threat Intel & Breach', icon: 'monitor' },
-      { to: '/message-analyzer', label: 'Message Analyzer', icon: 'email' },
+      { to: '/breach-checker', label: 'Dark Web Monitor', icon: 'monitor' },
       { to: '/vault', label: 'Quantum Vault', icon: 'vault' },
-    ]
+      { to: '/history', label: 'Scan History', icon: 'history' },
+    ],
   },
   {
-    title: 'SYSTEM',
+    title: 'SOC INTELLIGENCE',
     items: [
-      { to: '/intelligence', label: 'Decision Intelligence', icon: 'shield', badge: 'v82' },
-      { to: '/investigation', label: 'Investigation Graph', icon: 'shield', badge: 'v81' },
-      { to: '/automation', label: 'Automation Center', icon: 'zap', badge: 'v80' },
-      { to: '/reliability', label: 'Reliability Center', icon: 'pulse', badge: 'v76' },
-      { to: '/system-health', label: 'System Readiness', icon: 'pulse' },
-      { to: '/soc', label: 'SOC SIEM Console', icon: 'bell' },
-      { to: '/history', label: 'Scan Audit History', icon: 'history' },
-      { to: '/assets', label: 'Managed Assets', icon: 'monitor' },
+      { to: '/incidents', label: 'Incident Center', icon: 'shield' },
+      { to: '/alerts', label: 'SOC Alerts & Rules', icon: 'bell' },
+      { to: '/hunts', label: 'Threat Hunting', icon: 'search' },
+      { to: '/investigation', label: 'Investigation Graph', icon: 'graph' },
+      { to: '/intelligence', label: 'Decision Intel', icon: 'cpu' },
+      { to: '/reports', label: 'Reports & Audit', icon: 'report' },
       { to: '/settings', label: 'System Settings', icon: 'settings' },
-    ]
-  }
-
+    ],
+  },
 ];
 
 export default function Layout() {
@@ -110,9 +90,6 @@ export default function Layout() {
 
   // Navigation & Modals
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [terminalOpen, setTerminalOpen] = useState(false);
-  const [terminalInitialTool, setTerminalInitialTool] = useState(null);
-  const [terminalInitialTarget, setTerminalInitialTarget] = useState('');
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [clockTime, setClockTime] = useState('');
@@ -199,9 +176,11 @@ export default function Layout() {
   };
 
   const openTerminalWithTool = (tool, target = 'example.com') => {
-    setTerminalInitialTool(tool);
-    setTerminalInitialTarget(target);
-    setTerminalOpen(true);
+    const params = new URLSearchParams();
+    if (tool?.id) params.set('tool', tool.id);
+    if (target) params.set('target', target);
+    const qs = params.toString();
+    navigate(qs ? `/terminal?${qs}` : '/terminal');
   };
 
   // Readiness presentation helper
@@ -210,16 +189,17 @@ export default function Layout() {
   const dbConnected = readinessData?.database?.connected ?? true;
   const aiProvider = readinessData?.aiEngine?.activeProvider || 'Google Gemini 2.5 Flash';
 
+  // Active route matching (supports exact and nested routes, e.g. /toolkit/dns -> /toolkit active)
+  const isRouteActive = (toPath) => {
+    if (location.pathname === toPath) return true;
+    if (toPath !== '/' && toPath !== '/dashboard' && location.pathname.startsWith(toPath + '/')) {
+      return true;
+    }
+    return false;
+  };
+
   return (
     <div className="flex h-screen bg-[#020713] text-slate-200 font-mono overflow-hidden selection:bg-cyan-500/30 selection:text-cyan-300">
-      {/* Real Interactive CyberSOC Terminal Modal */}
-      <CyberTerminalModal 
-        isOpen={terminalOpen} 
-        onClose={() => setTerminalOpen(false)}
-        initialTool={terminalInitialTool}
-        initialTarget={terminalInitialTarget}
-      />
-
       {/* Global Command Palette Modal */}
       <CommandPaletteModal
         isOpen={commandPaletteOpen}
@@ -231,7 +211,7 @@ export default function Layout() {
       <div className={`lg:hidden fixed top-0 left-0 right-0 h-14 backdrop-blur-xl border-b z-[60] flex items-center justify-between px-4 transition-colors ${
         isDark ? 'bg-[#020814]/90 border-cyan-500/20' : 'bg-slate-900/95 border-cyan-500/20'
       }`}>
-        <Link to="/dashboard" className="flex items-center gap-2">
+        <Link to="/" aria-label="CyberShield X Home" className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-lg">
           <BrandLogo size={22} />
           <span className="font-display font-black text-xs text-white tracking-widest uppercase">CYBERSHIELD X</span>
           <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">
@@ -240,7 +220,7 @@ export default function Layout() {
         </Link>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setTerminalOpen(true)}
+            onClick={() => navigate('/terminal')}
             aria-label="Open Cyber Terminal"
             className="px-2 py-1 bg-cyan-500/10 border border-cyan-500/30 rounded-lg text-cyan-400 text-xs font-bold"
           >
@@ -273,7 +253,7 @@ export default function Layout() {
         }`}>
           {/* Workstation Brand Header */}
           <div className="p-4 border-b border-cyan-500/15 flex items-center justify-between">
-            <Link to="/dashboard" className="flex items-center gap-2.5 group">
+            <Link to="/" aria-label="CyberShield X Home" className="flex items-center gap-2.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-xl">
               <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 group-hover:border-cyan-400/60 transition-all shadow-[0_0_12px_rgba(0,212,255,0.15)]">
                 <BrandLogo size={24} />
               </div>
@@ -294,7 +274,7 @@ export default function Layout() {
           {/* Quick Terminal Launcher Action */}
           <div className="px-3 pt-3 pb-1">
             <button
-              onClick={() => setTerminalOpen(true)}
+              onClick={() => navigate('/terminal')}
               className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 text-xs font-bold transition-all shadow-[0_0_10px_rgba(0,212,255,0.1)] group"
             >
               <div className="flex items-center gap-2">
@@ -307,20 +287,21 @@ export default function Layout() {
             </button>
           </div>
 
-          {/* Nav Items Grouped */}
+          {/* Nav Items Grouped — Approved 2-Section Structure */}
           <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-4 custom-scrollbar">
-            {NAV_GROUPS.map((group) => (
-              <div key={group.title} className="space-y-1">
-                <p className="px-3 text-[9px] font-bold text-cyan-400/60 uppercase tracking-widest">
-                  {group.title}
+            {NAV_SECTIONS.map((section) => (
+              <div key={section.title} className="space-y-1">
+                <p className="px-3 text-[9px] font-bold text-cyan-400/70 uppercase tracking-widest font-mono">
+                  {section.title}
                 </p>
                 <div className="space-y-0.5">
-                  {group.items.map((item) => {
-                    const isActive = location.pathname === item.to;
+                  {section.items.map((item) => {
+                    const isActive = isRouteActive(item.to);
                     return (
                       <Link
                         key={item.to}
                         to={item.to}
+                        title={item.label}
                         className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all group ${
                           isActive
                             ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/40 shadow-[0_0_15px_rgba(0,212,255,0.15)] font-bold'
@@ -338,7 +319,7 @@ export default function Layout() {
                         {item.badge && (
                           <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded border tracking-wider ${
                             isActive
-                              ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+                              ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 font-bold'
                               : 'bg-white/5 text-slate-400 border-white/10 group-hover:border-white/20'
                           }`}>
                             {item.badge}
@@ -423,7 +404,7 @@ export default function Layout() {
             {/* Right Zone: Controls, HUD & Clock */}
             <div className="flex items-center gap-3">
               <button
-                onClick={() => setTerminalOpen(true)}
+                onClick={() => navigate('/terminal')}
                 className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 text-xs font-bold transition-all"
                 title="Launch System Terminal"
               >

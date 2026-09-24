@@ -2,20 +2,22 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../services/api';
-import { useLanguage } from '../context/LanguageContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { formatApiError, getPasswordRequirements, isPasswordStrongEnough } from '../utils/authValidation';
+import BrandLogo from '../components/common/BrandLogo';
+import { KeyRound, Mail, ShieldCheck, Lock, Eye, EyeOff, ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 export default function ForgotPasswordPage() {
   const [identity, setIdentity] = useState('');
   const [otp, setOtp] = useState('');
   const [password, setPassword] = useState('');
+  const [showPw, setShowPw] = useState(false);
   const [token, setToken] = useState(''); // Verification token from OTP check
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState('REQUEST'); // REQUEST, VERIFY, RESET
-  
-  const { language } = useLanguage();
+
   const navigate = useNavigate();
+  const shouldReduceMotion = useReducedMotion();
   const passwordRequirements = getPasswordRequirements(password);
 
   const copy = {
@@ -33,7 +35,7 @@ export default function ForgotPasswordPage() {
     successReset: 'Password reset successful! Please login.',
     failed: 'Operation failed',
     passwordNeeds: 'Use 12+ characters with uppercase, lowercase, number, and special character.',
-    back: '← Back to Login',
+    back: 'Back to Login',
   };
 
   const handleRequest = async (e) => {
@@ -69,7 +71,12 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
 
     if (!isPasswordStrongEnough(password)) {
-      toast.error(passwordRequirements.filter((requirement) => !requirement.met).map((requirement) => requirement.label).join(' • '));
+      toast.error(
+        passwordRequirements
+          .filter((requirement) => !requirement.met)
+          .map((requirement) => requirement.label)
+          .join(' • ')
+      );
       return;
     }
 
@@ -86,139 +93,262 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080c14] flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyber-accent/5 via-transparent to-transparent pointer-events-none" />
-      
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+    <div className="min-h-screen bg-[#020814] text-slate-100 flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden select-none">
+      {/* Ambient cyber glow elements */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-10 right-10 w-[300px] h-[300px] bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
+
+      {/* Main Container */}
+      <motion.div
+        initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
         className="w-full max-w-md relative z-10"
       >
-        <div className="cyber-card p-10 backdrop-blur-xl bg-white/[0.02] border-white/5 relative overflow-hidden">
-          
-          {/* Header */}
-          <div className="text-center mb-10">
-             <motion.div 
-               animate={{ rotate: [0, 10, -10, 0] }} 
-               transition={{ duration: 4, repeat: Infinity }}
-               className="inline-flex items-center justify-center w-16 h-16 border border-cyber-accent/30 rounded-xl mb-6 bg-cyber-accent/5"
-             >
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgb(var(--cyber-accent-rgb))" strokeWidth="1.5">
-                  <path d="M12 2a4 4 0 0 1 4 4v2h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2h2V6a4 4 0 0 1 4-4z" />
-                  <path d="M12 13v4" />
-                  <circle cx="12" cy="15" r="5" strokeDasharray="2 2" />
-                </svg>
-             </motion.div>
-             <h1 className="font-display text-2xl text-white tracking-[0.3em] font-bold uppercase">{copy.title}</h1>
-             <p className="font-mono text-cyber-green text-[10px] mt-2 uppercase tracking-widest">{copy.desc}</p>
+        {/* Brand Header */}
+        <div className="text-center mb-6">
+          <Link to="/" className="inline-flex items-center gap-3 group focus:outline-none mb-3">
+            <div className="p-2.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 group-hover:border-cyan-400 shadow-[0_0_20px_rgba(0,212,255,0.2)] transition-all">
+              <BrandLogo size={36} />
+            </div>
+            <div className="text-left">
+              <span className="font-display font-black text-lg tracking-wider text-white group-hover:text-cyan-400 transition-colors block">
+                CYBERSHIELD X
+              </span>
+              <span className="text-[10px] font-mono text-cyan-400/80 tracking-widest uppercase block">
+                Security Operations Hub
+              </span>
+            </div>
+          </Link>
+        </div>
+
+        {/* Auth Card */}
+        <div className="bg-[#0c162d]/90 border border-cyan-500/25 rounded-2xl p-6 sm:p-8 backdrop-blur-xl shadow-[0_12px_45px_rgba(0,0,0,0.6)]">
+          {/* Step Progress Indicators */}
+          <div className="flex items-center justify-between gap-2 mb-6 px-1">
+            <div className="flex-1 flex items-center gap-2">
+              <div
+                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-colors ${
+                  step === 'REQUEST'
+                    ? 'bg-cyan-500 text-slate-950 shadow-[0_0_10px_rgba(0,212,255,0.5)]'
+                    : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                }`}
+              >
+                {step === 'REQUEST' ? '1' : '✓'}
+              </div>
+              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 hidden sm:inline">
+                Identify
+              </span>
+            </div>
+
+            <div className="w-6 h-[1px] bg-slate-700" />
+
+            <div className="flex-1 flex items-center gap-2 justify-center">
+              <div
+                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-colors ${
+                  step === 'VERIFY'
+                    ? 'bg-cyan-500 text-slate-950 shadow-[0_0_10px_rgba(0,212,255,0.5)]'
+                    : step === 'RESET'
+                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                    : 'bg-slate-800 text-slate-500 border border-slate-700'
+                }`}
+              >
+                {step === 'RESET' ? '✓' : '2'}
+              </div>
+              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 hidden sm:inline">
+                Verify OTP
+              </span>
+            </div>
+
+            <div className="w-6 h-[1px] bg-slate-700" />
+
+            <div className="flex-1 flex items-center gap-2 justify-end">
+              <div
+                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-colors ${
+                  step === 'RESET'
+                    ? 'bg-cyan-500 text-slate-950 shadow-[0_0_10px_rgba(0,212,255,0.5)]'
+                    : 'bg-slate-800 text-slate-500 border border-slate-700'
+                }`}
+              >
+                3
+              </div>
+              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 hidden sm:inline">
+                New Pass
+              </span>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-white tracking-tight">{copy.title}</h2>
+            <p className="text-xs text-slate-400 mt-1">{copy.desc}</p>
           </div>
 
           <AnimatePresence mode="wait">
             {step === 'REQUEST' && (
-              <motion.form 
+              <motion.form
                 key="request"
-                initial={{ opacity: 0, x: -20 }}
+                initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, x: -15 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                onSubmit={handleRequest} 
-                className="space-y-6"
+                exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: 15 }}
+                transition={{ duration: 0.2 }}
+                onSubmit={handleRequest}
+                className="space-y-4"
               >
-                <div className="relative group">
-                  <label className="block font-mono text-[10px] text-cyber-muted uppercase tracking-widest mb-2 group-focus-within:text-cyber-accent transition-colors">
+                <div>
+                  <label
+                    htmlFor="forgot-identity"
+                    className="block text-xs font-semibold text-slate-300 mb-1.5 font-mono uppercase tracking-wider"
+                  >
                     {copy.identity}
                   </label>
-                  <input
-                    type="text"
-                    value={identity}
-                    onChange={(e) => setIdentity(e.target.value)}
-                    className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-4 text-white font-mono text-sm focus:outline-none focus:border-cyber-accent focus:ring-1 focus:ring-cyber-accent transition-all placeholder:text-white/10"
-                    placeholder="Email / Phone / User"
-                    required
-                    autoComplete="username"
-                  />
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <Mail size={16} className="text-cyan-400/80" />
+                    </div>
+                    <input
+                      id="forgot-identity"
+                      type="text"
+                      value={identity}
+                      onChange={(e) => setIdentity(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-slate-600 focus:border-cyan-400 text-sm text-white placeholder-slate-500 transition-colors focus:outline-none focus:ring-1 focus:ring-cyan-400"
+                      placeholder="operator@cybershieldx.in"
+                      required
+                      autoFocus
+                      autoComplete="username"
+                    />
+                  </div>
                 </div>
+
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full cyber-button-primary py-4 font-bold tracking-widest text-sm uppercase flex items-center justify-center gap-3"
+                  className="w-full mt-2 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 active:scale-[0.99] text-slate-950 font-bold text-xs uppercase tracking-wider transition-all duration-150 shadow-[0_0_20px_rgba(0,212,255,0.3)] disabled:opacity-50 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-slate-900"
                 >
-                  {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : copy.sendOtp}
+                  {loading ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                      <span>{copy.loading}</span>
+                    </>
+                  ) : (
+                    <span>{copy.sendOtp}</span>
+                  )}
                 </button>
               </motion.form>
             )}
 
             {step === 'VERIFY' && (
-              <motion.form 
+              <motion.form
                 key="verify"
-                initial={{ opacity: 0, x: -20 }}
+                initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, x: -15 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                onSubmit={handleVerify} 
-                className="space-y-6"
+                exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: 15 }}
+                transition={{ duration: 0.2 }}
+                onSubmit={handleVerify}
+                className="space-y-4"
               >
-                <div className="relative group">
-                  <label className="block font-mono text-[10px] text-cyber-muted uppercase tracking-widest mb-2 group-focus-within:text-cyber-green transition-colors">
+                <div>
+                  <label
+                    htmlFor="forgot-otp"
+                    className="block text-xs font-semibold text-slate-300 mb-1.5 font-mono uppercase tracking-wider"
+                  >
                     {copy.otp}
                   </label>
-                  <input
-                    type="text"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-4 text-white font-mono text-lg text-center tracking-[1em] focus:outline-none focus:border-cyber-green focus:ring-1 focus:ring-cyber-green transition-all"
-                    placeholder="000000"
-                    required
-                    maxLength={6}
-                    autoComplete="one-time-code"
-                  />
-                  <p className="mt-4 font-mono text-[10px] text-cyber-muted text-center italic">
-                    Sent to identity: <span className="text-cyber-green">{identity}</span>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <KeyRound size={16} className="text-cyan-400/80" />
+                    </div>
+                    <input
+                      id="forgot-otp"
+                      type="text"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-slate-600 focus:border-cyan-400 text-base font-mono text-center tracking-[0.5em] text-white placeholder-slate-500 transition-colors focus:outline-none focus:ring-1 focus:ring-cyan-400"
+                      placeholder="000000"
+                      required
+                      autoFocus
+                      maxLength={6}
+                      autoComplete="one-time-code"
+                    />
+                  </div>
+                  <p className="mt-2 text-[11px] font-mono text-slate-400">
+                    Verification code dispatched to: <span className="text-cyan-400 font-semibold">{identity}</span>
                   </p>
                 </div>
+
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-4 bg-cyber-green/20 border border-cyber-green/50 text-cyber-green hover:bg-cyber-green hover:text-black font-bold tracking-widest text-sm uppercase transition-all flex items-center justify-center gap-3"
+                  className="w-full mt-2 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-[0.99] text-slate-950 font-bold text-xs uppercase tracking-wider transition-all duration-150 shadow-[0_0_20px_rgba(16,185,129,0.3)] disabled:opacity-50 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-slate-900"
                 >
-                  {loading ? <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" /> : copy.verify}
+                  {loading ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                      <span>{copy.loading}</span>
+                    </>
+                  ) : (
+                    <span>{copy.verify}</span>
+                  )}
                 </button>
               </motion.form>
             )}
 
             {step === 'RESET' && (
-              <motion.form 
+              <motion.form
                 key="reset"
-                initial={{ opacity: 0, x: -20 }}
+                initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, x: -15 }}
                 animate={{ opacity: 1, x: 0 }}
-                onSubmit={handleReset} 
-                className="space-y-6"
+                exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: 15 }}
+                transition={{ duration: 0.2 }}
+                onSubmit={handleReset}
+                className="space-y-4"
               >
-                <div className="relative group">
-                  <label className="block font-mono text-[10px] text-cyber-muted uppercase tracking-widest mb-2 group-focus-within:text-cyber-accent transition-colors">
+                <div>
+                  <label
+                    htmlFor="forgot-password"
+                    className="block text-xs font-semibold text-slate-300 mb-1.5 font-mono uppercase tracking-wider"
+                  >
                     {copy.newPass}
                   </label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-4 text-white font-mono text-sm focus:outline-none focus:border-cyber-accent focus:ring-1 focus:ring-cyber-accent transition-all placeholder:text-white/20"
-                    placeholder="••••••••"
-                    required
-                    minLength={12}
-                    autoComplete="new-password"
-                  />
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <Lock size={16} className="text-cyan-400/80" />
+                    </div>
+                    <input
+                      id="forgot-password"
+                      type={showPw ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700/80 hover:border-slate-600 focus:border-cyan-400 text-sm text-white placeholder-slate-500 transition-colors focus:outline-none focus:ring-1 focus:ring-cyan-400"
+                      placeholder="••••••••••••"
+                      required
+                      autoFocus
+                      minLength={12}
+                      autoComplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPw(!showPw)}
+                      aria-label={showPw ? 'Hide password' : 'Show password'}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-200 transition-colors"
+                    >
+                      {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+
                   {password && (
-                    <div className="mt-3 space-y-2">
-                      <p className="font-mono text-[10px] text-cyber-muted">
-                        {copy.passwordNeeds}
-                      </p>
-                      <div className="grid grid-cols-2 gap-2">
+                    <div className="mt-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800 space-y-2">
+                      <p className="text-[11px] font-mono text-slate-400">{copy.passwordNeeds}</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                         {passwordRequirements.map((requirement) => (
                           <div key={requirement.label} className="flex items-center gap-1.5">
-                            <span className={`text-[10px] ${requirement.met ? 'text-cyber-green' : 'text-cyber-muted/50'}`}>
+                            <span className={`text-xs ${requirement.met ? 'text-emerald-400 font-bold' : 'text-slate-600'}`}>
                               {requirement.met ? '✓' : '○'}
                             </span>
-                            <span className={`font-mono text-[9px] ${requirement.met ? 'text-cyber-green' : 'text-cyber-muted/60'}`}>
+                            <span
+                              className={`text-[11px] font-mono ${
+                                requirement.met ? 'text-emerald-300' : 'text-slate-500'
+                              }`}
+                            >
                               {requirement.label}
                             </span>
                           </div>
@@ -227,20 +357,32 @@ export default function ForgotPasswordPage() {
                     </div>
                   )}
                 </div>
+
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full cyber-button-primary py-4 font-bold tracking-widest text-sm uppercase flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(var(--cyber-accent-rgb),0.3)]"
+                  className="w-full mt-2 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 active:scale-[0.99] text-slate-950 font-bold text-xs uppercase tracking-wider transition-all duration-150 shadow-[0_0_20px_rgba(0,212,255,0.3)] disabled:opacity-50 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-slate-900"
                 >
-                  {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : copy.reset}
+                  {loading ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                      <span>{copy.loading}</span>
+                    </>
+                  ) : (
+                    <span>{copy.reset}</span>
+                  )}
                 </button>
               </motion.form>
             )}
           </AnimatePresence>
 
-          <div className="mt-10 pt-6 border-t border-white/5 text-center">
-            <Link to="/login" className="font-mono text-[11px] text-cyber-muted hover:text-white transition-colors tracking-widest uppercase">
-              {copy.back}
+          <div className="mt-6 pt-4 border-t border-slate-800/80 text-center">
+            <Link
+              to="/login"
+              className="inline-flex items-center gap-2 text-xs font-mono text-slate-400 hover:text-cyan-400 transition-colors uppercase tracking-wider"
+            >
+              <ArrowLeft size={14} />
+              <span>{copy.back}</span>
             </Link>
           </div>
         </div>

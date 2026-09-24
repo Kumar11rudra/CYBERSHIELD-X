@@ -1,294 +1,481 @@
-import React from 'react';
-import { Link, useParams, useLocation } from 'react-router-dom';
-import { getToolConfig, getStatusBadge } from './toolConfig';
-
 /**
- * ToolPageLayout — Shared layout wrapper for ALL tool pages.
+
+ * 🛡️ ToolPageLayout — CyberShield X
+
+ * Shared Execution-First Layout Wrapper for all /toolkit/:toolId routes.
+
  *
- * Usage:
- *   <ToolPageLayout toolId="nmap">
- *     <ScannerToolView toolId="nmap" />
- *   </ToolPageLayout>
+
+ * Features:
+
+ * - Direct visual alignment with approved dark navy cyber-glass design language (#020814 / #0c162d)
+
+ * - Navigation header with 'Back to Security Tools' breadcrumb (preserves category state)
+
+ * - Header with AnimatedToolAvatar, dynamic category theme, execution target badge, and capabilities
+
+ * - Graceful fallback when toolId is unregistered in the catalog
+
+ * - Partial capability integration warning if tool requires external provider credentials
+
  */
-const ToolPageLayout = ({ toolId: toolIdProp, children }) => {
+
+
+
+import React from 'react';
+
+import { Link, useParams, useLocation } from 'react-router-dom';
+
+import { ChevronLeft, Shield, AlertTriangle, Cpu, Terminal, Sparkles, Layers } from 'lucide-react';
+
+import { getToolConfig, getStatusBadge, TOOL_TYPES } from './toolConfig';
+
+import { getCategoryTheme, CATEGORY_ARCHETYPE_MAP } from './cards/toolThemes';
+
+import AnimatedToolAvatar from './cards/AnimatedToolAvatar';
+
+
+
+export default function ToolPageLayout({ toolId: toolIdProp, children }) {
+
   const params = useParams();
+
   const location = useLocation();
+
   const toolId = toolIdProp || params.toolId;
+
   const tool = getToolConfig(toolId);
 
-  const backTarget = location.state?.fromCategory 
-    ? `/toolkit?category=${encodeURIComponent(location.state.fromCategory)}` 
+
+
+  const backTarget = location.state?.fromCategory
+
+    ? `/toolkit?category=${encodeURIComponent(location.state.fromCategory)}`
+
     : '/toolkit';
 
+
+
+  // Defensive fallback if tool is not found
+
   if (!tool) {
+
     return (
-      <div style={styles.errorContainer}>
-        <span style={styles.errorIcon}>⚠️</span>
-        <h2 style={styles.errorTitle}>Tool Not Found</h2>
-        <p style={styles.errorText}>
-          No tool with ID <code style={styles.code}>{toolId}</code> exists.
-        </p>
-        <Link to={backTarget} style={styles.backLink}>
-          ← Back to Toolkit
-        </Link>
+
+      <div className="min-h-screen bg-[#020814] text-slate-100 flex items-center justify-center p-4">
+
+        <div className="max-w-md w-full p-8 rounded-2xl bg-[#0c162d]/90 border border-red-500/30 text-center space-y-4 shadow-2xl">
+
+          <div className="w-12 h-12 mx-auto rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400">
+
+            <AlertTriangle className="w-6 h-6" />
+
+          </div>
+
+          <h2 className="text-lg font-bold text-white font-mono uppercase tracking-wider">
+
+            Tool Dossier Not Found
+
+          </h2>
+
+          <p className="text-xs text-slate-400 font-mono">
+
+            No security engine registered with module identifier <code className="text-cyan-400 bg-cyan-950/40 px-1.5 py-0.5 rounded border border-cyan-500/30">{toolId}</code>.
+
+          </p>
+
+          <Link
+
+            to={backTarget}
+
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold uppercase tracking-wider hover:bg-cyan-500/20 transition-all"
+
+          >
+
+            <ChevronLeft className="w-4 h-4" />
+
+            <span>Return to Security Toolkit</span>
+
+          </Link>
+
+        </div>
+
       </div>
+
     );
+
   }
 
+
+
+  const theme = getCategoryTheme(tool.category);
+
+  const archetype = tool.avatarArchetype || CATEGORY_ARCHETYPE_MAP[tool.category] || 'Cyber Scout';
+
   const badge = getStatusBadge(tool.status);
-  const toolColor = tool.color || '#00d4ff';
+
+
+
+  // Execution Type Label
+
+  let executionTypeLabel = 'DIAGNOSTIC ENGINE';
+
+  let executionTypeColor = 'text-cyan-400 border-cyan-500/30 bg-cyan-500/10';
+
+  if (tool.type === TOOL_TYPES.SCANNER) {
+
+    executionTypeLabel = 'SCANNER ENGINE';
+
+    executionTypeColor = 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10';
+
+  } else if (tool.type === TOOL_TYPES.ANALYZER) {
+
+    executionTypeLabel = 'ANALYSIS ENGINE';
+
+    executionTypeColor = 'text-cyan-400 border-cyan-500/30 bg-cyan-500/10';
+
+  } else if (tool.type === TOOL_TYPES.UTILITY) {
+
+    executionTypeLabel = 'CLIENT-SIDE UTILITY';
+
+    executionTypeColor = 'text-purple-400 border-purple-500/30 bg-purple-500/10';
+
+  }
+
+
 
   return (
-    <div style={styles.page}>
-      {/* ── Back navigation ── */}
-      <div style={styles.backBar}>
-        <Link to={backTarget} style={styles.backLink}>
-          <span style={styles.backArrow}>←</span> Back to Toolkit
-        </Link>
+
+    <div className="min-h-screen bg-[#020814] text-slate-100 relative pb-20 overflow-x-hidden font-sans">
+
+      {/* Tactical Glow Backdrops */}
+
+      <div
+
+        aria-hidden="true"
+
+        className="pointer-events-none absolute -top-40 -left-40 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"
+
+      />
+
+      <div
+
+        aria-hidden="true"
+
+        className="pointer-events-none absolute top-40 -right-40 w-96 h-96 rounded-full blur-3xl"
+
+        style={{ backgroundColor: `${theme.accent}15` }}
+
+      />
+
+
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 relative z-10 space-y-6">
+
+
+
+        {/* Top Breadcrumb Bar */}
+
+        <div className="flex items-center justify-between gap-4">
+
+          <Link
+
+            to={backTarget}
+
+            className="inline-flex items-center gap-1.5 text-xs font-mono text-cyan-400 hover:text-cyan-300 transition-colors group"
+
+          >
+
+            <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
+
+            <span className="uppercase tracking-wider font-semibold">Back to Security Tools</span>
+
+          </Link>
+
+
+
+          <div className="flex items-center gap-2 text-[11px] font-mono text-slate-500">
+
+            <span className="hidden sm:inline">Toolkit</span>
+
+            <span className="hidden sm:inline">/</span>
+
+            <span className="text-slate-400">{tool.category}</span>
+
+            <span>/</span>
+
+            <span className="text-cyan-400 font-bold">{tool.id}</span>
+
+          </div>
+
+        </div>
+
+
+
+        {/* Tool Header Dossier Card */}
+
+        <header
+
+          className="p-6 sm:p-8 rounded-2xl bg-[#0c162d]/80 border border-slate-800/80 backdrop-blur-md shadow-2xl relative overflow-hidden"
+
+          style={{
+
+            borderColor: `${theme.accent}30`,
+
+            boxShadow: `0 0 35px ${theme.accent}10`,
+
+          }}
+
+        >
+
+          <div
+
+            aria-hidden="true"
+
+            className="absolute top-0 right-0 w-80 h-80 pointer-events-none"
+
+            style={{
+
+              background: `radial-gradient(circle at top right, ${theme.accent}18, transparent 70%)`
+
+            }}
+
+          />
+
+
+
+          <div className="flex flex-col md:flex-row md:items-center gap-6 relative z-10">
+
+            {/* Animated Tool Avatar */}
+
+            <div
+
+              className="p-3 rounded-2xl border flex-shrink-0 self-start md:self-center"
+
+              style={{
+
+                backgroundColor: `${theme.accent}10`,
+
+                borderColor: `${theme.accent}40`,
+
+                boxShadow: `0 0 25px ${theme.accent}20`
+
+              }}
+
+            >
+
+              <AnimatedToolAvatar
+
+                archetype={archetype}
+
+                accent={theme.accent}
+
+                size={68}
+
+                alt={`${tool.name} avatar`}
+
+              />
+
+            </div>
+
+
+
+            {/* Tool Identity Details */}
+
+            <div className="space-y-2 flex-1 min-w-0">
+
+              {/* Badges Row */}
+
+              <div className="flex items-center gap-2 flex-wrap">
+
+                {/* Category Badge */}
+
+                <span
+
+                  className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold tracking-wide uppercase border"
+
+                  style={{
+
+                    backgroundColor: theme.badgeBg,
+
+                    borderColor: theme.badgeBorder,
+
+                    color: theme.badgeText,
+
+                  }}
+
+                >
+
+                  {tool.category}
+
+                </span>
+
+
+
+                {/* Execution Type Badge */}
+
+                <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold tracking-wide uppercase border ${executionTypeColor}`}>
+
+                  {executionTypeLabel}
+
+                </span>
+
+
+
+                {/* Target Type Badge */}
+
+                {tool.inputType && (
+
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-medium tracking-wide uppercase bg-white/5 border border-white/10 text-slate-300">
+
+                    TARGET: {tool.inputType.toUpperCase()}
+
+                  </span>
+
+                )}
+
+
+
+                {/* Operational Status Badge */}
+
+                <span
+
+                  className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold tracking-wide uppercase border flex items-center gap-1.5"
+
+                  style={{
+
+                    backgroundColor: badge.bg,
+
+                    borderColor: `${badge.color}40`,
+
+                    color: badge.color,
+
+                  }}
+
+                >
+
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+
+                  <span>{badge.label}</span>
+
+                </span>
+
+              </div>
+
+
+
+              {/* Tool Title */}
+
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-mono">
+
+                {tool.name}
+
+              </h1>
+
+
+
+              {/* Tagline */}
+
+              {tool.tagline && (
+
+                <p className="text-cyan-400/90 text-xs sm:text-sm font-mono font-medium">
+
+                  {tool.tagline}
+
+                </p>
+
+              )}
+
+
+
+              {/* Description */}
+
+              <p className="text-slate-400 text-xs sm:text-sm leading-relaxed max-w-4xl">
+
+                {tool.description}
+
+              </p>
+
+
+
+              {/* Capabilities Pills */}
+
+              {Array.isArray(tool.capabilities) && tool.capabilities.length > 0 && (
+
+                <div className="pt-2 flex items-center gap-1.5 flex-wrap">
+
+                  <span className="text-[10px] font-mono text-slate-500 uppercase mr-1">
+
+                    Capabilities:
+
+                  </span>
+
+                  {tool.capabilities.map((cap) => (
+
+                    <span
+
+                      key={cap}
+
+                      className="px-2 py-0.5 rounded text-[10px] font-mono bg-[#071126] text-slate-300 border border-slate-800"
+
+                    >
+
+                      {cap}
+
+                    </span>
+
+                  ))}
+
+                </div>
+
+              )}
+
+            </div>
+
+          </div>
+
+        </header>
+
+
+
+        {/* Partial Capability Integration Alert */}
+
+        {tool.status === 'partial' && (
+
+          <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3 text-amber-300 text-xs font-mono">
+
+            <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+
+            <div className="space-y-0.5">
+
+              <span className="font-bold tracking-wider uppercase">PARTIAL CAPABILITY INTEGRATION</span>
+
+              <p className="text-slate-400 text-[11px]">
+
+                {tool.configRequiredMessage || 'Operational in baseline mode. Configure external provider API credentials for deep enrichment telemetry.'}
+
+              </p>
+
+            </div>
+
+          </div>
+
+        )}
+
+
+
+        {/* Main Tool Execution Content */}
+
+        <main className="space-y-6">
+
+          {children}
+
+        </main>
+
       </div>
 
-      {/* ── Header ── */}
-      <header
-        style={{
-          ...styles.header,
-          background: `linear-gradient(135deg, ${toolColor}18 0%, transparent 60%)`,
-          borderBottom: `1px solid ${toolColor}30`,
-        }}
-      >
-        <div style={styles.headerContent}>
-          {/* Icon */}
-          <div
-            style={{
-              ...styles.iconContainer,
-              background: `${toolColor}15`,
-              border: `1px solid ${toolColor}30`,
-            }}
-          >
-            <span style={styles.icon}>{tool.icon || '🔧'}</span>
-          </div>
-
-          {/* Title block */}
-          <div style={styles.titleBlock}>
-            <div style={styles.titleRow}>
-              <h1 style={styles.toolName}>{tool.name}</h1>
-              <span
-                style={{
-                  ...styles.statusBadge,
-                  color: badge.color,
-                  background: badge.bg,
-                  border: `1px solid ${badge.color}40`,
-                }}
-              >
-                {badge.label}
-              </span>
-            </div>
-            <p style={styles.tagline}>{tool.tagline}</p>
-          </div>
-        </div>
-
-        {/* Category pill */}
-        {tool.category && (
-          <span
-            style={{
-              ...styles.categoryPill,
-              color: toolColor,
-              borderColor: `${toolColor}40`,
-            }}
-          >
-            {tool.category}
-          </span>
-        )}
-      </header>
-
-      {tool.status === 'partial' && (
-        <div style={styles.partialBanner}>
-          <span style={styles.partialIcon}>⚠️</span>
-          <div style={styles.partialTextContent}>
-            <strong style={{ fontSize: '12px', color: '#f59e0b', letterSpacing: '0.5px' }}>PARTIAL CAPABILITY INTEGRATION</strong>
-            <p style={styles.partialSubtext}>
-              {tool.configRequiredMessage || "Available, but requires configured external provider credentials."}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* ── Main content ── */}
-      <main style={styles.main}>{children}</main>
     </div>
+
   );
-};
 
-/* ═══════════════════════════════════════════════════════
-   Inline Styles
-   ═══════════════════════════════════════════════════════ */
-const styles = {
-  page: {
-    minHeight: '100vh',
-    background: '#0a0e1a',
-    color: '#e2e8f0',
-    fontFamily:
-      "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  },
-
-  /* Back bar */
-  backBar: {
-    padding: '16px 24px',
-  },
-  backLink: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '6px',
-    color: '#00d4ff',
-    textDecoration: 'none',
-    fontSize: '14px',
-    fontWeight: 500,
-    transition: 'opacity 0.2s',
-    opacity: 0.85,
-  },
-  backArrow: {
-    fontSize: '16px',
-  },
-
-  /* Header */
-  header: {
-    padding: '24px 24px 20px',
-    display: 'flex',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap',
-    gap: '16px',
-  },
-  headerContent: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-  },
-  iconContainer: {
-    width: '56px',
-    height: '56px',
-    borderRadius: '14px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-  },
-  icon: {
-    fontSize: '28px',
-  },
-  titleBlock: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '4px',
-  },
-  titleRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    flexWrap: 'wrap',
-  },
-  toolName: {
-    margin: 0,
-    fontSize: '24px',
-    fontWeight: 700,
-    color: '#ffffff',
-    letterSpacing: '-0.02em',
-  },
-  tagline: {
-    margin: 0,
-    fontSize: '14px',
-    color: '#94a3b8',
-  },
-
-  /* Status badge */
-  statusBadge: {
-    padding: '3px 10px',
-    borderRadius: '999px',
-    fontSize: '11px',
-    fontWeight: 700,
-    letterSpacing: '0.06em',
-    lineHeight: '18px',
-    whiteSpace: 'nowrap',
-  },
-
-  /* Category pill */
-  categoryPill: {
-    padding: '4px 12px',
-    borderRadius: '999px',
-    fontSize: '12px',
-    fontWeight: 600,
-    border: '1px solid',
-    background: 'transparent',
-    alignSelf: 'center',
-    whiteSpace: 'nowrap',
-  },
-  partialBanner: {
-    background: 'rgba(245,158,11,0.06)',
-    border: '1px solid rgba(245,158,11,0.25)',
-    borderRadius: '12px',
-    padding: '16px 20px',
-    margin: '24px auto 0 auto',
-    maxWidth: '912px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-    fontFamily: '"JetBrains Mono", Courier, monospace',
-  },
-  partialIcon: {
-    fontSize: '24px',
-  },
-  partialTextContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '4px',
-  },
-  partialSubtext: {
-    margin: 0,
-    fontSize: '10px',
-    color: '#94a3b8',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
-  },
-
-  /* Main */
-  main: {
-    padding: '24px',
-    maxWidth: '960px',
-    margin: '0 auto',
-  },
-
-  /* Error state */
-  errorContainer: {
-    minHeight: '100vh',
-    background: '#0a0e1a',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '12px',
-    padding: '24px',
-    textAlign: 'center',
-  },
-  errorIcon: {
-    fontSize: '48px',
-  },
-  errorTitle: {
-    margin: 0,
-    fontSize: '22px',
-    color: '#ffffff',
-  },
-  errorText: {
-    margin: 0,
-    fontSize: '14px',
-    color: '#94a3b8',
-  },
-  code: {
-    fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-    background: 'rgba(255,255,255,0.06)',
-    padding: '2px 6px',
-    borderRadius: '4px',
-    fontSize: '13px',
-    color: '#00d4ff',
-  },
-};
-
-export default ToolPageLayout;
+}

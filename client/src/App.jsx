@@ -76,6 +76,7 @@ const ReliabilityCenterPage    = lazy(() => import('./pages/ReliabilityCenterPag
 const AutomationCenterPage     = lazy(() => import('./pages/AutomationCenterPage'));
 const InvestigationGraphPage   = lazy(() => import('./pages/InvestigationGraphPage'));
 const DecisionIntelligencePage = lazy(() => import('./pages/DecisionIntelligencePage'));
+const TerminalPage             = lazy(() => import('./pages/TerminalPage'));
 
 
 
@@ -160,6 +161,7 @@ const AppRoutes = () => (
       <Route path="remediation" element={<PrivateRoute><RemediationPage /></PrivateRoute>} />
       <Route path="system-health" element={<PrivateRoute><SystemHealthPage /></PrivateRoute>} />
       <Route path="toolkit" element={<PrivateRoute><ToolkitPage /></PrivateRoute>} />
+      <Route path="terminal" element={<PrivateRoute><TerminalPage /></PrivateRoute>} />
       <Route path="threat-intel" element={<PrivateRoute><ThreatIntelligencePage /></PrivateRoute>} />
       <Route path="privacy" element={<PrivacyPolicyPage />} />
       <Route path="terms" element={<TermsOfServicePage />} />
@@ -192,6 +194,7 @@ const ROUTE_TITLES = {
   '/': 'CyberShield X',
   '/dashboard': 'Dashboard — CyberShield X',
   '/scan': 'Live Scanner — CyberShield X',
+  '/terminal': 'Native Terminal — CyberShield X',
   '/bulk-scan': 'Bulk Scanner — CyberShield X',
   '/toolkit': 'Security Tools & Models — CyberShield X',
   '/message-analyzer': 'Message Analyzer — CyberShield X',

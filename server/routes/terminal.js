@@ -18,16 +18,34 @@ router.get('/host-capabilities', tryAuthenticate, async (req, res) => {
   try {
     const forceRefresh = Boolean(req.query.refresh === 'true' || req.headers['x-force-refresh']);
     const capabilities = await hostEnvironmentService.getHostCapabilities(forceRefresh);
+
+    // Sanitize binaries map to avoid leaking raw host filesystem paths to client
+    const safeBinaries = {};
+    if (capabilities.binaries) {
+      for (const [bin, info] of Object.entries(capabilities.binaries)) {
+        safeBinaries[bin] = {
+          installed: info.installed,
+          path: info.installed ? '[INSTALLED]' : null,
+          availability: info.availability || (info.nativeExecutionSupported ? 'AVAILABLE' : 'RESTRICTED'),
+          nativeExecutionSupported: info.nativeExecutionSupported,
+          remediation: info.remediation
+        };
+      }
+    }
+
     res.json({
       success: true,
-      data: capabilities
+      data: {
+        ...capabilities,
+        binaries: safeBinaries,
+        nativeCapabilities: capabilities.nativeCapabilities || hostEnvironmentService.getNativeCapabilities()
+      }
     });
   } catch (error) {
     logger.error('Failed to retrieve host capabilities:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to inspect host capabilities',
-      details: error.message
+      error: 'Failed to inspect host capabilities'
     });
   }
 });
@@ -150,13 +168,15 @@ router.get('/check-tool/:toolId', tryAuthenticate, async (req, res) => {
     const capability = await hostEnvironmentService.checkToolCapability(toolId);
     res.json({
       success: true,
-      data: capability
+      data: {
+        ...capability,
+        path: capability.installed ? '[INSTALLED]' : null
+      }
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: `Failed to check capability for ${req.params.toolId}`,
-      details: error.message
+      error: `Failed to check capability for ${req.params.toolId}`
     });
   }
 });

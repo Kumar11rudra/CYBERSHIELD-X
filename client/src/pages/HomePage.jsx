@@ -2,634 +2,707 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { getAllTools } from '../components/toolkit/toolConfig';
-import NexusCategoryGrid from '../components/home/NexusCategoryGrid';
 import BrandLogo from '../components/common/BrandLogo';
+import NexusCategoryGrid from '../components/home/NexusCategoryGrid';
+import ToolGrid from '../components/toolkit/cards/ToolGrid';
+import ExternalAlternativesModal from '../components/toolkit/cards/ExternalAlternativesModal';
+import BinaryMatrixRain from '../components/home/BinaryMatrixRain';
+import {
+  Shield,
+  Lock,
+  Terminal,
+  ArrowRight,
+  CheckCircle2,
+  ChevronRight,
+  Menu,
+  X,
+  Activity,
+  Search,
+  Database,
+  Globe,
+  Cpu,
+  Zap,
+} from 'lucide-react';
 
-// ─── Matrix Rain Canvas ───────────────────────────────────────────────────────
-function MatrixRain() {
-  const canvasRef = useRef(null);
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let W = canvas.width = window.innerWidth;
-    let H = canvas.height = window.innerHeight;
-    const cols = Math.floor(W / 18);
-    const drops = Array(cols).fill(1);
-    const chars = 'アイウエオカキクケコ01ABCDEF</>{}[]#@!?';
-
-    const draw = () => {
-      ctx.fillStyle = 'rgba(2,8,20,0.055)';
-      ctx.fillRect(0, 0, W, H);
-      ctx.font = '13px monospace';
-      drops.forEach((y, i) => {
-        const char = chars[Math.floor(Math.random() * chars.length)];
-        const bright = Math.random() > 0.95;
-        ctx.fillStyle = bright ? '#00ffcc' : `rgba(0,191,255,${0.08 + Math.random() * 0.18})`;
-        ctx.fillText(char, i * 18, y * 18);
-        if (y * 18 > H && Math.random() > 0.975) drops[i] = 0;
-        drops[i]++;
-      });
-    };
-
-    const id = setInterval(draw, 55);
-    const resize = () => {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    };
-    window.addEventListener('resize', resize);
-    return () => { clearInterval(id); window.removeEventListener('resize', resize); };
-  }, []);
-  return <canvas ref={canvasRef} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.35, pointerEvents: 'none', zIndex: 0 }} />;
-}
-
-// ─── Animated counter ─────────────────────────────────────────────────────────
+// ─── Animated Counter Component ───────────────────────────────────────────────
 function Counter({ to, suffix = '' }) {
   const [val, setVal] = useState(0);
   const ref = useRef(null);
+  const shouldReduceMotion = useReducedMotion();
+
   useEffect(() => {
-    const observer = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) {
-        let start = 0;
-        const duration = 2500; // 2.5 seconds total duration for a smooth, slow feel
-        const stepTime = Math.max(duration / to, 50); // Minimum 50ms between steps
-        const id = setInterval(() => {
-          start += 1;
-          if (start >= to) { setVal(to); clearInterval(id); } else setVal(start);
-        }, stepTime);
-      }
-    }, { threshold: 0.5 });
+    if (shouldReduceMotion) {
+      setVal(to);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          let start = 0;
+          const duration = 1800;
+          const stepTime = Math.max(Math.floor(duration / (to || 1)), 25);
+          const timer = setInterval(() => {
+            start += Math.ceil(to / 40) || 1;
+            if (start >= to) {
+              setVal(to);
+              clearInterval(timer);
+            } else {
+              setVal(start);
+            }
+          }, stepTime);
+        }
+      },
+      { threshold: 0.3 }
+    );
+
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
-  }, [to]);
-  return <span ref={ref}>{val}{suffix}</span>;
-}
+  }, [to, shouldReduceMotion]);
 
-// ─── Glitch text ──────────────────────────────────────────────────────────────
-function GlitchText({ text, color = '#00bfff' }) {
   return (
-    <span style={{ position: 'relative', display: 'inline-block', color }}>
-      {text}
-      <span aria-hidden="true" style={{
-        position: 'absolute', top: 0, left: 0, color: '#ff003c',
-        clipPath: 'polygon(0 30%,100% 30%,100% 50%,0 50%)',
-        animation: 'glitch1 3.5s infinite', opacity: 0.7
-      }}>{text}</span>
-      <span aria-hidden="true" style={{
-        position: 'absolute', top: 0, left: 0, color: '#00ffcc',
-        clipPath: 'polygon(0 60%,100% 60%,100% 80%,0 80%)',
-        animation: 'glitch2 3.5s infinite', opacity: 0.6
-      }}>{text}</span>
+    <span ref={ref}>
+      {val}
+      {suffix}
     </span>
   );
 }
 
-// ─── Scan line overlay ────────────────────────────────────────────────────────
-function ScanLine() {
-  return (
-    <div style={{
-      position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-      background: 'repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,191,255,0.015) 2px,rgba(0,191,255,0.015) 4px)',
-      pointerEvents: 'none', zIndex: 1
-    }} />
-  );
-}
-
-const COLOR_MAP = {
-  blue: { rgb: '0,191,255', hex: '#00bfff', rgba30: 'rgba(0,191,255,0.3)' },
-  green: { rgb: '0,255,136', hex: '#00ff88', rgba30: 'rgba(0,255,136,0.3)' },
-  orange: { rgb: '255,140,0', hex: '#ff8c00', rgba30: 'rgba(255,140,0,0.3)' },
-  red: { rgb: '255,34,68', hex: '#ff2244', rgba30: 'rgba(255,34,68,0.3)' },
-  purple: { rgb: '180,0,255', hex: '#b400ff', rgba30: 'rgba(180,0,255,0.3)' },
-};
-
-
-
-
-// ─── Threat ticker ────────────────────────────────────────────────────────────
-const TICKER = [
-  '⚠ CISA KEV: Critical RCE in Ivanti Connect Secure',
-  '🔴 ALERT: New Lumma Stealer campaign targeting Indian banks',
-  '⚡ UrlEngine: 2.3M new IOCs detected in last 24h',
-  '🛡 UrlEngine: 14,000+ IPs reported for DDoS activity today',
-  '⚠ NCIIPC Advisory: Phishing attacks targeting UPI users',
-  '🔴 CERT-In: Ransomware targeting MSME sector in India',
+// ─── Live Threat Ticker ───────────────────────────────────────────────────────
+const THREAT_ALERTS = [
+  'CRITICAL: Active 0-Day Exploit Detected in Public Cloud Gateway',
+  'ALERT: Targeted Credential Stuffing Campaign Against Banking APIs',
+  'TELEMETRY: 2.8M Network IOCs Correlated Across Global Feeds',
+  'ADVISORY: Zero-Day Phishing Campaign Mimicking MFA Portals',
+  'INTEL: Suspicious ASN Traffic Spike Identified & Contained',
+  'SURFACE: 14,000+ Compromised Hosts Tracked in Threat Fabric',
 ];
 
 function LiveTicker() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
-    <div style={{
-      width: '100%', background: 'rgba(0,0,0,0.4)',
-      borderBottom: '1px solid rgba(0,191,255,0.1)', borderTop: '1px solid rgba(0,191,255,0.1)',
-      overflow: 'hidden', whiteSpace: 'nowrap', padding: '10px 0',
-      position: 'absolute', top: 0, left: 0, zIndex: 10
-    }}>
-      <div style={{ display: 'inline-block', whiteSpace: 'nowrap', animation: 'ticker 40s linear infinite' }}>
-        {[...TICKER, ...TICKER].map((text, i) => (
-          <span key={i} style={{ color: '#00bfff', fontSize: 13, letterSpacing: 1, marginRight: 60, fontWeight: 600 }}>
-            {text}
-          </span>
-        ))}
+    <div className="w-full bg-[#030914] border-b border-cyan-500/20 py-2 px-4 overflow-hidden relative z-30 select-none">
+      <div className="max-w-7xl mx-auto flex items-center gap-3">
+        <div className="flex items-center gap-2 shrink-0 bg-red-500/10 border border-red-500/30 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold text-red-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+          <span>THREAT FEED</span>
+        </div>
+        <div className="overflow-hidden whitespace-nowrap flex-1">
+          <div
+            className={`inline-block ${
+              shouldReduceMotion ? '' : 'animate-[marquee_45s_linear_infinite]'
+            }`}
+          >
+            {[...THREAT_ALERTS, ...THREAT_ALERTS].map((item, idx) => (
+              <span
+                key={idx}
+                className="text-xs font-mono text-cyan-300/80 mr-12 tracking-wide inline-flex items-center gap-2"
+              >
+                <span className="text-cyan-500">•</span>
+                <span>{item}</span>
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+// ─── Public Header / Navigation Bar ───────────────────────────────────────────
+function PublicNavbar({ user }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const navLinks = [
+    { label: 'Tools & Modules', href: '#tools' },
+    { label: 'Capabilities', href: '#capabilities' },
+    { label: 'Threat Lifecycle', href: '#lifecycle' },
+    { label: 'Intelligence', href: '#intelligence' },
+  ];
+
+  return (
+    <header className="sticky top-0 z-40 w-full bg-[#020814]/90 backdrop-blur-xl border-b border-cyan-500/20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        {/* Brand */}
+        <Link to="/" className="inline-flex items-center gap-3 group focus:outline-none">
+          <div className="p-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 group-hover:border-cyan-400 shadow-[0_0_15px_rgba(0,212,255,0.2)] transition-all">
+            <BrandLogo size={28} />
+          </div>
+          <div>
+            <span className="font-display font-black text-base tracking-wider text-white group-hover:text-cyan-400 transition-colors block">
+              CYBERSHIELD X
+            </span>
+            <span className="text-[9px] font-mono text-cyan-400/80 tracking-widest uppercase block">
+              Security Operations Hub
+            </span>
+          </div>
+        </Link>
+
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-8 text-xs font-mono tracking-wider uppercase">
+          {navLinks.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              className="text-slate-300 hover:text-cyan-400 transition-colors"
+            >
+              {link.label}
+            </a>
+          ))}
+          <Link
+            to="/toolkit"
+            className="text-slate-300 hover:text-cyan-400 transition-colors"
+          >
+            Toolkit Catalog
+          </Link>
+        </nav>
+
+        {/* Auth CTA Actions */}
+        <div className="hidden sm:flex items-center gap-3">
+          {user ? (
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 active:scale-[0.99] text-slate-950 font-bold text-xs font-mono uppercase tracking-wider transition-all shadow-[0_0_15px_rgba(0,212,255,0.3)] flex items-center gap-2"
+            >
+              <Terminal size={14} />
+              <span>Enter Console</span>
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={() => navigate('/login')}
+                className="px-3.5 py-1.5 rounded-xl border border-slate-700 hover:border-cyan-400 text-slate-200 hover:text-white font-mono text-xs uppercase tracking-wider transition-colors"
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => navigate('/signup')}
+                className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 active:scale-[0.99] text-slate-950 font-bold text-xs font-mono uppercase tracking-wider transition-all shadow-[0_0_15px_rgba(0,212,255,0.3)] flex items-center gap-2"
+              >
+                <span>Launch Workstation</span>
+                <ArrowRight size={14} />
+              </button>
+            </>
+          )}
+        </div>
+
+        {/* Mobile Hamburger Button */}
+        <div className="flex sm:hidden items-center">
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle Navigation Menu"
+            className="p-2 rounded-lg border border-slate-800 text-slate-300 hover:text-white hover:border-cyan-500/50"
+          >
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Drawer */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="sm:hidden bg-[#030918] border-b border-cyan-500/20 px-4 py-6 space-y-4"
+          >
+            <nav className="flex flex-col space-y-3 font-mono text-xs uppercase tracking-wider">
+              {navLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-slate-300 hover:text-cyan-400 py-1"
+                >
+                  {link.label}
+                </a>
+              ))}
+              <Link
+                to="/toolkit"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-slate-300 hover:text-cyan-400 py-1"
+              >
+                Toolkit Catalog
+              </Link>
+            </nav>
+            <div className="pt-4 border-t border-slate-800 flex flex-col gap-2.5">
+              {user ? (
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    navigate('/dashboard');
+                  }}
+                  className="w-full py-2.5 rounded-xl bg-cyan-500 text-slate-950 font-bold text-xs font-mono uppercase tracking-wider"
+                >
+                  Enter Console
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      navigate('/login');
+                    }}
+                    className="w-full py-2.5 rounded-xl border border-slate-700 text-slate-200 font-mono text-xs uppercase tracking-wider"
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      navigate('/signup');
+                    }}
+                    className="w-full py-2.5 rounded-xl bg-cyan-500 text-slate-950 font-bold text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2"
+                  >
+                    <span>Launch Workstation</span>
+                    <ArrowRight size={14} />
+                  </button>
+                </>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
+  );
+}
+
+// ─── Main Public Home Page Component ──────────────────────────────────────────
 export default function HomePage() {
   const { user } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [typedText, setTypedText] = useState('');
-  const fullText = t('home.hero.subtitle');
+  const shouldReduceMotion = useReducedMotion();
 
+  const [alternativeToolModal, setAlternativeToolModal] = useState(null);
 
+  const allTools = getAllTools();
+  // Select 6 featured tools across core categories for the discovery preview
+  const featuredTools = allTools
+    .filter((t) =>
+      [
+        'UrlEngine',
+        'PortEngine',
+        'DnsEngine',
+        'BreachWatch',
+        'CloudAuditor',
+        'WebVulnScan',
+      ].includes(t.id)
+    )
+    .slice(0, 6);
 
-
-
-
-  // Typewriter effect
-  useEffect(() => {
-    let i = 0;
-    const id = setInterval(() => {
-      if (i < fullText.length) { setTypedText(fullText.slice(0, ++i)); }
-      else clearInterval(id);
-    }, 45);
-    return () => clearInterval(id);
-  }, []);
-
-
+  // Fallback if specific IDs differ
+  const displayTools = featuredTools.length >= 4 ? featuredTools : allTools.slice(0, 6);
 
   const stats = [
-    { label: t('home.stats.threatModules'), value: getAllTools().length, suffix: '', color: '#00bfff' },
-    { label: t('home.stats.intelSources'), value: 35, suffix: '+', color: '#00ff88' },
-    { label: t('home.stats.riskTiers'), value: 5, suffix: '', color: '#ff2244' },
-    { label: t('home.stats.responseTime'), value: 15, suffix: 's', color: '#e0e6ff' },
+    { label: 'Defense Modules', value: allTools.length, suffix: '+', color: '#00d4ff' },
+    { label: 'Intel Feeds', value: 35, suffix: '+', color: '#10b981' },
+    { label: 'Risk Tiers', value: 5, suffix: '', color: '#f59e0b' },
+    { label: 'Scan Latency', value: 15, suffix: 's', color: '#38bdf8' },
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--cyber-bg, #020814)', fontFamily: '"JetBrains Mono", "Courier New", monospace', color: '#e0e6ff', overflowX: 'hidden', position: 'relative' }}>
-
-      {/* CSS */}
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Orbitron:wght@700;900&display=swap');
-
-        @keyframes glitch1 { 0%,100%{transform:translate(0)} 20%{transform:translate(-2px,1px)} 40%{transform:translate(2px,-1px)} 60%{transform:translate(-1px,2px)} }
-        @keyframes glitch2 { 0%,100%{transform:translate(0)} 20%{transform:translate(2px,-1px)} 40%{transform:translate(-2px,1px)} 60%{transform:translate(1px,-2px)} }
-        @keyframes fadeSlideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-        @keyframes pulse-ring { 0%{transform:scale(0.8);opacity:0.8} 100%{transform:scale(2.2);opacity:0} }
-        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
-        @keyframes scanline { 0%{top:-10%} 100%{top:110%} }
-        @keyframes borderGlow {
-          0%,100%{border-color:rgba(0,191,255,0.3)}
-          50%{border-color:rgba(0,191,255,0.8)}
-        }
-        @keyframes gridFade { from{opacity:0} to{opacity:1} }
-
-        .hero-title { font-family:'Orbitron',monospace; }
-        .glow-text { text-shadow: 0 0 20px rgba(0,191,255,0.6), 0 0 40px rgba(0,191,255,0.3); }
-        .card-hover { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        .card-hover:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 15px 40px rgba(0,191,255,0.2); }
-        .btn-primary {
-          background: linear-gradient(135deg,#0066cc,#00bfff);
-          border: none; border-radius: 8px; color: #fff;
-          padding: 12px 28px; font-size: 13px; font-weight: 700;
-          letter-spacing: 1.5px; cursor: pointer; font-family: inherit;
-          box-shadow: 0 0 24px rgba(0,191,255,0.35);
-          transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .btn-primary:hover { box-shadow: 0 0 36px rgba(0,191,255,0.55); transform: translateY(-3px) scale(1.05); }
-        .btn-secondary {
-          background: transparent;
-          border: 1px solid rgba(0,191,255,0.4); border-radius: 8px; color: #00bfff;
-          padding: 12px 28px; font-size: 13px; font-weight: 600;
-          letter-spacing: 1.5px; cursor: pointer; font-family: inherit;
-          transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .btn-secondary:hover { background: rgba(0,191,255,0.08); border-color: #00bfff; transform: translateY(-3px); }
-
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #020814; }
-        ::-webkit-scrollbar-thumb { background: rgba(0,191,255,0.3); border-radius: 3px; }
-      `}</style>
-
-      <MatrixRain />
-      <ScanLine />
+    <div className="min-h-screen bg-[#020814] text-slate-100 font-sans relative overflow-x-hidden selection:bg-cyan-500 selection:text-slate-950">
+      {/* Live Threat Ticker */}
       <LiveTicker />
 
-      {/* ── HERO ── */}
-      <section style={{ 
-        position: 'relative', 
-        zIndex: 2, 
-        minHeight: '88vh', 
-        display: 'flex', 
-        flexDirection: 'column',
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        padding: '95px 24px 55px', 
-        textAlign: 'center',
-      }}>
-        {/* Animated Grid background */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: 'linear-gradient(rgba(0,191,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,191,255,0.04) 1px,transparent 1px)',
-          backgroundSize: '48px 48px', animation: 'gridFade 1.5s ease both',
-          pointerEvents: 'none'
-        }} />
+      {/* Public Navigation */}
+      <PublicNavbar user={user} />
 
-        {/* Glow orbs */}
-        <div style={{ position: 'absolute', top: '15%', left: '8%', width: 400, height: 400, background: 'radial-gradient(circle,rgba(0,191,255,0.07),transparent 70%)', borderRadius: '50%', animation: 'float 8s ease-in-out infinite', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: '15%', right: '8%', width: 320, height: 320, background: 'radial-gradient(circle,rgba(0,255,136,0.06),transparent 70%)', borderRadius: '50%', animation: 'float 10s ease-in-out infinite reverse', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 700, height: 700, background: 'radial-gradient(circle,rgba(0,191,255,0.04),transparent 65%)', borderRadius: '50%', animation: 'float 14s ease-in-out infinite', pointerEvents: 'none' }} />
+      {/* Binary Matrix Rain Canvas (Step 4C) */}
+      <BinaryMatrixRain className="opacity-20" />
 
-        {/* Main Brand Lockup Wrapper — X-Aligned CyberNexus Platform Branding */}
-        <div style={{ position: 'relative', display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-end', zIndex: 2, marginBottom: 18 }}>
-          {/* Main CYBER SHIELD X title */}
-          <motion.h1
-            className="hero-title"
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            style={{
-              fontSize: 'clamp(28px, 6vw, 72px)',
-              fontWeight: 900,
-              lineHeight: 1.1,
-              margin: 0,
-              letterSpacing: '-1px',
-              position: 'relative',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            <GlitchText text="CYBER" color="#e0e6ff" />
-            <span className="glow-text" style={{ color: '#00bfff', marginLeft: '0.18em', textShadow: '0 0 40px rgba(0,191,255,0.8), 0 0 80px rgba(0,191,255,0.4)' }}> SHIELD</span>
-            <span style={{ color: '#00ff88', fontSize: '0.6em', marginLeft: '0.2em', verticalAlign: 'middle', textShadow: '0 0 20px rgba(0,255,136,0.8)' }}>X</span>
-          </motion.h1>
+      {/* Ambient Cyber Background Lighting */}
+      <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[800px] h-[450px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-[800px] right-10 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[130px] pointer-events-none" />
+      <div className="absolute bottom-[400px] left-10 w-[600px] h-[600px] bg-sky-600/5 rounded-full blur-[150px] pointer-events-none" />
 
-          {/* Platform Sub-Branding: Next-Gen Threat Intelligence */}
-          <motion.div
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.35 }}
-            whileHover={{ scale: 1.02 }}
-            style={{
-              fontSize: 'clamp(10px, 1.2vw, 13px)',
-              fontFamily: '"JetBrains Mono", monospace',
-              letterSpacing: '2.5px',
-              textTransform: 'uppercase',
-              marginTop: 4,
-              fontWeight: 600,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              cursor: 'default',
-              position: 'relative',
-              paddingRight: '0.1em'
-            }}
-          >
-            <span style={{ color: 'rgba(224, 230, 255, 0.55)', fontWeight: 500 }}>INTELLIGENCE</span>
-            <motion.span 
-              animate={{ 
-                textShadow: [
-                  '0 0 10px rgba(0,191,255,0.4)', 
-                  '0 0 20px rgba(0,191,255,0.85)', 
-                  '0 0 10px rgba(0,191,255,0.4)'
-                ] 
-              }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-              style={{
-                color: '#00bfff',
-                fontWeight: 700,
-                letterSpacing: '3px',
-                position: 'relative',
-                display: 'inline-block'
-              }}
-            >
-              PLATFORM
-              {/* Subtle Cyan Scanning Highlight Underline */}
-              <motion.span
-                initial={{ scaleX: 0, opacity: 0 }}
-                animate={{ scaleX: 1, opacity: [0, 1, 0.7] }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-                style={{
-                  position: 'absolute',
-                  bottom: -2,
-                  left: 0,
-                  right: 0,
-                  height: '1px',
-                  background: 'linear-gradient(90deg, transparent, #00bfff, #00ff88, transparent)',
-                  transformOrigin: 'left'
-                }}
-              />
-            </motion.span>
-          </motion.div>
-        </div>
-
-        {/* Typewriter subtitle */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          style={{ fontSize: 13, color: '#3b7a9e', letterSpacing: 3, marginBottom: 16, minHeight: 22 }}
-        >
-          {typedText}<span style={{ animation: 'pulse-ring 1s infinite', color: '#00bfff' }}>|</span>
-        </motion.p>
-
-        {/* Description */}
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          style={{ fontSize: 14, color: '#5a7fa8', lineHeight: 1.8, marginBottom: 38, maxWidth: 600 }}
-        >
-          {t('home.hero.desc')}
-        </motion.p>
-
-        {/* CTA Buttons */}
+      {/* ── 1. HERO SECTION ── */}
+      <section className="relative z-10 pt-16 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center flex flex-col items-center justify-center min-h-[75vh]">
+        {/* Platform Status Badge */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.65 }}
-          style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 52 }}
+          transition={{ duration: 0.3 }}
+          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono uppercase tracking-widest mb-6 shadow-[0_0_15px_rgba(0,212,255,0.15)]"
         >
-          <button className="btn-primary" onClick={() => navigate('/signup')} style={{ fontSize: 14, padding: '14px 36px' }}>{t('home.hero.ctaCreate')}</button>
-          <button className="btn-secondary" onClick={() => navigate('/login')} style={{ fontSize: 14, padding: '14px 36px' }}>{t('home.hero.ctaSignIn')}</button>
+          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+          <span>CYBERSOC THREAT DEFENSE PLATFORM</span>
         </motion.div>
 
-        {/* Stats Row */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
+        {/* Hero Title */}
+        <motion.h1
+          initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.85 }}
-          style={{ display: 'flex', gap: 32, flexWrap: 'wrap', justifyContent: 'center', position: 'relative', zIndex: 2 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white uppercase max-w-5xl leading-[1.1]"
         >
-          {stats.map((s, i) => (
-            <div key={i} style={{ textAlign: 'center', minWidth: 90 }}>
-              <div style={{ fontSize: 'clamp(26px,4vw,40px)', fontWeight: 900, color: s.color, fontFamily: 'Orbitron,monospace', textShadow: `0 0 20px ${s.color}66` }}>
+          CYBER<span className="text-cyan-400 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-emerald-400">SHIELD</span> X
+        </motion.h1>
+
+        {/* Platform Value Proposition */}
+        <motion.p
+          initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          className="mt-6 text-base sm:text-xl text-slate-300 max-w-3xl leading-relaxed font-light"
+        >
+          Unified defensive intelligence, automated reconnaissance, credential leak detection, and vulnerability assessments across <span className="text-cyan-400 font-semibold">{allTools.length} security tool models</span>.
+        </motion.p>
+
+        {/* Call to Actions */}
+        <motion.div
+          initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+          className="mt-8 flex flex-col sm:flex-row items-center gap-4 justify-center w-full max-w-md"
+        >
+          {user ? (
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 active:scale-[0.99] text-slate-950 font-bold text-sm uppercase tracking-wider transition-all shadow-[0_0_25px_rgba(0,212,255,0.35)] flex items-center justify-center gap-2"
+            >
+              <span>Access SOC Dashboard</span>
+              <ArrowRight size={16} />
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={() => navigate('/signup')}
+                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 active:scale-[0.99] text-slate-950 font-bold text-sm uppercase tracking-wider transition-all shadow-[0_0_25px_rgba(0,212,255,0.35)] flex items-center justify-center gap-2"
+              >
+                <span>Launch Free Workstation</span>
+                <ArrowRight size={16} />
+              </button>
+              <button
+                onClick={() => navigate('/login')}
+                className="w-full sm:w-auto px-8 py-3.5 rounded-xl border border-slate-700 hover:border-cyan-400 bg-[#0c162d]/60 text-slate-200 hover:text-white font-semibold text-sm uppercase tracking-wider transition-colors"
+              >
+                Sign In
+              </button>
+            </>
+          )}
+        </motion.div>
+
+        {/* Operational Statistics Matrix */}
+        <motion.div
+          initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.4 }}
+          className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-10 w-full max-w-4xl pt-10 border-t border-slate-800/80"
+        >
+          {stats.map((s) => (
+            <div key={s.label} className="text-center">
+              <div
+                style={{ color: s.color }}
+                className="text-3xl sm:text-4xl font-bold font-mono tracking-tight mb-1"
+              >
                 <Counter to={s.value} suffix={s.suffix} />
               </div>
-              <div style={{ fontSize: 10, color: '#5a7fa8', letterSpacing: 2, marginTop: 4, textTransform: 'uppercase' }}>{s.label}</div>
+              <div className="text-[11px] font-mono text-slate-400 uppercase tracking-widest">
+                {s.label}
+              </div>
             </div>
           ))}
         </motion.div>
-
       </section>
 
-      {/* ── NEXUS TOOLKIT SECTION ── */}
-      <section style={{ position: 'relative', zIndex: 2, padding: '60px 24px', background: 'linear-gradient(180deg,transparent,rgba(0,10,25,0.95) 15%,rgba(0,10,25,0.95) 85%,transparent)' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-
-          {/* Section header */}
-          <div style={{ textAlign: 'center', marginBottom: 52 }}>
-            <p style={{ fontSize: 11, letterSpacing: 4, color: '#00bfff', marginBottom: 12 }}>CYBERSECURITY TOOLS & MODULES</p>
-            <h2 className="hero-title" style={{ fontSize: 'clamp(28px,4vw,42px)', fontWeight: 900, color: '#e0e6ff', margin: 0 }}>
-              CYBERSHIELD X TOOLKIT
-            </h2>
-            <div style={{ width: 60, height: 2, background: 'linear-gradient(90deg,transparent,#00bfff,transparent)', margin: '20px auto 0' }} />
-            <p style={{ fontSize: 12, color: '#5a7fa8', maxWidth: 600, margin: '16px auto 0', lineHeight: 1.6 }}>
-              Scan websites, inspect network security, analyze threats, and check data breaches with easy-to-use tools.
-            </p>
+      {/* ── 2. FEATURED SECURITY TOOLS PREVIEW ── */}
+      <section id="tools" className="relative z-10 py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <div className="inline-flex items-center gap-1.5 text-xs font-mono text-cyan-400 uppercase tracking-widest mb-3">
+            <Zap size={14} />
+            <span>INTEGRATED DEFENSE ENGINES</span>
           </div>
-
-          {/* Nexus Category Grid Selector */}
-          <NexusCategoryGrid />
-
-          {/* Explore Button */}
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 40 }}>
-            <button 
-              onClick={() => navigate('/toolkit')}
-              style={{
-                background: 'rgba(0,191,255,0.06)',
-                border: '1px solid rgba(0,191,255,0.3)',
-                padding: '12px 32px',
-                borderRadius: '8px',
-                color: '#fff',
-                fontSize: '11px',
-                textTransform: 'uppercase',
-                letterSpacing: '2px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                transition: 'all 0.3s'
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = 'rgba(0,191,255,0.12)';
-                e.currentTarget.style.borderColor = '#00bfff';
-                e.currentTarget.style.boxShadow = '0 0 20px rgba(0,191,255,0.2)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'rgba(0,191,255,0.06)';
-                e.currentTarget.style.borderColor = 'rgba(0,191,255,0.3)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-            >
-              Explore All Security Tools →
-            </button>
-          </div>
-
+          <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight">
+            Security Tool Discovery Preview
+          </h2>
+          <p className="mt-3 text-sm text-slate-400 leading-relaxed">
+            Directly invoke verified threat intelligence, automated network probes, and breach scanners engineered with zero-trust isolation.
+          </p>
         </div>
-      </section>
 
-      {/* ── HOW IT WORKS ── */}
-      <section style={{ position: 'relative', zIndex: 2, padding: '60px 24px' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            style={{ textAlign: 'center', marginBottom: 48 }}
+        {/* Featured Tool Card Grid (Step 4B/4C External-Only Discovery) */}
+        <ToolGrid
+          tools={displayTools}
+          onExternalDiscovery={(tool) => setAlternativeToolModal(tool)}
+        />
+
+        {/* Catalog CTA */}
+        <div className="mt-12 text-center">
+          <button
+            onClick={() => navigate('/toolkit')}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-cyan-500/30 bg-[#0c162d]/80 hover:bg-cyan-500/10 hover:border-cyan-400 text-cyan-300 font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(0,212,255,0.15)]"
           >
-            <p style={{ fontSize: 11, letterSpacing: 4, color: '#00ff88', marginBottom: 12 }}>{t('home.workflow.subtitle')}</p>
-            <h2 className="hero-title" style={{ fontSize: 'clamp(24px,3.5vw,36px)', fontWeight: 900, color: '#e0e6ff', margin: 0 }}>
-              {t('home.workflow.title')}
-            </h2>
-          </motion.div>
+            <span>Explore All {allTools.length} Security Tools</span>
+            <ChevronRight size={14} />
+          </button>
+        </div>
+      </section>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: 24 }}>
-            {[
-              { step: '01', title: t('home.workflow.step1Title'), desc: t('home.workflow.step1Desc'), color: '#00bfff', icon: '📋' },
-              { step: '02', title: t('home.workflow.step2Title'), desc: t('home.workflow.step2Desc'), color: '#00ff88', icon: '⚡' },
-              { step: '03', title: t('home.workflow.step3Title'), desc: t('home.workflow.step3Desc'), color: '#ff8c00', icon: '🎯' },
-            ].map((s, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, x: i === 0 ? -30 : i === 2 ? 30 : 0, y: i === 1 ? 30 : 0 }}
-                whileInView={{ opacity: 1, x: 0, y: 0 }}
+      {/* ── 3. CAPABILITY / CATEGORY SECTION ── */}
+      <section id="capabilities" className="relative z-10 py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-800/60">
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <div className="inline-flex items-center gap-1.5 text-xs font-mono text-emerald-400 uppercase tracking-widest mb-3">
+            <Globe size={14} />
+            <span>MODULAR ARCHITECTURE</span>
+          </div>
+          <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight">
+            24 Canonical Defense Categories
+          </h2>
+          <p className="mt-3 text-sm text-slate-400 leading-relaxed">
+            Structured defensive capabilities categorized according to industrial cybersecurity standards and SOC operations requirements.
+          </p>
+        </div>
+
+        {/* Nexus Category Grid Component */}
+        <NexusCategoryGrid />
+      </section>
+
+      {/* ── 4. HOW IT WORKS: UNIFIED LIFECYCLE ── */}
+      <section id="lifecycle" className="relative z-10 py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-800/60">
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <div className="inline-flex items-center gap-1.5 text-xs font-mono text-cyan-400 uppercase tracking-widest mb-3">
+            <Activity size={14} />
+            <span>OPERATIONAL WORKFLOW</span>
+          </div>
+          <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight">
+            Unified Threat Investigation Lifecycle
+          </h2>
+          <p className="mt-3 text-sm text-slate-400 leading-relaxed">
+            From preliminary reconnaissance to evidence verification and automated incident mitigation.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            {
+              step: '01',
+              title: 'Reconnaissance & Asset Audit',
+              desc: 'Continuous scanning of host boundaries, DNS records, open service ports, and exposed cloud buckets with verifiable rate control.',
+              icon: Search,
+              accent: '#00d4ff',
+            },
+            {
+              step: '02',
+              title: 'Deterministic Risk Synthesis',
+              desc: 'Multi-source risk scoring correlates findings, CVE telemetry, and live threat feeds with transparent evidence audit trails.',
+              icon: Cpu,
+              accent: '#10b981',
+            },
+            {
+              step: '03',
+              title: 'Verification & Remediation',
+              desc: 'Cryptographic SHA-256 evidence package sealing and human-approved response workflows ensuring reliable remediation.',
+              icon: Shield,
+              accent: '#f59e0b',
+            },
+          ].map((item, idx) => {
+            const IconComponent = item.icon;
+            return (
+              <motion.div
+                key={item.step}
+                initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.2 }}
-                style={{
-                  background: 'rgba(10,18,35,0.85)', border: '1px solid rgba(0,191,255,0.1)',
-                  borderRadius: 12, padding: 24,
-                  position: 'relative', overflow: 'hidden'
-                }}
+                transition={{ duration: 0.3, delay: idx * 0.1 }}
+                className="p-8 rounded-2xl bg-[#0c162d]/80 border border-slate-800 hover:border-cyan-500/40 backdrop-blur-xl transition-all shadow-[0_8px_30px_rgba(0,0,0,0.4)] flex flex-col justify-between"
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
-                  <span style={{ fontSize: 28 }}>{s.icon}</span>
-                  <span style={{ fontFamily: 'Orbitron,monospace', fontSize: 22, fontWeight: 900, color: s.color }}>{s.step}</span>
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <div
+                      style={{ color: item.accent }}
+                      className="p-3 rounded-xl bg-slate-900/80 border border-slate-700/80"
+                    >
+                      <IconComponent size={24} />
+                    </div>
+                    <span
+                      style={{ color: item.accent }}
+                      className="text-2xl font-black font-mono"
+                    >
+                      {item.step}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-bold text-white tracking-tight mb-3">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-slate-400 leading-relaxed">
+                    {item.desc}
+                  </p>
                 </div>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: '#e0e6ff', margin: '0 0 10px' }}>{s.title}</h3>
-                <p style={{ fontSize: 12, color: '#5a7fa8', lineHeight: 1.7, margin: 0 }}>{s.desc}</p>
               </motion.div>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </section>
 
-      {/* ── INTEL SOURCES ── */}
-      <section style={{ position: 'relative', zIndex: 2, padding: '60px 24px', background: 'rgba(0,8,20,0.7)' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontSize: 11, letterSpacing: 4, color: '#5a7fa8', marginBottom: 28 }}>{t('home.intelSources.subtitle')}</p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'center' }}>
-            {[
-              { name: 'UrlEngine', desc: t('home.intelSources.vtDesc'), color: '#00bfff' },
-              { name: 'UrlEngine', desc: t('home.intelSources.abuseDesc'), color: '#ff8c00' },
-              { name: 'Pulsedive', desc: 'Real-time threat feeds & risk scoring', color: '#00ff88' },
-              { name: 'AlienVault OTX', desc: 'World largest open threat community', color: '#b400ff' },
-              { name: 'GreyNoise', desc: 'Analyzing global internet scanning noise', color: '#ff2244' },
-              { name: 'PortEngine', desc: 'Deep device & network discovery intel', color: '#00d4ff' },
-              { name: 'Cisco Talos', desc: 'Industry-leading threat intelligence', color: '#ffffff' },
-              { name: 'HIBP (Breach)', desc: t('home.intelSources.hibpDesc'), color: '#ff2244' },
-              { name: 'TLS / OpenSSL', desc: t('home.intelSources.tlsDesc'), color: '#00ff88' },
-            ].map((src, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                whileHover={{ scale: 1.05, borderColor: src.color, boxShadow: `0 0 20px ${src.color}30` }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                onClick={() => navigate(user ? '/toolkit/UrlEngine' : '/signup')}
-                style={{
-                  background: 'rgba(10,18,35,0.9)', border: `1px solid ${src.color}25`,
-                  borderRadius: 10, padding: '16px 22px', minWidth: 180,
-                  transition: 'border-color 0.2s',
-                  cursor: 'pointer'
-                }}
-              >
-                <div style={{ fontSize: 14, fontWeight: 700, color: src.color, marginBottom: 4 }}>{src.name}</div>
-                <div style={{ fontSize: 11, color: '#3b5a7a' }}>{src.desc}</div>
-              </motion.div>
-            ))}
+      {/* ── 5. GLOBAL INTEL SOURCES ── */}
+      <section id="intelligence" className="relative z-10 py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-800/60">
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <div className="inline-flex items-center gap-1.5 text-xs font-mono text-cyan-400 uppercase tracking-widest mb-3">
+            <Database size={14} />
+            <span>GLOBAL COVERAGE</span>
           </div>
+          <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight">
+            Integrated Threat Intelligence Feeds
+          </h2>
+          <p className="mt-3 text-sm text-slate-400 leading-relaxed">
+            Synchronized telemetry feeds providing high-confidence malicious indicator ratings and IP reputation analysis.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          {[
+            { name: 'UrlEngine', desc: 'Real-time URL & Domain reputation metrics', color: '#00d4ff' },
+            { name: 'Pulsedive', desc: 'Threat indicator feeds & risk classification', color: '#10b981' },
+            { name: 'AlienVault OTX', desc: 'Open threat exchange indicator matrix', color: '#a855f7' },
+            { name: 'GreyNoise', desc: 'Global internet mass-scanner filtering', color: '#f43f5e' },
+            { name: 'PortEngine', desc: 'Port scanner & service fingerprinting', color: '#38bdf8' },
+            { name: 'Cisco Talos', desc: 'Authoritative IP & domain reputation', color: '#fb923c' },
+            { name: 'HIBP Breach Feed', desc: 'Compromised credential breach telemetry', color: '#ef4444' },
+            { name: 'TLS / OpenSSL', desc: 'Cryptographic certificate validity auditing', color: '#2dd4bf' },
+          ].map((feed) => (
+            <div
+              key={feed.name}
+              className="p-4 rounded-xl bg-[#0c162d]/70 border border-slate-800 hover:border-cyan-500/30 transition-all flex flex-col justify-between"
+            >
+              <div>
+                <div
+                  style={{ color: feed.color }}
+                  className="font-mono font-bold text-sm mb-1 tracking-tight"
+                >
+                  {feed.name}
+                </div>
+                <div className="text-xs text-slate-400 leading-relaxed">
+                  {feed.desc}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* ── FINAL CTA ── */}
-      <section style={{ position: 'relative', zIndex: 2, padding: '60px 24px', textAlign: 'center' }}>
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
+      {/* ── 6. FINAL CALL TO ACTION ── */}
+      <section className="relative z-10 py-24 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center border-t border-slate-800/60">
+        <motion.div
+          initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          style={{ maxWidth: 600, margin: '0 auto' }}
+          className="p-10 sm:p-14 rounded-3xl bg-[#0c162d]/90 border border-cyan-500/30 backdrop-blur-xl shadow-[0_15px_50px_rgba(0,0,0,0.6)]"
         >
-          <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
-            <motion.div 
-              animate={{ boxShadow: ['0 0 20px rgba(0,212,255,0.2)', '0 0 45px rgba(0,212,255,0.5)', '0 0 20px rgba(0,212,255,0.2)'] }}
-              transition={{ duration: 2.5, repeat: Infinity }}
-              style={{ width: 84, height: 84, background: 'linear-gradient(135deg, rgba(0,51,102,0.6), rgba(0,102,153,0.4))', backdropFilter: 'blur(12px)', border: '1px solid rgba(0,212,255,0.3)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}
-            >
-              <BrandLogo size={46} />
-            </motion.div>
-            <div style={{ position: 'absolute', inset: -8, borderRadius: '50%', border: '1px solid rgba(0,212,255,0.3)', animation: 'pulse-ring 2s infinite' }} />
+          <div className="inline-flex p-3 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 shadow-[0_0_20px_rgba(0,212,255,0.25)] mb-6">
+            <BrandLogo size={42} />
           </div>
-          <h2 className="hero-title" style={{ fontSize: 'clamp(24px,4vw,38px)', fontWeight: 900, color: '#e0e6ff', margin: '0 0 16px' }}>
-            {t('home.finalCta.title')}
+          <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight">
+            Ready to Protect Your Infrastructure?
           </h2>
-          <p style={{ fontSize: 14, color: '#5a7fa8', lineHeight: 1.8, marginBottom: 36 }}>
-            {t('home.finalCta.desc')}
+          <p className="mt-4 text-sm sm:text-base text-slate-300 max-w-xl mx-auto leading-relaxed">
+            Deploy automated security scans, inspect attack surfaces, and secure your systems with the CyberShield X platform today.
           </p>
-          <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button className="btn-primary" onClick={() => navigate('/signup')} style={{ fontSize: 14, padding: '14px 36px' }}>
-              {t('home.hero.ctaLaunch')}
-            </button>
-            <button className="btn-secondary" onClick={() => navigate('/login')} style={{ fontSize: 14, padding: '14px 36px' }}>
-              {t('home.hero.ctaSignIn')}
-            </button>
+          <div className="mt-8 flex flex-col sm:flex-row gap-3.5 justify-center items-center">
+            {user ? (
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(0,212,255,0.3)]"
+              >
+                Enter Dashboard
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={() => navigate('/signup')}
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(0,212,255,0.3)] flex items-center justify-center gap-2"
+                >
+                  <span>Create Operator Account</span>
+                  <ArrowRight size={16} />
+                </button>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-xl border border-slate-700 hover:border-cyan-400 bg-slate-900/60 text-slate-200 text-sm font-semibold uppercase tracking-wider transition-colors"
+                >
+                  Sign In
+                </button>
+              </>
+            )}
           </div>
         </motion.div>
       </section>
 
-      {/* ── PREMIUM FOOTER ── */}
-      <footer style={{
-        position: 'relative',
-        zIndex: 2,
-        marginTop: 20,
-        background: 'linear-gradient(180deg, rgba(2,8,20,0) 0%, rgba(2,8,20,0.95) 20%, #020814 100%)',
-        borderTop: '1px solid rgba(0,191,255,0.1)',
-        padding: '30px 24px 20px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 32
-      }}>
-
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', fontFamily: 'Orbitron,monospace', fontSize: 16, fontWeight: 900, letterSpacing: 1 }}>
-            <span style={{ color: '#e0e6ff' }}>CYBER</span>
-            <span style={{ color: '#00bfff', textShadow: '0 0 10px rgba(0,191,255,0.5)' }}>SHIELD</span>
-            <span style={{ color: '#00ff88', fontSize: '0.6em', marginLeft: 4 }}>X</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#64748b', fontSize: 10, fontFamily: '"JetBrains Mono", monospace' }}>
-            <span style={{ color: '#00bfff' }}>✉</span>
-            <a href="mailto:official.cybershieldx@gmail.com" style={{ color: '#64748b', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = '#64748b'}>
+      {/* ── 7. PUBLIC FOOTER ── */}
+      <footer className="relative z-10 border-t border-slate-800/80 bg-[#020814] py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto flex flex-col items-center gap-8 text-center">
+          {/* Brand */}
+          <div className="flex flex-col items-center gap-2">
+            <div className="inline-flex items-center gap-2 font-display font-black text-lg tracking-wider text-white">
+              <span>CYBERSHIELD</span>
+              <span className="text-cyan-400">X</span>
+            </div>
+            <div className="text-xs font-mono text-slate-400">
               official.cybershieldx@gmail.com
-            </a>
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
-          {[
-            { label: 'Platform', path: '/login' },
-            { label: 'Security', path: '/security' },
-            { label: 'Core Team', path: '/team' },
-            { label: 'Live Models', path: '/toolkit' },
-            { label: 'Contact Us', path: '/contact' },
-            { label: 'Create Account', path: '/signup' },
-            { label: 'Comms Line', path: 'tel:+919351636193', external: true },
-            ...(user?.role === 'admin' ? [{ label: 'Admin Portal', path: '/nexus-admin' }] : [])
-          ].map((item, i) => (
-            item.external ? (
-              <a key={i} href={item.path} style={{
-                color: '#475569', textDecoration: 'none', fontSize: 9, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', transition: 'all 0.3s'
-              }}
-                onMouseEnter={e => { e.currentTarget.style.color = '#00bfff'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = '#475569'; }}
-              >
-                {item.label}
-              </a>
-            ) : (
-              <Link key={i} to={item.path} style={{
-                color: '#475569', textDecoration: 'none', fontSize: 9, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', transition: 'all 0.3s'
-              }}
-                onMouseEnter={e => { e.currentTarget.style.color = '#00bfff'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = '#475569'; }}
-              >
-                {item.label}
-              </Link>
-            )
-          ))}
-        </div>
-
-        <div style={{ width: '100%', maxWidth: 1000, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 10, textAlign: 'center' }}>
-          {/* CENTER: Clean in-flow Tactical Version Badge in footer */}
-          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: '"JetBrains Mono", monospace', fontSize: 10 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00ff88', boxShadow: '0 0 6px #00ff88', display: 'inline-block' }} />
-            <span style={{ color: '#94a3b8', fontWeight: 600, letterSpacing: '0.8px' }}>CYBERSHIELD X</span>
-            <span style={{ color: 'rgba(0, 212, 255, 0.4)' }}>•</span>
-            <span style={{ fontWeight: 700, color: '#00d4ff', background: 'rgba(0, 212, 255, 0.1)', padding: '2px 7px', borderRadius: 4, border: '1px solid rgba(0, 212, 255, 0.25)' }}>v33.0.0</span>
+            </div>
           </div>
 
-          {/* CENTER: Legal & Copyright Links */}
-          <div style={{ color: '#64748b', fontSize: 10, letterSpacing: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}>
-            <span>© {new Date().getFullYear()} CYBERSHIELD X. ALL RIGHTS RESERVED.</span>
-            <span style={{ color: '#334155' }}>|</span>
-            <Link to="/privacy" style={{ color: '#00bfff', textDecoration: 'none' }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>Privacy Policy</Link>
-            <span style={{ color: '#334155' }}>|</span>
-            <Link to="/terms" style={{ color: '#00bfff', textDecoration: 'none' }} onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}>Terms of Service</Link>
+          {/* Nav Links */}
+          <div className="flex flex-wrap justify-center gap-6 text-xs font-mono uppercase tracking-wider text-slate-400">
+            <Link to="/login" className="hover:text-cyan-400 transition-colors">
+              Platform
+            </Link>
+            <Link to="/security" className="hover:text-cyan-400 transition-colors">
+              Security
+            </Link>
+            <Link to="/team" className="hover:text-cyan-400 transition-colors">
+              Core Team
+            </Link>
+            <Link to="/toolkit" className="hover:text-cyan-400 transition-colors">
+              Live Models
+            </Link>
+            <Link to="/contact" className="hover:text-cyan-400 transition-colors">
+              Contact Us
+            </Link>
+            <Link to="/signup" className="hover:text-cyan-400 transition-colors">
+              Create Account
+            </Link>
+            <Link to="/privacy" className="hover:text-cyan-400 transition-colors">
+              Privacy Policy
+            </Link>
+            <Link to="/terms" className="hover:text-cyan-400 transition-colors">
+              Terms of Service
+            </Link>
+          </div>
+
+          {/* Tactical Version & Copyright */}
+          <div className="pt-6 border-t border-slate-800/60 w-full max-w-4xl flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-slate-500">
+            <div className="inline-flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span className="text-slate-400 font-semibold">CYBERSHIELD X PLATFORM</span>
+              <span>•</span>
+              <span className="px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px]">
+                v62.2.0
+              </span>
+            </div>
+            <div>
+              © {new Date().getFullYear()} CYBERSHIELD X. All rights reserved. Zero-trust protected.
+            </div>
           </div>
         </div>
       </footer>
+
+      {/* ── Verified External Alternatives Modal (Step 4C External-Only Flow) ── */}
+      <ExternalAlternativesModal
+        tool={alternativeToolModal}
+        isOpen={Boolean(alternativeToolModal)}
+        onClose={() => setAlternativeToolModal(null)}
+        onOpenNativeTool={(tool) => {
+          if (tool?.id) {
+            navigate(user ? `/toolkit/${tool.id}` : '/login');
+          }
+        }}
+      />
     </div>
   );
 }

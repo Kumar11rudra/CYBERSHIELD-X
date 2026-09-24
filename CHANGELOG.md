@@ -2,6 +2,59 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v62.5.0] - 2026-09-25
+### Frontend Modernization, 111-Tool Catalog & Centralized Native Terminal Workstation
+> **Comprehensive production frontend update with 111 canonical security tools, centralized native terminal, external alternatives modal, consolidated authentication, 2-section navigation, and backend terminal support.**
+
+- **Master Coverage Audit Baseline (Step 186)**:
+  - Formally executed and cleared the Step 186 Master Coverage Audit across all 24 production categories with **24/24 PASS (100% dependency closure)**.
+  - Verified 100% regression safety: client unit/component test suite **10/10 test suites passed | 122/122 tests passed**, server terminal suite **49/49 tests passed**, Phase 80/81 regressions green, and production build Exit Code 0 (`Compiled successfully`).
+
+- **Homepage Modernization (`client/src/pages/HomePage.jsx`)**:
+  - Implemented canvas-rendered `BinaryMatrixRain.jsx` with responsive resize listeners and cyber-aesthetic visual background.
+  - Added dynamic real-time Threat Ticker and platform security metrics counter grid.
+  - Replaced legacy fragmented landing layout with interactive `NexusCategoryGrid.jsx` providing direct category filtering and quick-launch capabilities.
+  - Streamlined hero CTA and module display for instant user engagement.
+
+- **Security Tool Discovery Hub (`client/src/pages/DashboardPage.jsx`)**:
+  - Replaced heavy legacy SOC widgets on the dashboard with a unified, high-density security tool discovery hub.
+  - Integrated `ToolGrid.jsx` displaying all 111 canonical cybersecurity tools.
+  - Real-time client-side search filtering by tool name, description, tags, and category archetypes.
+  - Category pill filter bar with active counters: Network, Web, Cloud, Crypto, Forensics, Endpoint, Wireless, OSINT.
+
+- **111 Canonical Tool Cards & Design System (`client/src/components/toolkit/cards/*`)**:
+  - Standardized `CyberToolCard.jsx` across all 111 tools with responsive interactive cards and hover glows.
+  - Category-tailored color tokens and borders powered by `toolThemes.js`.
+  - Added `AnimatedToolAvatar.jsx` with distinct SVG icons, glow styling, and animated pulse effects.
+  - Execution mode dispatching: In-Browser Scanner, Analyzer, Centralized Native Terminal, External Alternative, and Coming Soon.
+
+- **External Tool Alternatives Safety Flow (`ExternalAlternativesModal.jsx`)**:
+  - Canonical modal inside `client/src/components/toolkit/cards/` for tools requiring external runtime execution (e.g. Wireshark, Metasploit, Burp Suite, Ghidra).
+  - Provides vendor destination preview, security guidance, and safe external navigation (`rel="noopener noreferrer"`). Zero secret or session data leakage.
+
+- **Centralized Native Terminal Workstation (`/terminal`, `TerminalPage.jsx`)**:
+  - Created a dedicated terminal workspace (`TerminalPage.jsx`) mounted on the primary navigation rail.
+  - Interactive terminal console (`NativeTerminalConsole.jsx`) supporting command execution, parameter customization, preset loading, and history tracking.
+  - Terminal output parser (`TerminalOutputFormatter.jsx`) with syntax highlighting, ANSI color decoding, and error diagnostics.
+  - Canonical tool registry (`terminalNativeRegistry.js`) mapping all 111 canonical tools to their terminal capabilities, presets, and argument templates.
+
+- **Backend Terminal Support & Capability Hardening**:
+  - Hardened `server/services/HostEnvironmentService.js` with `getNativeCapabilities()` returning structured binary availability and execution modes.
+  - Updated `server/routes/terminal.js` with sanitized binary paths (`nmap`, `dig`, `curl`, `whois`, `openssl`, `ping`, `traceroute`), strict argument validation, shell metacharacter rejection, 10-second kill timers, and rate limiting (60 req/15min).
+
+- **Authentication Architecture Consolidation**:
+  - Consolidated auth pages (`LoginPage.jsx`, `SignupPage.jsx`, `ForgotPasswordPage.jsx`, `ResetPasswordPage.jsx`, `VerifyEmailPage.jsx`).
+  - Removed 21 redundant micro-components from `client/src/components/auth/*` into clean, maintainable, single-file architectures.
+
+- **2-Section Navigation Rail (`client/src/components/common/Layout.jsx`)**:
+  - Redesigned sidebar navigation with an intuitive 2-section layout:
+    1. *Core Workspaces*: Dashboard (`/dashboard`), Native Terminal (`/terminal`), Tools (`/tools`), Scans (`/scans`).
+    2. *SOC Operations & Intelligence*: Decision Intelligence (`/intelligence`), Reporting (`/reports`), Compliance (`/compliance`), Detections (`/detections`), Incidents (`/incidents`), Cases (`/cases`), Hunts (`/hunts`), Threat Intel (`/intel`), Approvals (`/approvals`), Integrations (`/integrations`), Alerts (`/alerts`).
+  - Brand logo header routes directly to root homepage (`/`).
+
+- **Historical Integrity**:
+  - Prior releases (`v62.4.1`, `v62.4.0`, Phase 81, Phase 80, etc.) remain intact and immutable.
+
 ## [v62.4.1] - 2026-09-25
 ### Corrective Release: Phase 80 Runtime Dependency Packaging & Test Isolation Fix
 > **Corrective patch over `v62.4.0` (`7ad91e5`). `v62.4.0` remains immutable. Deployment has NOT yet occurred.**

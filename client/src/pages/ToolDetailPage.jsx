@@ -7,22 +7,16 @@ import AnalyzerToolView from '../components/toolkit/AnalyzerToolView';
 import ComingSoonView from '../components/toolkit/ComingSoonView';
 import UtilityToolView from '../components/toolkit/UtilityToolView';
 
+/**
+ * 🛠️ ToolDetailPage — CyberShield X
+ * Dispatches the authenticated execution workstation for the requested toolId.
+ */
 export default function ToolDetailPage() {
   const { toolId } = useParams();
   const toolConfig = getToolConfig(toolId);
 
   if (!toolConfig) {
-    return (
-      <ToolPageLayout toolId={toolId}>
-        <div className="flex flex-col items-center justify-center py-20 text-center font-mono">
-          <span className="text-4xl mb-4">⚠️</span>
-          <p className="text-xs uppercase tracking-[0.2em] text-[#ff2244] font-bold">Tool Dossier Not Found</p>
-          <p className="text-[10px] text-cyber-muted uppercase tracking-widest mt-2">
-            The requested module identifier "{toolId}" is not registered in the Nexus catalogue.
-          </p>
-        </div>
-      </ToolPageLayout>
-    );
+    return <ToolPageLayout toolId={toolId} />;
   }
 
   if (toolConfig.status === TOOL_STATUS.COMING_SOON) {
@@ -59,7 +53,7 @@ export default function ToolDetailPage() {
 
   return (
     <ToolPageLayout toolId={toolId}>
-      <div className="text-center py-10 font-mono text-xs uppercase tracking-widest text-cyber-muted">
+      <div className="p-8 text-center font-mono text-xs uppercase tracking-widest text-slate-500">
         Unknown tool type configuration structure
       </div>
     </ToolPageLayout>
