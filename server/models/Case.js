@@ -129,6 +129,37 @@ const caseSchema = new mongoose.Schema(
         details: { type: String, default: '' },
       },
     ],
+    // Phase 81: External ITSM ticket bindings for bidirectional synchronization
+    externalTickets: [
+      {
+        provider: {
+          type: String,
+          enum: ['JIRA', 'SERVICENOW', 'PAGERDUTY', 'GENERIC'],
+          required: true,
+        },
+        integrationId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'IntegrationConfig',
+          required: true,
+        },
+        ticketId: { type: String, required: true },       // e.g. "10024" or ServiceNow sys_id
+        ticketKey: { type: String, required: true },      // e.g. "SEC-104" or "INC001004"
+        ticketUrl: { type: String, required: true },      // Direct external browser link
+        externalStatus: { type: String, required: true }, // Raw external status (e.g. "In Progress")
+        syncStatus: {
+          type: String,
+          enum: ['IN_SYNC', 'SYNC_PENDING', 'SYNC_FAILED', 'MANUAL_OVERRIDE'],
+          default: 'IN_SYNC',
+        },
+        lastSyncAt: { type: Date, default: Date.now },
+        lastError: { type: String, default: null },
+        syncDirection: {
+          type: String,
+          enum: ['BIDIRECTIONAL', 'OUTBOUND_ONLY', 'INBOUND_ONLY'],
+          default: 'BIDIRECTIONAL',
+        },
+      },
+    ],
   },
   {
     timestamps: true,
@@ -140,5 +171,8 @@ caseSchema.index({ organizationId: 1, status: 1 });
 caseSchema.index({ organizationId: 1, severity: 1 });
 caseSchema.index({ organizationId: 1, createdAt: -1 });
 caseSchema.index({ 'assets': 1 });
+// Phase 81: Compound indexes for external ticket lookups with tenant isolation
+caseSchema.index({ 'externalTickets.ticketKey': 1, organizationId: 1 });
+caseSchema.index({ 'externalTickets.ticketId': 1, 'externalTickets.provider': 1 });
 
 module.exports = mongoose.models.Case || mongoose.model('Case', caseSchema);

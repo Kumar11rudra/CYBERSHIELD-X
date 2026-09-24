@@ -4,9 +4,10 @@ import {
   FolderLock, Plus, Search, Filter, Shield, AlertTriangle, 
   CheckCircle2, Clock, ChevronRight, FileText, Bot, Terminal, 
   Eye, Hash, User, Tag, Sparkles, Send, Wrench, RefreshCw, X,
-  Layers, FileCheck, Crosshair
+  Layers, FileCheck, Crosshair, ExternalLink
 } from 'lucide-react';
 import api from '../services/api';
+import { isSafeExternalUrl, getSyncStatusBadgeClass } from '../services/workflowIntegrationService';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -455,6 +456,14 @@ export default function CaseWorkspacePage() {
                     <Layers className="w-3.5 h-3.5" /> Incidents & Hunts ({(selectedCase.incidents?.length || 0) + (selectedCase.hunts?.length || 0)})
                   </button>
                   <button
+                    onClick={() => setActiveTab('tickets')}
+                    className={`pb-2 text-xs font-semibold tracking-wide border-b-2 transition-colors flex items-center gap-2 ${
+                      activeTab === 'tickets' ? 'border-cyan-400 text-cyan-300' : 'border-transparent text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" /> External Tickets ({selectedCase.externalTickets?.length || 0})
+                  </button>
+                  <button
                     onClick={() => setActiveTab('ai')}
                     className={`pb-2 text-xs font-semibold tracking-wide border-b-2 transition-colors flex items-center gap-2 ${
                       activeTab === 'ai' ? 'border-cyan-400 text-cyan-300' : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -676,6 +685,100 @@ export default function CaseWorkspacePage() {
                           </div>
                         )}
                       </div>
+                    </div>
+                  )}
+
+                  {/* TAB: EXTERNAL TICKETS */}
+                  {activeTab === 'tickets' && (
+                    <div className="space-y-4" data-testid="case-external-tickets-tab">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                            <ExternalLink className="w-4 h-4 text-cyan-400" /> External ITSM Ticket Synchronizations
+                          </h3>
+                          <p className="text-[10px] text-slate-500 mt-0.5">
+                            Bidirectional status and resolution sync with Jira, ServiceNow, and PagerDuty
+                          </p>
+                        </div>
+                      </div>
+
+                      {(!selectedCase.externalTickets || selectedCase.externalTickets.length === 0) ? (
+                        <div className="p-12 text-center border border-dashed border-slate-800 rounded-xl space-y-2" data-testid="no-external-tickets">
+                          <p className="text-xs text-slate-500 uppercase tracking-widest">No external tickets linked to this case.</p>
+                          <p className="text-[10px] text-slate-600 max-w-md mx-auto">
+                            When this case is dispatched to external ITSM providers or reconciled via inbound webhooks, ticket bindings and synchronization health will appear here.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {selectedCase.externalTickets.map((ticket, index) => {
+                            const syncClass = getSyncStatusBadgeClass(ticket.syncStatus);
+                            const isSafe = isSafeExternalUrl(ticket.ticketUrl);
+                            return (
+                              <div
+                                key={`${ticket.provider}-${ticket.ticketKey || ticket.ticketId}-${index}`}
+                                className="p-4 rounded-xl bg-slate-900/60 border border-slate-800/80 space-y-3"
+                                data-testid={`external-ticket-card-${ticket.provider}`}
+                              >
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-2">
+                                  <div className="flex items-center gap-3">
+                                    <span className="px-2 py-0.5 text-xs font-bold font-mono rounded bg-cyan-950/80 border border-cyan-800 text-cyan-300">
+                                      {ticket.provider}
+                                    </span>
+                                    <span className="font-mono text-xs font-bold text-white">
+                                      {ticket.ticketKey || ticket.ticketId || '—'}
+                                    </span>
+                                    <span className={`px-2 py-0.5 text-[9px] font-bold uppercase rounded border ${syncClass}`}>
+                                      {ticket.syncStatus || 'UNKNOWN'}
+                                    </span>
+                                  </div>
+                                  {isSafe ? (
+                                    <a
+                                      href={ticket.ticketUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-1.5 px-3 py-1 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 rounded text-xs font-mono font-bold transition-colors"
+                                    >
+                                      Open in {ticket.provider} <ExternalLink className="w-3 h-3" />
+                                    </a>
+                                  ) : (
+                                    <span className="text-slate-600 text-[10px] font-mono">No direct link</span>
+                                  )}
+                                </div>
+
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                                  <div>
+                                    <span className="text-slate-500 text-[10px] uppercase block">External Status</span>
+                                    <span className="font-semibold text-slate-200">{ticket.externalStatus || '—'}</span>
+                                  </div>
+                                  <div>
+                                    <span className="text-slate-500 text-[10px] uppercase block">Sync Direction</span>
+                                    <span className="font-mono text-slate-300">{ticket.syncDirection || 'BIDIRECTIONAL'}</span>
+                                  </div>
+                                  <div>
+                                    <span className="text-slate-500 text-[10px] uppercase block">Last Synchronized</span>
+                                    <span className="text-slate-400 text-[11px]">
+                                      {ticket.lastSyncAt ? new Date(ticket.lastSyncAt).toLocaleString() : 'Never'}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <span className="text-slate-500 text-[10px] uppercase block">Ticket ID</span>
+                                    <span className="font-mono text-slate-400 text-[11px] truncate block">
+                                      {ticket.ticketId || '—'}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {ticket.lastError && (
+                                  <div className="p-2 rounded bg-rose-950/30 border border-rose-900/40 text-rose-300 text-[11px] font-mono">
+                                    Sync Warning: {ticket.lastError}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   )}
 

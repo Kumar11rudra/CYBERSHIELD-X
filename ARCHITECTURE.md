@@ -2,14 +2,140 @@
 
 This document outlines the current state and the intended future target state of the CyberShield X architecture, establishing a migration strategy for long-term scalability.
 
-## 1. Current Architecture (Version 62.2.0)
+## 1. Current Architecture (Version 62.4.0)
 
 CyberShield X uses a hybrid approach, transitioning from a legacy MVC monolith to an Event-Driven Service-Oriented Architecture using Dependency Injection.
 
 - **Legacy Core**: Standard Express MVC paradigm for business logic (`server/controllers/`, `server/services/`, `server/routes/`).
-- **Modern Core (V62.2.0)**: Fully decoupled, event-driven orchestration layer located primarily in `server/services/chatbot_core/`, specialized feature folders (`server/services/intelligence/`, `server/services/datafabric/`, `server/services/automation/`, `server/services/soc/`, `server/services/observability/`, `server/services/jobs/`, `server/services/workflows/`, `server/services/scanners/`).
+- **Modern Core (V62.4.0)**: Fully decoupled, event-driven orchestration layer located primarily in `server/services/chatbot_core/`, specialized feature folders (`server/services/intelligence/`, `server/services/datafabric/`, `server/services/automation/`, `server/services/soc/`, `server/services/observability/`, `server/services/jobs/`, `server/services/workflows/`, `server/services/scanners/`).
 
-## 2. Core V62.2.0 Modules
+## 2. Core V62.4.0 Modules
+
+- **Phase 81 Enterprise External Workflow, Bidirectional Ticketing & SOAR Webhooks Architecture (Certified & Production-Ready)**:
+  - **External Approval Callback Engine Architecture (`ExternalApprovalCallbackNormalizer.js`, `ExternalApprovalCallbackService.js`, `inboundWebhookController.js`)**:
+    - **Pipeline Architecture & Controller Wiring**:
+      - Step 4 Authenticated Webhook (`inboundWebhookController.js`) -> Deterministic Discrimination (`ExternalApprovalCallbackNormalizer.isApprovalCallback`) -> Normalization (`ExternalApprovalCallbackNormalizer.normalize`) -> Authoritative Tenant/Integration Resolution -> Scoped PendingApproval Matching -> Authoritative 5-Layer Idempotency Guard -> Safe State Machine Transition (`APPROVED` | `DENIED`) -> Strict Zero Action Execution -> Socket.IO Notification -> Immutable IntegrationSyncEvent Audit.
+      - **Runtime Response Contracts**: Preserves Step 4 Gate J contracts (`status = 'AUTHENTICATED'`), embeds outcome in `res.body.approvalCallback`. Replays return HTTP 200 `{ status: 'DUPLICATE_ACKNOWLEDGED', reason: 'REPLAY_DETECTED' }`.
+    - **PendingApproval State Machine Reuse**:
+      - Reuses canonical `PendingApproval` model (`server/models/PendingApproval.js`) and status enum `['PROPOSED', 'AWAITING_APPROVAL', 'APPROVED', 'EXECUTING', 'COMPLETED', 'FAILED', 'DENIED', 'EXPIRED']`.
+      - External approvals transition to `APPROVED`; external rejections transition to `DENIED`.
+      - Protects terminal states (`APPROVED`, `DENIED`, `EXECUTING`, `COMPLETED`, `FAILED`) from external regression (`ALREADY_TERMINAL`).
+      - Validates expiration (`new Date() > expiresAt`), marking expired records as `EXPIRED` and blocking external decisions.
+      - Blocks out-of-order stale callbacks (`occurredAt < updatedAt`).
+    - **Strict Zero Action Execution (Guardrail 5)**:
+      - The callback engine strictly modifies approval decision/state and audit trail.
+      - Zero calls to `SafePlaybookAutomationService.approveAndExecuteAction()`, zero native terminal spawns, zero SOAR runners, and zero arbitrary command executions.
+    - **Scoped Approval Matching**:
+      - Queries `PendingApproval.findOne({ organizationId, $or: [...] })` matching `approvalId`, `parameters.ticketKey`, `parameters.externalTicketKey`, `parameters.ticketId`, `parameters.externalTicketId`, `parameters.correlationId`, or `evidenceRef`. Unmatched callbacks return safe `{ success: true, status: 'UNMATCHED', matched: false }` with zero records created.
+    - **Authoritative 5-Layer Idempotency & Concurrency Architecture**:
+      - **Layer 1 (Intra-process Concurrency Lock)**: `_inFlightApprovals = new Set()` in-memory lock prevents concurrent microsecond collisions within the same Node process.
+      - **Layer 2 (In-Memory Fast-Path Cache)**: Bounded LRU cache (`_recentEvents`) provides sub-millisecond duplicate checks for recently processed digests.
+      - **Layer 3 (Authoritative DB Lookup Across Restarts)**: Converts SHA-256 duplicate identity digest into deterministic RFC 4122 UUID v4 `syncId` and queries durable `IntegrationSyncEvent.findOne({ syncId })`. Survives process restarts.
+      - **Layer 4 (Multi-Process Atomic Race Defense)**: Inserts `IntegrationSyncEvent` with `syncId: deterministicSyncId` BEFORE mutating `PendingApproval`. Catches MongoDB E11000 duplicate key errors on concurrent inserts across cluster instances and classifies them safely as `DUPLICATE_ACKNOWLEDGED`. Zero duplicate idempotency collections created.
+      - **Layer 5 (Failure Rollback)**: If `approvalDoc.save()` fails, `_deleteSyncEvent(deterministicSyncId)` rolls back the tentative audit entry, allowing upstream retry mechanisms to succeed.
+    - **Immutable Audit Trail**:
+      - Records `IntegrationSyncEvent` with deterministic UUID v4 `syncId`, `direction: 'INBOUND'`, `targetEntityType: 'APPROVAL'`, and `targetEntityId: approval.approvalId`. Zero secrets or credentials persisted.
+    - **Strict Loop Prevention**:
+      - Approval callback processing never invokes `OutboundDispatchService.enqueueDispatch()`, eliminating outbound echo loops.
+  - **Inbound Ticket Reconciliation Engine Architecture (`InboundTicketNormalizer.js`, `InboundTicketReconciliationService.js`, `inboundWebhookController.js`)**:
+    - **Pipeline Architecture & Controller Wiring**:
+      - Step 4 Authenticated Webhook (`inboundWebhookController.js`) -> `inboundTicketReconciliationService.reconcileWebhook()` -> Normalization (`InboundTicketNormalizer.js`) -> Authoritative Tenant/Integration Resolution -> External Ticket Matching -> Authoritative Multi-Layer Idempotency Guard -> Safe Case Reconciliation -> External Ticket Metadata Update -> Inbound Loop Prevention -> Immutable IntegrationSyncEvent Audit.
+      - **Runtime Response Contracts**: Preserves Step 4 Gate J contracts (`status = 'AUTHENTICATED'`), keeps root `caseId` / `externalStatus` undefined to prevent client confusion, and exposes reconciliation outcome in nested `reconciliation` payload. Replays acknowledge with `200 DUPLICATE_ACKNOWLEDGED`.
+    - **Inbound Ticket Normalization (`InboundTicketNormalizer.js`)**:
+      - Converts provider-specific authenticated webhook data (`JIRA`, `SERVICENOW`, `PAGERDUTY`, `GENERIC`) into a deterministic canonical structure (`provider`, `integrationId`, `organizationId`, `externalTicketId`, `externalTicketKey`, `externalStatus`, `eventType`, `eventId`, `occurredAt`, `payloadHash`, `source`).
+      - Ingests exact raw body byte buffer where available (`req.rawBody`) to compute SHA-256 `payloadHash`.
+      - Strips credentials, tokens, raw bodies, cookies, and Authorization headers. Fails closed on missing ticket identity.
+    - **Authoritative Tenant & Integration Resolution**:
+      - Derives tenant exclusively from `IntegrationConfig.organizationId` and integration from `IntegrationConfig._id`. Never trusts payload claims.
+    - **Strict Scoped Case Matching**:
+      - Queries `Case.findOne({ organizationId, 'externalTickets.integrationId': integrationId, $or: [ticketId, ticketKey] })`. Unmatched tickets return `{ matched: false, status: 'UNMATCHED' }` and create zero Cases. Disconnected Mongoose states fail safely without buffering hangs.
+    - **Canonical Status Mapping & Lifecycle Safety**:
+      - Maps provider statuses to `Case.status` enum (`['NEW', 'OPEN', 'IN_PROGRESS', 'ESCALATED', 'CONTAINED', 'RESOLVED', 'CLOSED', 'ARCHIVED']`).
+      - Unsupported external statuses update `externalTickets[].lastError` without corrupting `Case.status`.
+      - Terminal state protection: `CLOSED` and `ARCHIVED` Cases reject automated status regression (`TERMINAL_STATE_LOCKED`).
+      - Supported reopening: `RESOLVED` -> `OPEN` or `IN_PROGRESS` records `CASE_REOPENED` in timeline and appends to `reopenHistory`.
+      - Stale event defense: prevents out-of-order events (`occurredAt < lastSyncAt`) from regressing status (`STALE_EVENT_REGRESSION_BLOCKED`).
+    - **Authoritative Multi-Layer Idempotency & Concurrency Architecture**:
+      - **Layer 1 (Intra-process Concurrency Lock)**: `_inFlightEvents = new Set()` tracks active in-flight duplicate identity keys, preventing concurrent intra-process race conditions.
+      - **Layer 2 (In-Memory Fast-Path Cache)**: Bounded LRU cache (`_idempotencyCache`) provides sub-millisecond duplicate checks for recently processed events.
+      - **Layer 3 (Authoritative DB Lookup Across Restarts)**: Converts SHA-256 duplicate identity into deterministic RFC 4122 UUID v4 `syncId` and queries durable `IntegrationSyncEvent.findOne({ syncId })`. Survives process restarts.
+      - **Layer 4 (Multi-Process Atomic Race Defense)**: Leverages existing MongoDB unique index `syncId_1` on `IntegrationSyncEvent`. Catches E11000 duplicate key errors on concurrent inserts across cluster instances and classifies them safely as `DUPLICATE_ACKNOWLEDGED`. Zero duplicate idempotency tables or secondary architectures.
+      - **Layer 5 (Failure Rollback)**: If `caseDoc.save()` fails, `_deleteSyncEvent(syncId)` removes the tentative audit entry, allowing upstream retry mechanisms to succeed.
+    - **External Ticket Metadata Update**:
+      - Preserves unrelated `externalTickets` subdocuments, updating only the matched binding (`externalStatus`, `lastSyncAt`, `syncStatus: 'IN_SYNC'`).
+    - **Strict Loop Prevention**:
+      - Inbound synchronization never calls `OutboundDispatchService.enqueueDispatch()`, records `performedBy: 'INBOUND_WEBHOOK'` in timeline.
+    - **Immutable Audit Trail**:
+      - Records `IntegrationSyncEvent` with deterministic UUID v4 `syncId`, `direction: 'INBOUND'`, `targetEntityType: 'CASE'`, and normalized provider enum. Zero secrets or raw bodies stored.
+  - **Inbound Webhook Cryptography & Security Architecture (`ItsmSignatureVerifier.js`, `inboundWebhookController.js`, `inboundWebhook.js`)**:
+    - **Constant-Time Cryptographic Verification**: Verifies incoming signatures and shared tokens using native `crypto.timingSafeEqual` with length-normalized buffers, defending against side-channel timing attacks.
+    - **Multi-Provider Webhook Security Matrix**:
+      - Jira: Computes HMAC-SHA256 over raw request body using `config.webhookSecret` against `X-Hub-Signature` (`sha256=<hex>` or `<hex>`) or validates Bearer token against configured credentials.
+      - PagerDuty: Computes HMAC-SHA256 over raw body against `X-PagerDuty-Signature` (`v1=<hex>`), supporting multi-version comma-separated header values.
+      - ServiceNow: Constant-time validation of shared secret token via `X-ServiceNow-Token` / `X-CyberShield-Token`, Basic Auth credentials, or HMAC-SHA256 via `X-ServiceNow-Signature`.
+      - Generic Webhook: HMAC-SHA256 verification over raw body via `X-Hub-Signature-256` / `X-Webhook-Signature` or shared token.
+    - **Freshness & Replay Guard**: Enforces transport delivery age <= 5 minutes and future clock skew <= 1 minute. Replays are caught using a bounded in-memory LRU cache storing compound digest keys `SHA256(integrationId + ':' + provider + ':' + eventId + ':' + payloadHash)` with a 10-minute TTL, returning safe `200 DUPLICATE_ACKNOWLEDGED` responses.
+    - **Strict Tenant & Provider Isolation**: Derives `organizationId` authoritatively from database `IntegrationConfig.organizationId` via route parameter `:integrationId`. Ignores all payload tenant claims. Enforces provider confusion defense by validating that route `:provider` matches `config.type`.
+    - **Query Secret Prohibition**: Immediately rejects `?token=`, `?secret=`, `?key=` with `400 Bad Request` (`QUERY_SECRET_PROHIBITED`) to prevent secret leakage in proxy or access logs.
+    - **Raw Body Integrity**: Captures and preserves exact raw request byte buffers via `express.json` verify callback to guarantee deterministic HMAC evaluation.
+    - **Immutable Security Audit Trail**: Writes `IntegrationSyncEvent` audit logs with UUID v4 `syncId`, SHA-256 `payloadHash`, authoritative `organizationId`, and `direction: 'INBOUND'`. Zero credentials or raw bodies are persisted.
+    - **HARD GATE (Zero Side-Effects)**: Acts exclusively as an authentication and security filter. Does NOT mutate `Case`, `externalTickets`, or `PendingApproval`.
+  - **Outbound Dispatch, Worker & DLQ Architecture (`OutboundDispatchService.js`, `IntegrationWorker.js`, `outboundDispatcher.js`)**:
+    - **Queue Re-use & Bounded Concurrency**: Outbound dispatch integrates into the existing `MemoryQueue` (`integrationQueue` with concurrency: 3, maxRetries: 3). Jobs are packaged with `jobType: 'OUTBOUND_DISPATCH'` and UUID v4 `jobId`.
+    - **Tenant Isolation Enforcement**: Worker re-resolves `IntegrationConfig.findOne({ _id: integrationId, organizationId })` before invoking any connector. Cross-tenant forgeries trigger immediate non-retryable rejection (`TENANT_MISMATCH`) and isolation to DLQ without network calls.
+    - **Static Connector Resolution**: Dispatches exclusively through a pre-defined connector dictionary (`CONNECTOR_REGISTRY`) mapping `JIRA` -> `jiraConnector`, `SERVICENOW` -> `serviceNowConnector`, `PAGERDUTY` -> `pagerDutyConnector`. Dynamic `require()` from user payload is strictly prevented.
+    - **HTTP Transport Hardening**: Sets `maxRedirects: 0` on worker outbound transport (`secureAxios`) providing defense-in-depth against redirect-based SSRF circumvention.
+    - **Deterministic Error Classification**: Classifies upstream outcomes into:
+      - `RETRYABLE`: Network errors (ECONNRESET, socket hang up, timeouts), HTTP 429 (rate-limited), and HTTP 5xx (upstream server error).
+      - `NON_RETRYABLE`: HTTP 401/403 (authentication/authorization failure), HTTP 400 (bad request), HTTP 404, tenant mismatch, and SSRF blocks.
+      - `POISON`: Structurally malformed payloads or invalid serialization.
+    - **Bounded Exponential Backoff**: Deterministic formula `delay = Math.min(base * mult^(attempt - 2), max) + jitter` (base: 1000ms, mult: 2, max: 60000ms, jitter: 200ms).
+    - **Retry Limits & DLQ Isolation**: Jobs are capped at `maxAttempts = 3`. Retries exhausted or non-retryable/poison failures route to Dead-Letter Queue (DLQ). DLQ records preserve operator telemetry while strictly scrubbing all credentials, passwords, tokens, and Authorization headers.
+    - **Audit Trail Conformance**: Every lifecycle state transition records an immutable `IntegrationSyncEvent` audit log with UUID v4 `syncId`, SHA-256 `payloadHash`, authoritative `organizationId`, and direction `'OUTBOUND'`.
+  - **Outbound Connector Layer & Utilities (`connectorUtils.js`, `jira.js`, `servicenow.js`, `pagerduty.js`)**:
+    - **SSRF-Safe Transport (`secureAxios`, `validateApiUrl`)**: Every outbound HTTP request to customer-configured URLs (Jira base URL, ServiceNow instance URL) passes through strict SSRF validation. Uses a custom HTTPS agent performing pre-request DNS resolution checked against `ssrfValidator.isPrivateIp` to block access to private RFC 1918 subnets, link-local addresses (AWS IMDS `169.254.169.254`), and loopback addresses.
+    - **Tenant Isolation (`verifyTenantOwnership`)**: Every connector operation strictly validates that the caller's contextual `organizationId` authoritatively matches `IntegrationConfig.organizationId`. Payload-supplied tenant IDs are rejected without making network calls.
+    - **Deterministic Secret Scrubbing (`sanitizeError`)**: Comprehensive regex scrubbing redacts Bearer tokens, Basic credentials, passwords, secrets, webhook secrets, and API tokens/keys from thrown errors, Axios error bodies, and logs.
+    - **Normalized Result Contract (`formatNormalizedResult`)**: Uniform adapter contract across all providers (`success`, `provider`, `operation`, `integrationId`, `organizationId`, `externalTicketId`, `externalTicketKey`, `externalTicketUrl`, `providerStatus`, `timestamp`, `error`). Prevents provider-specific response shapes or sensitive headers from leaking into callers.
+    - **Jira Connector Adapter (`jiraConnector`)**: Supports Jira Cloud (email + API token) and Server/Data Center (PAT Bearer). Handles issue creation, update (summary, description, labels, transitions), and connection testing.
+    - **ServiceNow Connector Adapter (`serviceNowConnector`)**: Interacts with ServiceNow Table API (`/api/now/table/incident` or configurable table) with Basic auth, extracting `sys_id` and incident numbers with safe error normalization.
+    - **PagerDuty Connector Adapter (`pagerDutyConnector`)**: Integrates with Events API v2 (`/v2/enqueue`) and REST API v2 for incident triggering, acknowledging, resolving, and connection testing using dedup keys.
+  - **ITSM & Webhook Connector Schema (`IntegrationConfig.js`)**:
+    Extended per-tenant integration credential model with `'ServiceNow'` and `'Webhook'` types. Enforces strict server-side secret masking (`toSafeObject()`) for `webhookSecret` and `password` preventing credential leakage.
+  - **Multi-Provider External Ticket Subdocument (`Case.js`)**:
+    Enables SOC cases to bind multiple external ITSM tickets (Jira, ServiceNow, PagerDuty, Generic) with status synchronization tracking (`syncStatus`, `syncDirection`, `lastSyncAt`, `lastError`). Indexed via `{ 'externalTickets.ticketKey': 1, organizationId: 1 }` and `{ 'externalTickets.ticketId': 1, 'externalTickets.provider': 1 }`.
+  - **Immutable Integration Audit Trail (`IntegrationSyncEvent.js`)**:
+    Append-only record tracking all inbound webhook deliveries and outbound dispatch attempts with SHA-256 payload hashes, execution timing (`durationMs`), and retry counters. Zero native TTL index.
+  - **Phase 75 Data Lifecycle Governance (`RetentionPolicy.js`, `DataLifecycleService.js`)**:
+    Registers `'integration_audit'` into the platform retention policy framework, ensuring integration audit events are subject to automated retention evaluation and legal hold preservation.
+  - **Authenticated Socket.IO Approval Push & Real-Time Updates Architecture (`socketAuth.js`, `server/index.js`, `ApprovalCenterPage.jsx`)**:
+    - **Canonical Socket Authentication Middleware (`socketAuth.js`)**: Validates canonical JWT tokens from handshake `auth.token`, `headers.authorization`, or cookies. Verifies user existence, checks account status (rejects banned/suspended accounts with `AUTH_ACCOUNT_DISABLED`), and verifies session revocation against `User.sessionRevocation` (`AUTH_SESSION_EXPIRED`).
+    - **Authoritative Tenant Room Binding**: Resolves the user's active membership deterministically using `Membership.findOne({ userId }).sort({ createdAt: 1 })`. Automatically joins the socket to `org:${socket.organizationId}`. Client-supplied organization parameters are validated against membership; unauthorized overrides reject with `TENANT_MISMATCH`.
+    - **Client Room Manipulation Defense**: Intercepts and blocks client-emitted `join` or `joinRoom` events to prevent unauthorized cross-tenant room traversal.
+    - **Real-Time Push Delivery**: `externalApprovalCallbackService.setSocketIO(io)` emits `approval:external_callback` directly to room `org:${orgId}` upon successful callback reconciliation, updating connected Approval Center dashboards in real time.
+    - **Preserved HTTP Fallback**: Standard `/api/approvals` HTTP polling/fetch endpoints remain fully functional, ensuring resilient dual-mode updates.
+    - **Strict Zero Action Execution Guarantee**: Event reception updates client UI state only; zero automated tool executions, playbooks, or terminal spawns occur upon event delivery.
+  - **Inbound Webhook Fail-Closed Error Semantics & Fallthrough Architecture (`inboundWebhookController.js`)**:
+    - **Fail-Closed Internal Error Semantics (FINDING-01)**: Internal database errors or unexpected exceptions thrown during ticket reconciliation or approval callback processing return HTTP 500 without leaking stack traces, database error messages, or internal schemas.
+    - **Non-Fatal Business Outcomes**: Duplicate events (`DUPLICATE_ACKNOWLEDGED`) and unmatched entities return HTTP 200 to prevent upstream webhook providers (Jira, ServiceNow, PagerDuty) from looping retries.
+    - **Deterministic Approval-to-Ticket Fallthrough (FINDING-03)**: When an inbound webhook matches approval heuristic keywords but `ExternalApprovalCallbackService` returns `UNMATCHED`/`APPROVAL_NOT_FOUND`, the controller deterministically falls through to `InboundTicketReconciliationService.reconcileWebhook()` to check for matching ticket bindings, eliminating ambiguity.
+  - **Canonical Integration Connection Testing & Deterministic Membership Architecture (`integrationController.js`, `integration.js`)**:
+    - **Dual Route Support (FINDING-04)**: Exposes `POST /api/integrations/:id/test` alongside alias `POST /api/integrations/test` with flexible identifier resolution (`req.params.id`, `req.body.id`, `req.body.integrationId`).
+    - **Deterministic Organization Context Fallback (FINDING-FINAL-02)**: When `X-Organization-Id` header is omitted, `IntegrationController.testIntegration` resolves tenant context using `Membership.findOne({ userId: req.user._id }).sort({ createdAt: 1 })`, ensuring deterministic organization selection aligned with `socketAuth.js`.
+    - **Authoritative Multi-Tenant Boundary Enforcement**: Strictly validates that the requested integration belongs to the authenticated caller's tenant; cross-tenant test attempts reject with HTTP 403 `TENANT_MISMATCH`.
+  - **Enterprise SOAR Workstation Frontend Integration Architecture (`workflowIntegrationService.js`, `IntegrationsPage.jsx`, `CaseWorkspacePage.jsx`, `ApprovalCenterPage.jsx`)**:
+    - **Unified API Client Proxy (`workflowIntegrationService.js`)**: Proxies all frontend external workflow requests through authenticated backend `/api/*` endpoints with automated `x-organization-id` header injection. Strictly enforces zero direct browser-to-provider HTTP calls.
+    - **Strict External URL Safety Validator (`isSafeExternalUrl`)**: Whitelists only `https:` and `http:` schemes, strictly blocking dangerous pseudo-protocols (`javascript:`, `data:`, `file:`, `vbscript:`).
+    - **Integrations Hub Workstation (`IntegrationsPage.jsx`)**: Tabbed interface supporting 7 canonical providers (Jira, ServiceNow, PagerDuty, Slack, Teams, GitHub, Webhook) with masked password inputs (`type="password"`) and safe health testing.
+    - **Case Workspace Integration (`CaseWorkspacePage.jsx`)**: Dedicated External Tickets tab displaying bound external tickets with safe external links (`target="_blank" rel="noopener noreferrer"`).
+    - **Approval Center Integration (`ApprovalCenterPage.jsx`)**: Displays canonical `PROPOSED` status, External ITSM Decision attribution cards, and real-time Socket.IO push updates.
+    - **Zero Client-Side Action Execution Guarantee**: The presentation layer acts strictly as an operator dashboard; zero playbooks or tools are executed client-side.
+  - **Phase 81 MemoryQueue Durability Limitation & Phase 82 Migration Deferral (FINDING-05 / FINDING-FINAL-01)**:
+    - **Process-Local MemoryQueue Limitation**: Phase 81 outbound ITSM dispatch intentionally uses the process-local in-memory queue (`MemoryQueue`) and in-memory retry timers (`_retryTimers`). Pending jobs, retries, and in-memory DLQ state do not survive process restarts.
+    - **Audit History vs Job Persistence**: `IntegrationSyncEvent` provides durable audit history with SHA-256 payload hashes but is not an executable job recovery store.
+    - **Accepted Risk**: Formally accepted architectural limitation for Phase 81 single-node / development topologies.
+    - **Phase 82 Deferral**: Full durable queue migration (`OutboundDispatchJob` with atomic claims, lease handling, worker clustering, and restart recovery) is scheduled for Phase 82.
+
 
 - **Phase 79 Enterprise SOC Intelligence, Risk Synthesis & Analyst Decision Support Architecture**:
   - **Multi-Source Risk Synthesis Engine (`RiskSynthesisService.js`, `RiskAssessment.js`, `RiskSnapshot.js`)**:

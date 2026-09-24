@@ -46,6 +46,8 @@ const retentionPolicySchema = new mongoose.Schema(
         'threat_hunt_executions',
         'detection_rules',
         'metric_snapshots',
+        'cloud_telemetry',
+        'integration_audit', // Phase 81: IntegrationSyncEvent lifecycle governance
       ],
       index: true,
     },

@@ -22,6 +22,8 @@ const ThreatHunt = require('../../models/ThreatHunt');
 const ThreatHuntExecution = require('../../models/ThreatHuntExecution');
 const DetectionRule = require('../../models/DetectionRule');
 const MetricSnapshot = require('../../models/MetricSnapshot');
+const CloudTelemetryEvent = require('../../models/CloudTelemetryEvent');
+const IntegrationSyncEvent = require('../../models/IntegrationSyncEvent');
 const logger = require('../../utils/logger');
 
 class DataLifecycleService {
@@ -100,6 +102,10 @@ class DataLifecycleService {
         return { model: DetectionRule, dateField: 'createdAt', idField: 'ruleId' };
       case 'metric_snapshots':
         return { model: MetricSnapshot, dateField: 'timestamp', idField: 'snapshotId' };
+      case 'cloud_telemetry':
+        return { model: CloudTelemetryEvent, dateField: 'eventTime', idField: 'canonicalEventId' };
+      case 'integration_audit':
+        return { model: IntegrationSyncEvent, dateField: 'processedAt', idField: 'syncId' };
       default:
         throw new Error(`Unsupported entityType for data retention: ${entityType}`);
     }

@@ -2,7 +2,172 @@
 
 All notable changes to this project will be documented in this file.
 
-## [v62.2.0] - 2026-09-11
+## [v62.4.0] - 2026-09-24
+### Phase 81: Enterprise External Workflow, Bidirectional Ticketing & SOAR Webhooks (Release Gate Cleared & Production Certified)
+- **Phase 81 Release Gate Clearance (Step 154) & Full Regression (Step 153)**:
+  - Formally cleared Phase 81 release gate (`RELEASE GATE CLEARED — PHASE 81 READY FOR FINAL RELEASE PROCESS`).
+  - Completed comprehensive Step 153 regression battery across all 11 Phase 81 test suites: **294 / 294 tests passed (100% PASS)** with 0 failures and 0 skipped in ~16.60s runtime.
+  - Zero P0/P1 blockers remain. All findings resolved or explicitly accepted as architectural limitations.
+- **Enterprise External Workflow Integration & Connectors (Steps 1–2)**:
+  - Multi-provider outbound connectors for Jira (Cloud & Server/Data Center), ServiceNow (Table API), and PagerDuty (Events API v2 & REST API v2).
+  - Outbound transport security via `secureAxios`: pre-request DNS pinning SSRF validation blocking private RFC 1918 subnets, loopback addresses, and cloud metadata (169.254.169.254), with `maxRedirects: 0`.
+  - Authoritative tenant verification (`verifyTenantOwnership`) and comprehensive regex credential scrubbing (`sanitizeError`) preventing secret leaks.
+  - Normalized adapter contract (`formatNormalizedResult`) across all providers.
+  - Multi-provider `Case.externalTickets` subdocument array with compound indexes on `{ 'externalTickets.ticketKey': 1, organizationId: 1 }` and `{ 'externalTickets.ticketId': 1, 'externalTickets.provider': 1 }`.
+  - Append-only `IntegrationSyncEvent` audit trail with SHA-256 payload hashes and zero native TTL, governed by Phase 75 Data Lifecycle retention.
+- **Outbound Dispatch Worker & DLQ Isolation (Step 3)**:
+  - Queue-based dispatch on `integrationQueue` with bounded concurrency and UUID v4 `jobId`.
+  - Static connector resolution (`CONNECTOR_REGISTRY`) preventing dynamic require from user payload.
+  - Deterministic 3-category error classification: `RETRYABLE` (timeouts, 429, 5xx), `NON_RETRYABLE` (401/403, 400, tenant mismatch, SSRF), and `POISON` (malformed payload).
+  - Bounded exponential backoff with jitter and capped retry policy (`maxAttempts = 3`).
+  - Dead-Letter Queue (DLQ) tenant isolation with credential scrubbing.
+- **Inbound Webhook Cryptography & Security (Step 4)**:
+  - Constant-time HMAC-SHA256 signature verification (`crypto.timingSafeEqual`) for Jira (`X-Hub-Signature`), PagerDuty (`X-PagerDuty-Signature`), ServiceNow (`X-ServiceNow-Token` / Basic auth / HMAC), and Generic webhooks (`X-Hub-Signature-256`).
+  - Strict freshness validation (delivery age <= 5 minutes, clock skew <= 1 minute) and 10-minute compound digest replay defense.
+  - Authoritative tenant resolution via route parameter `:integrationId` (ignoring payload tenant claims) and provider confusion defense.
+  - Strict query-string secret prohibition (`QUERY_SECRET_PROHIBITED` on `?token=`, `?secret=`, `?key=`).
+- **Inbound Ticket Reconciliation Engine (Step 5)**:
+  - Inbound ticket normalizer (`InboundTicketNormalizer.js`) computing SHA-256 hash over exact raw request bytes and stripping sensitive headers.
+  - Scoped Case matching query `{ organizationId, 'externalTickets.integrationId': integrationId, $or: [ticketId, ticketKey] }`.
+  - Safe lifecycle transition engine: terminal state locks (`CLOSED`, `ARCHIVED`), supported reopening (`RESOLVED` -> `OPEN`/`IN_PROGRESS`), and stale event regression defense.
+  - Authoritative 5-layer idempotency architecture: intra-process in-flight set (`_inFlightEvents`), fast-path LRU memory cache, durable DB lookup (`IntegrationSyncEvent.findOne`), multi-process atomic E11000 unique key race defense, and failure rollback.
+  - Strict loop prevention: zero calls to `OutboundDispatchService.enqueueDispatch()`.
+- **External Approval Callback Engine (Step 6)**:
+  - Deterministic discrimination of approval webhooks via `ExternalApprovalCallbackNormalizer.isApprovalCallback`.
+  - Canonical `PendingApproval` state transition to `APPROVED` or `DENIED` with `approvedBy` audit data.
+  - Protection of terminal states (`ALREADY_TERMINAL`), expiration enforcement (`EXPIRED`), and stale event defense.
+  - Strict Guardrail 5 enforcement: zero automated tool execution, zero terminal spawns, zero playbook execution from inbound callbacks.
+- **Authenticated Socket.IO Approval Push & Real-Time Updates (FINDING-02 Remediation)**:
+  - Canonical JWT Socket.IO authentication middleware (`server/middleware/socketAuth.js`) validating session revocation and user account status.
+  - Authoritative tenant room binding strictly to `org:${socket.organizationId}` based on membership, blocking client room-manipulation attempts.
+  - Real-time approval push event emission (`approval:external_callback`) wired into `externalApprovalCallbackService.setSocketIO(io)`.
+  - Preservation of HTTP polling/fetch fallback endpoints on `/api/approvals`.
+- **Enterprise SOAR Workstation Frontend (Step 7)**:
+  - Unified frontend API service `client/src/services/workflowIntegrationService.js` proxying through authenticated backend endpoints.
+  - Strict external URL safety validation (`isSafeExternalUrl`) restricting links to `https:` and `http:` while blocking dangerous schemes (`javascript:`, `data:`, `file:`, `vbscript:`).
+  - Integrations Hub (`IntegrationsPage.jsx`) supporting 7 canonical providers (Jira, ServiceNow, PagerDuty, Slack, Teams, GitHub, Webhook) with masked password inputs (`type="password"`).
+  - External connection testing via `POST /api/integrations/test` and `POST /api/integrations/:id/test`.
+  - Case Workspace (`CaseWorkspacePage.jsx`) dedicated External Tickets tab with safe links.
+  - Approval Center (`ApprovalCenterPage.jsx`) with `PROPOSED` status, External ITSM Decision cards, and real-time Socket.IO listener.
+  - Strict zero client-side action execution guarantee.
+- **Verified Findings Remediations & Hardening**:
+  - `FINDING-01 (P1/P2)`: Implemented fail-closed HTTP 500 error semantics on internal reconciliation and approval errors in `inboundWebhookController.js`.
+  - `FINDING-02 (P2)`: Wired canonical Socket.IO authentication (`socketAuth.js`), authoritative tenant room binding, and real-time approval push.
+  - `FINDING-03 (P2)`: Implemented deterministic fallthrough from unmatched approval callbacks to ticket reconciliation in `inboundWebhookController.js`.
+  - `FINDING-04 (P2)`: Implemented canonical tenant-isolated integration connection testing in `integrationController.js` and `integration.js` supporting both route params and body IDs.
+  - `FINDING-FINAL-02 (P3)`: Added deterministic `.sort({ createdAt: 1 })` to fallback membership query in `integrationController.js:57`.
+  - `FINDING-05 / FINDING-FINAL-01 (P2)`: Accepted architectural limitation for Phase 81; outbound dispatch queue durability deferred to Phase 82.
+- **Known Architectural Limitations (Phase 81)**:
+  - *Outbound Queue Durability*: Outbound ITSM dispatch uses the process-local in-memory `MemoryQueue` and in-memory retry timers. Pending jobs, retries, and in-memory DLQ state do not survive process restarts. `IntegrationSyncEvent` provides durable audit history but is not an executable job store. Distributed durable queue migration (`OutboundDispatchJob`) is scheduled for Phase 82.
+
+## [v62.2.0] - 2026-09-20
+### Phase 81: Enterprise External Workflow, Bidirectional Ticketing & SOAR Webhooks (Steps 1–6 Implemented)
+- **Phase 81 Step 6: External Approval Callback Engine (`ExternalApprovalCallbackNormalizer.js`, `ExternalApprovalCallbackService.js`, `inboundWebhookController.js`)**:
+  - Reused existing `PendingApproval` model (`server/models/PendingApproval.js`) and status enum `['PROPOSED', 'AWAITING_APPROVAL', 'APPROVED', 'EXECUTING', 'COMPLETED', 'FAILED', 'DENIED', 'EXPIRED']`. Zero new approval database models created.
+  - Implemented `ExternalApprovalCallbackNormalizer.js`:
+    - Canonical event parser for Jira, ServiceNow (`sysapproval_approver`), PagerDuty (`custom_action`), and Generic webhooks.
+    - Exposes `isApprovalCallback(req, provider)` for deterministic routing in controller.
+    - Normalizes decision strings strictly to `'APPROVED'` or `'DENIED'`.
+    - Computes SHA-256 `payloadHash` over exact raw request bytes.
+    - Strips credentials, tokens, cookies, and Authorization headers.
+    - Fails closed on missing approval identity (`MISSING_APPROVAL_IDENTITY`).
+  - Implemented `ExternalApprovalCallbackService.js`:
+    - Enforces Step 4 cryptographic verification gate (`ItsmSignatureVerifier.verifyWebhook`).
+    - Authoritative tenant & integration resolution from `IntegrationConfig.organizationId` (ignores payload claims).
+    - Authoritative 5-layer idempotency architecture: intra-process in-flight set (`_inFlightApprovals`), fast-path LRU memory cache (`_recentEvents`), durable database lookup (`IntegrationSyncEvent.findOne`), multi-process atomic E11000 unique key race defense, and failure rollback (`_deleteSyncEvent`).
+    - Scoped `PendingApproval` lookup matching `organizationId` and approval identifier/ticketKey. Unmatched callbacks return safe `{ success: true, status: 'UNMATCHED', matched: false }` with zero records created.
+    - Reuses canonical Phase 77 state machine: validates active awaiting state (`AWAITING_APPROVAL`, `PROPOSED`), defends terminal states (`ALREADY_TERMINAL`), defends expired approvals (`EXPIRED`), and stale events (`STALE_EVENT`).
+    - Mutates `PendingApproval.status` to `APPROVED` or `DENIED` with `approvedBy` audit data.
+    - Strict zero action execution (Guardrail 5): does NOT invoke native terminal tools, playbooks, or runners.
+    - Writes immutable `IntegrationSyncEvent` audit records (`targetEntityType: 'APPROVAL'`).
+  - Wired into `server/controllers/inboundWebhookController.js`: evaluates `isApprovalCallback(req, configuredType)` after authentication, routing approval callbacks to Step 6 while preserving ordinary ticket synchronization to Step 5 without interference.
+  - Created dedicated test suite `server/tests/phase81_step6_external_approval_callback.test.js` passing **35/35 tests (100% PASS)** across all 23 Gates (A through W).
+  - Verified full platform regression: **400/400 PASS (100%)**, client production build **PASS (Exit Code 0)**.
+  - Enforced strict Step 7 & 8 boundaries: zero SOAR execution, zero frontend UI modifications. Hard stop observed.
+- **Phase 81 Step 5 Remediation (`InboundTicketReconciliationService.js`, `inboundWebhookController.js`)**:
+  - Remediated `F-81-5-BLOCKER-01` (Runtime Pipeline Disconnection):
+    - Connected `inboundTicketReconciliationService.reconcileWebhook()` into `server/controllers/inboundWebhookController.js` after successful authentication.
+    - Preserved Step 4 Gate J response contract: returns HTTP 200 `{ success: true, status: 'AUTHENTICATED', ... }`, keeps root `caseId` / `externalStatus` undefined, and exposes reconciliation outcome in nested `res.body.reconciliation`.
+    - Handled duplicate acknowledgment returning HTTP 200 `{ success: true, status: 'DUPLICATE_ACKNOWLEDGED', reason: 'REPLAY_DETECTED' }`.
+  - Remediated `F-81-5-BLOCKER-02` (Non-Authoritative / Ephemeral Idempotency):
+    - Implemented 5-layer authoritative idempotency architecture:
+      - Layer 1: In-flight concurrency set (`_inFlightEvents`) for intra-process locking.
+      - Layer 2: Fast-path LRU memory cache (`_idempotencyCache`).
+      - Layer 3: Durable DB lookup querying `IntegrationSyncEvent.findOne({ syncId })` with deterministic RFC 4122 UUID v4 generated from SHA-256 duplicate identity digest. Survives process restarts.
+      - Layer 4: Multi-process atomic race defense leveraging MongoDB unique index `syncId_1` on `IntegrationSyncEvent` (catching E11000 duplicate key error). Zero duplicate idempotency collections created.
+      - Layer 5: Failure rollback removing tentative audit via `_deleteSyncEvent(syncId)` if subsequent `caseDoc.save()` fails.
+  - Extended dedicated test suite `server/tests/phase81_step5_inbound_reconciliation.test.js` from 25 to 33 tests (100% PASS across Gates A through L).
+  - Verified 365 total passing automated tests across full platform regression battery and client production build (Exit Code 0).
+- **Inbound Ticket Reconciliation Engine (`InboundTicketNormalizer.js`, `InboundTicketReconciliationService.js`)**:
+  - Implemented `server/services/soc/InboundTicketNormalizer.js`:
+    - Deterministic normalization for Jira, ServiceNow (numeric incident state codes), PagerDuty v3, and Generic webhooks.
+    - Extracts canonical ticketId/key, externalStatus, eventType, eventId, and occurredAt.
+    - Computes SHA-256 payloadHash directly over exact raw request bytes.
+    - Strips credentials, tokens, raw bodies, cookies, and Authorization headers.
+    - Fails closed on missing ticket identity or malformed payloads.
+  - Implemented `server/services/soc/InboundTicketReconciliationService.js`:
+    - Enforces Step 4 cryptographic verification gate (`ItsmSignatureVerifier.verifyWebhook`).
+    - Authoritative tenant & integration resolution from `IntegrationConfig`.
+    - Strict Case matching query scoped to `{ organizationId, 'externalTickets.integrationId': integrationId, $or: [ticketId, ticketKey] }`.
+    - Safe handling of unmatched tickets (logs `TICKET_UNMATCHED` audit, returns `{ matched: false, status: 'UNMATCHED' }`, zero Case mutations).
+    - Deterministic status normalization to canonical `Case.status` enum values (`['NEW', 'OPEN', 'IN_PROGRESS', 'ESCALATED', 'CONTAINED', 'RESOLVED', 'CLOSED', 'ARCHIVED']`).
+    - Safe lifecycle transition engine: locks terminal states (`CLOSED`, `ARCHIVED`), manages reopening (`RESOLVED` -> `OPEN`/`IN_PROGRESS`), and blocks stale event regression (`STALE_EVENT_REGRESSION_BLOCKED`).
+    - External ticket metadata update: preserves unrelated tickets, updates matching binding (`externalStatus`, `lastSyncAt`, `syncStatus = 'IN_SYNC'`).
+    - Strict loop prevention: zero calls to `OutboundDispatchService.enqueueDispatch()`, records `performedBy: 'INBOUND_WEBHOOK'`.
+    - Immutable `IntegrationSyncEvent` audit logging (deterministic UUID v4 `syncId`, `direction: 'INBOUND'`, `targetEntityType: 'CASE'`).
+  - Enforced strict Step 6+ boundaries: zero approval workflows, zero playbook execution, zero frontend UI changes.
+- **Inbound Webhook Cryptography & Security (`ItsmSignatureVerifier.js`, `inboundWebhookController.js`, `inboundWebhook.js`)**:
+  - Implemented `server/services/soc/ItsmSignatureVerifier.js` providing constant-time cryptographic verification:
+    - Jira: HMAC-SHA256 verification over raw request body via `X-Hub-Signature` (`sha256=<hex>` or `<hex>`) or Bearer token check.
+    - PagerDuty: HMAC-SHA256 verification over raw request body via `X-PagerDuty-Signature` (`v1=<hex>`) supporting multiple signature candidates.
+    - ServiceNow: Constant-time validation of shared secret token via `X-ServiceNow-Token` / `X-CyberShield-Token`, Basic Auth credentials, or HMAC-SHA256 via `X-ServiceNow-Signature`.
+    - Generic Webhook: HMAC-SHA256 verification via `X-Hub-Signature-256` / `X-Webhook-Signature` or shared token.
+    - Freshness validation: enforces delivery age <= 5 minutes and future clock skew <= 1 minute.
+    - Replay protection: bounded in-memory LRU cache storing compound digest keys `SHA256(integrationId + ':' + provider + ':' + eventId + ':' + payloadHash)` with 10-minute TTL.
+  - Implemented `server/controllers/inboundWebhookController.js` providing strict tenant isolation and security gating:
+    - Query-string secret prohibition: rejects `?token=`, `?secret=`, `?key=` with `400 Bad Request` (`QUERY_SECRET_PROHIBITED`).
+    - Authoritative `IntegrationConfig` resolution via route parameter `:integrationId`. Derives `organizationId` exclusively from database config; ignores all payload tenant claims.
+    - Provider confusion defense: validates that route `:provider` matches configured `config.type`.
+    - Security audit logging: writes immutable `IntegrationSyncEvent` records with UUID v4 `syncId`, SHA-256 `payloadHash`, authoritative `organizationId`, and `direction: 'INBOUND'`. Zero secrets or raw payloads persisted.
+    - Replay detection: returns `200 OK` `{ success: true, status: 'DUPLICATE_ACKNOWLEDGED' }` without reprocessing.
+    - HARD GATE: Zero side-effects. Does NOT create or mutate `Case`, `externalTickets`, or `PendingApproval`.
+  - Implemented `server/routes/inboundWebhook.js` with early 1MB body-size limit (HTTP 413) and rate limiting (300 req/min).
+  - Mounted routes in `server/index.js` at `/api/webhooks/itsm` and `/api/integrations/:integrationId/webhook` with rawBody preservation in `express.json`.
+  - Created and passed dedicated 32-test acceptance battery (`server/tests/phase81_step4_webhook_security.test.js`).
+  - Verified strict Step 5+ boundaries: zero ticket synchronization reconcilers, zero approval callbacks, zero frontend UI changes. Step 5 NOT STARTED.
+- **Outbound Dispatch, Worker, Exponential Backoff & DLQ (`OutboundDispatchService.js`, `IntegrationWorker.js`, `outboundDispatcher.js`)**:
+  - Implemented `server/services/soc/OutboundDispatchService.js` providing deterministic dispatch enqueuing and processing:
+    - Enqueues jobs to canonical `integrationQueue` (`MemoryQueue`) with UUID v4 `jobId`, validating provider, operation, target entity, and strictly forbidding raw credentials in payloads.
+    - Authoritative tenant check: re-resolves `IntegrationConfig.findOne({ _id: integrationId, organizationId })`; rejects cross-tenant forgeries as non-retryable `TENANT_MISMATCH`.
+    - Static connector resolution via dictionary (`CONNECTOR_REGISTRY`) with zero dynamic require from payload.
+    - Enforces `maxRedirects: 0` on worker outbound HTTP transport (`secureAxios`).
+    - Deterministic 3-tier error classification: `RETRYABLE` (timeouts, connection resets, 429, 5xx), `NON_RETRYABLE` (401/403, 400, 404, tenant mismatch, SSRF), and `POISON` (malformed payload).
+    - Bounded exponential backoff formula: `delay = Math.min(base * mult^(attempt - 2), max) + jitter` (base: 1000ms, mult: 2, max: 60000ms, jitter: 200ms).
+    - Retry limit: capped strictly at `maxAttempts = 3`.
+    - Dead-Letter Queue (DLQ): isolates exhausted retry jobs and poison jobs with zero credentials/tokens, preserving safe operator telemetry. Synchronizes to `integrationQueue.dlq`.
+    - Audit logging: creates immutable `IntegrationSyncEvent` records with UUID v4 `syncId`, SHA-256 `payloadHash`, authoritative `organizationId`, and direction `'OUTBOUND'`.
+  - Updated `server/workers/IntegrationWorker.js` to branch on `task.jobType === 'OUTBOUND_DISPATCH'` routing to `OutboundDispatchService.processJob(task)` while 100% preserving legacy SOAR playbook execution via `actionQueue.runTask(task)`.
+  - Added compatibility facades and stubs: `server/integrations/outboundDispatcher.js`, `server/services/queueProvider.js`, `server/services/IntegrationWorker.js`, `server/services/actionQueue.js`, `server/services/OutboundDispatchService.js`.
+  - Created and passed dedicated 26-test acceptance suite (`server/tests/phase81_step3_outbound_dispatch.test.js`).
+  - Verified 300 total passing automated tests across all platform suites and client build exit code 0.
+  - Enforced strict Step 4+ boundaries: zero inbound webhook routes, zero ticket synchronization reconciler, zero approval callbacks, zero frontend UI changes.
+- **Outbound Provider Connectors: Jira + ServiceNow + PagerDuty (`connectorUtils.js`, `jira.js`, `servicenow.js`, `pagerduty.js`)**:
+  - Implemented `server/integrations/connectorUtils.js` providing SSRF socket-level protection with custom DNS pinning agent (`secureAxios`), URL validation, authoritative tenant verification against `IntegrationConfig.organizationId`, secret redaction regex scrubbing auth headers/passwords/secrets/tokens, normalized result contract formatter, and optional `IntegrationSyncEvent` audit recorder.
+  - Implemented standardized Jira outbound connector (`server/integrations/jira.js`) with `jiraConnector` adapter supporting issue creation, issue updating, and connection testing while preserving backward compatibility for legacy `createJiraTicket` and `testJiraConnection`.
+  - Implemented ServiceNow Table API outbound connector (`server/integrations/servicenow.js`) with `serviceNowConnector` adapter supporting incident creation, updates, and connection testing with `sys_id` extraction and safe error normalization.
+  - Implemented PagerDuty Events API v2 / REST outbound connector (`server/integrations/pagerduty.js`) with `pagerDutyConnector` adapter supporting incident triggering, incident updates, and connection testing with dedup key tracking.
+  - Created and passed dedicated 40-test acceptance suite (`server/tests/phase81_step2_outbound_connectors.test.js`).
+  - Verified zero Step 3 queue/worker dispatch, zero backoff/retry, zero DLQ, zero inbound webhook routes, zero ticket synchronization, and zero frontend modifications.
+
+- **Data Models & Schema Foundations (`IntegrationConfig.js`, `Case.js`, `IntegrationSyncEvent.js`, `RetentionPolicy.js`, `DataLifecycleService.js`)**:
+  - Extended `IntegrationConfig` type enum with `'ServiceNow'` and `'Webhook'`.
+  - Added `webhookSecret` and `password` to `toSafeObject()` secret masking to prevent credential leakage.
+  - Added `externalTickets` subdocument array to `Case.js` for binding Jira, ServiceNow, PagerDuty tickets to SOC cases with compound indexes on `{ externalTickets.ticketKey: 1, organizationId: 1 }` and `{ externalTickets.ticketId: 1, externalTickets.provider: 1 }`.
+  - Created `IntegrationSyncEvent.js` model for append-only audit trail with zero native TTL.
+  - Registered `integration_audit` in `RetentionPolicy.js` enum and wired into `DataLifecycleService.js` resolver for Phase 75 lifecycle and legal hold governance.
+  - Created and passed dedicated 51-test acceptance battery (`server/tests/phase81_step1_data_models.test.js`).
+
+
 ### Phase 79: Enterprise SOC Intelligence, Risk Synthesis & Analyst Decision Support
 - **Multi-Source Risk Synthesis Engine**:
   - Implemented `RiskSynthesisService.js`, `RiskAssessment.js`, and `RiskSnapshot.js` deterministically calculating composite risk scores across 12 platform domains (Incidents, Alerts, Findings, Detections, IOCs, Assets, Threat Hunts, Governance, Compliance, Reliability, Automation, Audit).

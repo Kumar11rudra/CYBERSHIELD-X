@@ -14,5 +14,6 @@ router.post('/', integrationController.createIntegration);
 router.put('/:id', integrationController.updateIntegration);
 router.delete('/:id', integrationController.deleteIntegration);
 router.post('/test', integrationController.testIntegration);
+router.post('/:id/test', integrationController.testIntegration);
 
 module.exports = router;

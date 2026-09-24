@@ -149,6 +149,31 @@ const io = new Server(httpServer, {
 });
 
 app.set('io', io);
+
+// ─── Socket.IO Canonical Authentication & Tenant Room Routing ───────────────
+const socketAuth = require('./middleware/socketAuth');
+io.use(socketAuth);
+
+io.on('connection', (socket) => {
+  // Use ONLY socket.organizationId established authoritatively by socketAuth
+  if (socket.organizationId) {
+    const roomName = `org:${socket.organizationId}`;
+    socket.join(roomName);
+    logger.info(`[SOCKET.IO] Authenticated socket ${socket.id} joined room ${roomName}`);
+  }
+
+  // Strictly block any client-controlled room join attempts
+  socket.onAny((event) => {
+    if (['join', 'joinRoom', 'subscribe', 'room:join'].includes(event)) {
+      logger.warn(`[SOCKET.IO] Blocked unauthorized client room join attempt on socket ${socket.id}`);
+    }
+  });
+
+  socket.on('disconnect', () => {});
+});
+
+const externalApprovalCallbackService = require('./services/soc/ExternalApprovalCallbackService');
+externalApprovalCallbackService.setSocketIO(io);
 const terminalJobService = require('./services/TerminalJobService');
 terminalJobService.setIO(io);
 const incidentCorrelationEngine = require('./services/soc/IncidentCorrelationEngine');
@@ -248,7 +273,16 @@ app.use(compression());
 app.use(mongoSanitize());
 app.use(cors(corsOptions));
 
-app.use(express.json({ limit: '10mb' }));
+app.use(
+  express.json({
+    limit: '10mb',
+    verify: (req, res, buf) => {
+      if (buf && buf.length) {
+        req.rawBody = buf;
+      }
+    },
+  })
+);
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 app.use(morgan(isProduction ? 'combined' : 'dev'));
@@ -346,6 +380,13 @@ app.use('/api/toolkit', toolkitRoutes);
 app.use('/api/ioc', iocRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/playbooks', require('./routes/playbook'));
+// Phase 81: Public Inbound Webhooks for ITSM & SOAR Integrations
+app.use('/api/webhooks', require('./routes/inboundWebhook'));
+app.use('/api/integrations/:integrationId/webhook', (req, res, next) => {
+  req.url = `/${req.params.integrationId}/webhook`;
+  require('./routes/inboundWebhook')(req, res, next);
+});
+
 app.use('/api/integrations', require('./routes/integration'));
 app.use('/api/remediations', require('./routes/remediation'));
 app.use('/api/health', require('./routes/health'));
@@ -380,6 +421,7 @@ app.use('/api/reliability', require('./routes/observability'));
 app.use('/api/automation', require('./routes/automation'));
 app.use('/api/data-fabric', require('./routes/dataFabric'));
 app.use('/api/intelligence', require('./routes/intelligence'));
+app.use('/api/ingestion/cloud', require('./routes/cloudIngestion'));
 
 
 

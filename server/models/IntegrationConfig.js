@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 /**
  * IntegrationConfig — stores per-org external integration credentials.
  * Secrets (tokens, API keys) are stored here but NEVER returned in API responses.
+ *
+ * Phase 81: Extended with 'ServiceNow' and 'Webhook' types for enterprise
+ * bidirectional ITSM ticketing and SOAR webhook integrations.
  */
 const integrationConfigSchema = new mongoose.Schema(
   {
@@ -14,7 +17,7 @@ const integrationConfigSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ['Jira', 'GitHub', 'Slack', 'Teams', 'PagerDuty'],
+      enum: ['Jira', 'GitHub', 'Slack', 'Teams', 'PagerDuty', 'ServiceNow', 'Webhook'],
       required: true,
     },
     name: {
@@ -25,11 +28,13 @@ const integrationConfigSchema = new mongoose.Schema(
     },
     // config holds integration-specific credentials and settings.
     // Shape per type:
-    // Jira: { baseUrl, email, apiToken, projectKey, issueType }
+    // Jira: { baseUrl, email, apiToken, projectKey, issueType, webhookSecret }
     // GitHub: { owner, repo, token, labels }
     // Slack: { webhookUrl }
     // Teams: { webhookUrl }
-    // PagerDuty: { routingKey, serviceId }
+    // PagerDuty: { routingKey, apiToken, serviceId, webhookSecret }
+    // ServiceNow: { instanceUrl, username, password, defaultTable, callerId, webhookSecret }
+    // Webhook: { callbackUrl, webhookSecret }
     config: {
       type: mongoose.Schema.Types.Mixed,
       required: true,
@@ -69,7 +74,7 @@ integrationConfigSchema.methods.toSafeObject = function () {
   const obj = this.toObject();
   if (obj.config) {
     const masked = { ...obj.config };
-    ['apiToken', 'token', 'webhookUrl', 'routingKey', 'secret'].forEach(key => {
+    ['apiToken', 'token', 'webhookUrl', 'routingKey', 'secret', 'webhookSecret', 'password'].forEach(key => {
       if (masked[key]) masked[key] = '••••••••';
     });
     obj.config = masked;
