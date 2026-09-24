@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v62.4.1] - 2026-09-25
+### Corrective Release: Phase 80 Runtime Dependency Packaging & Test Isolation Fix
+> **Corrective patch over `v62.4.0` (`7ad91e5`). `v62.4.0` remains immutable. Deployment has NOT yet occurred.**
+
+- **Root Cause (Steps 167–168 Forensic Audit)**:
+  - The `v62.4.0` Git commit (`7ad91e5`) omitted 13 Phase 80 runtime dependency files from the tracked tree. These files were present in the local working tree but were never staged and committed during Phase 80 implementation.
+  - On Render production deployment, a clean clone of the repository lacked these files, causing an immediate startup failure: `Error: Cannot find module '../../models/CloudTelemetryEvent'` (required by `server/services/soc/DataLifecycleService.js` at boot).
+  - `server/index.js` also mounts the Phase 80 cloud ingestion router (`/api/ingestion/cloud`), which transitively requires all 13 missing files.
+
+- **v62.4.1 Corrective Scope — 13 Phase 80 Runtime Dependency Files (Step 169)**:
+  - Added all 13 previously untracked Phase 80 runtime files to the repository tree (no functional change to any existing committed file):
+    1. `server/models/CloudTelemetryEvent.js` — Multi-cloud telemetry event model with compound uniqueness index.
+    2. `server/routes/cloudIngestion.js` — AWS/GCP/Azure ingestion router with rate limiting and connector-scoped dispatch.
+    3. `server/controllers/cloudIngestionController.js` — Multi-cloud ingestion controller enforcing signature verification → normalization → persistence → async graph projection pipeline.
+    4. `server/services/ingestion/CloudDataFabricAdapter.js` — Asynchronous Security Data Fabric graph materialization engine with 5-attempt retry and reconciliation scheduler.
+    5. `server/services/ingestion/CloudObservabilityService.js` — In-process observability service with bounded provider-label cardinality and health reporting.
+    6. `server/services/ingestion/CloudPersistenceService.js` — Authoritative durable MongoDB persistence with canonical event ID deduplication and race-condition idempotency.
+    7. `server/services/ingestion/CloudSignatureVerifier.js` — Per-provider HMAC cryptographic authentication for AWS SNS, GCP Pub/Sub, and Azure Event Grid.
+    8. `server/services/ingestion/CloudTelemetryNormalizer.js` — Canonical normalized event contract production with adapter dispatch.
+    9. `server/services/ingestion/adapters/ActionClassifier.js` — Rule-based event tier classification engine (Tier 1–5).
+    10. `server/services/ingestion/adapters/AwsCloudTrailAdapter.js` — AWS CloudTrail event extractor and normalizer.
+    11. `server/services/ingestion/adapters/AzureActivityLogAdapter.js` — Azure Activity Log event extractor and normalizer.
+    12. `server/services/ingestion/adapters/BaseCloudAdapter.js` — Shared base adapter with field validation and canonical field contracts.
+    13. `server/services/ingestion/adapters/GcpCloudAuditAdapter.js` — GCP Cloud Audit Log event extractor and normalizer.
+
+- **v62.4.1 Corrective Scope — Phase 80 Step 8 Test Isolation Fix (Step 169C)**:
+  - **TEST-ONLY change** to `server/tests/phase80_step8_observability.test.js`:
+    - Added `await new Promise((resolve) => setTimeout(resolve, 50));` immediately before `defaultObservabilityService.reset()` in the `beforeEach` hook.
+    - Resolves a cross-test metric contamination issue (Scenario K) caused by a stale async `setImmediate`-dispatched `projectEvent()` chain from prior ingestion tests completing after `reset()` was called, producing an observed `cloud_projection_materialized_total` of 2 instead of 1.
+    - Zero production source files modified. Zero test assertions modified. Zero tests added, removed, or skipped.
+
+- **Regression Verification (Steps 169–170)**:
+  - Phase 80 complete suite: **8/8 test suites passed | 262/262 tests passed** (0 failed, 0 skipped).
+  - Phase 81 regression: **11/11 test suites passed | 294/294 tests passed** (0 failed, 0 skipped).
+  - Production build (`npm run build:all`): **Exit Code 0** (`Compiled successfully`).
+
+- **Release Constraints**:
+  - `v62.4.0` (`7ad91e5`) is immutable. This patch release is a forward-only additive corrective commit.
+  - No source code functional changes. No schema changes. No migrations.
+  - No Phase 81 production files modified.
+
 ## [v62.4.0] - 2026-09-24
 ### Phase 81: Enterprise External Workflow, Bidirectional Ticketing & SOAR Webhooks (Release Gate Cleared & Production Certified)
 - **Phase 81 Release Gate Clearance (Step 154) & Full Regression (Step 153)**:
