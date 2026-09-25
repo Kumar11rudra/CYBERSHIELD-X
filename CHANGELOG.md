@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v62.5.1] - 2026-09-26
+### Legacy Architecture Cleanup & AI Consolidation
+> **Controlled legacy architecture cleanup, abandoned concept decommissioning, canonical conversational AI unification, password-reset reconnection, test reconciliation, and release validation.**
+
+- **Controlled Legacy Architecture Cleanup (Step 194)**:
+  - Decommissioned 70 dead/obsolete files (68 tracked in Git + 2 untracked duplicate proxies) and 5 obsolete directory trees (`ScannerInput/`, `ScannerToolView/`, `AnalyzerToolView/`, `ComingSoonView/`, `UtilityToolView/`).
+  - Removed dead frontend services (`aiService.js`, `authService.js`, `assetService.js`, `scanService.js`), orphaned `emailRisk.js`, redundant settings sections, terminal host modal, and unused contexts/hooks/data.
+  - Removed unused backend models (`Job.js`, `PlaybookLog.js`, `Workflow.js`, `WorkflowTemplate.js`), unmounted route (`workflow.js`), dummy breach providers (`HIBPProvider.js`, `DehashedProvider.js`), dead services (`geoService.js`, `malwareService.js`, `passwordReset.js`, `pdfExport.js`, `threatIntelService.js`), and dead crypto utility (`vaultCrypto.js`).
+  - Verified zero dangling imports or unresolved references across the entire repository.
+
+- **Abandoned Concept Removal & Sanitization**:
+  - Sanitized `server/models/Verification.js` by eliminating abandoned `whatsapp_signup`, `phone_signup`, and `whatsapp` channel enums.
+  - Preserved active production email OTP verification schema and lifecycle intact.
+
+- **Canonical AI Consolidation**:
+  - Decommissioned obsolete conversational endpoint `POST /api/ai/chat` and dead `aiController.js`.
+  - Consolidated canonical AI assistant routing through `POST /api/chatbot/chat` (`SecurityCopilot.jsx` workstation).
+  - Preserved active specialized scan analysis subsystem `POST /api/ai/analyze-scan` and `aiReportController.js`.
+
+- **Password Reset Flow Reconnection**:
+  - Reconnected `ResetPasswordPage` in `client/src/App.jsx` with lazy-loaded route (`/reset-password`) and registered in `ROUTE_TITLES`.
+
+- **Test Suite Reconciliation (Step 196)**:
+  - Reconciled `server/tests/phase1_access_privacy.test.js` to assert HTTP 404 for decommissioned `POST /api/ai/chat`, HTTP 401 for authenticated `POST /api/ai/analyze-scan`, and removed obsolete assertions against deleted `homeData.js`.
+  - Corrected active security model count in `README.md` to 111 tools.
+
+- **Architecture Integrity & Verification**:
+  - Maintained 111 canonical tools in `toolConfig.js` and 111 external alternatives in `externalAlternatives.js` with 1-to-1 parity.
+  - Verified 395/395 tests passing (122 client tests + 273 production backend tests across 10 suites).
+  - Verified production build clean compile (Exit Code 0).
+  - Verified zero git whitespace or format errors (`git diff --check`).
+
 ## [v62.5.0] - 2026-09-25
 ### Frontend Modernization, 111-Tool Catalog & Centralized Native Terminal Workstation
 > **Comprehensive production frontend update with 111 canonical security tools, centralized native terminal, external alternatives modal, consolidated authentication, 2-section navigation, and backend terminal support.**

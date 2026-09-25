@@ -62,11 +62,19 @@ describe('Phase 1 — Access Gating, Team Privacy & Sushant Member Verification'
       expect(res.body).toHaveProperty('error', 'Authentication required');
     });
 
-    test('Unauthenticated POST /api/ai/chat returns HTTP 401 Unauthorized', async () => {
+    test('Decommissioned POST /api/ai/chat is absent (returns HTTP 404 Not Found)', async () => {
       const res = await request(app)
         .post('/api/ai/chat')
         .send({ message: 'hello' });
       
+      expect(res.status).toBe(404);
+    });
+
+    test('Unauthenticated POST /api/ai/analyze-scan returns HTTP 401 Unauthorized', async () => {
+      const res = await request(app)
+        .post('/api/ai/analyze-scan')
+        .send({ scanData: {} });
+
       expect(res.status).toBe(401);
       expect(res.body).toHaveProperty('error', 'Authentication required');
     });
@@ -75,7 +83,7 @@ describe('Phase 1 — Access Gating, Team Privacy & Sushant Member Verification'
       const res = await request(app)
         .post('/api/breach/email')
         .send({ email: 'test@example.com' });
-      
+
       expect(res.status).toBe(401);
       expect(res.body).toHaveProperty('error', 'Authentication required');
     });
@@ -84,7 +92,7 @@ describe('Phase 1 — Access Gating, Team Privacy & Sushant Member Verification'
       const res = await request(app)
         .post('/api/chatbot/chat')
         .send({ message: 'test' });
-      
+
       // chatbot uses tryAuthenticate (guest-friendly), so it should NOT return 401
       expect(res.status).not.toBe(401);
     });
@@ -94,7 +102,7 @@ describe('Phase 1 — Access Gating, Team Privacy & Sushant Member Verification'
         .post('/api/breach/email')
         .set('Authorization', `Bearer ${validToken}`)
         .send({ email: 'test@example.com' });
-      
+
       expect(res.status).not.toBe(401);
     });
   });
@@ -126,15 +134,6 @@ describe('Phase 1 — Access Gating, Team Privacy & Sushant Member Verification'
       expect(content).not.toContain("tel:${selectedMember.phone}");
     });
 
-    test('homeData.js does not expose public email or phone properties in team array', () => {
-      const homeDataPath = path.join(__dirname, '../../client/src/data/homeData.js');
-      const content = fs.readFileSync(homeDataPath, 'utf8');
-
-      expect(content).not.toContain("pandeysuryansh560@gmail.com");
-      expect(content).not.toContain("+917565813054");
-      expect(content).not.toContain("aryanpatel9171235114@gmail.com");
-    });
-
     test('TeamPage.jsx includes Sushant as Data Analyst', () => {
       const teamPagePath = path.join(__dirname, '../../client/src/pages/TeamPage.jsx');
       const content = fs.readFileSync(teamPagePath, 'utf8');
@@ -142,14 +141,6 @@ describe('Phase 1 — Access Gating, Team Privacy & Sushant Member Verification'
       expect(content).toContain("name: 'Sushant'");
       expect(content).toContain("role: 'Data Analyst'");
       expect(content).toContain("id: 'sushant'");
-    });
-
-    test('homeData.js includes Sushant as Data Analyst', () => {
-      const homeDataPath = path.join(__dirname, '../../client/src/data/homeData.js');
-      const content = fs.readFileSync(homeDataPath, 'utf8');
-
-      expect(content).toContain("name: 'Sushant'");
-      expect(content).toContain("role: 'Data Analyst'");
     });
   });
 });

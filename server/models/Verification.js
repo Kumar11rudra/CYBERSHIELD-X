@@ -13,12 +13,12 @@ const verificationSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['email_signup', 'phone_signup', 'whatsapp_signup', 'password_reset'],
+    enum: ['email_signup', 'password_reset'],
     default: 'email_signup'
   },
   purpose: {
     type: String,
-    enum: ['email_signup', 'phone_signup', 'whatsapp_signup', 'password_reset'],
+    enum: ['email_signup', 'password_reset'],
     default: 'email_signup'
   },
   destination: {
@@ -28,7 +28,7 @@ const verificationSchema = new mongoose.Schema({
   },
   channel: {
     type: String,
-    enum: ['email', 'sms', 'whatsapp'],
+    enum: ['email', 'sms'],
     default: 'email'
   },
   expiresAt: {

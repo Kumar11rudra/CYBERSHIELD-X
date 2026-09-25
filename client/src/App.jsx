@@ -24,6 +24,7 @@ const HomePage         = lazy(() => import('./pages/HomePage'));
 const LoginPage        = lazy(() => import('./pages/LoginPage'));
 const SignupPage       = lazy(() => import('./pages/SignupPage'));
 const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
+const ResetPasswordPage  = lazy(() => import('./pages/ResetPasswordPage'));
 const DashboardPage    = lazy(() => import('./pages/DashboardPage'));
 const HistoryPage      = lazy(() => import('./pages/HistoryPage'));
 const ScanDetailPage   = lazy(() => import('./pages/ScanDetailPage'));
@@ -118,6 +119,7 @@ const AppRoutes = () => (
     <Route path="/signup" element={<SignupPage />} />
     <Route path="/verify-email" element={<VerifyEmailPage />} />
     <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+    <Route path="/reset-password" element={<ResetPasswordPage />} />
 
     {/* Protected App Shell */}
     <Route path="/" element={<Layout />}>
@@ -192,6 +194,7 @@ const AppRoutes = () => (
 
 const ROUTE_TITLES = {
   '/': 'CyberShield X',
+  '/reset-password': 'Reset Password — CyberShield X',
   '/dashboard': 'Dashboard — CyberShield X',
   '/scan': 'Live Scanner — CyberShield X',
   '/terminal': 'Native Terminal — CyberShield X',

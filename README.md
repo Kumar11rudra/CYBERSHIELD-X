@@ -4,7 +4,7 @@
 
 [![Production Status](https://img.shields.io/badge/Production-Live-00ff88?style=for-the-badge&logo=cloudflare)](https://www.cybershieldx.in)
 [![Interactive Terminal](https://img.shields.io/badge/CyberSOC%20Terminal-Online-00bfff?style=for-the-badge)](https://www.cybershieldx.in/toolkit)
-[![Security Catalog](https://img.shields.io/badge/Security%20Models-110%20Active-b400ff?style=for-the-badge)](https://www.cybershieldx.in/toolkit)
+[![Security Catalog](https://img.shields.io/badge/Security%20Models-111%20Active-b400ff?style=for-the-badge)](https://www.cybershieldx.in/toolkit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
 ---
@@ -38,8 +38,8 @@ Execute real cybersecurity diagnostics directly inside an in-browser CRT/Matrix 
 * **⚡ 5-Step Chained Playbook**: One-click automated pentest pipeline (DNS Recon ➔ Port Scan ➔ SSL Audit ➔ HTTP Headers ➔ Threat Feeds).
 * **🤖 AI Copilot CLI**: Natural language parser that translates simple human queries (e.g. *"find open ports on scanme.nmap.org"*) into real executable CLI commands.
 
-### 🛡️ 2. Authoritative 110-Model Security Catalog (24 Categories)
-All 110 specialized engines are active and ready to run across 24 intelligence domains:
+### 🛡️ 2. Authoritative 111-Model Security Catalog (24 Categories)
+All 111 specialized engines are active and ready to run across 24 intelligence domains:
 * **Reconnaissance & OSINT**: DNS enumeration, WHOIS lookup, Subdomain discovery (Subfinder), Shodan queries, TheHarvester.
 * **Web & Vulnerability Security**: Open port scanner (Nmap), HTTP security headers audit, SSL/TLS certificate inspector, WhatWeb tech detection, WPScan, Nikto, Nuclei.
 * **Threat Intelligence & Identity**: Real-time IOC feeds (URLHaus, OpenPhish, CISA KEV), Dark Web breach check (HIBP k-Anonymity), JWT decoder, Base64/Hex converter, Hash identifier.
