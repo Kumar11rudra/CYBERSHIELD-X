@@ -160,7 +160,7 @@ export default function SecurityCopilot() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         aria-label="Open Security Copilot"
-        className="fixed bottom-6 right-6 w-13 h-13 rounded-full bg-[#040d1e] text-white shadow-[0_0_25px_rgba(0,212,255,0.4)] flex items-center justify-center z-50 border border-cyan-400/60 hover:shadow-[0_0_35px_rgba(0,212,255,0.7)] transition-all p-2"
+        className="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-[#040d1e] text-white shadow-[0_0_25px_rgba(0,212,255,0.4)] flex items-center justify-center z-50 border border-cyan-400/60 hover:shadow-[0_0_35px_rgba(0,212,255,0.7)] transition-all p-2"
       >
         {isOpen ? <X size={22} className="text-cyan-400" /> : <Bot size={24} className="text-cyan-400" />}
         
@@ -178,7 +178,7 @@ export default function SecurityCopilot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-22 right-6 w-[410px] h-[580px] max-h-[82vh] max-w-[calc(100vw-2.5rem)] bg-[#030919]/95 backdrop-blur-2xl border border-cyan-500/30 rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden font-mono"
+            className="fixed bottom-20 right-6 w-[410px] h-[580px] max-h-[82vh] max-w-[calc(100vw-2.5rem)] bg-[#030919]/95 backdrop-blur-2xl border border-cyan-500/30 rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden font-mono"
             style={{
               boxShadow: '0 0 40px rgba(0, 212, 255, 0.2), 0 0 80px rgba(0, 0, 0, 0.9)'
             }}
