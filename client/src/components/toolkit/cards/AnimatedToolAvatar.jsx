@@ -38,485 +38,391 @@ function normalizeArchetype(name) {
 }
 
 /**
- * 1. Cyber Scout — Compact Cyber Helmet + Scanning Visor + Antenna Beacon
+ * 1. Cyber Scout — Green Beanie, Cool Glasses, Playful Winking Smile with Tongue Out
  */
-function RenderCyberScout({ accent }) {
+function RenderCyberScout({ accent, idPrefix }) {
   return (
     <g>
-      {/* Helmet Shell */}
-      <path
-        d="M18 22 C18 14, 46 14, 46 22 L48 40 C48 48, 40 54, 32 54 C24 54, 16 48, 16 40 Z"
-        fill="#0c162d"
-        stroke="#1e293b"
-        strokeWidth="1.5"
-      />
-      {/* Head Crest */}
-      <path
-        d="M26 15 L32 12 L38 15"
-        stroke={accent}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeOpacity="0.8"
-      />
-      {/* Side Antenna */}
-      <path
-        d="M48 28 L54 22 M54 22 L54 17"
-        stroke={accent}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <circle cx="54" cy="17" r="2" fill={accent} />
-      {/* Visor Enclosure */}
-      <rect
-        x="20"
-        y="26"
-        width="24"
-        height="8"
-        rx="4"
-        fill={accent}
-        fillOpacity="0.25"
-        stroke={accent}
-        strokeWidth="1.2"
-      />
-      {/* Inner Visor Scanner Slit */}
-      <rect
-        x="23"
-        y="28.5"
-        width="18"
-        height="3"
-        rx="1.5"
-        fill={accent}
-      />
-      {/* Forehead Optical Sensor */}
-      <circle cx="32" cy="20" r="1.5" fill={accent} />
-      {/* Jawline Reinforcement */}
-      <path
-        d="M26 46 L38 46"
-        stroke={accent}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeOpacity="0.6"
-      />
+      <defs>
+        <radialGradient id={`${idPrefix}-skin`} cx="45%" cy="40%" r="55%">
+          <stop offset="0%" stopColor="#fed7aa" />
+          <stop offset="70%" stopColor="#fba66c" />
+          <stop offset="100%" stopColor="#ea580c" />
+        </radialGradient>
+        <linearGradient id={`${idPrefix}-beanie`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#22c55e" />
+          <stop offset="100%" stopColor="#15803d" />
+        </linearGradient>
+      </defs>
+      {/* Ears */}
+      <circle cx="16" cy="34" r="5" fill="#fba66c" />
+      <circle cx="48" cy="34" r="5" fill="#fba66c" />
+      {/* Head / Face */}
+      <circle cx="32" cy="34" r="17" fill={`url(#${idPrefix}-skin)`} />
+      {/* Beanie Hat */}
+      <path d="M16 28 C16 14, 48 14, 48 28 Z" fill={`url(#${idPrefix}-beanie)`} />
+      <rect x="14" y="24" width="36" height="6" rx="3" fill="#16a34a" />
+      <circle cx="32" cy="14" r="3" fill="#4ade80" />
+      {/* Eyebrows */}
+      <path d="M22 26 Q25 24 28 26" stroke="#451a03" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+      <path d="M36 26 Q39 23 42 25" stroke="#451a03" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+      {/* Glasses */}
+      <rect x="20" y="27" width="9" height="7" rx="2" fill="none" stroke="#ec4899" strokeWidth="1.6" />
+      <rect x="35" y="27" width="9" height="7" rx="2" fill="none" stroke="#ec4899" strokeWidth="1.6" />
+      <line x1="29" y1="30" x2="35" y2="30" stroke="#ec4899" strokeWidth="1.6" />
+      {/* Eyes: Left Wink, Right Open Sparkle */}
+      <path d="M22 31 Q24.5 33 27 31" stroke="#1c1917" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+      <circle cx="39.5" cy="30.5" r="2" fill="#1c1917" />
+      <circle cx="40.3" cy="29.7" r="0.7" fill="#ffffff" />
+      {/* Rosy Cheeks */}
+      <circle cx="21" cy="37" r="3" fill="#f43f5e" opacity="0.3" />
+      <circle cx="43" cy="37" r="3" fill="#f43f5e" opacity="0.3" />
+      {/* Mouth & Playful Tongue */}
+      <path d="M27 37 Q32 43 37 37 Z" fill="#450a0a" />
+      <path d="M29 39 Q32 45 35 39" fill="#f43f5e" />
     </g>
   );
 }
 
 /**
- * 2. Net Warden — Hexagonal Defensive Shield Helmet + Network Connection Nodes
+ * 2. Net Warden — Blue Cap, Glasses, Friendly Smile & 3D Thumbs-Up Gesture
  */
-function RenderNetWarden({ accent }) {
+function RenderNetWarden({ accent, idPrefix }) {
   return (
     <g>
-      {/* Shield Silhouette */}
-      <path
-        d="M32 12 L48 19 L48 37 C48 46, 32 54, 32 54 C32 54, 16 46, 16 37 L16 19 Z"
-        fill="#0c162d"
-        stroke="#1e293b"
-        strokeWidth="1.5"
-      />
-      {/* Upper Defense Crest */}
-      <path
-        d="M26 16 L32 20 L38 16"
-        stroke={accent}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Dual Angular Visor Slits */}
-      <path
-        d="M21 28 L28 28 L30 32 L23 32 Z"
-        fill={accent}
-      />
-      <path
-        d="M43 28 L36 28 L34 32 L41 32 Z"
-        fill={accent}
-      />
-      {/* Network Node Cluster */}
-      <circle cx="32" cy="38" r="2" fill={accent} />
-      <line
-        x1="24"
-        y1="38"
-        x2="40"
-        y2="38"
-        stroke={accent}
-        strokeWidth="1"
-        strokeDasharray="1.5 1.5"
-        strokeOpacity="0.8"
-      />
-      <circle cx="24" cy="38" r="1.2" fill={accent} />
-      <circle cx="40" cy="38" r="1.2" fill={accent} />
+      <defs>
+        <radialGradient id={`${idPrefix}-skin2`} cx="45%" cy="40%" r="55%">
+          <stop offset="0%" stopColor="#fed7aa" />
+          <stop offset="70%" stopColor="#fba66c" />
+          <stop offset="100%" stopColor="#c2410c" />
+        </radialGradient>
+        <linearGradient id={`${idPrefix}-cap`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#3b82f6" />
+          <stop offset="100%" stopColor="#1d4ed8" />
+        </linearGradient>
+      </defs>
+      {/* Ears */}
+      <circle cx="15" cy="33" r="4.5" fill="#fba66c" />
+      <circle cx="47" cy="33" r="4.5" fill="#fba66c" />
+      {/* Face */}
+      <circle cx="31" cy="33" r="16.5" fill={`url(#${idPrefix}-skin2)`} />
+      {/* Blue Cap */}
+      <path d="M16 26 C16 13, 46 13, 46 26 Z" fill={`url(#${idPrefix}-cap)`} />
+      <path d="M12 25 Q31 22 49 26 Q31 29 12 25" fill="#1e40af" />
+      {/* Glasses */}
+      <circle cx="24" cy="31" r="5" fill="none" stroke="#334155" strokeWidth="1.5" />
+      <circle cx="38" cy="31" r="5" fill="none" stroke="#334155" strokeWidth="1.5" />
+      <line x1="29" y1="31" x2="33" y2="31" stroke="#334155" strokeWidth="1.5" />
+      {/* Eyes */}
+      <circle cx="24" cy="31" r="1.8" fill="#0f172a" />
+      <circle cx="38" cy="31" r="1.8" fill="#0f172a" />
+      <circle cx="24.6" cy="30.3" r="0.6" fill="#fff" />
+      <circle cx="38.6" cy="30.3" r="0.6" fill="#fff" />
+      {/* Smile */}
+      <path d="M25 38 Q31 43 37 38" stroke="#78350f" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+      {/* 3D Thumbs-Up Hand on Right Side */}
+      <g transform="translate(45, 27) scale(0.85)">
+        <ellipse cx="6" cy="12" rx="4.5" ry="5.5" fill="#fed7aa" stroke="#c2410c" strokeWidth="0.8" />
+        {/* Thumb */}
+        <path d="M4 10 C4 3, 9 3, 9 10 Z" fill="#fed7aa" stroke="#c2410c" strokeWidth="0.8" />
+        {/* Fingers */}
+        <line x1="7" y1="9" x2="10" y2="9" stroke="#ea580c" strokeWidth="0.8" />
+        <line x1="7" y1="12" x2="10" y2="12" stroke="#ea580c" strokeWidth="0.8" />
+        <line x1="7" y1="15" x2="9.5" y2="15" stroke="#ea580c" strokeWidth="0.8" />
+      </g>
     </g>
   );
 }
 
 /**
- * 3. Web Shield — Browser Frame Head + Central Port Security Shield
+ * 3. Web Shield — Auburn Hair, Winking Tongue, Cheerful & Expressive
  */
-function RenderWebShield({ accent }) {
+function RenderWebShield({ accent, idPrefix }) {
   return (
     <g>
-      {/* Browser Frame Chassis */}
-      <rect
-        x="16"
-        y="15"
-        width="32"
-        height="38"
-        rx="8"
-        fill="#0c162d"
-        stroke="#1e293b"
-        strokeWidth="1.5"
-      />
-      {/* Window Controls */}
-      <circle cx="21" cy="20" r="1.2" fill="#ef4444" opacity="0.9" />
-      <circle cx="25" cy="20" r="1.2" fill="#facc15" opacity="0.9" />
-      <circle cx="29" cy="20" r="1.2" fill="#22c55e" opacity="0.9" />
-      <line x1="16" y1="24" x2="48" y2="24" stroke="#1e293b" strokeWidth="1" />
-      {/* Central Web Defense Shield */}
-      <path
-        d="M32 29 L39 33 V39 C39 44, 32 47, 32 47 C32 47, 25 44, 25 39 V33 Z"
-        fill={accent}
-        fillOpacity="0.25"
-        stroke={accent}
-        strokeWidth="1.3"
-      />
-      {/* SSL Lock Core */}
-      <circle cx="32" cy="36.5" r="2" fill={accent} />
-      <path
-        d="M30.5 35 V33 C30.5 32, 33.5 32, 33.5 33 V35"
-        fill="none"
-        stroke={accent}
-        strokeWidth="1"
-      />
+      <defs>
+        <radialGradient id={`${idPrefix}-skin3`} cx="45%" cy="40%" r="55%">
+          <stop offset="0%" stopColor="#ffedd5" />
+          <stop offset="70%" stopColor="#fed7aa" />
+          <stop offset="100%" stopColor="#f97316" />
+        </radialGradient>
+        <linearGradient id={`${idPrefix}-hair3`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#92400e" />
+          <stop offset="100%" stopColor="#451a03" />
+        </linearGradient>
+      </defs>
+      {/* Hair Behind */}
+      <circle cx="32" cy="28" r="19" fill={`url(#${idPrefix}-hair3)`} />
+      {/* Ears */}
+      <circle cx="15" cy="34" r="4.5" fill="#fed7aa" />
+      <circle cx="49" cy="34" r="4.5" fill="#fed7aa" />
+      {/* Face */}
+      <circle cx="32" cy="34" r="16" fill={`url(#${idPrefix}-skin3)`} />
+      {/* Hair Bangs */}
+      <path d="M17 26 Q32 16 47 26 Q38 21 32 23 Q26 21 17 26 Z" fill={`url(#${idPrefix}-hair3)`} />
+      {/* Left Wink Eye */}
+      <path d="M22 32 Q26 35 30 32" stroke="#451a03" strokeWidth="2" strokeLinecap="round" fill="none" />
+      {/* Right Open Eye */}
+      <circle cx="39" cy="31" r="2.2" fill="#451a03" />
+      <circle cx="39.8" cy="30.2" r="0.8" fill="#ffffff" />
+      {/* Blush */}
+      <circle cx="21" cy="36" r="3" fill="#f43f5e" opacity="0.35" />
+      <circle cx="43" cy="36" r="3" fill="#f43f5e" opacity="0.35" />
+      {/* Open Smile with Cute Tongue */}
+      <path d="M26 37 Q32 44 38 37 Z" fill="#881337" />
+      <path d="M29 39 Q32 45 35 39" fill="#fb7185" />
     </g>
   );
 }
 
 /**
- * 4. Code Breaker — Angular Chiseled Mask + Code Bracket Optics (< / >)
+ * 4. Code Breaker — Yellow Beanie, Winking Tongue, Playful Tech Prodigy
  */
-function RenderCodeBreaker({ accent }) {
+function RenderCodeBreaker({ accent, idPrefix }) {
   return (
     <g>
-      {/* Angular Chiseled Shell */}
-      <polygon
-        points="32,13 47,20 45,43 32,53 19,43 17,20"
-        fill="#0c162d"
-        stroke="#1e293b"
-        strokeWidth="1.5"
-      />
-      {/* Code Left Bracket Optic < */}
-      <path
-        d="M27 28 L23 32 L27 36"
-        fill="none"
-        stroke={accent}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Code Right Bracket Optic > */}
-      <path
-        d="M37 28 L41 32 L37 36"
-        fill="none"
-        stroke={accent}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Center Delimiter / */}
-      <line
-        x1="33"
-        y1="28"
-        x2="31"
-        y2="36"
-        stroke={accent}
-        strokeWidth="1.3"
-        strokeLinecap="round"
-        strokeOpacity="0.6"
-      />
-      {/* Circuit Traces */}
-      <path
-        d="M21 42 L26 47 M43 42 L38 47"
-        stroke={accent}
-        strokeWidth="1.2"
-        strokeOpacity="0.5"
-        strokeLinecap="round"
-      />
+      <defs>
+        <radialGradient id={`${idPrefix}-skin4`} cx="45%" cy="40%" r="55%">
+          <stop offset="0%" stopColor="#fed7aa" />
+          <stop offset="70%" stopColor="#fdba74" />
+          <stop offset="100%" stopColor="#ea580c" />
+        </radialGradient>
+        <linearGradient id={`${idPrefix}-beanie4`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#facc15" />
+          <stop offset="100%" stopColor="#ca8a04" />
+        </linearGradient>
+      </defs>
+      <circle cx="16" cy="35" r="4.5" fill="#fdba74" />
+      <circle cx="48" cy="35" r="4.5" fill="#fdba74" />
+      <circle cx="32" cy="35" r="16.5" fill={`url(#${idPrefix}-skin4)`} />
+      {/* Yellow Beanie */}
+      <path d="M16 29 C16 15, 48 15, 48 29 Z" fill={`url(#${idPrefix}-beanie4)`} />
+      <rect x="14" y="25" width="36" height="6" rx="3" fill="#eab308" />
+      {/* Wink & Eye */}
+      <path d="M22 33 Q25 36 28 33" stroke="#451a03" strokeWidth="2" strokeLinecap="round" fill="none" />
+      <circle cx="39" cy="32" r="2.2" fill="#451a03" />
+      <circle cx="39.8" cy="31.2" r="0.7" fill="#fff" />
+      {/* Mouth & Tongue */}
+      <path d="M26 38 Q32 45 38 38 Z" fill="#450a0a" />
+      <path d="M28.5 40 Q32 46 35.5 40" fill="#f43f5e" />
     </g>
   );
 }
 
 /**
- * 5. Bio-Scanner — Hazmat Diagnostics Respirator + Concentric Analytical Eye
+ * 5. Bio-Scanner — Purple Beanie, Thoughtful Hand-on-Chin Pose
  */
-function RenderBioScanner({ accent }) {
+function RenderBioScanner({ accent, idPrefix }) {
   return (
     <g>
-      {/* Domed Respirator Shell */}
-      <path
-        d="M20 25 C20 15, 44 15, 44 25 L45 38 C45 44, 41 48, 38 50 L26 50 C23 48, 19 44, 19 38 Z"
-        fill="#0c162d"
-        stroke="#1e293b"
-        strokeWidth="1.5"
-      />
-      {/* Curved Hazmat Visor */}
-      <path
-        d="M21 28 C21 23, 43 23, 43 28 C43 33, 21 33, 21 28 Z"
-        fill={accent}
-        fillOpacity="0.25"
-        stroke={accent}
-        strokeWidth="1.3"
-      />
-      {/* Concentric Diagnostic Iris */}
-      <circle cx="32" cy="28" r="2.5" fill={accent} />
-      <circle
-        cx="32"
-        cy="28"
-        r="4.8"
-        fill="none"
-        stroke={accent}
-        strokeWidth="0.8"
-        strokeDasharray="2 1"
-      />
-      {/* Dual Particle Filters */}
-      <circle cx="25" cy="44" r="3.5" fill="#0f172a" stroke={accent} strokeWidth="1" />
-      <circle cx="39" cy="44" r="3.5" fill="#0f172a" stroke={accent} strokeWidth="1" />
-      <line x1="23.5" y1="44" x2="26.5" y2="44" stroke={accent} strokeWidth="1" />
-      <line x1="37.5" y1="44" x2="40.5" y2="44" stroke={accent} strokeWidth="1" />
+      <defs>
+        <radialGradient id={`${idPrefix}-skin5`} cx="45%" cy="40%" r="55%">
+          <stop offset="0%" stopColor="#fed7aa" />
+          <stop offset="70%" stopColor="#fba66c" />
+          <stop offset="100%" stopColor="#c2410c" />
+        </radialGradient>
+        <linearGradient id={`${idPrefix}-beanie5`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#a855f7" />
+          <stop offset="100%" stopColor="#6b21a8" />
+        </linearGradient>
+      </defs>
+      <circle cx="15" cy="33" r="4.5" fill="#fba66c" />
+      <circle cx="47" cy="33" r="4.5" fill="#fba66c" />
+      <circle cx="31" cy="33" r="16.5" fill={`url(#${idPrefix}-skin5)`} />
+      {/* Purple Beanie */}
+      <path d="M15 27 C15 13, 47 13, 47 27 Z" fill={`url(#${idPrefix}-beanie5)`} />
+      <rect x="13" y="23" width="36" height="6" rx="3" fill="#9333ea" />
+      {/* Thoughtful Eyes */}
+      <ellipse cx="23" cy="31" rx="2" ry="2.3" fill="#1e1b4b" />
+      <ellipse cx="37" cy="31" rx="2" ry="2.3" fill="#1e1b4b" />
+      <circle cx="23.7" cy="30.2" r="0.7" fill="#fff" />
+      <circle cx="37.7" cy="30.2" r="0.7" fill="#fff" />
+      {/* Smirk */}
+      <path d="M26 38 Q31 40 36 37" stroke="#78350f" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+      {/* 3D Thinking Hand on Chin */}
+      <g transform="translate(19, 36) scale(0.9)">
+        <ellipse cx="9" cy="8" rx="7" ry="4" fill="#fed7aa" stroke="#c2410c" strokeWidth="0.8" />
+        {/* Curled fingers & thumb resting against cheek */}
+        <circle cx="4" cy="5" r="2.2" fill="#fba66c" />
+        <circle cx="8" cy="5" r="2.2" fill="#fba66c" />
+        <circle cx="12" cy="5.5" r="2" fill="#fba66c" />
+        <path d="M14 6 C16 3, 17 8, 14 10" stroke="#c2410c" strokeWidth="0.8" fill="#fed7aa" />
+      </g>
     </g>
   );
 }
 
 /**
- * 6. AI Sentinel — Android Visage + Forehead Synaptic Node + Slit Visor
+ * 6. AI Sentinel — Glamorous Magenta/Purple Hair, Blowing a 3D Heart Kiss
  */
-function RenderAISentinel({ accent }) {
+function RenderAISentinel({ accent, idPrefix }) {
   return (
     <g>
-      {/* Android Head Contour */}
-      <path
-        d="M32 14 C22 14, 18 22, 18 32 C18 42, 24 51, 32 54 C40 51, 46 42, 46 32 C46 22, 42 14, 32 14 Z"
-        fill="#0c162d"
-        stroke="#1e293b"
-        strokeWidth="1.5"
-      />
-      {/* Synaptic Forehead Diamond */}
-      <polygon points="32,18 35.5,22 32,26 28.5,22" fill={accent} />
-      {/* Dual Robotic Eye Slits */}
-      <path d="M22 32.5 L29 32.5" stroke={accent} strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M35 32.5 L42 32.5" stroke={accent} strokeWidth="2.2" strokeLinecap="round" />
-      {/* Neural Core Spine */}
-      <line
-        x1="32"
-        y1="27"
-        x2="32"
-        y2="42"
-        stroke={accent}
-        strokeWidth="1"
-        strokeOpacity="0.6"
-        strokeDasharray="1.5 1.5"
-      />
-      {/* Audio Baffle */}
-      <line
-        x1="28"
-        y1="46"
-        x2="36"
-        y2="46"
-        stroke={accent}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeOpacity="0.75"
-      />
+      <defs>
+        <radialGradient id={`${idPrefix}-skin6`} cx="45%" cy="40%" r="55%">
+          <stop offset="0%" stopColor="#fce7f3" />
+          <stop offset="70%" stopColor="#fbcfe8" />
+          <stop offset="100%" stopColor="#f472b6" />
+        </radialGradient>
+        <linearGradient id={`${idPrefix}-hair6`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#ec4899" />
+          <stop offset="100%" stopColor="#831843" />
+        </linearGradient>
+      </defs>
+      {/* Hair Behind */}
+      <circle cx="32" cy="27" r="19" fill={`url(#${idPrefix}-hair6)`} />
+      <circle cx="15" cy="34" r="4" fill="#fbcfe8" />
+      <circle cx="49" cy="34" r="4" fill="#fbcfe8" />
+      {/* Face */}
+      <circle cx="32" cy="34" r="16" fill={`url(#${idPrefix}-skin6)`} />
+      {/* Hair Swept Side */}
+      <path d="M15 25 Q32 14 49 22 Q40 18 32 20 Q24 18 15 25 Z" fill={`url(#${idPrefix}-hair6)`} />
+      {/* Left Wink Eye with Lashes */}
+      <path d="M22 31 Q26 34 30 31" stroke="#831843" strokeWidth="2" strokeLinecap="round" fill="none" />
+      <path d="M21 30 L19 28" stroke="#831843" strokeWidth="1.2" />
+      <path d="M30 30 L32 28" stroke="#831843" strokeWidth="1.2" />
+      {/* Right Eye */}
+      <circle cx="39" cy="30" r="2.2" fill="#831843" />
+      <circle cx="39.8" cy="29.2" r="0.8" fill="#fff" />
+      {/* Kissing Lips Pout */}
+      <ellipse cx="29" cy="38" rx="2.5" ry="1.8" fill="#be123c" />
+      {/* 3D Floating Heart Kiss */}
+      <g transform="translate(36, 32) scale(0.95)">
+        <path
+          d="M6 3.5 C6 1.5, 3 1.5, 3 3.5 C3 5.5, 6 7.5, 6 7.5 C6 7.5, 9 5.5, 9 3.5 C9 1.5, 6 1.5, 6 3.5 Z"
+          fill="#ef4444"
+          stroke="#b91c1c"
+          strokeWidth="0.5"
+        />
+        <circle cx="4.5" cy="3" r="0.6" fill="#fff" opacity="0.8" />
+      </g>
     </g>
   );
 }
 
 /**
- * 7. Forensics Investigator — Asymmetric Optical Monocle + Scanner Reticle
+ * 7. Forensics Investigator — Afro Curls, Round Glasses, Hand Pointing
  */
-function RenderForensicsInvestigator({ accent }) {
+function RenderForensicsInvestigator({ accent, idPrefix }) {
   return (
     <g>
-      {/* Tactical Chassis */}
-      <path
-        d="M19 22 C19 15, 45 15, 45 22 L47 41 C47 48, 40 53, 32 53 C24 53, 17 48, 17 41 Z"
-        fill="#0c162d"
-        stroke="#1e293b"
-        strokeWidth="1.5"
-      />
-      {/* Tactical Visor Brow */}
-      <path d="M17 24 L47 24" stroke="#334155" strokeWidth="2" strokeLinecap="round" />
-      {/* Left Optical Slit */}
-      <rect x="22" y="30.5" width="7" height="3" rx="1.5" fill={accent} fillOpacity="0.75" />
-      {/* Right Forensic Monocle Aperture */}
-      <circle cx="37" cy="32" r="6.5" fill="#070d1d" stroke={accent} strokeWidth="1.4" />
-      <circle cx="37" cy="32" r="3.5" fill={accent} fillOpacity="0.3" stroke={accent} strokeWidth="0.8" />
-      <line x1="37" y1="24.5" x2="37" y2="39.5" stroke={accent} strokeWidth="0.8" strokeOpacity="0.6" />
-      <line x1="29.5" y1="32" x2="44.5" y2="32" stroke={accent} strokeWidth="0.8" strokeOpacity="0.6" />
-      <circle cx="37" cy="32" r="1.3" fill={accent} />
+      <defs>
+        <radialGradient id={`${idPrefix}-skin7`} cx="45%" cy="40%" r="55%">
+          <stop offset="0%" stopColor="#d97706" />
+          <stop offset="70%" stopColor="#b45309" />
+          <stop offset="100%" stopColor="#78350f" />
+        </radialGradient>
+      </defs>
+      {/* Afro Hair Volume */}
+      <circle cx="21" cy="22" r="9" fill="#1c1917" />
+      <circle cx="32" cy="18" r="10" fill="#1c1917" />
+      <circle cx="43" cy="22" r="9" fill="#1c1917" />
+      <circle cx="15" cy="30" r="7" fill="#1c1917" />
+      <circle cx="49" cy="30" r="7" fill="#1c1917" />
+      {/* Face */}
+      <circle cx="32" cy="34" r="16" fill={`url(#${idPrefix}-skin7)`} />
+      {/* Round Glasses */}
+      <circle cx="24" cy="32" r="5" fill="none" stroke="#f59e0b" strokeWidth="1.5" />
+      <circle cx="38" cy="32" r="5" fill="none" stroke="#f59e0b" strokeWidth="1.5" />
+      <line x1="29" y1="32" x2="33" y2="32" stroke="#f59e0b" strokeWidth="1.5" />
+      <circle cx="24" cy="32" r="1.8" fill="#1c1917" />
+      <circle cx="38" cy="32" r="1.8" fill="#1c1917" />
+      <circle cx="24.6" cy="31.3" r="0.6" fill="#fff" />
+      <circle cx="38.6" cy="31.3" r="0.6" fill="#fff" />
+      {/* Bright Smile */}
+      <path d="M26 39 Q31 43 36 39 Z" fill="#ffffff" />
+      <path d="M26 39 Q31 43 36 39" stroke="#451a03" strokeWidth="1" fill="none" />
+      {/* Hand Gesture */}
+      <g transform="translate(43, 34) scale(0.8)">
+        <ellipse cx="5" cy="8" rx="4" ry="5" fill="#b45309" />
+        <circle cx="8" cy="5" r="1.8" fill="#d97706" />
+      </g>
     </g>
   );
 }
 
 /**
- * 8. Compliance Auditor — Symmetric Shield Crown + Verification Check Emblem
+ * 8. Compliance Auditor — Elegant Pink Hijab, Gentle Winking Smile
  */
-function RenderComplianceAuditor({ accent }) {
+function RenderComplianceAuditor({ accent, idPrefix }) {
   return (
     <g>
-      {/* Crested Shield Crown */}
-      <path
-        d="M32 12 L47 17 V34 C47 44, 32 53, 32 53 C32 53, 17 44, 17 34 V17 Z"
-        fill="#0c162d"
-        stroke="#1e293b"
-        strokeWidth="1.5"
-      />
-      {/* Verification Checkmark Emblem */}
-      <path
-        d="M27 21 L31 25 L37 18"
-        fill="none"
-        stroke={accent}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Steady Visor Bar */}
-      <rect
-        x="21"
-        y="30"
-        width="22"
-        height="4.5"
-        rx="2"
-        fill={accent}
-      />
-      {/* Dual Balance Pillars */}
-      <line x1="25" y1="38" x2="25" y2="43" stroke={accent} strokeWidth="1.2" strokeLinecap="round" strokeOpacity="0.7" />
-      <line x1="39" y1="38" x2="39" y2="43" stroke={accent} strokeWidth="1.2" strokeLinecap="round" strokeOpacity="0.7" />
-      <line x1="23" y1="43" x2="41" y2="43" stroke={accent} strokeWidth="1.2" strokeLinecap="round" strokeOpacity="0.7" />
+      <defs>
+        <radialGradient id={`${idPrefix}-skin8`} cx="45%" cy="40%" r="55%">
+          <stop offset="0%" stopColor="#ffedd5" />
+          <stop offset="70%" stopColor="#fed7aa" />
+          <stop offset="100%" stopColor="#fb923c" />
+        </radialGradient>
+        <linearGradient id={`${idPrefix}-hijab`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#f472b6" />
+          <stop offset="100%" stopColor="#db2777" />
+        </linearGradient>
+      </defs>
+      {/* Hijab Outer Drapes */}
+      <path d="M14 26 C12 12, 52 12, 50 26 C50 44, 46 54, 32 54 C18 54, 14 44, 14 26 Z" fill={`url(#${idPrefix}-hijab)`} />
+      {/* Face Opening */}
+      <ellipse cx="32" cy="33" rx="12.5" ry="14" fill={`url(#${idPrefix}-skin8)`} />
+      {/* Hijab Inner Wrap Fold */}
+      <path d="M19 26 Q32 20 45 26" stroke="#be185d" strokeWidth="1.5" fill="none" />
+      {/* Eyes: Wink and Cheerful Eye */}
+      <path d="M23 31 Q26 33.5 29 31" stroke="#451a03" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+      <circle cx="37" cy="30" r="1.8" fill="#451a03" />
+      <circle cx="37.6" cy="29.3" r="0.6" fill="#fff" />
+      {/* Rosy Cheeks */}
+      <circle cx="23" cy="35" r="2.5" fill="#f43f5e" opacity="0.3" />
+      <circle cx="41" cy="35" r="2.5" fill="#f43f5e" opacity="0.3" />
+      {/* Gentle Smile */}
+      <path d="M27 37 Q32 41 37 37" stroke="#451a03" strokeWidth="1.6" strokeLinecap="round" fill="none" />
     </g>
   );
 }
 
-/**
- * Dispatches to the appropriate archetype renderer
- */
-function RenderArchetypeContent({ archetype, accent }) {
-  switch (archetype) {
-    case 'Net Warden':
-      return <RenderNetWarden accent={accent} />;
-    case 'Web Shield':
-      return <RenderWebShield accent={accent} />;
-    case 'Code Breaker':
-      return <RenderCodeBreaker accent={accent} />;
-    case 'Bio-Scanner':
-      return <RenderBioScanner accent={accent} />;
-    case 'AI Sentinel':
-      return <RenderAISentinel accent={accent} />;
-    case 'Forensics Investigator':
-      return <RenderForensicsInvestigator accent={accent} />;
-    case 'Compliance Auditor':
-      return <RenderComplianceAuditor accent={accent} />;
-    case 'Cyber Scout':
-    default:
-      return <RenderCyberScout accent={accent} />;
-  }
-}
+const RENDERERS = {
+  'Cyber Scout': RenderCyberScout,
+  'Net Warden': RenderNetWarden,
+  'Web Shield': RenderWebShield,
+  'Code Breaker': RenderCodeBreaker,
+  'Bio-Scanner': RenderBioScanner,
+  'AI Sentinel': RenderAISentinel,
+  'Forensics Investigator': RenderForensicsInvestigator,
+  'Compliance Auditor': RenderComplianceAuditor,
+};
 
-/**
- * 🤖 AnimatedToolAvatar
- *
- * Lightweight, accessible, vector-animated avatar for CyberShield X tool cards.
- * Renders 8 distinct cyber archetypes with idle breathing and hover micro-animations.
- *
- * @param {Object} props
- * @param {string} [props.archetype='Cyber Scout'] - Archetype name
- * @param {string} [props.accent='#00d4ff'] - Primary theme accent color
- * @param {number} [props.size=64] - Size in pixels (width and height)
- * @param {string} [props.className=''] - Additional CSS classes
- * @param {boolean} [props.reducedMotion=false] - Explicit override to disable animations
- * @param {string} [props.alt=''] - Descriptive label if used as non-decorative image
- */
 export default function AnimatedToolAvatar({
   archetype = 'Cyber Scout',
   accent = '#00d4ff',
-  size = 64,
+  size = 56,
   className = '',
-  reducedMotion = false,
-  alt = '',
+  alt,
+  ...rest
 }) {
-  const prefersReduced = useReducedMotion();
-  const shouldReduce = Boolean(reducedMotion || prefersReduced);
+  const shouldReduceMotion = useReducedMotion();
+  const normalized = normalizeArchetype(archetype);
+  const Renderer = RENDERERS[normalized] || RenderCyberScout;
+  const idPrefix = `avatar-${normalized.replace(/\s+/g, '-').toLowerCase()}-${Math.random().toString(36).substr(2, 5)}`;
 
-  const normalizedArchetype = normalizeArchetype(archetype);
-  const safeAccent = accent && typeof accent === 'string' && accent.startsWith('#') ? accent : '#00d4ff';
-  const safeSize = Number.isFinite(size) && size > 0 ? size : 64;
-
-  const isDecorative = !alt;
-
-  // Animation variants
-  const containerVariants = {
-    idle: shouldReduce
-      ? { y: 0 }
-      : {
-          y: [0, -2.5, 0],
-          transition: {
-            duration: 3.5,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          },
-        },
-    hover: shouldReduce
-      ? { scale: 1 }
-      : {
-          scale: 1.06,
-          transition: {
-            duration: 0.2,
-            ease: 'easeOut',
-          },
-        },
-  };
+  const isDecorative = alt === '';
+  const accessibilityProps = isDecorative
+    ? { role: 'presentation', 'aria-hidden': 'true' }
+    : { role: 'img', 'aria-label': alt || `${normalized} Avatar` };
 
   return (
     <motion.div
-      className={`relative flex items-center justify-center select-none ${className}`}
-      style={{
-        width: safeSize,
-        height: safeSize,
-        filter: `drop-shadow(0 0 10px ${safeAccent}35)`,
-      }}
-      initial="idle"
-      animate="idle"
-      whileHover="hover"
-      variants={containerVariants}
+      className={`inline-flex items-center justify-center select-none ${className}`}
+      style={{ width: size, height: size }}
+      whileHover={shouldReduceMotion ? {} : { scale: 1.08, y: -2 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      {...rest}
     >
       <svg
+        width={size}
+        height={size}
         viewBox="0 0 64 64"
-        width={safeSize}
-        height={safeSize}
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        focusable="false"
-        aria-hidden={isDecorative ? 'true' : 'false'}
-        role={isDecorative ? 'presentation' : 'img'}
-        aria-label={isDecorative ? undefined : alt}
-        className="w-full h-full overflow-visible"
+        {...accessibilityProps}
       >
-        {/* Subtle Ambient Radial Glow */}
-        <defs>
-          <radialGradient id={`halo-${normalizedArchetype.replace(/\s+/g, '-')}`} cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor={safeAccent} stopOpacity="0.25" />
-            <stop offset="100%" stopColor={safeAccent} stopOpacity="0" />
-          </radialGradient>
-        </defs>
-
-        <circle
-          cx="32"
-          cy="32"
-          r="26"
-          fill={`url(#halo-${normalizedArchetype.replace(/\s+/g, '-')})`}
-        />
-
-        {/* Archetype SVG Geometry */}
-        <RenderArchetypeContent archetype={normalizedArchetype} accent={safeAccent} />
+        <Renderer accent={accent} idPrefix={idPrefix} />
       </svg>
     </motion.div>
   );

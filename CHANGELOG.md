@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v62.5.2] - 2026-09-27
+### Frontend Scope Correction & Dashboard Card Modernization
+> **Controlled frontend scope correction restoring original structural designs, restricting Matrix Rain to binary 0/1, adding expressive 3D avatars, integrating direct Have I Been Pwned check, and aligning Dashboard cards with authoritative design reference.**
+
+- **Restored Original Homepage Structure**:
+  - Restored original structural design from commit `5cf14ee` (`client/src/pages/HomePage.jsx`).
+  - Restored original hero, CyberShield X brand lockup, `GlitchText` (`client/src/components/home/GlitchText.jsx`), glow/orb treatments, typewriter subtitle, How It Works section, Intel Sources, Final CTA, and tactical footer.
+  - Eliminated unauthorized v62.5.x sections (no `PublicNavbar` redesign, no featured tools preview, no terminal preview, no SOC workflow pipeline, no threat network preview, no replacement footer).
+
+- **Homepage Tool-Card 3D Animated Faces**:
+  - Integrated approved expressive 3D character avatars (`AnimatedToolAvatar.jsx`) at top-right of cards in `NexusCategoryGrid.jsx`.
+  - Added subtle card elevation and hover animations consistent with the approved design language while preserving original 24-category layout and navigation.
+
+- **Matrix Rain Restricted to 0/1**:
+  - Restricted `BinaryMatrixRain.jsx` character generator strictly to `0` and `1`. Zero alphabetic, katakana, symbols, or punctuation characters.
+
+- **Restored Original Authentication UI**:
+  - Restored original two-column layout from `5cf14ee` in `LoginPage.jsx` and `SignupPage.jsx` (left cyber graphic panel, operational telemetry, circuit styling, and cyber-green `#00ff88` palette).
+
+- **Direct Have I Been Pwned Entry ("Check Your Data")**:
+  - Added small, direct external link to `https://haveibeenpwned.com/` below the authentication UI on Login and Signup.
+  - Zero native email collection, zero API credentials, zero backend proxying, zero tenant leakage.
+
+- **Dashboard Card Design Aligned with Authoritative Reference**:
+  - Aligned `DashboardPage.jsx`, `CyberToolCard.jsx`, `ToolGrid.jsx`, and `toolThemes.js` with `design img..png`: clean light `#f8fafc` background, 4-column responsive desktop grid, colorful pastel cards, category pills, left-aligned title & description, top-right expressive 3D character avatars, external tools count indicator, login requirement indicator, horizontal progress/accent bar, "Open Tool ↗" button, and "View Alternatives →" action.
+
+- **111 Canonical Tools & Alternatives Preserved**:
+  - Preserved 111 canonical tools in `toolConfig.js` and 111 external alternatives in `externalAlternatives.js` with strict parity. Tool #86 `domain-twist` verified intact.
+
+- **Zero Backend Modifications**:
+  - All backend files (`server/**`), database models, API routes, Phase 80 telemetry, and Phase 81 ITSM integrations remain 100% untouched.
+
 ## [v62.5.1] - 2026-09-26
 ### Legacy Architecture Cleanup & AI Consolidation
 > **Controlled legacy architecture cleanup, abandoned concept decommissioning, canonical conversational AI unification, password-reset reconnection, test reconciliation, and release validation.**

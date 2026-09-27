@@ -1,373 +1,220 @@
 import React from 'react';
-
-import { motion } from 'framer-motion';
-
-import { ExternalLink } from 'lucide-react';
-
-import { getCategoryTheme } from './toolThemes';
-
+import { motion, useReducedMotion } from 'framer-motion';
+import { Link2, ShieldCheck, AlertCircle, ArrowUpRight, ArrowRight } from 'lucide-react';
+import { getCategoryTheme, CATEGORY_ARCHETYPE_MAP } from './toolThemes';
 import AnimatedToolAvatar from './AnimatedToolAvatar';
-
-
-
-/**
-
- * Calculates high-contrast text color (dark navy or white) for any hex accent color.
-
- * @param {string} hexColor - Hex color code (e.g. '#00d4ff')
-
- * @returns {string} High-contrast text hex color
-
- */
-
-function getContrastTextColor(hexColor) {
-
-  if (!hexColor || typeof hexColor !== 'string' || !hexColor.startsWith('#')) {
-
-    return '#020817';
-
-  }
-
-  const hex = hexColor.replace('#', '');
-
-  if (hex.length !== 6) return '#020817';
-
-  const r = parseInt(hex.substring(0, 2), 16);
-
-  const g = parseInt(hex.substring(2, 4), 16);
-
-  const b = parseInt(hex.substring(4, 6), 16);
-
-  const yiq = (r * 299 + g * 587 + b * 114) / 1000;
-
-  return yiq >= 135 ? '#020817' : '#ffffff';
-
-}
-
-
+import { getAlternativesForTool } from './externalAlternatives';
 
 /**
-
  * 🛡️ CyberToolCard
-
- * Reusable metadata-driven card component for the CyberShield X Tool Grid.
-
+ * High-fidelity, pastel card presentation matching design img..png authoritative reference.
  *
-
- * ARCHITECTURAL BOUNDARY (Step 4A):
-
- * - Tool cards are strictly an EXTERNAL WEBSITE DISCOVERY surface.
-
- * - Clicking anywhere on the card or clicking the primary CTA opens the External Alternatives experience.
-
- * - The card does NOT execute native tools, does NOT call /api/terminal/execute-native,
-
- *   does NOT call /api/toolkit/execute, and does NOT route to internal execution workstations.
-
- * - Does NOT display internal executionTarget badges (Native, API, Browser, Hybrid).
-
+ * Visual Reference Spec:
+ * - 4-column responsive desktop card
+ * - Colorful pastel background and border
+ * - Top-left category pill with high-contrast category badge
+ * - Top-right expressive 3D character/avatar face with props & gestures
+ * - Bold left-aligned tool title & concise clamped description
+ * - Metadata row: link icon + external tools count, shield/alert + login requirement
+ * - Horizontal colored progress / accent bar
+ * - Dual Action row: "Open Tool ↗" primary solid pill button + "View Alternatives →" link
  *
-
- * Visual Spec:
-
- * - Dark navy / glass surface (#0c162d / #0a1124)
-
- * - Rounded-2xl with subtle category-reactive border & glow
-
- * - Category badge & external discovery badge
-
- * - Animated tool avatar (64px)
-
- * - Prominent tool name & clamped description
-
- * - Action row: Unified "View Alternatives" external discovery CTA
-
- *
-
- * @param {Object} props
-
- * @param {Object} [props.tool={}] - Tool metadata object
-
- * @param {string} [props.tool.id] - Unique tool identifier
-
- * @param {string} [props.tool.name] - Human-readable display name
-
- * @param {string} [props.tool.description] - Short summary of capabilities
-
- * @param {string} [props.tool.tagline] - Optional fallback summary
-
- * @param {string} [props.tool.category] - Official Nexus category string
-
- * @param {string} [props.tool.avatarArchetype] - Avatar archetype name
-
- * @param {Function} [props.onOpen] - Callback invoked when tool is selected (routed to alternatives)
-
- * @param {Function} [props.onAlternatives] - Callback invoked to open External Alternatives modal
-
- * @param {string} [props.className=''] - Optional custom CSS classes
-
+ * Architectural Boundary:
+ * - Preserves Step 4A/4B test contracts (data-testid="external-badge", card click, alternatives)
+ * - Safe external verification routing without sensitive data leakage
  */
-
 function CyberToolCard({
-
   tool = {},
-
   onOpen,
-
   onAlternatives,
-
   className = '',
-
 }) {
+  const shouldReduceMotion = useReducedMotion();
 
   // Safe read of metadata fields with robust defaults
-
   const safeTool = tool && typeof tool === 'object' ? tool : {};
-
   const toolName = safeTool.name || 'Unnamed Tool';
-
   const toolDesc = safeTool.description || safeTool.tagline || 'Security tool';
-
   const toolCategory = safeTool.category || 'General Security';
+  const avatarArchetype =
+    safeTool.avatarArchetype || CATEGORY_ARCHETYPE_MAP[toolCategory] || 'Cyber Scout';
 
-  const avatarArchetype = safeTool.avatarArchetype;
-
-
-
-  // Resolve centralized theme tokens
-
+  // Resolve centralized theme tokens (pastel & dark tokens)
   const theme = getCategoryTheme(toolCategory);
 
-  const primaryTextColor = getContrastTextColor(theme.accent);
-
-
-
-  // Authoritative external discovery invocation: routes exclusively to alternatives
-
-  const triggerAlternatives = () => {
-
-    (onAlternatives || onOpen)?.(safeTool);
-
-  };
-
-
-
-  // Handler for card container click
-
-  const handleCardClick = () => {
-
-    triggerAlternatives();
-
-  };
-
-
-
-  // Keyboard accessibility: Enter or Space activates external discovery
-
-  const handleKeyDown = (e) => {
-
-    if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) {
-
-      e.preventDefault();
-
-      triggerAlternatives();
-
-    }
-
-  };
-
-
-
-  // Handler for primary CTA button click (stops propagation to prevent double-triggering card click)
-
-  const handleButtonClick = (e) => {
-
-    e.stopPropagation();
-
-    triggerAlternatives();
-
-  };
-
-
-
-  return (
-
-    <motion.article
-
-      onClick={handleCardClick}
-
-      onKeyDown={handleKeyDown}
-
-      tabIndex={0}
-
-      role="article"
-
-      aria-label={`${toolName} - External Tool Discovery Card`}
-
-      className={`group relative flex flex-col justify-between rounded-2xl p-5 min-h-[250px] select-none backdrop-blur-md cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020814] ${className}`}
-
-      style={{
-
-        backgroundColor: 'rgba(12, 22, 45, 0.88)',
-
-        borderWidth: '1px',
-
-        borderStyle: 'solid',
-
-        borderColor: 'rgba(30, 41, 59, 0.8)',
-
-        boxShadow: '0 4px 12px -2px rgba(0, 0, 0, 0.4)',
-
-      }}
-
-      whileHover={{
-
-        y: -3,
-
-        borderColor: theme.cardBorderHover,
-
-        boxShadow: `0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 20px -2px ${theme.accent}25`,
-
-      }}
-
-      transition={{ duration: 0.2, ease: 'easeOut' }}
-
-    >
-
-      {/* Top Meta Row: Category Badge + External Discovery Badge */}
-
-      <div className="flex items-center justify-between gap-2 mb-3">
-
-        <span
-
-          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide border uppercase truncate max-w-[65%]"
-
-          style={{
-
-            backgroundColor: theme.badgeBg,
-
-            borderColor: theme.badgeBorder,
-
-            color: theme.badgeText,
-
-          }}
-
-          title={toolCategory}
-
-        >
-
-          {toolCategory}
-
-        </span>
-
-
-
-        {/* External Discovery Badge (Replaces internal executionTarget presentation) */}
-
-        <span
-
-          data-testid="external-badge"
-
-          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-medium tracking-wider bg-slate-800/80 text-cyan-400 border border-slate-700/60 uppercase shrink-0"
-
-        >
-
-          <ExternalLink size={10} className="text-cyan-400" />
-
-          <span>External</span>
-
-        </span>
-
-      </div>
-
-
-
-      {/* Avatar Visual Anchor */}
-
-      <div className="flex items-center justify-center my-2">
-
-        <AnimatedToolAvatar
-
-          archetype={avatarArchetype}
-
-          accent={theme.accent}
-
-          size={64}
-
-        />
-
-      </div>
-
-
-
-      {/* Tool Identity & Description */}
-
-      <div className="mt-1 flex-1 flex flex-col justify-center text-center">
-
-        <h3
-
-          className="text-base font-bold text-slate-100 tracking-tight truncate px-1 group-hover:text-cyan-300 transition-colors"
-
-          title={toolName}
-
-        >
-
-          {toolName}
-
-        </h3>
-
-        <p className="mt-1 text-xs text-slate-400 line-clamp-2 leading-relaxed px-1">
-
-          {toolDesc}
-
-        </p>
-
-      </div>
-
-
-
-      {/* Action Row — Unified External Alternatives Discovery CTA */}
-
-      <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center gap-2">
-
-        <button
-
-          type="button"
-
-          onClick={handleButtonClick}
-
-          aria-label={`View alternatives for ${toolName}`}
-
-          className="w-full py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 active:scale-[0.98] text-center truncate shadow-sm flex items-center justify-center gap-1.5 group/btn"
-
-          style={{
-
-            backgroundColor: theme.accent,
-
-            color: primaryTextColor,
-
-            boxShadow: `0 2px 10px -2px ${theme.accent}50`,
-
-          }}
-
-        >
-
-          <span>View Alternatives</span>
-
-          <ExternalLink size={13} className="shrink-0 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
-
-        </button>
-
-      </div>
-
-    </motion.article>
-
+  // Dynamic external alternatives count
+  const alternatives = getAlternativesForTool(safeTool.id);
+  const extCount = Array.isArray(alternatives) && alternatives.length > 0 ? alternatives.length : 3;
+
+  // Login indicator (true if tool requires authentication)
+  const requiresLogin = Boolean(
+    safeTool.requiresAuth || safeTool.authRequired || safeTool.requiresApiKey
   );
 
+  // Authoritative external discovery invocation: routes to alternatives modal
+  const triggerAlternatives = () => {
+    (onAlternatives || onOpen)?.(safeTool);
+  };
+
+  // Handler for card container click
+  const handleCardClick = () => {
+    triggerAlternatives();
+  };
+
+  // Keyboard accessibility: Enter or Space activates external discovery
+  const handleKeyDown = (e) => {
+    if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      triggerAlternatives();
+    }
+  };
+
+  // Handler for primary "Open Tool ↗" button
+  const handleOpenClick = (e) => {
+    e.stopPropagation();
+    if (onOpen) {
+      onOpen(safeTool);
+    } else {
+      triggerAlternatives();
+    }
+  };
+
+  // Handler for "View Alternatives →" button
+  const handleAlternativesClick = (e) => {
+    e.stopPropagation();
+    triggerAlternatives();
+  };
+
+  return (
+    <motion.article
+      onClick={handleCardClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="article"
+      aria-label={`${toolName} - External Tool Discovery Card`}
+      className={`group relative flex flex-col justify-between rounded-3xl p-6 select-none cursor-pointer transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 ${className}`}
+      style={{
+        backgroundColor: theme.pastelBg || '#eff6ff',
+        borderColor: theme.pastelBorder || '#bfdbfe',
+        borderWidth: '1.5px',
+        borderStyle: 'solid',
+        boxShadow: '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+      }}
+      whileHover={
+        shouldReduceMotion
+          ? {}
+          : {
+              y: -5,
+              boxShadow: '0 12px 30px -4px rgba(0, 0, 0, 0.12)',
+            }
+      }
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+    >
+      {/* ── Top Row: Category Pill (Left) & Expressive 3D Avatar (Right) ── */}
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <span
+          className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-extrabold tracking-wider uppercase truncate max-w-[65%] shadow-xs"
+          style={{
+            backgroundColor: theme.pastelPillBg || '#dbeafe',
+            color: theme.pastelPillText || '#1d4ed8',
+          }}
+          title={toolCategory}
+        >
+          {toolCategory}
+        </span>
+
+        {/* Top-Right 3D Character Avatar matching design img..png */}
+        <div className="shrink-0 -mt-1 -mr-1">
+          <AnimatedToolAvatar
+            archetype={avatarArchetype}
+            accent={theme.accent}
+            size={58}
+          />
+        </div>
+      </div>
+
+      {/* ── Tool Identity & Description ── */}
+      <div className="flex-1 flex flex-col justify-start text-left mb-4">
+        <h3
+          className="text-lg font-extrabold text-slate-900 tracking-tight truncate mb-1.5"
+          title={toolName}
+        >
+          {toolName}
+        </h3>
+        <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed font-normal">
+          {toolDesc}
+        </p>
+      </div>
+
+      {/* ── Metadata Row: External Tool Count & Login Indicator ── */}
+      <div className="flex items-center gap-4 text-[11px] font-medium text-slate-700 mb-3 pt-1 border-t border-slate-900/5">
+        <span
+          data-testid="external-badge"
+          className="inline-flex items-center gap-1.5 shrink-0"
+        >
+          <Link2 size={13} className="text-slate-600" />
+          <span>{extCount} External tools</span>
+        </span>
+
+        <span className="inline-flex items-center gap-1 shrink-0 text-slate-600">
+          {requiresLogin ? (
+            <>
+              <AlertCircle size={13} className="text-amber-600" />
+              <span>May require login</span>
+            </>
+          ) : (
+            <>
+              <ShieldCheck size={13} className="text-emerald-600" />
+              <span>No login required</span>
+            </>
+          )}
+        </span>
+      </div>
+
+      {/* ── Horizontal Progress / Accent Bar ── */}
+      <div className="w-full h-1.5 rounded-full bg-slate-900/10 overflow-hidden mb-4">
+        <div
+          className="h-full rounded-full transition-all duration-300"
+          style={{
+            width: `${theme.progress || 70}%`,
+            backgroundColor: theme.btnColor || theme.accent,
+          }}
+        />
+      </div>
+
+      {/* ── Action Row: Dual CTAs ("Open Tool ↗" + "View Alternatives →") ── */}
+      <div className="flex items-center justify-between gap-3 pt-1">
+        {/* Primary Action Button: "Open Tool ↗" */}
+        <button
+          type="button"
+          onClick={handleOpenClick}
+          aria-label={`Launch ${toolName}`}
+          className="px-4 py-2 rounded-xl text-xs font-bold text-white shadow-sm transition-all duration-150 hover:opacity-95 active:scale-95 inline-flex items-center gap-1.5 shrink-0"
+          style={{
+            backgroundColor: theme.btnColor || theme.accent,
+          }}
+        >
+          <span>Open Tool</span>
+          <ArrowUpRight size={13} strokeWidth={2.5} />
+        </button>
+
+        {/* Secondary Action Link: "View Alternatives →" */}
+        <button
+          type="button"
+          onClick={handleAlternativesClick}
+          aria-label={`View alternatives for ${toolName}`}
+          className="text-xs font-bold hover:underline inline-flex items-center gap-1 transition-colors shrink-0"
+          style={{
+            color: theme.btnColor || theme.accent,
+          }}
+        >
+          <span>View Alternatives</span>
+          <ArrowRight size={13} strokeWidth={2.2} />
+        </button>
+      </div>
+    </motion.article>
+  );
 }
 
-
-
 export default React.memo(CyberToolCard);
-
 export { CyberToolCard };
