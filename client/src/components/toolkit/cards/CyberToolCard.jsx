@@ -69,18 +69,8 @@ function CyberToolCard({
     }
   };
 
-  // Handler for primary "Open Tool ↗" button
-  const handleOpenClick = (e) => {
-    e.stopPropagation();
-    if (onOpen) {
-      onOpen(safeTool);
-    } else {
-      triggerAlternatives();
-    }
-  };
-
-  // Handler for "View Alternatives →" button
-  const handleAlternativesClick = (e) => {
+  // Handler for primary external action button ("External Website ↗")
+  const handleActionClick = (e) => {
     e.stopPropagation();
     triggerAlternatives();
   };
@@ -92,7 +82,7 @@ function CyberToolCard({
       tabIndex={0}
       role="article"
       aria-label={`${toolName} - External Tool Discovery Card`}
-      className={`group relative flex flex-col justify-between rounded-3xl p-6 select-none cursor-pointer transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 ${className}`}
+      className={`group relative flex flex-col justify-between rounded-3xl p-5 sm:p-6 w-full h-full min-h-[310px] select-none cursor-pointer transition-all duration-200 overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 ${className}`}
       style={{
         backgroundColor: theme.pastelBg || '#eff6ff',
         borderColor: theme.pastelBorder || '#bfdbfe',
@@ -104,16 +94,16 @@ function CyberToolCard({
         shouldReduceMotion
           ? {}
           : {
-              y: -5,
+              y: -4,
               boxShadow: '0 12px 30px -4px rgba(0, 0, 0, 0.12)',
             }
       }
       transition={{ duration: 0.2, ease: 'easeOut' }}
     >
       {/* ── Top Row: Category Pill (Left) & Expressive 3D Avatar (Right) ── */}
-      <div className="flex items-start justify-between gap-3 mb-3">
+      <div className="flex items-start justify-between gap-2 mb-3 w-full">
         <span
-          className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-extrabold tracking-wider uppercase truncate max-w-[65%] shadow-xs"
+          className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-extrabold tracking-wider uppercase truncate max-w-[calc(100%-60px)] shadow-xs shrink"
           style={{
             backgroundColor: theme.pastelPillBg || '#dbeafe',
             color: theme.pastelPillText || '#1d4ed8',
@@ -123,56 +113,56 @@ function CyberToolCard({
           {toolCategory}
         </span>
 
-        {/* Top-Right 3D Character Avatar matching design img..png */}
+        {/* Top-Right 3D Character Avatar matching design reference */}
         <div className="shrink-0 -mt-1 -mr-1">
           <AnimatedToolAvatar
             archetype={avatarArchetype}
             accent={theme.accent}
-            size={58}
+            size={52}
           />
         </div>
       </div>
 
       {/* ── Tool Identity & Description ── */}
-      <div className="flex-1 flex flex-col justify-start text-left mb-4">
+      <div className="flex-1 flex flex-col justify-start text-left mb-3 overflow-hidden">
         <h3
-          className="text-lg font-extrabold text-slate-900 tracking-tight truncate mb-1.5"
+          className="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight leading-snug line-clamp-2 break-words mb-1.5"
           title={toolName}
         >
           {toolName}
         </h3>
-        <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed font-normal">
+        <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed font-normal break-words">
           {toolDesc}
         </p>
       </div>
 
       {/* ── Metadata Row: External Tool Count & Login Indicator ── */}
-      <div className="flex items-center gap-4 text-[11px] font-medium text-slate-700 mb-3 pt-1 border-t border-slate-900/5">
+      <div className="flex items-center justify-between gap-2 text-[10px] sm:text-[11px] font-medium text-slate-700 mb-3 pt-2 border-t border-slate-900/5">
         <span
           data-testid="external-badge"
-          className="inline-flex items-center gap-1.5 shrink-0"
+          className="inline-flex items-center gap-1.5 shrink-0 truncate"
         >
-          <Link2 size={13} className="text-slate-600" />
+          <Link2 size={13} className="text-slate-600 shrink-0" />
           <span>{extCount} External tools</span>
         </span>
 
-        <span className="inline-flex items-center gap-1 shrink-0 text-slate-600">
+        <span className="inline-flex items-center gap-1 shrink-0 text-slate-600 truncate">
           {requiresLogin ? (
             <>
-              <AlertCircle size={13} className="text-amber-600" />
-              <span>May require login</span>
+              <AlertCircle size={13} className="text-amber-600 shrink-0" />
+              <span>Requires login</span>
             </>
           ) : (
             <>
-              <ShieldCheck size={13} className="text-emerald-600" />
-              <span>No login required</span>
+              <ShieldCheck size={13} className="text-emerald-600 shrink-0" />
+              <span>No login</span>
             </>
           )}
         </span>
       </div>
 
       {/* ── Horizontal Progress / Accent Bar ── */}
-      <div className="w-full h-1.5 rounded-full bg-slate-900/10 overflow-hidden mb-4">
+      <div className="w-full h-1.5 rounded-full bg-slate-900/10 overflow-hidden mb-3.5">
         <div
           className="h-full rounded-full transition-all duration-300"
           style={{
@@ -182,34 +172,24 @@ function CyberToolCard({
         />
       </div>
 
-      {/* ── Action Row: Dual CTAs ("Open Tool ↗" + "View Alternatives →") ── */}
-      <div className="flex items-center justify-between gap-3 pt-1">
-        {/* Primary Action Button: "Open Tool ↗" */}
+      {/* ── Action Row: Single External Website CTA (Step 209 Specification) ── */}
+      <div className="pt-1 w-full mt-auto">
         <button
           type="button"
-          onClick={handleOpenClick}
-          aria-label={`Launch ${toolName}`}
-          className="px-4 py-2 rounded-xl text-xs font-bold text-white shadow-sm transition-all duration-150 hover:opacity-95 active:scale-95 inline-flex items-center gap-1.5 shrink-0"
+          onClick={handleActionClick}
+          aria-label={`View alternatives for ${toolName}`}
+          className="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white shadow-xs transition-all duration-150 hover:opacity-95 active:scale-[0.98] flex items-center justify-center gap-2 group/btn cursor-pointer"
           style={{
             backgroundColor: theme.btnColor || theme.accent,
           }}
         >
-          <span>Open Tool</span>
-          <ArrowUpRight size={13} strokeWidth={2.5} />
-        </button>
-
-        {/* Secondary Action Link: "View Alternatives →" */}
-        <button
-          type="button"
-          onClick={handleAlternativesClick}
-          aria-label={`View alternatives for ${toolName}`}
-          className="text-xs font-bold hover:underline inline-flex items-center gap-1 transition-colors shrink-0"
-          style={{
-            color: theme.btnColor || theme.accent,
-          }}
-        >
-          <span>View Alternatives</span>
-          <ArrowRight size={13} strokeWidth={2.2} />
+          <span>External Website</span>
+          <span className="sr-only"> — View Alternatives</span>
+          <ArrowUpRight
+            size={14}
+            strokeWidth={2.5}
+            className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform shrink-0"
+          />
         </button>
       </div>
     </motion.article>

@@ -121,9 +121,11 @@ const AppRoutes = () => (
     <Route path="/forgot-password" element={<ForgotPasswordPage />} />
     <Route path="/reset-password" element={<ResetPasswordPage />} />
 
+    {/* Standalone Clean Dashboard (Step 209: Disconnected from legacy sidebar) */}
+    <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
+
     {/* Protected App Shell */}
     <Route path="/" element={<Layout />}>
-      <Route path="dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
       <Route path="scan" element={<PrivateRoute><ScanPage /></PrivateRoute>} />
       <Route path="bulk-scan" element={<PrivateRoute><BulkScannerPage /></PrivateRoute>} />
       {/* ─── Combined Tools ─────────────────────────────────────────────── */}

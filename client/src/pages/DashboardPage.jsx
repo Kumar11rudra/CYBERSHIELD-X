@@ -1,20 +1,23 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getAllTools, getAllCategories } from '../components/toolkit/toolConfig';
 import { getCategoryTheme, CATEGORY_ARCHETYPE_MAP } from '../components/toolkit/cards/toolThemes';
 import ToolGrid from '../components/toolkit/cards/ToolGrid';
 import ExternalAlternativesModal from '../components/toolkit/cards/ExternalAlternativesModal';
-import { Search, X } from 'lucide-react';
+import BrandLogo from '../components/common/BrandLogo';
+import { Search, X, Terminal, LogOut } from 'lucide-react';
 
 /**
  * 🛡️ DashboardPage
- * Visual design matching design img..png authoritative reference.
- * 4-column responsive grid with colorful pastel cards, clean light aesthetic,
- * search & category filtering across the canonical 111-tool catalog.
+ * Clean, modern dashboard matching Step 209 specifications:
+ * - Completely disconnected from old sidebar
+ * - Clean top header: BrandLogo (left), Terminal, User info, Logout (right)
+ * - Main area containing ONLY the 111-tool catalog grid
+ * - 4-column responsive grid with colorful pastel cards
  */
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   // Search & Filter State
@@ -115,8 +118,68 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-900 selection:bg-blue-100">
-      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 selection:bg-blue-100 flex flex-col">
+      {/* ── Clean Top Header (Step 209: BrandLogo on left, Terminal, User info, Logout on right) ── */}
+      <header className="w-full bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
+          {/* LEFT: CyberShield X Logo */}
+          <Link
+            to="/"
+            className="flex items-center gap-2 sm:gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg p-1 shrink-0"
+            title="CyberShield X Homepage"
+          >
+            <BrandLogo size={30} />
+            <div className="flex flex-col">
+              <span className="font-extrabold text-sm sm:text-base tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors font-mono">
+                CYBERSHIELD <span className="text-emerald-500">X</span>
+              </span>
+              <span className="text-[8px] sm:text-[9px] font-mono tracking-widest text-slate-500 uppercase -mt-0.5 hidden xs:block">
+                CYBER DEFENSE
+              </span>
+            </div>
+          </Link>
+
+          {/* RIGHT: Terminal, User Info, Logout */}
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            {/* Terminal (Top-Header Only) */}
+            <button
+              type="button"
+              onClick={() => navigate('/terminal')}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors shadow-xs cursor-pointer"
+              title="Open Native Terminal"
+              aria-label="Terminal"
+            >
+              <Terminal size={14} className="text-blue-600 shrink-0" />
+              <span className="hidden sm:inline">Terminal</span>
+            </button>
+
+            {/* Current User's Name / Information */}
+            <div className="flex items-center gap-1.5 px-2 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700 shadow-xs max-w-[85px] xs:max-w-[120px] sm:max-w-[180px]">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 animate-pulse" />
+              <span className="font-mono truncate">
+                {user?.username || user?.name || user?.email || 'Operator'}
+              </span>
+            </div>
+
+            {/* Logout */}
+            <button
+              type="button"
+              onClick={async () => {
+                await logout?.();
+                navigate('/login');
+              }}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 border border-rose-200 transition-colors shadow-xs cursor-pointer"
+              title="Sign Out"
+              aria-label="Logout"
+            >
+              <LogOut size={14} className="shrink-0" />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
         {/* ── Section Header (Authoritative Reference: design img..png) ── */}
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -134,14 +197,6 @@ export default function DashboardPage() {
                 Explore 111+ curated cybersecurity tools with trusted external resources. No complex setup — just click and start.
               </p>
             </div>
-
-            {/* Operator Badge */}
-            {user && (
-              <div className="self-start sm:self-center shrink-0 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 shadow-xs flex items-center gap-2 text-xs font-medium text-slate-700">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span>{user.username || 'Operator'}</span>
-              </div>
-            )}
           </div>
 
           {/* ── Search Bar ── */}

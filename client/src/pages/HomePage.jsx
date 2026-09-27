@@ -496,6 +496,213 @@ export default function HomePage() {
         </motion.div>
       </section>
 
+      {/* ── HAVE I BEEN PWNED SECTION (Step 209: Exact Placement below Stats, above Tools) ── */}
+      <section
+        style={{
+          position: 'relative',
+          zIndex: 2,
+          padding: '48px 24px',
+          background: 'radial-gradient(ellipse at center, rgba(0, 191, 255, 0.05) 0%, transparent 70%)',
+        }}
+        aria-label="Have I Been Pwned Data Breach Verification"
+      >
+        <div
+          style={{
+            maxWidth: 1100,
+            margin: '0 auto',
+            background: 'linear-gradient(135deg, rgba(12, 22, 45, 0.7) 0%, rgba(2, 8, 20, 0.9) 100%)',
+            border: '1px solid rgba(0, 191, 255, 0.25)',
+            boxShadow: '0 0 30px rgba(0, 191, 255, 0.08), inset 0 0 20px rgba(0, 191, 255, 0.03)',
+            borderRadius: 20,
+            padding: '36px 32px',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 24,
+            }}
+          >
+            {/* Header & Title */}
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+              }}
+            >
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  fontFamily: '"JetBrains Mono", monospace',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: '2px',
+                  color: '#00ff88',
+                  textTransform: 'uppercase',
+                }}
+              >
+                <span
+                  style={{
+                    width: 7,
+                    height: 7,
+                    borderRadius: '50%',
+                    background: '#00ff88',
+                    boxShadow: '0 0 8px #00ff88',
+                    display: 'inline-block',
+                  }}
+                />
+                DATA BREACH & EXPOSURE VERIFICATION
+              </div>
+
+              <h2
+                style={{
+                  fontSize: 'clamp(24px, 3.5vw, 36px)',
+                  fontWeight: 900,
+                  color: '#ffffff',
+                  margin: 0,
+                  letterSpacing: '-0.5px',
+                  fontFamily: 'Orbitron, sans-serif',
+                }}
+              >
+                Have I Been Pwned
+              </h2>
+
+              <p
+                style={{
+                  fontSize: 14,
+                  color: '#94a3b8',
+                  lineHeight: 1.7,
+                  margin: 0,
+                  maxWidth: 850,
+                  fontFamily: '"JetBrains Mono", monospace',
+                }}
+              >
+                Check whether your email address has appeared in known data breaches. Have I Been Pwned aggregates billions of compromised accounts from public breaches and security incident corpuses to help operators and individuals secure exposed identities.
+              </p>
+            </div>
+
+            {/* Feature Highlights Grid */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                gap: 16,
+              }}
+            >
+              <div
+                style={{
+                  background: 'rgba(0, 0, 0, 0.3)',
+                  border: '1px solid rgba(255, 255, 255, 0.07)',
+                  borderRadius: 12,
+                  padding: '16px 18px',
+                }}
+              >
+                <div style={{ color: '#00bfff', fontWeight: 700, fontSize: 13, marginBottom: 6 }}>
+                  Breach Verification
+                </div>
+                <div style={{ color: '#64748b', fontSize: 12, lineHeight: 1.5 }}>
+                  Discover whether an email appeared in known breaches across major enterprise leaks and paste dumps.
+                </div>
+              </div>
+
+              <div
+                style={{
+                  background: 'rgba(0, 0, 0, 0.3)',
+                  border: '1px solid rgba(255, 255, 255, 0.07)',
+                  borderRadius: 12,
+                  padding: '16px 18px',
+                }}
+              >
+                <div style={{ color: '#00ff88', fontWeight: 700, fontSize: 13, marginBottom: 6 }}>
+                  Associated Incidents
+                </div>
+                <div style={{ color: '#64748b', fontSize: 12, lineHeight: 1.5 }}>
+                  View associated breach incidents, compromise dates, attack vectors, and incident backgrounds.
+                </div>
+              </div>
+
+              <div
+                style={{
+                  background: 'rgba(0, 0, 0, 0.3)',
+                  border: '1px solid rgba(255, 255, 255, 0.07)',
+                  borderRadius: 12,
+                  padding: '16px 18px',
+                }}
+              >
+                <div style={{ color: '#a78bfa', fontWeight: 700, fontSize: 13, marginBottom: 6 }}>
+                  Exposed Data Categories
+                </div>
+                <div style={{ color: '#64748b', fontSize: 12, lineHeight: 1.5 }}>
+                  Inspect exposed data categories reported for those breaches, including passwords, emails, and PII.
+                </div>
+              </div>
+            </div>
+
+            {/* CTA & Privacy Notice */}
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                gap: 16,
+                paddingTop: 8,
+              }}
+            >
+              <a
+                href="https://haveibeenpwned.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  background: 'linear-gradient(135deg, #00bfff 0%, #00ff88 100%)',
+                  color: '#020814',
+                  fontWeight: 900,
+                  fontSize: 14,
+                  letterSpacing: '1px',
+                  textTransform: 'uppercase',
+                  padding: '14px 28px',
+                  borderRadius: 12,
+                  textDecoration: 'none',
+                  boxShadow: '0 0 25px rgba(0, 191, 255, 0.4)',
+                  transition: 'all 0.25s ease',
+                  fontFamily: '"JetBrains Mono", monospace',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 255, 136, 0.6)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0 0 25px rgba(0, 191, 255, 0.4)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                <span>Check Your Data</span>
+                <span style={{ fontSize: 16 }}>↗</span>
+              </a>
+
+              <p
+                style={{
+                  fontSize: 11,
+                  color: '#64748b',
+                  margin: 0,
+                  lineHeight: 1.5,
+                  maxWidth: 700,
+                  fontFamily: '"JetBrains Mono", monospace',
+                }}
+              >
+                * CyberShield X does not collect, transmit, proxy, or store your email address. Clicking "Check Your Data" directly opens the official Have I Been Pwned service in a new secure tab.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── NEXUS TOOLKIT SECTION ── */}
       <section
         style={{

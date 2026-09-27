@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v62.5.3] - 2026-09-28
+### Controlled Homepage HIBP Placement & Clean Mobile-Responsive Dashboard
+> **Controlled frontend release establishing dedicated Homepage HIBP breach verification, eliminating HIBP from Auth pages, decoupling Dashboard from legacy sidebar, resolving mobile top header overflow (DEFECT-210-01), and standardizing 111 canonical tool cards with a single External Website action.**
+
+- **Dedicated Homepage Have I Been Pwned Placement**:
+  - Embedded exactly ONE dedicated Have I Been Pwned section in `client/src/pages/HomePage.jsx` located immediately below Hero stats and immediately above the Toolkit section.
+  - Direct outbound destination configured to `https://haveibeenpwned.com/` (`target="_blank"`, `rel="noopener noreferrer"`).
+  - Strictly zero email input fields, zero user credential collection, and zero backend proxying.
+
+- **Authentication UI Isolation**:
+  - Completely removed Have I Been Pwned / "Check Your Data" entries from `LoginPage.jsx` and `SignupPage.jsx`.
+  - Preserved original approved 2-column cyber-green layout, operational telemetry, circuit backgrounds, and authentication controls intact.
+
+- **Clean Standalone Dashboard Presentation**:
+  - Decoupled `DashboardPage.jsx` from the legacy left sidebar.
+  - Implemented clean top header layout: CyberShield X BrandLogo on left; Terminal launcher, operator username badge, and Logout on right.
+  - Preserved main area containing strictly the 111 canonical tool catalog grid in a 4-column responsive pastel layout.
+
+- **Mobile Header Overflow Resolution (DEFECT-210-01)**:
+  - Resolved +95px horizontal document overflow at narrow viewports (390px and 375px) in `DashboardPage.jsx`.
+  - Added responsive hiding for non-essential text spans (`hidden sm:inline`), compact padding (`px-2.5 py-1.5 sm:px-3.5 sm:py-2`), tight gap spacing (`gap-1.5 sm:gap-3`), and truncated username badge (`max-w-[85px] xs:max-w-[120px] sm:max-w-[180px]`).
+  - Preserved full accessibility via `aria-label="Terminal"`, `aria-label="Logout"`, and assistive tooltips. Document horizontal overflow measured strictly at 0px.
+
+- **Single External Action on 111 Tool Cards**:
+  - Standardized `CyberToolCard.jsx` to render strictly one primary action CTA: "External Website ↗".
+  - Eliminated competing "Open Tool" or "Run" buttons inside tool cards.
+  - Preserved secure outbound routing via `ExternalAlternativesModal` with zero credential or tenant context forwarding.
+
+- **Protected Invariants Preserved**:
+  - 111 canonical tools in `toolConfig.js` and 111 alternatives in `externalAlternatives.js` intact.
+  - Dedicated `/terminal` native workstation route preserved.
+  - Canvas matrix rain strictly binary `['0', '1']`.
+  - Animated 3D character avatars intact.
+  - Zero backend modifications (`server/**` is 100% untouched).
+
+- **Validation & Quality Gates**:
+  - 122/122 client tests passing across all 10 test suites.
+  - Production build compiled successfully (Exit Code 0).
+  - Git diff check 0 errors; secret scan clean.
+  - Step 212 comprehensive visual QA passed across all 6 responsive breakpoints (1440, 1280, 1024, 768, 390, 375).
+
 ## [v62.5.2] - 2026-09-27
 ### Frontend Scope Correction & Dashboard Card Modernization
 > **Controlled frontend scope correction restoring original structural designs, restricting Matrix Rain to binary 0/1, adding expressive 3D avatars, integrating direct Have I Been Pwned check, and aligning Dashboard cards with authoritative design reference.**

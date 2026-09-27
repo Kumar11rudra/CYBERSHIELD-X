@@ -64,11 +64,12 @@ function ToolGrid({
           const stableKey = tool.id || `tool-${index}-${tool.name || 'unnamed'}`;
 
           return (
-            <div key={stableKey} role="listitem" className="w-full">
+            <div key={stableKey} role="listitem" className="w-full h-full flex">
               <CyberToolCard
                 tool={tool}
                 onAlternatives={onExternalDiscovery}
                 onOpen={onOpenTool}
+                className="w-full"
               />
             </div>
           );

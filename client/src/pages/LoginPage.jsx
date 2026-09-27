@@ -255,22 +255,6 @@ export default function LoginPage() {
                         {t('auth.login.register') || 'Register'} →
                       </Link>
                     </p>
-
-                    {/* PHASE 7: Have I Been Pwned / Check Your Data Direct External Link */}
-                    <div className="mt-3 pt-3 border-t border-white/5">
-                      <p className="font-mono text-[9px] text-cyber-muted/80 mb-1">
-                        Check if your email or password has appeared in known data breaches:
-                      </p>
-                      <a
-                        href="https://haveibeenpwned.com/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 font-mono text-[10px] text-cyber-green hover:underline decoration-cyber-green/50 underline-offset-4 font-bold transition-colors"
-                      >
-                        <span>Check Your Data: Have I Been Pwned</span>
-                        <span>↗</span>
-                      </a>
-                    </div>
                   </div>
                 </motion.div>
               )}
