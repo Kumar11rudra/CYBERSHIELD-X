@@ -30,9 +30,14 @@ async function seedAdmin(options = {}) {
       return existingAdmin;
     }
 
-    const adminEmail = (process.env.ADMIN_EMAIL || 'official.cybershieldx@gmail.com').toLowerCase().trim();
-    const adminUsername = (process.env.ADMIN_USERNAME || 'founder_admin').toLowerCase().trim();
-    const adminPassword = process.env.ADMIN_PASSWORD || 'CyberShieldAdmin2026!Root';
+    const adminEmail = (options.email || process.env.ADMIN_EMAIL || 'admin@cybershieldx.local').toLowerCase().trim();
+    const adminUsername = (options.username || process.env.ADMIN_USERNAME || 'founder_admin').toLowerCase().trim();
+    const adminPassword = options.password || process.env.ADMIN_PASSWORD;
+
+    if (!adminPassword) {
+      console.error('❌ FATAL: ADMIN_PASSWORD environment variable (or options.password) is required to bootstrap the administrator account.');
+      throw new Error('ADMIN_PASSWORD environment variable (or options.password) is required to bootstrap the administrator account.');
+    }
 
     console.log(`[SEED] Initializing Founder Admin account for ${adminEmail}...`);
 

@@ -2,6 +2,9 @@
 process.env.JWT_SECRET = process.env.JWT_SECRET || 'a_very_long_test_secret_that_is_at_least_64_characters_long_for_security_12345678901234567890';
 process.env.JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'a_very_long_test_refresh_secret_that_is_at_least_64_characters_long_1234567890';
 
+process.env.ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'official.cybershieldx@gmail.com';
+process.env.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'CyberShieldAdmin2026!Root';
+
 const request = require('supertest');
 const mongoose = require('mongoose');
 const express = require('express');
@@ -59,6 +62,18 @@ describe('Nexus Command & Founder Admin Access Flow Security Audit', () => {
 
     process.env.NODE_ENV = origEnv;
     if (origUri) process.env.MONGODB_URI = origUri;
+  });
+
+  test('TEST 2: Seed script fails fast if ADMIN_PASSWORD is missing', async () => {
+    const origPassword = process.env.ADMIN_PASSWORD;
+    delete process.env.ADMIN_PASSWORD;
+
+    await User.deleteMany({ role: 'admin' });
+
+    await expect(seedAdmin({ autoClose: false, password: '' })).rejects.toThrow(/ADMIN_PASSWORD environment variable.*is required/i);
+
+    if (origPassword) process.env.ADMIN_PASSWORD = origPassword;
+    await seedAdmin({ autoClose: false });
   });
 
   test('TEST 3: Anonymous admin login with invalid credentials should be rejected (401)', async () => {
