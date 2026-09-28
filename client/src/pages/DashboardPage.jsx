@@ -6,6 +6,7 @@ import { getCategoryTheme, CATEGORY_ARCHETYPE_MAP } from '../components/toolkit/
 import ToolGrid from '../components/toolkit/cards/ToolGrid';
 import ExternalAlternativesModal from '../components/toolkit/cards/ExternalAlternativesModal';
 import BrandLogo from '../components/common/BrandLogo';
+import BinaryMatrixRain from '../components/home/BinaryMatrixRain';
 import { Search, X, Terminal, LogOut, Sparkles, Shield, Wrench, Activity, Compass } from 'lucide-react';
 
 /**
@@ -135,7 +136,10 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-900 selection:bg-blue-100 flex flex-col">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 selection:bg-blue-100 flex flex-col relative overflow-hidden">
+      {/* ── Background Matrix Rain Layer (Step 2: 0/1 binary rain, pointer-events-none, z-0) ── */}
+      <BinaryMatrixRain className="fixed inset-0 z-0 pointer-events-none opacity-20" />
+
       {/* ── Clean Top Header (Step 209: BrandLogo on left, Terminal, User info, Logout on right) ── */}
       <header className="w-full bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
@@ -196,7 +200,7 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 relative z-10">
         {/* ── Section Header (Authoritative Reference: design img..png) ── */}
         <div className="flex flex-col items-center text-center space-y-4">
           <div className="flex flex-col items-center text-center">

@@ -9,6 +9,7 @@ import BrandLogo from '../components/common/BrandLogo';
 import GlitchText from '../components/home/GlitchText';
 import BinaryMatrixRain from '../components/home/BinaryMatrixRain';
 import ExternalAlternativesModal from '../components/toolkit/cards/ExternalAlternativesModal';
+import api from '../services/api';
 
 // ─── Animated counter ─────────────────────────────────────────────────────────
 function Counter({ to, suffix = '' }) {
@@ -67,7 +68,7 @@ function ScanLine() {
 }
 
 // ─── Threat ticker ────────────────────────────────────────────────────────────
-const TICKER = [
+const FALLBACK_TICKER = [
   '⚠ CISA KEV: Critical RCE in Ivanti Connect Secure',
   '🔴 ALERT: New Lumma Stealer campaign targeting Indian banks',
   '⚡ UrlEngine: 2.3M new IOCs detected in last 24h',
@@ -77,8 +78,52 @@ const TICKER = [
 ];
 
 function LiveTicker() {
+  const [tickerItems, setTickerItems] = useState(FALLBACK_TICKER);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadThreatTicker = async () => {
+      try {
+        const res = await api.get('/threat-feed');
+        if (!isMounted) return;
+
+        if (res.data && Array.isArray(res.data.ticker) && res.data.ticker.length > 0) {
+          const sanitized = res.data.ticker
+            .filter((item) => typeof item === 'string' && item.trim().length > 0)
+            .map((item) => item.replace(/<[^>]+>/g, '').trim());
+          if (sanitized.length > 0) {
+            setTickerItems(sanitized);
+          }
+        } else if (res.data && Array.isArray(res.data.items) && res.data.items.length > 0) {
+          const sanitized = res.data.items
+            .map((item) => item.tickerText || item.title)
+            .filter((text) => typeof text === 'string' && text.trim().length > 0)
+            .map((text) => text.replace(/<[^>]+>/g, '').trim());
+          if (sanitized.length > 0) {
+            setTickerItems(sanitized);
+          }
+        }
+      } catch (err) {
+        // Fallback safely preserved without disrupting Homepage
+      }
+    };
+
+    loadThreatTicker();
+    // Refresh periodically matching backend cache window (15 minutes), avoid aggressive polling
+    const intervalId = setInterval(loadThreatTicker, 15 * 60 * 1000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(intervalId);
+    };
+  }, []);
+
+  const renderedItems = [...tickerItems, ...tickerItems];
+
   return (
     <div
+      data-testid="homepage-live-ticker"
       style={{
         width: '100%',
         background: 'rgba(0,0,0,0.4)',
@@ -100,7 +145,7 @@ function LiveTicker() {
           animation: 'ticker 40s linear infinite',
         }}
       >
-        {[...TICKER, ...TICKER].map((text, i) => (
+        {renderedItems.map((text, i) => (
           <span
             key={i}
             style={{
