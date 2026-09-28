@@ -124,6 +124,9 @@ const AppRoutes = () => (
     {/* Standalone Clean Dashboard (Step 209: Disconnected from legacy sidebar) */}
     <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
 
+    {/* Standalone Clean Terminal (FIX #1: Dedicated clean terminal outside legacy sidebar) */}
+    <Route path="/terminal" element={<PrivateRoute><TerminalPage /></PrivateRoute>} />
+
     {/* Protected App Shell */}
     <Route path="/" element={<Layout />}>
       <Route path="scan" element={<PrivateRoute><ScanPage /></PrivateRoute>} />
@@ -165,7 +168,6 @@ const AppRoutes = () => (
       <Route path="remediation" element={<PrivateRoute><RemediationPage /></PrivateRoute>} />
       <Route path="system-health" element={<PrivateRoute><SystemHealthPage /></PrivateRoute>} />
       <Route path="toolkit" element={<PrivateRoute><ToolkitPage /></PrivateRoute>} />
-      <Route path="terminal" element={<PrivateRoute><TerminalPage /></PrivateRoute>} />
       <Route path="threat-intel" element={<PrivateRoute><ThreatIntelligencePage /></PrivateRoute>} />
       <Route path="privacy" element={<PrivacyPolicyPage />} />
       <Route path="terms" element={<TermsOfServicePage />} />

@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { Link2, ShieldCheck, AlertCircle, ArrowUpRight, ArrowRight } from 'lucide-react';
 import { getCategoryTheme, CATEGORY_ARCHETYPE_MAP } from './toolThemes';
 import AnimatedToolAvatar from './AnimatedToolAvatar';
-import { getAlternativesForTool } from './externalAlternatives';
+import { getAlternativesForTool, isToolOnline, getOfficialRepository } from './externalAlternatives';
 
 /**
  * 🛡️ CyberToolCard
@@ -42,9 +42,11 @@ function CyberToolCard({
   // Resolve centralized theme tokens (pastel & dark tokens)
   const theme = getCategoryTheme(toolCategory);
 
-  // Dynamic external alternatives count
+  // Dynamic external status
+  const isOnline = isToolOnline(safeTool.id);
+  const repoUrl = getOfficialRepository(safeTool.id);
   const alternatives = getAlternativesForTool(safeTool.id);
-  const extCount = Array.isArray(alternatives) && alternatives.length > 0 ? alternatives.length : 3;
+  const extCount = isOnline ? 1 : (repoUrl ? 1 : 0);
 
   // Login indicator (true if tool requires authentication)
   const requiresLogin = Boolean(
@@ -143,7 +145,7 @@ function CyberToolCard({
           className="inline-flex items-center gap-1.5 shrink-0 truncate"
         >
           <Link2 size={13} className="text-slate-600 shrink-0" />
-          <span>{extCount} External tools</span>
+          <span>{isOnline ? 'External Service' : (repoUrl ? 'External: Repo Available' : 'External: Coming Soon')}</span>
         </span>
 
         <span className="inline-flex items-center gap-1 shrink-0 text-slate-600 truncate">
@@ -172,7 +174,7 @@ function CyberToolCard({
         />
       </div>
 
-      {/* ── Action Row: Single External Website CTA (Step 209 Specification) ── */}
+      {/* ── Action Row: Truthful Policy Representation ── */}
       <div className="pt-1 w-full mt-auto">
         <button
           type="button"
@@ -180,16 +182,25 @@ function CyberToolCard({
           aria-label={`View alternatives for ${toolName}`}
           className="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white shadow-xs transition-all duration-150 hover:opacity-95 active:scale-[0.98] flex items-center justify-center gap-2 group/btn cursor-pointer"
           style={{
-            backgroundColor: theme.btnColor || theme.accent,
+            backgroundColor: isOnline ? (theme.btnColor || theme.accent) : '#475569',
           }}
         >
-          <span>External Website</span>
-          <span className="sr-only"> — View Alternatives</span>
-          <ArrowUpRight
-            size={14}
-            strokeWidth={2.5}
-            className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform shrink-0"
-          />
+          {isOnline ? (
+            <>
+              <span>External Website</span>
+              <span className="sr-only"> — View Alternatives</span>
+              <ArrowUpRight
+                size={14}
+                strokeWidth={2.5}
+                className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform shrink-0"
+              />
+            </>
+          ) : (
+            <>
+              <span>COMING SOON</span>
+              <span className="sr-only"> — View Alternatives</span>
+            </>
+          )}
         </button>
       </div>
     </motion.article>

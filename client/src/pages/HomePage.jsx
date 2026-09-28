@@ -506,7 +506,11 @@ export default function HomePage() {
         }}
         aria-label="Have I Been Pwned Data Breach Verification"
       >
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
           style={{
             maxWidth: 1100,
             margin: '0 auto',
@@ -524,18 +528,21 @@ export default function HomePage() {
               gap: 24,
             }}
           >
-            {/* Header & Title */}
+            {/* Header & Title — Centered */}
             <div
               style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 8,
+                alignItems: 'center',
+                textAlign: 'center',
+                gap: 10,
               }}
             >
               <div
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
+                  justifyContent: 'center',
                   gap: 8,
                   fontFamily: '"JetBrains Mono", monospace',
                   fontSize: 11,
@@ -566,6 +573,7 @@ export default function HomePage() {
                   margin: 0,
                   letterSpacing: '-0.5px',
                   fontFamily: 'Orbitron, sans-serif',
+                  textAlign: 'center',
                 }}
               >
                 Have I Been Pwned
@@ -576,9 +584,10 @@ export default function HomePage() {
                   fontSize: 14,
                   color: '#94a3b8',
                   lineHeight: 1.7,
-                  margin: 0,
+                  margin: '0 auto',
                   maxWidth: 850,
                   fontFamily: '"JetBrains Mono", monospace',
+                  textAlign: 'center',
                 }}
               >
                 Check whether your email address has appeared in known data breaches. Have I Been Pwned aggregates billions of compromised accounts from public breaches and security incident corpuses to help operators and individuals secure exposed identities.
@@ -593,7 +602,11 @@ export default function HomePage() {
                 gap: 16,
               }}
             >
-              <div
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.1 }}
                 style={{
                   background: 'rgba(0, 0, 0, 0.3)',
                   border: '1px solid rgba(255, 255, 255, 0.07)',
@@ -607,9 +620,13 @@ export default function HomePage() {
                 <div style={{ color: '#64748b', fontSize: 12, lineHeight: 1.5 }}>
                   Discover whether an email appeared in known breaches across major enterprise leaks and paste dumps.
                 </div>
-              </div>
+              </motion.div>
 
-              <div
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.2 }}
                 style={{
                   background: 'rgba(0, 0, 0, 0.3)',
                   border: '1px solid rgba(255, 255, 255, 0.07)',
@@ -623,9 +640,13 @@ export default function HomePage() {
                 <div style={{ color: '#64748b', fontSize: 12, lineHeight: 1.5 }}>
                   View associated breach incidents, compromise dates, attack vectors, and incident backgrounds.
                 </div>
-              </div>
+              </motion.div>
 
-              <div
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.3 }}
                 style={{
                   background: 'rgba(0, 0, 0, 0.3)',
                   border: '1px solid rgba(255, 255, 255, 0.07)',
@@ -639,23 +660,26 @@ export default function HomePage() {
                 <div style={{ color: '#64748b', fontSize: 12, lineHeight: 1.5 }}>
                   Inspect exposed data categories reported for those breaches, including passwords, emails, and PII.
                 </div>
-              </div>
+              </motion.div>
             </div>
 
-            {/* CTA & Privacy Notice */}
+            {/* CTA & Privacy Notice — Centered */}
             <div
               style={{
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: 'flex-start',
+                alignItems: 'center',
+                textAlign: 'center',
                 gap: 16,
                 paddingTop: 8,
               }}
             >
-              <a
+              <motion.a
                 href="https://haveibeenpwned.com/"
                 target="_blank"
                 rel="noopener noreferrer"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -670,37 +694,36 @@ export default function HomePage() {
                   borderRadius: 12,
                   textDecoration: 'none',
                   boxShadow: '0 0 25px rgba(0, 191, 255, 0.4)',
-                  transition: 'all 0.25s ease',
+                  transition: 'box-shadow 0.25s ease',
                   fontFamily: '"JetBrains Mono", monospace',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.boxShadow = '0 0 35px rgba(0, 255, 136, 0.6)';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.boxShadow = '0 0 25px rgba(0, 191, 255, 0.4)';
-                  e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
                 <span>Check Your Data</span>
                 <span style={{ fontSize: 16 }}>↗</span>
-              </a>
+              </motion.a>
 
               <p
                 style={{
                   fontSize: 11,
                   color: '#64748b',
-                  margin: 0,
+                  margin: '0 auto',
                   lineHeight: 1.5,
                   maxWidth: 700,
                   fontFamily: '"JetBrains Mono", monospace',
+                  textAlign: 'center',
                 }}
               >
                 * CyberShield X does not collect, transmit, proxy, or store your email address. Clicking "Check Your Data" directly opens the official Have I Been Pwned service in a new secure tab.
               </p>
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* ── NEXUS TOOLKIT SECTION ── */}

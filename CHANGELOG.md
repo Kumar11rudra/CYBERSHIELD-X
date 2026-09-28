@@ -43,6 +43,27 @@ All notable changes to this project will be documented in this file.
   - Git diff check 0 errors; secret scan clean.
   - Step 212 comprehensive visual QA passed across all 6 responsive breakpoints (1440, 1280, 1024, 768, 390, 375).
 
+- **111-Tool External Alternatives Policy Enforcement**:
+  - Implemented the audited 111-tool external alternatives matrix in `client/src/components/toolkit/cards/externalAlternatives.js`.
+  - Canonical classification enforced: **41 ONLINE** (verified browser utilities) and **70 COMING_SOON** (tools without genuine browser service).
+  - GitHub Invariant strictly enforced: 0 GitHub URLs in `externalWebsite`; GitHub is NEVER presented as an External Website.
+  - Where official repositories exist, rendered separately as "Official Repository ↗" (66 repositories).
+  - Updated `CyberToolCard.jsx` and `ExternalAlternativesModal.jsx` to respect status-driven actions with zero duplicate competing CTAs.
+
+- **Standalone Clean Terminal Workstation**:
+  - Consolidated `/terminal` route (`TerminalPage.jsx`) to render strictly one clean terminal console (`NativeTerminalConsole.jsx` with `cleanMode={true}`).
+  - Completely removed duplicate workstation consoles, tool carousels, and telemetry widgets from the terminal route.
+  - Preserved manual command entry, prompt, Execute, Clear, and host-native execution security (`shell: false`, 10-second kill timers).
+
+- **Compact Centered Dashboard Welcome Popup**:
+  - Refined welcome modal in `DashboardPage.jsx` into a compact centered glass card (`max-w-[460px]`) over a subtle dark/blurred viewport backdrop.
+  - Features dynamic authenticated username, platform introduction, exactly 4 capability highlights, Enter Dashboard button, top-right X, and Escape-to-close with session storage gate.
+
+- **Documentation Consolidation & Operational Architecture Freeze**:
+  - Synthesized all architectural invariants, forensic certifications, and operational runbooks into the canonical `PROJECT_MASTER.md`.
+  - Updated `README.md` to include 4 comprehensive Mermaid diagrams (System Architecture, Native Terminal Security Flow, 111-Tool Ecosystem, Production Deployment Architecture).
+  - Synchronized `PROJECT_STATE.md` with complete verified test metrics across all test suites: Client 122/122 PASS, Phase 80 262/262 PASS, Phase 81 273/273 PASS, Core Native Terminal 29/29 PASS, Backend Security 115/115 PASS, Combined Security Baseline 237/237 PASS (100%), and production build Exit Code 0.
+
 ## [v62.5.2] - 2026-09-27
 ### Frontend Scope Correction & Dashboard Card Modernization
 > **Controlled frontend scope correction restoring original structural designs, restricting Matrix Rain to binary 0/1, adding expressive 3D avatars, integrating direct Have I Been Pwned check, and aligning Dashboard cards with authoritative design reference.**

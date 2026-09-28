@@ -17,9 +17,13 @@ const { connectTestDb, closeTestDb } = require('../helpers/testDbHelper');
 // ─── Test DB connection ────────────────────────────────────────────────────────
 beforeAll(async () => {
   await connectTestDb();
+  await User.deleteMany({ email: /@cybershield-test-hardened\.com/ });
+  await User.deleteMany({ username: /^user_\d+/ });
 });
 
 afterAll(async () => {
+  await User.deleteMany({ email: /@cybershield-test-hardened\.com/ });
+  await User.deleteMany({ username: /^user_\d+/ });
   await closeTestDb();
 });
 
@@ -37,7 +41,7 @@ describe('Phase 17 — Authentication & Hardening Gates', () => {
   const testUserEmail = `user-${uniqueId}@cybershield-test-hardened.com`;
   const testUsername = `user_${uniqueId}`;
   const testPassword = 'Test@1234Secure';
-  const testMobile = '+919876543210';
+  const testMobile = `+91${uniqueId.toString().slice(-9)}0`;
   let userToken = '';
   let userId = '';
   let secondUserId = '';

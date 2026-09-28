@@ -6,7 +6,7 @@ import { getCategoryTheme, CATEGORY_ARCHETYPE_MAP } from '../components/toolkit/
 import ToolGrid from '../components/toolkit/cards/ToolGrid';
 import ExternalAlternativesModal from '../components/toolkit/cards/ExternalAlternativesModal';
 import BrandLogo from '../components/common/BrandLogo';
-import { Search, X, Terminal, LogOut } from 'lucide-react';
+import { Search, X, Terminal, LogOut, Sparkles, Shield, Wrench, Activity, Compass } from 'lucide-react';
 
 /**
  * 🛡️ DashboardPage
@@ -26,7 +26,22 @@ export default function DashboardPage() {
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [alternativeToolModal, setAlternativeToolModal] = useState(null);
 
+  // FIX #5: Full-screen centered welcome modal on Dashboard route entry
+  const [welcomeModalOpen, setWelcomeModalOpen] = useState(false);
+
   const searchInputRef = useRef(null);
+
+  // Trigger welcome modal on Dashboard route entry (once per session, not on search/filter/re-renders)
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'test' && !sessionStorage.getItem('cybershield_show_welcome_in_test')) {
+      return;
+    }
+    const welcomeSeen = sessionStorage.getItem('cybershield_dashboard_welcome_seen');
+    if (!welcomeSeen) {
+      setWelcomeModalOpen(true);
+      sessionStorage.setItem('cybershield_dashboard_welcome_seen', 'true');
+    }
+  }, []);
 
   // 150ms Search Debounce
   useEffect(() => {
@@ -36,7 +51,7 @@ export default function DashboardPage() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Keyboard Shortcuts: '/' to focus search, 'Escape' to clear
+  // Keyboard Shortcuts: '/' to focus search, 'Escape' to clear or close modal
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (
@@ -48,7 +63,9 @@ export default function DashboardPage() {
         searchInputRef.current?.focus();
       }
       if (e.key === 'Escape') {
-        if (document.activeElement === searchInputRef.current) {
+        if (welcomeModalOpen) {
+          setWelcomeModalOpen(false);
+        } else if (document.activeElement === searchInputRef.current) {
           if (searchQuery) {
             setSearchQuery('');
           } else {
@@ -62,7 +79,7 @@ export default function DashboardPage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [searchQuery, alternativeToolModal]);
+  }, [searchQuery, alternativeToolModal, welcomeModalOpen]);
 
   // Canonical 111-tool catalog with persona archetypes
   const canonicalTools = useMemo(() => {
@@ -181,26 +198,24 @@ export default function DashboardPage() {
 
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
         {/* ── Section Header (Authoritative Reference: design img..png) ── */}
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <div className="text-[11px] font-mono font-extrabold tracking-widest text-slate-500 uppercase mb-2">
-                111 CYBERSECURITY TOOLS
-              </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
-                Powerful Tools for a{' '}
-                <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Safer Digital World
-                </span>
-              </h1>
-              <p className="mt-2 text-sm sm:text-base text-slate-600 max-w-3xl leading-relaxed">
-                Explore 111+ curated cybersecurity tools with trusted external resources. No complex setup — just click and start.
-              </p>
+        <div className="flex flex-col items-center text-center space-y-4">
+          <div className="flex flex-col items-center text-center">
+            <div className="text-xs sm:text-sm font-mono font-extrabold tracking-widest text-blue-600 uppercase mb-2">
+              CYBERSHIELD X
             </div>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight text-center">
+              Powerful Tools for a{' '}
+              <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Safer Digital World
+              </span>
+            </h1>
+            <p className="mt-2 text-sm sm:text-base text-slate-600 max-w-3xl leading-relaxed mx-auto text-center">
+              Explore 111+ curated cybersecurity tools with trusted external resources. No complex setup — just click and start.
+            </p>
           </div>
 
           {/* ── Search Bar ── */}
-          <div className="relative w-full max-w-2xl pt-2">
+          <div className="relative w-full max-w-2xl pt-2 mx-auto">
             <div className="absolute inset-y-0 left-0 pl-4 pt-2 flex items-center pointer-events-none text-slate-400">
               <Search size={18} />
             </div>
@@ -236,7 +251,7 @@ export default function DashboardPage() {
 
           {/* ── Category Filter Pills (Authoritative Reference: design img..png) ── */}
           <div className="w-full overflow-x-auto pb-2 custom-scrollbar">
-            <div className="flex items-center gap-2 min-w-max pt-1">
+            <div className="flex items-center justify-start sm:justify-center gap-2 min-w-max pt-1">
               {categories.map((cat) => {
                 const isSelected = selectedCategory === cat;
                 const count =
@@ -316,6 +331,97 @@ export default function DashboardPage() {
           onClose={() => setAlternativeToolModal(null)}
           onOpenNativeTool={handleOpenTool}
         />
+
+        {/* ── Refined Compact Centered Welcome Popup ── */}
+        {welcomeModalOpen && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="welcome-dialog-title"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setWelcomeModalOpen(false);
+            }}
+          >
+            <div
+              className="relative w-full max-w-[460px] bg-[#0c1322] border border-cyan-500/30 rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8),0_0_30px_rgba(6,182,212,0.15)] text-center text-white space-y-4 overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Subtle decorative glow accents */}
+              <div className="absolute -top-12 -left-12 w-28 h-28 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute -bottom-12 -right-12 w-28 h-28 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
+
+              {/* Close X button in top right */}
+              <button
+                type="button"
+                onClick={() => setWelcomeModalOpen(false)}
+                aria-label="Close welcome popup"
+                title="Close"
+                className="absolute top-3.5 right-3.5 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+
+              {/* Brand Logo & Pill */}
+              <div className="flex flex-col items-center gap-1.5 pt-1">
+                <BrandLogo size={40} />
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/25 text-[10px] font-mono font-bold tracking-widest text-cyan-400 uppercase">
+                  <Shield size={11} className="text-cyan-400" />
+                  <span>CYBERSHIELD X PLATFORM</span>
+                </div>
+              </div>
+
+              {/* Welcome Title & Dynamic Username */}
+              <div className="space-y-1">
+                <h2 id="welcome-dialog-title" className="text-xl sm:text-2xl font-black text-white tracking-wider uppercase font-display">
+                  WELCOME
+                </h2>
+                <p className="text-sm sm:text-base text-slate-300 font-medium">
+                  Welcome,{' '}
+                  <span className="font-mono font-bold text-cyan-300 px-2 py-0.5 rounded bg-cyan-950/60 border border-cyan-500/30 inline-block max-w-[220px] sm:max-w-[260px] truncate align-bottom">
+                    {user?.username || user?.name || (user?.email ? user.email.split('@')[0] : 'Operator')}
+                  </span>
+                </p>
+              </div>
+
+              {/* Website Introduction */}
+              <p className="text-xs sm:text-sm text-slate-300/90 leading-relaxed max-w-sm mx-auto">
+                CyberShield X is a security intelligence platform built to help you explore cybersecurity tools, analyze threats, and access trusted security resources from one workspace.
+              </p>
+
+              {/* Compact Capability Highlights */}
+              <div className="grid grid-cols-2 gap-2 text-left pt-1">
+                <div className="flex items-center gap-2 p-2 rounded-xl bg-white/[0.03] border border-white/10">
+                  <Wrench size={13} className="text-cyan-400 shrink-0" />
+                  <span className="text-[11px] font-medium text-slate-200 truncate">111 Security Tools</span>
+                </div>
+                <div className="flex items-center gap-2 p-2 rounded-xl bg-white/[0.03] border border-white/10">
+                  <Shield size={13} className="text-emerald-400 shrink-0" />
+                  <span className="text-[11px] font-medium text-slate-200 truncate">Threat Intelligence</span>
+                </div>
+                <div className="flex items-center gap-2 p-2 rounded-xl bg-white/[0.03] border border-white/10">
+                  <Activity size={13} className="text-indigo-400 shrink-0" />
+                  <span className="text-[11px] font-medium text-slate-200 truncate">Security Analysis</span>
+                </div>
+                <div className="flex items-center gap-2 p-2 rounded-xl bg-white/[0.03] border border-white/10">
+                  <Compass size={13} className="text-amber-400 shrink-0" />
+                  <span className="text-[11px] font-medium text-slate-200 truncate">Trusted Resources</span>
+                </div>
+              </div>
+
+              {/* Bottom Action */}
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => setWelcomeModalOpen(false)}
+                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:via-blue-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm tracking-wide shadow-lg shadow-cyan-900/30 transition-all focus:outline-none focus:ring-2 focus:ring-cyan-400/50 cursor-pointer"
+                >
+                  Enter Dashboard
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

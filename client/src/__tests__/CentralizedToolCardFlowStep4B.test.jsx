@@ -267,17 +267,17 @@ describe('Centralized Tool Card Flow — Step 4B External-Only Integration', () 
   });
 
   test('10. HIGH/CRITICAL warning gate remains functional and enforces acknowledgment', () => {
-    // Sqlmap is HIGH privacy risk
-    const sqlmapTool = {
-      id: 'sqlmap',
-      name: 'SQLMap Scanner',
-      category: 'Vulnerability Assessment'
+    // jwt-parser is HIGH privacy risk
+    const jwtTool = {
+      id: 'jwt-parser',
+      name: 'JWT Security Decoder',
+      category: 'Utilities / Cryptography'
     };
 
     act(() => {
       root.render(
         <ExternalAlternativesModal
-          tool={sqlmapTool}
+          tool={jwtTool}
           isOpen={true}
           onClose={jest.fn()}
         />
@@ -302,7 +302,7 @@ describe('Centralized Tool Card Flow — Step 4B External-Only Integration', () 
 
     expect(checkbox.checked).toBe(true);
     expect(outboundLink.getAttribute('aria-disabled')).toBe('false');
-    expect(outboundLink.getAttribute('href')).toBe('https://sqlmap.org/');
+    expect(outboundLink.getAttribute('href')).toBe('https://jwt.io/');
   });
 
   test('11. external link attributes strictly enforce target="_blank" and rel="noopener noreferrer"', () => {

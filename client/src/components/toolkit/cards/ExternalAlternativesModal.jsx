@@ -20,7 +20,9 @@ import {
 
   Lock,
 
-  ArrowRight
+  ArrowRight,
+
+  GitBranch
 
 } from 'lucide-react';
 
@@ -530,7 +532,7 @@ export default function ExternalAlternativesModal({
 
                         >
 
-                          <span>Visit Official Provider</span>
+                          <span>External Website</span>
 
                           <ExternalLink size={13} />
 
@@ -548,72 +550,69 @@ export default function ExternalAlternativesModal({
 
             ) : (
 
-              /* Verified No-Alternative State (remediation, playbook-runner, sms, upi) */
-
+              /* Verified COMING_SOON State */
               <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800 text-center space-y-4">
-
-                <div className="w-12 h-12 mx-auto rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-
+                <div className="w-12 h-12 mx-auto rounded-full bg-slate-800/80 border border-slate-700/60 flex items-center justify-center text-slate-300">
                   <Lock size={22} />
-
                 </div>
-
-
 
                 <div className="space-y-1.5 max-w-md mx-auto">
-
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                    COMING SOON
+                  </div>
                   <h3 className="text-sm font-bold text-slate-100">
-
                     Proprietary CyberShield X Architecture
-
                   </h3>
-
+                  <div className="text-xs text-amber-400 font-semibold">
+                    No Genuine Browser Alternative Available
+                  </div>
                   <p className="text-xs text-slate-400 leading-relaxed">
-
-                    This security engine operates as an integrated, first-party CyberShield X capability. In accordance with the Phase 2B Step 10A Audit, <strong className="text-slate-300">no suitable verified external public alternative</strong> exists that satisfies enterprise security and privacy standards.
-
+                    This security tool operates as a command-line binary, desktop software, self-hosted platform, or proprietary native engine. In accordance with the 111-Tool External Website Policy, no genuine browser-based service is currently available.
                   </p>
-
                 </div>
-
-
 
                 <div className="p-3 rounded-lg bg-black/40 border border-slate-800/80 text-xs font-mono text-slate-400 text-left max-w-md mx-auto">
-
                   <div className="text-cyan-400 font-bold mb-1">AUDIT RATIONALE:</div>
-
-                  <div>{entry?.rationale || 'Native platform orchestrator with zero safe public equivalent.'}</div>
-
+                  <div>{entry?.rationale || 'Command-line, desktop, or native platform orchestrator with zero verified public browser service.'}</div>
                 </div>
 
-
+                {/* If official repository exists, render Official Repository CTA */}
+                {entry?.officialRepository && (
+                  <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-700/80 flex items-center justify-between gap-3 text-left max-w-md mx-auto">
+                    <div className="min-w-0 flex-1">
+                      <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                        <GitBranch size={13} className="text-slate-400 shrink-0" />
+                        <span>Official Project Repository</span>
+                      </div>
+                      <div className="text-[11px] text-slate-400 font-mono truncate">
+                        {entry.officialRepository}
+                      </div>
+                    </div>
+                    <a
+                      href={entry.officialRepository}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all shrink-0 cursor-pointer"
+                    >
+                      <span>Official Repository</span>
+                      <ExternalLink size={12} />
+                    </a>
+                  </div>
+                )}
 
                 <div className="pt-2">
-
                   <button
-
                     type="button"
-
                     onClick={() => {
-
                       onClose?.();
-
                       onOpenNativeTool?.(tool);
-
                     }}
-
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-slate-950 transition-all shadow-[0_0_15px_rgba(0,212,255,0.3)]"
-
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-slate-950 transition-all shadow-[0_0_15px_rgba(0,212,255,0.3)] cursor-pointer"
                   >
-
                     <span>Deploy Native {toolName}</span>
-
                     <ArrowRight size={14} />
-
                   </button>
-
                 </div>
-
               </div>
 
             )}

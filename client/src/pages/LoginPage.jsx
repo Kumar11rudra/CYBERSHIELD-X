@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import BrandLogo from '../components/common/BrandLogo';
-import LanguageSwitcher from '../components/common/LanguageSwitcher';
 
 export default function LoginPage() {
   const [identity, setIdentity] = useState('');
@@ -150,10 +149,6 @@ export default function LoginPage() {
               <h1 className="font-display text-xl font-bold text-white tracking-widest">CYBERSHIELD X</h1>
               <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyber-green/10 text-cyber-green border border-cyber-green/30">v62.5.1</span>
             </div>
-          </div>
-
-          <div className="absolute top-0 right-0 p-4 z-20">
-            <LanguageSwitcher />
           </div>
 
           <div className="bg-white/[0.03] backdrop-blur-2xl border border-white/[0.08] p-6 md:p-8 rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.6)] relative overflow-hidden">

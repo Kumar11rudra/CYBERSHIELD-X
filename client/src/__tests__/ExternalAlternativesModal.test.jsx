@@ -30,9 +30,9 @@ describe('ExternalAlternativesModal Component', () => {
   };
 
   const highRiskTool = {
-    id: 'semgrep',
-    name: 'Semgrep SAST',
-    category: 'DevSecOps / Supply Chain Security'
+    id: 'jwt-parser',
+    name: 'JWT Security Decoder',
+    category: 'Utilities / Cryptography'
   };
 
   const nativeOnlyTool = {

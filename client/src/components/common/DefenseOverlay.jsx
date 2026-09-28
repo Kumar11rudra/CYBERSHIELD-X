@@ -1,7 +1,15 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 const DefenseOverlay = () => {
+  const location = useLocation();
+
+  // FIX #3: Remove unwanted horizontal scanline and noise effect across light dashboard
+  if (location.pathname === '/dashboard') {
+    return null;
+  }
+
   return (
     <div className="fixed inset-0 pointer-events-none z-[9999] overflow-hidden opacity-20">
       {/* Horizontal Scanline */}

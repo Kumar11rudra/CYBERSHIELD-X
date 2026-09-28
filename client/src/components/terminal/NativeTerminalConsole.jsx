@@ -99,13 +99,10 @@ export function sanitizeCommandForHistory(rawCmd) {
 
 
 export default function NativeTerminalConsole({
-
   initialTool = null,
-
   initialTarget = '',
-
-  className = ''
-
+  className = '',
+  cleanMode = false
 }) {
 
   // Host capabilities state
@@ -1555,92 +1552,55 @@ export default function NativeTerminalConsole({
 
 
       {/* ── Native Host Tool Quick-Selector Bar ────────────────────────────── */}
+      {!cleanMode && (
+        <div className="bg-[#030a1b] border-b border-white/5 px-3 py-2 flex items-center gap-2 overflow-x-auto select-none flex-shrink-0 text-xs custom-scrollbar">
+          <div className="flex items-center gap-1 text-[10px] font-bold text-slate-500 uppercase tracking-wider mr-1 flex-shrink-0">
+            <Server size={12} className="text-cyan-400" />
+            <span>NATIVE TOOLS:</span>
+          </div>
 
-      <div className="bg-[#030a1b] border-b border-white/5 px-3 py-2 flex items-center gap-2 overflow-x-auto select-none flex-shrink-0 text-xs custom-scrollbar">
+          {activeRegistry.map(t => {
+            const isSelected = selectedTool.id === t.id;
+            const isAvailable = t.availability === 'AVAILABLE';
+            const isNotInstalled = t.availability === 'NOT INSTALLED' || t.availability === 'UNAVAILABLE';
 
-        <div className="flex items-center gap-1 text-[10px] font-bold text-slate-500 uppercase tracking-wider mr-1 flex-shrink-0">
+            return (
+              <button
+                key={t.id}
+                onClick={() => {
+                  setSelectedTool(t);
+                  setCommandInput(t.defaultTarget || '');
+                  inputRef.current?.focus();
+                }}
+                title={`${t.label} [${t.category}] (${t.availability})\n${t.description}\nSafe Example: ${t.executable || t.cmd || t.id} ${t.defaultTarget || ''}`}
+                aria-label={`Select ${t.label} (${t.availability})`}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-mono transition-all flex items-center gap-1.5 whitespace-nowrap border ${
+                  isSelected
+                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 font-bold shadow-[0_0_10px_rgba(0,212,255,0.2)]'
+                    : isNotInstalled
+                    ? 'bg-white/[0.02] text-slate-500 hover:text-slate-300 hover:bg-white/5 border-white/5 opacity-70'
+                    : 'bg-white/[0.03] text-slate-400 hover:text-slate-200 hover:bg-white/10 border-white/5'
+                }`}
+              >
+                {/* Live status dot */}
+                <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                  isAvailable ? 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]' :
+                  isNotInstalled ? 'bg-amber-400/80' : 'bg-rose-500'
+                }`} />
 
-          <Server size={12} className="text-cyan-400" />
+                <span className="font-semibold">{t.executable || t.cmd || t.id}</span>
+                <span className="text-[9px] text-slate-500 hidden sm:inline">({t.category})</span>
 
-          <span>NATIVE TOOLS:</span>
-
+                {isNotInstalled && (
+                  <span className="text-[9px] px-1 py-0.2 rounded bg-amber-500/15 text-amber-400 border border-amber-500/20 uppercase font-semibold">
+                    OFFLINE
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
-
-        {activeRegistry.map(t => {
-
-          const isSelected = selectedTool.id === t.id;
-
-          const isAvailable = t.availability === 'AVAILABLE';
-
-          const isNotInstalled = t.availability === 'NOT INSTALLED' || t.availability === 'UNAVAILABLE';
-
-          return (
-
-            <button
-
-              key={t.id}
-
-              onClick={() => {
-
-                setSelectedTool(t);
-
-                setCommandInput(t.defaultTarget || '');
-
-                inputRef.current?.focus();
-
-              }}
-
-              title={`${t.label} [${t.category}] (${t.availability})\n${t.description}\nSafe Example: ${t.executable || t.cmd || t.id} ${t.defaultTarget || ''}`}
-
-              aria-label={`Select ${t.label} (${t.availability})`}
-
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-mono transition-all flex items-center gap-1.5 whitespace-nowrap border ${
-
-                isSelected
-
-                  ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 font-bold shadow-[0_0_10px_rgba(0,212,255,0.2)]'
-
-                  : isNotInstalled
-
-                  ? 'bg-white/[0.02] text-slate-500 hover:text-slate-300 hover:bg-white/5 border-white/5 opacity-70'
-
-                  : 'bg-white/[0.03] text-slate-400 hover:text-slate-200 hover:bg-white/10 border-white/5'
-
-              }`}
-
-            >
-
-              {/* Live status dot */}
-
-              <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-
-                isAvailable ? 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]' :
-
-                isNotInstalled ? 'bg-amber-400/80' : 'bg-rose-500'
-
-              }`} />
-
-              <span className="font-semibold">{t.executable || t.cmd || t.id}</span>
-
-              <span className="text-[9px] text-slate-500 hidden sm:inline">({t.category})</span>
-
-              {isNotInstalled && (
-
-                <span className="text-[9px] px-1 py-0.2 rounded bg-amber-500/15 text-amber-400 border border-amber-500/20 uppercase font-semibold">
-
-                  OFFLINE
-
-                </span>
-
-              )}
-
-            </button>
-
-          );
-
-        })}
-
-      </div>
+      )}
 
 
 
@@ -1913,217 +1873,121 @@ export default function NativeTerminalConsole({
 
 
       {/* ── Active Target & Command Telemetry Bar ──────────────────────────── */}
+      {!cleanMode && (
+        <div className="bg-[#020713] border-t border-cyan-500/10 px-3 py-1.5 flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono select-none flex-shrink-0">
+          <div className="flex items-center gap-3 overflow-hidden text-ellipsis">
+            {/* TOOL */}
+            <div className="flex items-center gap-1 text-slate-400">
+              <span className="text-slate-500 font-semibold">TOOL:</span>
+              <span className="px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 font-bold">
+                {currentTool.executable || currentTool.cmd || currentTool.id}
+              </span>
+              <span className="text-slate-600 hidden md:inline">({currentTool.category})</span>
+            </div>
 
-      <div className="bg-[#020713] border-t border-cyan-500/10 px-3 py-1.5 flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono select-none flex-shrink-0">
+            {/* TARGET */}
+            <div className="flex items-center gap-1 text-slate-400">
+              <span className="text-slate-500 font-semibold">TARGET:</span>
+              <span className="text-white font-medium max-w-[180px] truncate">
+                {commandInput.trim() || <span className="text-slate-600 italic">none (required)</span>}
+              </span>
+            </div>
 
-        <div className="flex items-center gap-3 overflow-hidden text-ellipsis">
-
-          {/* TOOL */}
-
-          <div className="flex items-center gap-1 text-slate-400">
-
-            <span className="text-slate-500 font-semibold">TOOL:</span>
-
-            <span className="px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 font-bold">
-
-              {currentTool.executable || currentTool.cmd || currentTool.id}
-
-            </span>
-
-            <span className="text-slate-600 hidden md:inline">({currentTool.category})</span>
-
+            {/* COMMAND */}
+            <div className="hidden lg:flex items-center gap-1 text-slate-400">
+              <span className="text-slate-500 font-semibold">COMMAND:</span>
+              <span className="text-emerald-400/90 font-mono truncate max-w-[280px]">
+                {currentTool.executable || currentTool.cmd || currentTool.id} {commandInput.trim() || currentTool.defaultTarget || ''}
+              </span>
+            </div>
           </div>
 
-
-
-          {/* TARGET */}
-
-          <div className="flex items-center gap-1 text-slate-400">
-
-            <span className="text-slate-500 font-semibold">TARGET:</span>
-
-            <span className="text-white font-medium max-w-[180px] truncate">
-
-              {commandInput.trim() || <span className="text-slate-600 italic">none (required)</span>}
-
-            </span>
-
-          </div>
-
-
-
-          {/* COMMAND */}
-
-          <div className="hidden lg:flex items-center gap-1 text-slate-400">
-
-            <span className="text-slate-500 font-semibold">COMMAND:</span>
-
-            <span className="text-emerald-400/90 font-mono truncate max-w-[280px]">
-
-              {currentTool.executable || currentTool.cmd || currentTool.id} {commandInput.trim() || currentTool.defaultTarget || ''}
-
-            </span>
-
-          </div>
-
+          {/* Safe Template Hint / Quick Populate */}
+          {currentTool.defaultTarget && (
+            <button
+              type="button"
+              onClick={() => {
+                setCommandInput(currentTool.defaultTarget);
+                inputRef.current?.focus();
+              }}
+              title="Populate safe example target"
+              className="flex items-center gap-1 px-2 py-0.5 rounded bg-white/[0.03] hover:bg-white/[0.08] text-slate-400 hover:text-cyan-300 transition-colors cursor-pointer"
+            >
+              <span className="text-slate-500">Safe Example:</span>
+              <span className="text-cyan-400 underline decoration-cyan-500/30">{currentTool.defaultTarget}</span>
+            </button>
+          )}
         </div>
-
-
-
-        {/* Safe Template Hint / Quick Populate */}
-
-        {currentTool.defaultTarget && (
-
-          <button
-
-            type="button"
-
-            onClick={() => {
-
-              setCommandInput(currentTool.defaultTarget);
-
-              inputRef.current?.focus();
-
-            }}
-
-            title="Populate safe example target"
-
-            className="flex items-center gap-1 px-2 py-0.5 rounded bg-white/[0.03] hover:bg-white/[0.08] text-slate-400 hover:text-cyan-300 transition-colors cursor-pointer"
-
-          >
-
-            <span className="text-slate-500">Safe Example:</span>
-
-            <span className="text-cyan-400 underline decoration-cyan-500/30">{currentTool.defaultTarget}</span>
-
-          </button>
-
-        )}
-
-      </div>
-
-
+      )}
 
       {/* ── Tactical Command Input Bar ──────────────────────────────────────── */}
-
       <div className="bg-[#030919] border-t border-cyan-500/20 p-3 select-none flex-shrink-0">
-
         <div className="flex items-center gap-2">
-
           {/* Active Tool Badge Prompt */}
-
-          <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-bold whitespace-nowrap transition-all ${
-
-            currentTool.availability === 'NOT INSTALLED' || currentTool.availability === 'UNAVAILABLE'
-
-              ? 'bg-amber-500/10 border-amber-500/30 text-amber-300'
-
-              : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300'
-
-          }`}>
-
-            <span>nexus@cybershield:~$</span>
-
-            <span className="text-white font-mono">{currentTool.executable || currentTool.cmd || currentTool.id}</span>
-
-            {(currentTool.availability === 'NOT INSTALLED' || currentTool.availability === 'UNAVAILABLE') && (
-
-              <span className="text-[9px] px-1 py-0.2 rounded bg-amber-500/20 text-amber-400 font-bold uppercase">
-
-                OFFLINE
-
-              </span>
-
-            )}
-
-          </div>
-
-
-
-          {/* Target Input Field */}
-
-          <div className="relative flex-1">
-
-            <input
-
-              ref={inputRef}
-
-              type="text"
-
-              value={commandInput}
-
-              onChange={(e) => setCommandInput(e.target.value)}
-
-              onKeyDown={handleKeyDown}
-
-              disabled={isRunning}
-
-              placeholder={
-
-                currentTool.availability === 'NOT INSTALLED' || currentTool.availability === 'UNAVAILABLE'
-
-                  ? `${currentTool.label} is NOT INSTALLED on execution host`
-
-                  : (currentTool.placeholder || 'Enter target or command')
-
-              }
-
-              aria-label="Terminal Target or Command Input"
-
-              autoFocus
-
-              className="w-full bg-[#020612] border border-cyan-500/30 focus:border-cyan-400 rounded-xl px-3 py-2 text-white font-mono text-xs placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all disabled:opacity-50"
-
-            />
-
-          </div>
-
-
-
-          {/* Action Button: Run or Abort */}
-
-          {isRunning ? (
-
-            <button
-
-              onClick={handleAbort}
-
-              aria-label="Abort Running Command"
-
-              className="px-4 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold flex items-center gap-1.5 shadow-[0_0_15px_rgba(244,63,94,0.4)] transition-all"
-
-            >
-
-              <Square size={13} className="fill-white" />
-
-              <span>Abort</span>
-
-            </button>
-
+          {cleanMode ? (
+            <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-xs font-mono font-bold text-cyan-300 select-none">
+              <span>nexus@cybershield:~$</span>
+            </div>
           ) : (
-
-            <button
-
-              onClick={() => handleRun()}
-
-              disabled={!commandInput.trim() || currentTool.availability === 'NOT INSTALLED' || currentTool.availability === 'UNAVAILABLE'}
-
-              aria-label={currentTool.availability === 'NOT INSTALLED' ? 'Tool not installed on execution host' : 'Execute Command'}
-
-              title={currentTool.availability === 'NOT INSTALLED' ? 'Binary not installed on execution host' : 'Execute Command'}
-
-              className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold flex items-center gap-1.5 shadow-[0_0_15px_rgba(0,212,255,0.4)] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-
-            >
-
-              <Play size={13} className="fill-slate-950" />
-
-              <span>{currentTool.availability === 'NOT INSTALLED' || currentTool.availability === 'UNAVAILABLE' ? 'Unavailable' : 'Execute'}</span>
-
-            </button>
-
+            <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-bold whitespace-nowrap transition-all ${
+              currentTool.availability === 'NOT INSTALLED' || currentTool.availability === 'UNAVAILABLE'
+                ? 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+                : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300'
+            }`}>
+              <span>nexus@cybershield:~$</span>
+              <span className="text-white font-mono">{currentTool.executable || currentTool.cmd || currentTool.id}</span>
+              {(currentTool.availability === 'NOT INSTALLED' || currentTool.availability === 'UNAVAILABLE') && (
+                <span className="text-[9px] px-1 py-0.2 rounded bg-amber-500/20 text-amber-400 font-bold uppercase">
+                  OFFLINE
+                </span>
+              )}
+            </div>
           )}
 
+          {/* Target / Command Input Field */}
+          <div className="relative flex-1">
+            <input
+              ref={inputRef}
+              type="text"
+              value={commandInput}
+              onChange={(e) => setCommandInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              disabled={isRunning}
+              placeholder={
+                cleanMode
+                  ? 'Type a command (e.g. curl https://example.com, ping 8.8.8.8, whois google.com, help, tools)...'
+                  : currentTool.availability === 'NOT INSTALLED' || currentTool.availability === 'UNAVAILABLE'
+                  ? `${currentTool.label} is NOT INSTALLED on execution host`
+                  : (currentTool.placeholder || 'Enter target or command')
+              }
+              aria-label="Terminal Target or Command Input"
+              autoFocus
+              className="w-full bg-[#020612] border border-cyan-500/30 focus:border-cyan-400 rounded-xl px-3 py-2 text-white font-mono text-xs placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition-all disabled:opacity-50"
+            />
+          </div>
+
+          {/* Action Button: Run or Abort */}
+          {isRunning ? (
+            <button
+              onClick={handleAbort}
+              aria-label="Abort Running Command"
+              className="px-4 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold flex items-center gap-1.5 shadow-[0_0_15px_rgba(244,63,94,0.4)] transition-all cursor-pointer"
+            >
+              <Square size={13} className="fill-white" />
+              <span>Abort</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => handleRun()}
+              disabled={cleanMode ? !commandInput.trim() : (!commandInput.trim() || currentTool.availability === 'NOT INSTALLED' || currentTool.availability === 'UNAVAILABLE')}
+              aria-label={cleanMode ? 'Execute Command' : (currentTool.availability === 'NOT INSTALLED' ? 'Tool not installed on execution host' : 'Execute Command')}
+              title={cleanMode ? 'Execute Command' : (currentTool.availability === 'NOT INSTALLED' ? 'Binary not installed on execution host' : 'Execute Command')}
+              className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold flex items-center gap-1.5 shadow-[0_0_15px_rgba(0,212,255,0.4)] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+            >
+              <Play size={13} className="fill-slate-950" />
+              <span>{cleanMode ? 'Execute' : (currentTool.availability === 'NOT INSTALLED' || currentTool.availability === 'UNAVAILABLE' ? 'Unavailable' : 'Execute')}</span>
+            </button>
+          )}
         </div>
 
 
