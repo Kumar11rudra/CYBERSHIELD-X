@@ -136,25 +136,48 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-900 selection:bg-blue-100 flex flex-col relative overflow-hidden">
-      {/* ── Background Matrix Rain Layer (Step 2: 0/1 binary rain, pointer-events-none, z-0) ── */}
-      <BinaryMatrixRain className="fixed inset-0 z-0 pointer-events-none opacity-20" />
+    <div className="min-h-screen bg-[#020814] text-slate-100 selection:bg-cyan-500/30 flex flex-col relative overflow-hidden font-sans">
+      {/* ── Background Cyber Blueprint Grid Layer (Matching Screenshot 2 / Homepage) ── */}
+      <div
+        className="fixed inset-0 pointer-events-none z-0"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(0,191,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,191,255,0.04) 1px,transparent 1px)',
+          backgroundSize: '48px 48px',
+        }}
+      />
 
-      {/* ── Clean Top Header (Step 209: BrandLogo on left, Terminal, User info, Logout on right) ── */}
-      <header className="w-full bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+      {/* ── Background Scanline Layer (Homepage Ambience) ── */}
+      <div
+        className="fixed inset-0 pointer-events-none z-0"
+        style={{
+          background:
+            'repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,191,255,0.015) 2px,rgba(0,191,255,0.015) 4px)',
+        }}
+      />
+
+      {/* ── Background Ambient Glow Orbs ── */}
+      <div className="fixed top-1/4 -left-32 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none z-0" />
+      <div className="fixed bottom-1/4 -right-32 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none z-0" />
+
+      {/* ── Background Matrix Rain Layer (Step 2: 0/1 binary rain, glowing cyan/emerald on dark) ── */}
+      <BinaryMatrixRain className="fixed inset-0 z-0 pointer-events-none opacity-30" />
+
+      {/* ── Clean Top Header (Dark Cyber Header) ── */}
+      <header className="w-full bg-[#020814]/90 backdrop-blur-md border-b border-cyan-500/20 sticky top-0 z-30 shadow-lg">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
           {/* LEFT: CyberShield X Logo */}
           <Link
             to="/"
-            className="flex items-center gap-2 sm:gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg p-1 shrink-0"
+            className="flex items-center gap-2 sm:gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 rounded-lg p-1 shrink-0"
             title="CyberShield X Homepage"
           >
             <BrandLogo size={30} />
             <div className="flex flex-col">
-              <span className="font-extrabold text-sm sm:text-base tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors font-mono">
-                CYBERSHIELD <span className="text-emerald-500">X</span>
+              <span className="font-extrabold text-sm sm:text-base tracking-tight text-white group-hover:text-cyan-400 transition-colors font-mono">
+                CYBERSHIELD <span className="text-emerald-400">X</span>
               </span>
-              <span className="text-[8px] sm:text-[9px] font-mono tracking-widest text-slate-500 uppercase -mt-0.5 hidden xs:block">
+              <span className="text-[8px] sm:text-[9px] font-mono tracking-widest text-cyan-500/70 uppercase -mt-0.5 hidden xs:block">
                 CYBER DEFENSE
               </span>
             </div>
@@ -166,17 +189,17 @@ export default function DashboardPage() {
             <button
               type="button"
               onClick={() => navigate('/terminal')}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors shadow-xs cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-bold text-cyan-400 hover:text-cyan-300 bg-slate-900/90 hover:bg-slate-800 border border-cyan-500/30 transition-colors shadow-xs cursor-pointer"
               title="Open Native Terminal"
               aria-label="Terminal"
             >
-              <Terminal size={14} className="text-blue-600 shrink-0" />
+              <Terminal size={14} className="text-cyan-400 shrink-0" />
               <span className="hidden sm:inline">Terminal</span>
             </button>
 
             {/* Current User's Name / Information */}
-            <div className="flex items-center gap-1.5 px-2 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700 shadow-xs max-w-[85px] xs:max-w-[120px] sm:max-w-[180px]">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 animate-pulse" />
+            <div className="flex items-center gap-1.5 px-2 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-slate-900/90 border border-slate-800 text-xs font-medium text-slate-300 shadow-xs max-w-[85px] xs:max-w-[120px] sm:max-w-[180px]">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 animate-pulse" />
               <span className="font-mono truncate">
                 {user?.username || user?.name || user?.email || 'Operator'}
               </span>
@@ -189,7 +212,7 @@ export default function DashboardPage() {
                 await logout?.();
                 navigate('/login');
               }}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 border border-rose-200 transition-colors shadow-xs cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-bold text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 bg-slate-900/90 border border-rose-500/30 transition-colors shadow-xs cursor-pointer"
               title="Sign Out"
               aria-label="Logout"
             >
@@ -201,19 +224,19 @@ export default function DashboardPage() {
       </header>
 
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 relative z-10">
-        {/* ── Section Header (Authoritative Reference: design img..png) ── */}
+        {/* ── Section Header (Dark Cyber Reference) ── */}
         <div className="flex flex-col items-center text-center space-y-4">
           <div className="flex flex-col items-center text-center">
-            <div className="text-xs sm:text-sm font-mono font-extrabold tracking-widest text-blue-600 uppercase mb-2">
+            <div className="text-xs sm:text-sm font-mono font-extrabold tracking-widest text-cyan-400 uppercase mb-2">
               CYBERSHIELD X
             </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight text-center">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight text-center">
               Powerful Tools for a{' '}
-              <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent">
                 Safer Digital World
               </span>
             </h1>
-            <p className="mt-2 text-sm sm:text-base text-slate-600 max-w-3xl leading-relaxed mx-auto text-center">
+            <p className="mt-2 text-sm sm:text-base text-slate-400 max-w-3xl leading-relaxed mx-auto text-center">
               Explore 111+ curated cybersecurity tools with trusted external resources. No complex setup — just click and start.
             </p>
           </div>
@@ -230,7 +253,7 @@ export default function DashboardPage() {
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search tools, categories, capabilities... (Press '/' to focus)"
               aria-label="Search tools"
-              className="w-full pl-11 pr-20 py-3 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 focus:border-blue-500 text-sm text-slate-900 placeholder-slate-400 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              className="w-full pl-11 pr-20 py-3 rounded-2xl bg-slate-900/90 border border-cyan-500/30 hover:border-cyan-500/60 focus:border-cyan-400 text-sm text-white placeholder-slate-400 shadow-[0_0_20px_rgba(0,191,255,0.08)] transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
             />
             <div className="absolute inset-y-0 right-0 pr-3.5 pt-2 flex items-center gap-1.5">
               {searchQuery ? (
@@ -241,19 +264,19 @@ export default function DashboardPage() {
                     searchInputRef.current?.focus();
                   }}
                   aria-label="Clear search"
-                  className="p-1 rounded-lg text-slate-400 hover:text-slate-600 transition-colors"
+                  className="p-1 rounded-lg text-slate-400 hover:text-white transition-colors"
                 >
                   <X size={16} />
                 </button>
               ) : (
-                <kbd className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono text-slate-400 bg-slate-100 border border-slate-200">
+                <kbd className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono text-slate-400 bg-slate-800 border border-slate-700">
                   /
                 </kbd>
               )}
             </div>
           </div>
 
-          {/* ── Category Filter Pills (Authoritative Reference: design img..png) ── */}
+          {/* ── Category Filter Pills ── */}
           <div className="w-full overflow-x-auto pb-2 custom-scrollbar">
             <div className="flex items-center justify-start sm:justify-center gap-2 min-w-max pt-1">
               {categories.map((cat) => {
@@ -268,10 +291,10 @@ export default function DashboardPage() {
                     key={cat}
                     type="button"
                     onClick={() => setSelectedCategory(cat)}
-                    className={`px-4 py-2 rounded-full text-xs font-bold tracking-wide transition-all duration-150 border shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                    className={`px-4 py-2 rounded-full text-xs font-bold tracking-wide transition-all duration-150 border shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
                       isSelected
-                        ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
-                        : 'bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 border-slate-200 shadow-xs'
+                        ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold border-cyan-400 shadow-[0_0_15px_rgba(0,191,255,0.35)]'
+                        : 'bg-slate-900/80 text-slate-300 hover:text-white hover:bg-slate-800 border-slate-800 hover:border-cyan-500/40 shadow-xs'
                     }`}
                   >
                     <span>{cat === 'ALL' ? `All Tools (${count})` : cat}</span>
@@ -283,21 +306,21 @@ export default function DashboardPage() {
         </div>
 
         {/* ── Results Info Bar ── */}
-        <div className="flex items-center justify-between text-xs text-slate-500 px-1">
+        <div className="flex items-center justify-between text-xs text-slate-400 px-1">
           <div>
-            <span className="font-semibold text-slate-800">
+            <span className="font-semibold text-slate-200">
               {filteredTools.length} {filteredTools.length === 1 ? 'tool' : 'tools'} available
             </span>
             {selectedCategory !== 'ALL' && (
               <span>
                 {' '}
-                in <span className="font-medium text-slate-800">{selectedCategory}</span>
+                in <span className="font-medium text-cyan-400">{selectedCategory}</span>
               </span>
             )}
             {debouncedQuery && (
               <span>
                 {' '}
-                matching <span className="font-medium text-blue-600">"{debouncedQuery}"</span>
+                matching <span className="font-medium text-cyan-400">"{debouncedQuery}"</span>
               </span>
             )}
           </div>
@@ -309,7 +332,7 @@ export default function DashboardPage() {
                 setSelectedCategory('ALL');
                 setSearchQuery('');
               }}
-              className="font-semibold text-blue-600 hover:text-blue-700 transition-colors underline underline-offset-4"
+              className="font-semibold text-cyan-400 hover:text-cyan-300 transition-colors underline underline-offset-4"
             >
               Reset filters
             </button>

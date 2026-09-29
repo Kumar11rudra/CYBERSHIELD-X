@@ -127,6 +127,9 @@ const AppRoutes = () => (
     {/* Standalone Clean Terminal (FIX #1: Dedicated clean terminal outside legacy sidebar) */}
     <Route path="/terminal" element={<PrivateRoute><TerminalPage /></PrivateRoute>} />
 
+    {/* Standalone Clean Core Team Page (Disconnected from legacy sidebar) */}
+    <Route path="/team" element={<TeamPage />} />
+
     {/* Protected App Shell */}
     <Route path="/" element={<Layout />}>
       <Route path="scan" element={<PrivateRoute><ScanPage /></PrivateRoute>} />
@@ -175,7 +178,6 @@ const AppRoutes = () => (
       <Route path="acceptable-use" element={<AcceptableUsePolicyPage />} />
       <Route path="security-info" element={<SecurityInformationPage />} />
       <Route path="contact" element={<ContactPage />} />
-      <Route path="team" element={<TeamPage />} />
 
 
       {/* ─── Toolkit — all tool pages share the same Layout shell ─────── */}

@@ -6,7 +6,8 @@
 - **Status**: 🚀 **CYBERSHIELD X IS FROZEN AS THE CANONICAL PRODUCTION MODEL — MAINTENANCE-ONLY MODE ENABLED.**
   - **Live Production Parity**: Verified live on Cloudflare Pages (`https://www.cybershieldx.in`, `https://cybershieldx.in`, `https://cybershield-x.pages.dev`), Render Web Service (`https://cybershield-x.onrender.com`), and MongoDB Atlas Replica Set.
   - **Step 1 Real-Data Threat Ticker**: Verified live streaming normalized CISA Known Exploited Vulnerabilities catalog entries via backend cache proxy (`GET /api/threat-feed`).
-  - **Step 2 Dashboard Matrix Rain**: Verified live single fixed canvas background layer (`fixed inset-0 z-0 pointer-events-none opacity-20`) behind the 4-column tool grid.
+  - **Step 2 Dashboard Matrix Rain**: Harmonized with Homepage dark cyber aesthetic (`#020814` deep dark base, 48px cyber blueprint grid, scanline layer, glow ambience, and glowing cyan/emerald `0/1` binary matrix rain `fixed inset-0 z-0 pointer-events-none opacity-30` behind the 4-column tool grid).
+  - **Core Team Standalone Harmonization (`/team`)**: Decoupled from legacy CyberSOC sidebar shell, converted to clean standalone full-width cyber page with dedicated sticky header (BrandLogo, direct navigation), and synchronized `Layout.jsx` version token to `v62.6.0`.
   - **Development Seed Hardening (`server/scripts/seedAdmin.js`)**: Converted to strict ENV-ONLY development bootstrap requiring `ADMIN_PASSWORD` (zero hardcoded fallback passwords).
   - **Phase 81 Queue Volatility Documented**: Process-local in-memory dispatch queue documented honestly with restart volatility and DLQ isolation.
   - **111-Tool Policy Enforced**: 111 canonical security tools across 24 categories (41 ONLINE, 70 COMING_SOON, 0 GitHub-as-External-Website).

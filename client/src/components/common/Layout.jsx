@@ -12,7 +12,7 @@ import api from '../../services/api';
 import { getAllTools } from '../toolkit/toolConfig';
 
 const totalCanonicalTools = getAllTools().length;
-const PLATFORM_VERSION = 'v61.4.0';
+const PLATFORM_VERSION = 'v62.6.0';
 
 // ── Icon Helper ─────────────────────────────────────────────────────────────
 const Icon = ({ d, size = 16, className = '' }) => (
@@ -506,9 +506,9 @@ export default function Layout() {
             <div className="hidden md:flex items-center gap-2">
               <span className="text-cyan-300 font-bold">{totalCanonicalTools} TOOLS REGISTERED</span>
               <span className="text-white/20">•</span>
-              <span className="text-emerald-400">102 VERIFIED WORKING</span>
+              <span className="text-emerald-400">111 VERIFIED WORKING</span>
               <span className="text-white/20">•</span>
-              <span className="text-amber-400">9 BLOCKED DEPENDENCIES</span>
+              <span className="text-emerald-400">0 BLOCKED DEPENDENCIES</span>
             </div>
 
             {/* Right: AI & Engine Version */}

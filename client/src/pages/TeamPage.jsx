@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import BrandLogo from '../components/common/BrandLogo';
 
 const TEAM = [
   {
@@ -291,11 +292,47 @@ export default function TeamPage() {
   const coreMembers = TEAM.filter(t => !t.isFounder);
 
   return (
-    <div className="w-full min-h-screen bg-[#020814] text-cyber-text font-mono relative overflow-x-hidden flex flex-col justify-between py-2 px-3 sm:px-6">
+    <div className="w-full min-h-screen bg-[#020814] text-cyber-text font-mono relative overflow-x-hidden flex flex-col justify-between selection:bg-cyan-500/30">
       
+      {/* ── Standalone Clean Header (Matching Dashboard / Modern Cyber Aesthetic) ── */}
+      <header className="w-full bg-[#020814]/90 backdrop-blur-md border-b border-cyan-500/20 sticky top-0 z-30 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <Link
+            to="/"
+            className="flex items-center gap-2.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 rounded-lg p-1"
+            title="CyberShield X Homepage"
+          >
+            <BrandLogo size={28} />
+            <div className="flex flex-col">
+              <span className="font-extrabold text-sm sm:text-base tracking-tight text-white group-hover:text-cyan-400 transition-colors font-mono">
+                CYBERSHIELD <span className="text-emerald-400">X</span>
+              </span>
+              <span className="text-[8px] sm:text-[9px] font-mono tracking-widest text-cyan-500/70 uppercase -mt-0.5 hidden xs:block">
+                CYBER DEFENSE
+              </span>
+            </div>
+          </Link>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link
+              to="/"
+              className="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800/80 border border-transparent hover:border-slate-700 transition-colors"
+            >
+              Home
+            </Link>
+            <Link
+              to="/dashboard"
+              className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-cyan-400 hover:text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 transition-colors shadow-xs"
+            >
+              Dashboard
+            </Link>
+          </div>
+        </div>
+      </header>
+
       {/* Background Cyber Grid & Glow Orbs */}
       <div 
-        className="absolute inset-0 pointer-events-none opacity-20"
+        className="fixed inset-0 pointer-events-none opacity-20 z-0"
         style={{
           backgroundImage: `
             linear-gradient(rgba(0, 191, 255, 0.08) 1px, transparent 1px),
@@ -304,25 +341,25 @@ export default function TeamPage() {
           backgroundSize: '40px 40px'
         }}
       />
-      <div className="absolute top-[10%] left-[20%] w-96 h-96 bg-[#00bfff]/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-[10%] right-[20%] w-96 h-96 bg-[#00ff88]/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="fixed top-[10%] left-[20%] w-96 h-96 bg-[#00bfff]/5 rounded-full blur-3xl pointer-events-none z-0" />
+      <div className="fixed bottom-[10%] right-[20%] w-96 h-96 bg-[#00ff88]/5 rounded-full blur-3xl pointer-events-none z-0" />
 
-      {/* Main Container - Compact 100vh Desktop Viewport Composition */}
-      <div className="max-w-7xl mx-auto w-full relative z-10 flex flex-col my-auto space-y-2.5 sm:space-y-3">
+      {/* Main Container - Full-Width Viewport Composition */}
+      <main className="max-w-7xl mx-auto w-full relative z-10 flex flex-col my-auto space-y-3 sm:space-y-4 px-3 sm:px-6 py-6 sm:py-8">
         
-        {/* HEADER SECTION (Compact) */}
-        <header className="text-center space-y-0.5">
+        {/* HEADER SECTION */}
+        <div className="text-center space-y-1">
           <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-[#00bfff]/10 border border-[#00bfff]/30 text-[#00bfff] text-[10px] uppercase tracking-[0.3em]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#00bfff] animate-pulse" />
             LEADERSHIP & TALENT
           </div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-display font-black tracking-tight text-white uppercase">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-black tracking-tight text-white uppercase">
             OUR <span className="text-[#00bfff] drop-shadow-[0_0_12px_rgba(0,191,255,0.4)]">CORE TEAM</span>
           </h1>
-          <p className="text-[10px] text-cyber-muted max-w-xl mx-auto uppercase tracking-wider leading-tight">
+          <p className="text-xs text-cyber-muted max-w-xl mx-auto uppercase tracking-wider leading-relaxed">
             The analysts, engineers, and visionaries securing the CyberShield X platform.
           </p>
-        </header>
+        </div>
 
         {/* FOUNDER SECTION */}
         {founder && (() => {
@@ -428,7 +465,7 @@ export default function TeamPage() {
           ))}
         </div>
 
-      </div>
+      </main>
 
       {/* FOOTER METADATA BAR (Compact) */}
       <footer className="relative z-10 max-w-7xl mx-auto w-full pt-2 mt-1 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[9px] text-cyber-muted font-mono uppercase tracking-widest">
