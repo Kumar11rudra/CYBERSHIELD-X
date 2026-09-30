@@ -53,8 +53,15 @@ const {
 } = require('../controllers/chatbot/chatbotController');
 const { tryAuthenticate } = require('../middleware/auth');
 
+// Dedicated timeout middleware for LLM processing pipelines (60s)
+const aiTimeout = (req, res, next) => {
+  if (req.setTimeout) req.setTimeout(60000);
+  if (res.setTimeout) res.setTimeout(60000);
+  next();
+};
+
 // Endpoint to handle chatbot interaction (supports both guests and authenticated operators)
-router.post('/chat', tryAuthenticate, handleChat);
+router.post('/chat', aiTimeout, tryAuthenticate, handleChat);
 
 // Bounded AI Investigation Assistant (Phase 69)
 router.post('/investigate', tryAuthenticate, handleInvestigate);

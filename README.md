@@ -5,7 +5,7 @@
 [![Production Status](https://img.shields.io/badge/Production-v62.6.0%20Live-00ff88?style=for-the-badge&logo=cloudflare)](https://www.cybershieldx.in)
 [![Interactive Terminal](https://img.shields.io/badge/CyberSOC%20Terminal-Online-00bfff?style=for-the-badge)](https://www.cybershieldx.in/terminal)
 [![Security Catalog](https://img.shields.io/badge/Security%20Tools-111%20Canonical-b400ff?style=for-the-badge)](https://www.cybershieldx.in/dashboard)
-[![Architecture Status](https://img.shields.io/badge/Architecture-Frozen%20%2F%20Production-blue?style=for-the-badge)](PROJECT_MASTER.md)
+[![AI Copilot](https://img.shields.io/badge/CyberBot%20AI-Resilient%20Multi--Model-cyan?style=for-the-badge)](https://www.cybershieldx.in)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
 ---
@@ -18,21 +18,23 @@ The platform bridges real-time cybersecurity telemetry with an interactive brows
 * An authoritative catalog of **111 security tools** categorized across **24 operational security domains**.
 * A host-native **Interactive CyberSOC Terminal Workstation** (`/terminal`) enforcing process-level allowlists (`shell: false`).
 * A real-time **CISA KEV Live Threat Ticker** streaming active exploits and remediation guidance.
-* An advisory **AI Security Copilot** powered by Google Gemini with deterministic offline heuristic fallback.
+* A resilient **CyberBot AI Security Copilot** with multi-model failover (`gemini-2.5-flash` → `gemini-3.8-flash`), automatic 503/429 retry, omniscient technical knowledge, and restored high-definition neon shield avatar.
 * A single-canvas high-performance **0/1 Binary Matrix Rain** background preserving high-contrast accessibility.
+* A decoupled **Core Team Workstation** (`/team`) providing standalone team profiles with dedicated cyber navigation.
 
 ---
 
 ## Current Production Status
 
-* **Release Version**: `v62.6.0` (Canonical Frozen Production Release)
+* **Release Version**: `v62.6.0` (Canonical Operational Release)
 * **Release Status**: **LIVE, VERIFIED & FROZEN**
-* **Maintenance Mode**: **MAINTENANCE-ONLY MODE ENABLED** (No new feature development permitted)
+* **Maintenance Mode**: **MAINTENANCE-ONLY MODE ENABLED**
 * **Production Integrity**:
   * Edge Frontend: `HTTP/2 200 OK` on Cloudflare Pages (`https://www.cybershieldx.in`, `https://cybershieldx.in`, `https://cybershield-x.pages.dev`)
   * Backend API: `HTTP 200 OK` on Render (`https://cybershield-x.onrender.com/health`)
   * Database Cluster: `Connected to MongoDB` (MongoDB Atlas Replica Set)
   * Real-Time Threat Feed: `HTTP 200 OK` (`/api/threat-feed`) with 15-minute server-side caching.
+  * AI Copilot Gateway: `HTTP 200 OK` (`/api/chatbot/chat`) with multi-model resilience and zero error leakage.
 
 ---
 
@@ -52,14 +54,16 @@ CyberShield X follows a decoupled client-server architecture with strict separat
 │  - HomePage: CISA KEV Live Marquee, HIBP CTA, Matrix Rain   │
 │  - Dashboard: 111 Tool Cards, 24 Categories, Welcome Modal  │
 │  - Terminal: Standalone Clean Console (Native Backend)      │
+│  - CyberBot: Floating Workstation Copilot with HD Avatar    │
+│  - Team Page: Standalone Full-Width Cyber Team Hub          │
 │  - Auth: English-Only Universal 3-Way Login / Signup        │
 └──────────────────────────────┬──────────────────────────────┘
                                │ REST API over TLS / Socket.IO
                                ▼
 ┌─────────────────────────────────────────────────────────────┐
 │             Backend API Tier (Node.js Express on Render)    │
-│  - Controllers: auth, threatFeed, terminal, tools, cloud    │
-│  - Services: threatFeed, breachService, auditLogger         │
+│  - Controllers: auth, threatFeed, terminal, tools, chatbot  │
+│  - Services: AIOrchestrator, threatFeed, breachService      │
 │  - Security: Helmet, CORS, Rate Limiters, SSRF DNS-Pinning  │
 │  - Terminal Engine: child_process.spawn(shell: false)       │
 │  - Workers: In-Memory Integration Queue with DLQ & Retries  │
@@ -70,7 +74,7 @@ CyberShield X follows a decoupled client-server architecture with strict separat
 │              Data & External Intelligence Tier              │
 │  - MongoDB Atlas: Multi-tenant schemas, audit events        │
 │  - CISA KEV Catalog: Automated 15-min cached pull           │
-│  - Google Gemini 2.5 Flash: AI advisory triage engine        │
+│  - Google Gemini: 2.5 Flash -> 3.8 Flash resilient failover │
 │  - Enterprise ITSM: Jira, ServiceNow, PagerDuty, Webhooks   │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -80,22 +84,17 @@ CyberShield X follows a decoupled client-server architecture with strict separat
 ## Core Capabilities
 
 1. **Interactive CyberSOC Terminal (`/terminal`)**: Direct execution of host-installed diagnostic binaries (`nmap`, `dig`, `whois`, `ping`, `traceroute`, `curl`, `openssl`) inside a sandboxed console with argument validation.
-2. **Authoritative 111-Tool Security Catalog (`/dashboard`)**: Unified registry spanning 24 specialized domains, each tool with precise metadata, risk scoring, category mapping, and external alternative links.
-3. **Real-Data Threat Ticker**: Top live banner streaming real vulnerabilities directly from the official CISA Known Exploited Vulnerabilities (KEV) catalog via an Express proxy.
+2. **Authoritative 111-Tool Security Catalog (`/dashboard`, `/toolkit`)**: Unified registry spanning 24 specialized domains, each tool with precise metadata, risk scoring, category mapping, and external alternative links.
+3. **Real-Data Threat Ticker**: Top live banner streaming real vulnerabilities directly from the official CISA Known Exploited Vulnerabilities (KEV) catalog via an Express proxy with a 15-minute TTL cache.
 4. **Have I Been Pwned Integration**: Direct external breach query gateway located strictly below Hero stats on the Homepage, ensuring zero-knowledge privacy with no native email retention.
-5. **CyboBot AI Security Copilot**: Context-aware security advisor utilizing Gemini 2.5 Flash to analyze scan outputs and recommend defensive remediation steps.
+5. **CyberBot AI Security Copilot**:
+   - **Multi-Model Fallback Hierarchy**: Replaced single-point failure with candidate model chain (`gemini-2.5-flash` → `gemini-3.8-flash`).
+   - **Transient Error Retry**: Automatically retries 503 (high demand) and 429 (rate limits) with backoff before stepping to secondary model.
+   - **Zero Technical Error Leakage**: Raw URLs and internal stack traces are completely eliminated from chat outputs.
+   - **Omniscient Technical Answering**: Answers queries across Cybersecurity, Software Engineering, Code Remediation (Python, JS, Go, Rust, Bash, SQL, C/C++), Networking, Cloud, and IT Systems.
+   - **Restored High-Definition Avatar**: Features CyberShield X's authentic neon shield emblem (`/bot-avatar.png` / `/bot-avatar.svg`) across the floating action trigger, chat header, and response messages.
 6. **Multi-Cloud Ingestion (Phase 80)**: Normalized security event fabric accepting AWS CloudTrail, GCP Cloud Audit, and Azure Activity Log telemetry.
 7. **Enterprise ITSM & SOAR Dispatch (Phase 81)**: Automated incident dispatch to Jira, ServiceNow, PagerDuty, Slack, Teams, and generic webhooks with HMAC validation.
-
----
-
-## Security Model
-
-* **Zero Trust Mindset**: All API endpoints enforce strict authentication and tenant scoping via `req.organizationId`.
-* **Subprocess Sandboxing**: Terminal commands are spawned with `shell: false`, strict binary allowlists, forbidden character filtering, and an automated 10-second kill switch.
-* **SSRF Protection**: Outbound requests through connector utilities leverage DNS-pinning agents (`secureAxios`), blocking private IP space (RFC 1918), loopback (`127.0.0.1`), and cloud metadata services (`169.254.169.254`).
-* **Credential Hygiene**: Strict recursive scrubbing of Authorization headers, Bearer tokens, cookies, passwords, and MongoDB connection strings from logs, telemetry, and client responses.
-* **Immutable Audit Logging**: Every administrative action, authentication attempt, and dispatch event is immutably recorded with organization scoping.
 
 ---
 
@@ -134,7 +133,7 @@ The canonical security registry defines exactly 111 tools across 24 categories:
 
 ## External Website vs Coming Soon Model
 
-CyberShield X enforces a strict, frozen two-state external alternatives taxonomy:
+CyberShield X enforces a strict two-state external alternatives taxonomy:
 
 1. **ONLINE (41 Tools)**: Tools that have genuine, verified browser-based external security services (e.g., MXToolbox, SSL Labs, Shodan, SecurityHeaders, Have I Been Pwned). These render with an active pastel accent and an **"External Website ↗"** CTA button opening an external advisory modal.
 2. **COMING_SOON (70 Tools)**: Tools that are desktop or CLI native without a verified browser service. These render with an explicit **"COMING SOON"** badge and an optional **"Official Repository ↗"** link (66 tools) if an official public repository exists.
@@ -142,26 +141,15 @@ CyberShield X enforces a strict, frozen two-state external alternatives taxonomy
 
 ---
 
-## AI/Copilot
+## AI/Copilot (CyberBot)
 
 * **Canonical Route**: `POST /api/chatbot/chat`
-* **Primary LLM**: Google Gemini 2.5 Flash via official Google Generative AI SDK (`@google/generative-ai`).
-* **Prompt Hardening**: Server-side system instruction boundaries sanitize inputs and prevent system prompt leakage or jailbreak injection.
-* **Deterministic Fallback**: In the absence of an API key or during network disconnection, the platform automatically engages the deterministic heuristic Template Engine, ensuring uninterrupted guidance.
-
----
-
-## Threat Intelligence
-
-* **Canonical Service**: `server/services/threatFeed.js`
-* **Upstream Authority**: Official CISA Known Exploited Vulnerabilities (KEV) Catalog.
-* **Data Flow**: Frontend `ThreatTicker` queries the Express endpoint `GET /api/threat-feed`.
-* **Caching & Resilience**:
-  * 15-minute in-memory cache TTL (`CACHE_TTL_MS = 900000`).
-  * 8-second request timeout with 10MB response ceiling.
-  * Fail-safe retention of stale cache during upstream network timeouts.
-  * Offline emergency fallback dataset ensuring ticker continuity under total network disconnection.
-* **Client Privacy**: Zero direct client queries to external threat providers; all requests brokered and sanitized server-side.
+* **Dedicated Route Timeout**: 60 seconds with request-level non-blocking override.
+* **Multi-Model Hierarchy**: `gemini-2.5-flash` → `gemini-3.8-flash` candidate cascade.
+* **Transient Error Resilience**: Automatic retry with 500ms backoff on HTTP 503 and 429.
+* **Execution Bound**: 8-second internal execution bound per model call.
+* **Deterministic Fallback**: Comprehensive built-in cybersecurity and systems knowledge base (SQLi, XSS, DNS, Firewalls/WAFs, SOC Playbooks, Tools).
+* **Avatar & UI**: High-definition neon shield emblem rendered on floating action trigger button, chat window header bar, and assistant message bubbles.
 
 ---
 
@@ -184,7 +172,7 @@ CyberShield X enforces a strict, frozen two-state external alternatives taxonomy
   * Short-lived Access Token (JWT signed with HMAC-SHA256, 15m expiration).
   * Long-lived Refresh Token (JWT with server-side database hash comparison, 7d expiration).
 * **Session Revocation**: User logout immediately invalidates the refresh token and terminates the active session.
-* **UI Hygiene**: Original 2-column cyber-green layout; zero LanguageSwitcher; English-only interface; zero external breach widgets on authentication pages.
+* **UI Hygiene**: 2-column cyber-green layout, English-only interface, and zero external breach widgets on authentication pages.
 
 ---
 
@@ -217,25 +205,26 @@ CyberShield X enforces a strict, frozen two-state external alternatives taxonomy
 ```
 CYBERSHIELD-X/
 ├── client/                          # React 18 Frontend Application
-│   ├── public/                      # Static assets, favicon, manifest
+│   ├── public/                      # Static assets, bot-avatar.png, bot-avatar.svg, favicon
 │   ├── src/
-│   │   ├── __tests__/               # Client unit & integration test suites
+│   │   ├── __tests__/               # Client test suites (13 suites, 136 tests)
 │   │   ├── components/              # Modular UI components
+│   │   │   ├── chatbot/             # SecurityCopilot (CyberBot UI & avatar)
 │   │   │   ├── common/              # BinaryMatrixRain, ThreatTicker, Navbar, Footer
 │   │   │   └── toolkit/             # ToolGrid, CyberToolCard, toolConfig, externalAlternatives
-│   │   ├── pages/                   # Top-level page views (HomePage, DashboardPage, etc.)
+│   │   ├── pages/                   # Top-level page views (HomePage, DashboardPage, TerminalPage, etc.)
 │   │   └── services/                # Axios API client, auth services, websocket client
 │   └── package.json                 # Client dependencies & scripts
 ├── server/                          # Node.js Express REST API
-│   ├── controllers/                 # Request handlers (auth, threatFeed, terminal, etc.)
+│   ├── controllers/                 # Request handlers (auth, threatFeed, terminal, chatbot, etc.)
 │   ├── integrations/                # Connectors (Jira, ServiceNow, PagerDuty, Slack, Teams)
 │   ├── middleware/                  # Auth validation, rate limiting, observability, error handlers
 │   ├── models/                      # Mongoose schemas (User, AuditEvent, CloudEvent, Scan)
-│   ├── routes/                      # Express route registrations
-│   ├── scripts/                     # Operational scripts (seedAdmin.js, certification)
-│   ├── services/                    # Business logic (threatFeed.js, breachService.js, aiService.js)
+│   ├── routes/                      # Express route registrations (16 routers)
+│   ├── scripts/                     # Operational scripts (seedAdmin.js, seedTools.js)
+│   ├── services/                    # Business logic (AIOrchestrator, threatFeed, breachService)
 │   ├── tests/                       # Jest test suites (unit, integration, regression)
-│   ├── utils/                       # Database connector, JWT helper, sanitizers
+│   ├── utils/                       # Database connector, JWT helper, PlatformErrors, sanitizers
 │   └── workers/                     # In-memory integration queues and workers
 ├── docs/                            # Architecture Decision Records (ADRs) and runbooks
 ├── PROJECT_MASTER.md                # Single Source of Operational Memory (Frozen Architecture)
@@ -283,85 +272,40 @@ ADMIN_EMAIL=admin@cybershieldx.local ADMIN_PASSWORD=your_secure_dev_password npm
 
 ### 5. Launch Development Servers
 ```bash
-# Starts Express API (Port 5001) and React Client (Port 3000) concurrently
+# Starts Express API (Port 3001/5001) and React Client (Port 3000) concurrently
 npm run dev
 ```
 
 ---
 
-## Environment Variables
-
-| Variable | Scope | Required? | Purpose |
-| :--- | :--- | :---: | :--- |
-| `PORT` | Server | No (Default: 5001) | HTTP listen port |
-| `NODE_ENV` | Server | Yes | Runtime environment (`development`, `test`, `production`) |
-| `MONGODB_URI` | Server | Yes | MongoDB connection string URI |
-| `JWT_SECRET` | Server | Yes | Min 64-character secret for signing access tokens |
-| `JWT_REFRESH_SECRET` | Server | Yes | Secret for signing long-lived refresh tokens |
-| `SCAN_HMAC_KEY` | Server | Yes | Key for signing report integrity fingerprints |
-| `GEMINI_API_KEY` | Server | Optional | Google Gemini API key (defaults to offline template engine if omitted) |
-| `ADMIN_EMAIL` | Server | Dev Only | Target email for `npm run seed:admin` |
-| `ADMIN_PASSWORD` | Server | Dev Only | Required password for `npm run seed:admin` (no fallback) |
-| `REACT_APP_API_URL` | Client | Optional | Custom backend API base URL (defaults to production backend) |
-
----
-
-## Testing
+## Testing & Quality Gates
 
 ```bash
-# Run server baseline and security suites
-cd server && npm test
+# 1. Run client test battery (13 test suites, 136 passing tests)
+npm --prefix client test -- --watchAll=false
 
-# Run specific integration suites
-cd server && npx jest tests/threatFeed.test.js tests/nativeTerminal.test.js
+# 2. Run client production build
+npm --prefix client run build
 
-# Run client component and UI regression suites
-cd client && npm test -- --watchAll=false
+# 3. Run server core test suites
+npm --prefix server test -- tests/threatFeed.test.js tests/ai_provider_routing.test.js tests/canonical_111_tool_registry.test.js
 ```
 
 ---
 
-## Build
+## Security Model
 
-```bash
-# Compile production-optimized frontend bundle
-npm run build
-```
-Build output artifacts are emitted to `client/build/` with content hashes and tree-shaken chunks.
-
----
-
-## Security Notes
-
-1. **Zero Credential Exposure**: Never commit active production credentials, API keys, or JWT tokens to Git.
-2. **Environment Isolation**: Production secrets are injected exclusively through hosting platform environment controls (Cloudflare Pages environment variables and Render secret management).
-3. **Report Sanitization**: All exported reports and client responses recursively redact sensitive fields.
-
----
-
-## Known Accepted Limitations
-
-1. **Single-Node In-Memory ITSM Queue (Phase 81)**:
-   * The outbound ITSM dispatch queue (`integrationQueue` in `server/workers/queueProvider.js`) is an in-memory queue with DLQ isolation and exponential backoff retry.
-   * **Limitation**: Jobs enqueued in memory do not persist across Node.js server restarts. This is an intentional architectural trade-off avoiding Redis/Kafka complexity in single-instance deployments.
-2. **Deterministic Offline AI Fallback**:
-   * When `GEMINI_API_KEY` is not provided or upstream Google AI quota is reached, CyboBot automatically uses a deterministic heuristic template engine rather than dynamic LLM generation.
-3. **Client-Side Alternative CTAs**:
-   * For the 70 tools designated as `COMING_SOON`, the platform does not execute native browser emulation; it explicitly displays a Coming Soon badge and links to official repositories where verified.
-
----
-
-## Maintenance Policy
-
-CyberShield X is officially in **MAINTENANCE-ONLY MODE**.
-* **Policy**: The system architecture is completely frozen. No feature expansion, structural redesigns, or speculative abstractions will be accepted.
-* **Permitted Changes**: Critical security vulnerability patches, dependency vulnerability fixes, and upstream API deprecation updates only.
+* **Zero Trust Mindset**: All API endpoints enforce strict authentication and tenant scoping via `req.organizationId`.
+* **Subprocess Sandboxing**: Terminal commands are spawned with `shell: false`, strict binary allowlists, forbidden character filtering, and an automated 10-second kill switch.
+* **SSRF Protection**: Outbound requests through connector utilities leverage DNS-pinning agents (`secureAxios`), blocking private IP space (RFC 1918), loopback (`127.0.0.1`), and cloud metadata services (`169.254.169.254`).
+* **Credential Hygiene**: Strict recursive scrubbing of Authorization headers, Bearer tokens, cookies, passwords, and MongoDB connection strings from logs, telemetry, and client responses.
+* **Immutable Audit Logging**: Every administrative action, authentication attempt, and dispatch event is immutably recorded with organization scoping.
 
 ---
 
 ## Version / Release
 
 * **Current Canonical Version**: `v62.6.0`
-* **Release Date**: September 29, 2026
-* **Certified Release Commit**: `dc9f5f0c1ed7cccb8c5e38fa1733976f01b023c8` (Base) + Operational Hard-Lock
+* **Release Date**: September 30, 2026
+* **Certified Release Commit**: Operational Hard-Lock & AI Copilot Resilience Release
 * **License**: MIT License

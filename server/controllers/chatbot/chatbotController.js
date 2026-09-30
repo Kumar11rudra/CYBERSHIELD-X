@@ -346,6 +346,7 @@ const handleChat = async (req, res) => {
     // Process the chat request via the orchestrator pipeline
     const orchestratorResult = await orchestrator.processChatRequest(req, messages);
 
+    if (res.headersSent) return;
     if (!orchestratorResult.success) {
        return res.status(orchestratorResult.metadata.errorCode === 'AI_OFFLINE' ? 503 : 500)
                  .json({ error: orchestratorResult.error });
@@ -360,6 +361,7 @@ const handleChat = async (req, res) => {
     });
 
   } catch (error) {
+    if (res.headersSent) return;
     console.error('[CHATBOT CONTROLLER ERROR]', error);
     res.status(500).json({ error: 'Internal server error.' });
   }

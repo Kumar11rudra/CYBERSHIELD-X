@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const AIReportDTO = require('../../models/dto/AIReportDTO');
-const { AIParsingError } = require('../../providers/ai/AIErrors');
+const { AIParsingError } = require('../../utils/PlatformErrors');
 
 class AIReportService {
     constructor(deps) {

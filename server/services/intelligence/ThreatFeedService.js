@@ -291,7 +291,7 @@ class ThreatFeedService {
     }
 
     async getLiveThreatFeed() {
-        const { getThreatFeed } = require('../../threatFeed');
+        const { getThreatFeed } = require('../threatFeed');
         return await getThreatFeed();
     }
 }

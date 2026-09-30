@@ -36,7 +36,7 @@ class IExecutionAdapter {
     }
 
     _handleProviderError(error) {
-        const { AdapterExecutionError } = require('../../providers/adapters/AdapterErrors');
+        const { AdapterExecutionError } = require('../utils/PlatformErrors');
         // Fallback for untyped errors
         if (error.name && error.name.startsWith('Adapter')) throw error;
         throw new AdapterExecutionError(error.message);

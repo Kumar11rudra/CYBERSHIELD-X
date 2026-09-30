@@ -1,5 +1,5 @@
-const AIAnalysis = require('../../models/AIAnalysis');
-const AIAnalysisDTO = require('../../models/dto/AIAnalysisDTO');
+const AIAnalysis = require('../models/AIAnalysis');
+const AIAnalysisDTO = require('../models/dto/AIAnalysisDTO');
 
 class AIAnalysisRepository {
     async findByScanIdAndModel(scanId, model) {

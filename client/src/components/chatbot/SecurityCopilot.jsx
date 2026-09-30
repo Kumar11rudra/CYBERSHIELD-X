@@ -157,16 +157,32 @@ export default function SecurityCopilot() {
       {/* Floating Action Button */}
       <motion.button
         onClick={toggleChat}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.06 }}
+        whileTap={{ scale: 0.94 }}
         aria-label="Open Security Copilot"
-        className="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-[#040d1e] text-white shadow-[0_0_25px_rgba(0,212,255,0.4)] flex items-center justify-center z-50 border border-cyan-400/60 hover:shadow-[0_0_35px_rgba(0,212,255,0.7)] transition-all p-2"
+        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-[#030919] text-white shadow-[0_0_25px_rgba(0,212,255,0.5)] flex items-center justify-center z-50 border-2 border-cyan-400/70 hover:border-cyan-300 hover:shadow-[0_0_35px_rgba(0,212,255,0.85)] transition-all p-1 group"
       >
-        {isOpen ? <X size={22} className="text-cyan-400" /> : <Bot size={24} className="text-cyan-400" />}
+        {isOpen ? (
+          <div className="w-full h-full rounded-full bg-cyan-500/10 flex items-center justify-center">
+            <X size={24} className="text-cyan-400 group-hover:text-white transition-colors" />
+          </div>
+        ) : (
+          <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-[#020814]">
+            <img
+              src="/bot-avatar.png"
+              alt="CyberBot Copilot"
+              className="w-full h-full rounded-full object-cover select-none pointer-events-none drop-shadow-[0_0_8px_rgba(0,212,255,0.6)]"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = '/bot-avatar.svg';
+              }}
+            />
+          </div>
+        )}
         
-        {/* Notification dot if hasn't opened yet */}
-        {!hasOpened && !isOpen && (
-          <span className="absolute top-0 right-0 w-3 h-3 rounded-full bg-cyan-400 animate-pulse ring-2 ring-black" />
+        {/* Pulsing online status indicator dot */}
+        {!isOpen && (
+          <span className="absolute top-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-400 ring-2 ring-[#020814] shadow-[0_0_10px_#00ff88] animate-pulse" />
         )}
       </motion.button>
 
@@ -178,7 +194,7 @@ export default function SecurityCopilot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-20 right-6 w-[410px] h-[580px] max-h-[82vh] max-w-[calc(100vw-2.5rem)] bg-[#030919]/95 backdrop-blur-2xl border border-cyan-500/30 rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden font-mono"
+            className="fixed bottom-24 right-6 w-[410px] h-[580px] max-h-[82vh] max-w-[calc(100vw-2.5rem)] bg-[#030919]/95 backdrop-blur-2xl border border-cyan-500/30 rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden font-mono"
             style={{
               boxShadow: '0 0 40px rgba(0, 212, 255, 0.2), 0 0 80px rgba(0, 0, 0, 0.9)'
             }}
@@ -186,12 +202,21 @@ export default function SecurityCopilot() {
             {/* Header Bar */}
             <div className="p-3.5 border-b border-cyan-500/20 bg-[#020713] flex items-center justify-between flex-shrink-0">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-[0_0_10px_rgba(0,212,255,0.2)]">
-                  <Bot size={18} />
+                <div className="relative w-9 h-9 rounded-full bg-[#020814] border-2 border-cyan-400/60 overflow-hidden shadow-[0_0_12px_rgba(0,212,255,0.4)] flex-shrink-0">
+                  <img
+                    src="/bot-avatar.png"
+                    alt="CyberBot"
+                    className="w-full h-full object-cover select-none"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = '/bot-avatar.svg';
+                    }}
+                  />
                 </div>
                 <div>
-                  <h3 className="font-bold text-white text-xs tracking-wider uppercase">
-                    Security Copilot
+                  <h3 className="font-bold text-white text-xs tracking-wider uppercase flex items-center gap-1.5">
+                    <span>CyberBot</span>
+                    <span className="text-[8px] px-1.5 py-0.5 bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 rounded font-mono font-semibold">COPILOT</span>
                   </h3>
                   <div className="flex items-center gap-1.5 text-[9px] text-slate-400">
                     <span className={`w-1.5 h-1.5 rounded-full ${isAiOffline ? 'bg-amber-400' : 'bg-emerald-400 animate-pulse'}`} />
@@ -230,9 +255,20 @@ export default function SecurityCopilot() {
                   >
                     {msg.role === 'assistant' && (
                       <div className="flex items-center justify-between border-b border-white/5 pb-1 mb-2">
-                        <span className="text-[9px] uppercase tracking-wider text-cyan-400 font-bold flex items-center gap-1">
-                          <Bot size={11} /> AI Security Interpretation
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <img
+                            src="/bot-avatar.png"
+                            alt="CyberBot"
+                            className="w-4 h-4 rounded-full object-cover border border-cyan-400/50 shadow-[0_0_6px_rgba(0,212,255,0.4)] flex-shrink-0"
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = '/bot-avatar.svg';
+                            }}
+                          />
+                          <span className="text-[9px] uppercase tracking-wider text-cyan-400 font-bold">
+                            CyberBot Intelligence
+                          </span>
+                        </div>
                         <span className="text-[8px] text-slate-500">
                           {msg.model || 'Gemini 2.5 Flash'}
                         </span>

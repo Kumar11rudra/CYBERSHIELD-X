@@ -37,6 +37,18 @@ class AnalyticsError extends PlatformError {
   }
 }
 
+class AIParsingError extends PlatformError {
+  constructor(message) {
+    super(message, 502);
+  }
+}
+
+class AdapterExecutionError extends PlatformError {
+  constructor(message) {
+    super(message, 500);
+  }
+}
+
 /**
  * Standard Normalized Error Codes across CyberShield X
  */
@@ -87,6 +99,8 @@ module.exports = {
   ReportGenerationError,
   BreachProviderError,
   AnalyticsError,
+  AIParsingError,
+  AdapterExecutionError,
   ERROR_CODES,
   createNormalizedError
 };
