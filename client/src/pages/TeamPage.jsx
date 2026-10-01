@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Key } from 'lucide-react';
 import BrandLogo from '../components/common/BrandLogo';
 
 const TEAM = [
@@ -421,10 +422,11 @@ export default function TeamPage() {
                         e.stopPropagation();
                         navigate('/nexus-admin');
                       }}
-                      className="px-2 py-0.5 rounded border border-red-500/40 bg-red-500/10 text-red-400 hover:bg-red-500/25 hover:border-red-400 transition-all font-bold uppercase tracking-wider inline-flex items-center gap-1 shadow-[0_0_8px_rgba(239,68,68,0.2)]"
-                      title="Authorized Founder / SecOps Portal Access"
+                      className="p-1 rounded border border-white/10 bg-white/5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500/30 transition-all duration-200 inline-flex items-center justify-center shadow-xs"
+                      title="Access Passkey"
+                      aria-label="Admin Access"
                     >
-                      ADMIN CONSOLE →
+                      <Key className="w-3.5 h-3.5" />
                     </button>
                     <span className="text-[#00bfff] group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-1 font-bold uppercase">
                       VIEW PROFILE →
