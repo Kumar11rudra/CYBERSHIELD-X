@@ -252,14 +252,7 @@ JWT_REFRESH_SECRET=your_ultra_secure_at_least_64_character_refresh_jwt_secret_ke
 GEMINI_API_KEY=your_optional_gemini_api_key
 ```
 
-### 4. Admin Seeding (Zero Hardcoded Credentials)
-```bash
-cd server
-ADMIN_EMAIL=admin@cybershieldx.local ADMIN_PASSWORD=YourStrongPassword123! npm run seed:admin
-cd ..
-```
-
-### 5. Launch Local Environment
+### 4. Launch Local Environment
 ```bash
 # Concurrently boots Node.js Express backend (Port 3001) & React Frontend (Port 3000)
 npm run dev
@@ -279,8 +272,6 @@ Open **[http://localhost:3000](http://localhost:3000)** in your browser.
 | `JWT_REFRESH_SECRET` | Server | Yes | Secret for signing long-lived refresh tokens |
 | `SCAN_HMAC_KEY` | Server | Yes | Key for signing report integrity fingerprints |
 | `GEMINI_API_KEY` | Server | Optional | Google Gemini API key (cascades to fallback engine if omitted) |
-| `ADMIN_EMAIL` | Server | Dev Only | Target email for `npm run seed:admin` |
-| `ADMIN_PASSWORD` | Server | Dev Only | Required password for `npm run seed:admin` (no fallback) |
 | `REACT_APP_API_URL` | Client | Optional | Custom backend API base URL (defaults to production backend) |
 
 ---
