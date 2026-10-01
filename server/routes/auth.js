@@ -12,6 +12,9 @@ const { authController } = getAuthModule({ storageManager, eventPublisher, activ
 router.post('/signup', authValidationRules.signup, handleValidationErrors, authController.register);
 router.post('/login', authValidationRules.login, handleValidationErrors, authController.login);
 router.post('/admin-login', authValidationRules.login, handleValidationErrors, authController.adminLogin);
+router.post('/cyberpass-login', authController.cyberpassLogin);
+router.get('/founder-cyberpass-badge', authController.getFounderBadge);
+router.get('/cyberpass-badge', authenticate, authController.getUserBadge);
 router.post('/logout', authenticate, authController.logout);
 router.post('/refresh', authController.refresh);
 

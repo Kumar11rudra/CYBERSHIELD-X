@@ -6,6 +6,7 @@ import api from '../services/api';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import BrandLogo from '../components/common/BrandLogo';
+import CyberBadgeModal from '../components/auth/CyberBadgeModal';
 import { formatApiError, isPasswordStrongEnough } from '../utils/authValidation';
 
 const COUNTRY_CODES = [
@@ -90,6 +91,8 @@ export default function SignupPage() {
   const [usernameSuggestions, setUsernameSuggestions] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [createdBadge, setCreatedBadge] = useState(null);
+  const [showBadgeModal, setShowBadgeModal] = useState(false);
 
   const { signup } = useAuth();
   const { t } = useTranslation();
@@ -180,7 +183,7 @@ export default function SignupPage() {
 
     const fullMobile = `${form.countryCode}${cleanPhone}`;
     try {
-      await signup(
+      const result = await signup(
         form.username.trim(),
         form.email.trim(),
         form.password,
@@ -188,7 +191,12 @@ export default function SignupPage() {
         form.fullName.trim()
       );
       toast.success('Account successfully registered! Welcome to CyberShield X.');
-      navigate(getSafeReturnUrl(returnTo));
+      if (result && result.cyberPassBadge) {
+        setCreatedBadge(result.cyberPassBadge);
+        setShowBadgeModal(true);
+      } else {
+        navigate(getSafeReturnUrl(returnTo));
+      }
     } catch (err) {
       toast.error(formatApiError(err, 'Failed to complete registration.'));
     } finally {
@@ -440,6 +448,15 @@ export default function SignupPage() {
           </div>
         </motion.div>
       </div>
+
+      {/* CyberPass Digital Clearance Badge Modal */}
+      {showBadgeModal && createdBadge && (
+        <CyberBadgeModal
+          badge={createdBadge}
+          onClose={() => navigate(getSafeReturnUrl(returnTo))}
+          onProceed={() => navigate(getSafeReturnUrl(returnTo))}
+        />
+      )}
     </div>
   );
 }

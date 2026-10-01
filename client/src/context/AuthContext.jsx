@@ -187,7 +187,7 @@ export const AuthProvider = ({ children }) => {
       setUser(newUser);
       setAuthState(AUTH_STATE.AUTHENTICATED);
       setAuthError(null);
-      return newUser;
+      return { user: newUser, cyberPassBadge: res.data?.cyberPassBadge };
     } catch (err) {
       setAuthState(AUTH_STATE.UNAUTHENTICATED);
       throw err;

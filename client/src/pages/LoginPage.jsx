@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import BrandLogo from '../components/common/BrandLogo';
+import CyberPassScanner from '../components/auth/CyberPassScanner';
 
 export default function LoginPage() {
   const [identity, setIdentity] = useState('');
@@ -22,6 +23,55 @@ export default function LoginPage() {
   const [searchParams] = useSearchParams();
   const returnTo = searchParams.get('returnTo');
   const isExpired = searchParams.get('expired') === '1';
+  const modeParam = searchParams.get('mode');
+  const [loginMode, setLoginMode] = useState(modeParam === 'cyberpass' ? 'cyberpass' : 'standard');
+  const [isAuthenticatingPasskey, setIsAuthenticatingPasskey] = useState(false);
+
+  const handleCyberPassLogin = async (passkeyData) => {
+    setIsAuthenticatingPasskey(true);
+    try {
+      const res = await api.post('/auth/cyberpass-login', { passkey: passkeyData });
+      const { token, refreshToken, role, message, redirectTo } = res.data;
+
+      if (token) {
+        try {
+          localStorage.setItem('cybershield_token', token);
+          if (refreshToken) localStorage.setItem('cybershield_refresh_token', refreshToken);
+          localStorage.setItem('cybershield_auth_event', `cyberpass:${Date.now()}`);
+        } catch {}
+      }
+
+      if (role === 'admin') {
+        toast.success('★ FOUNDER ADMIN CLEARANCE GRANTED ★', {
+          icon: '🛡️',
+          style: {
+            border: '1px solid #00bfff',
+            padding: '12px',
+            color: '#00bfff',
+            background: '#020814'
+          }
+        });
+      } else {
+        toast.success(message || 'CyberPass Identity Verified!', {
+          icon: '🟢',
+          style: {
+            border: '1px solid #00ff88',
+            padding: '12px',
+            color: '#00ff88',
+            background: '#020814'
+          }
+        });
+      }
+
+      window.dispatchEvent(new Event('storage'));
+      navigate(redirectTo || (role === 'admin' ? '/nexus-admin/dashboard' : getSafeReturnUrl(returnTo)));
+    } catch (err) {
+      const errMsg = err.response?.data?.error || 'Invalid or unrecognized CyberPass';
+      toast.error(errMsg);
+    } finally {
+      setIsAuthenticatingPasskey(false);
+    }
+  };
 
   // Inform user if redirected due to expired session
   React.useEffect(() => {
@@ -159,6 +209,59 @@ export default function LoginPage() {
             {/* Glowing background blob behind form */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyber-green/10 rounded-full blur-[80px] pointer-events-none" />
 
+            {/* ── HIGH-TECH MODE SELECTOR: STANDARD CREDENTIALS VS CYBERPASS SMART QR ── */}
+            <div className="flex items-center justify-center p-1 rounded-xl bg-black/60 border border-white/10 mb-6 relative z-10 backdrop-blur-md">
+              <button
+                type="button"
+                onClick={() => setLoginMode('standard')}
+                className={`flex-1 py-2 px-3 rounded-lg font-mono text-xs font-bold transition-all ${
+                  loginMode === 'standard'
+                    ? 'bg-cyber-green/20 text-cyber-green border border-cyber-green/40 shadow-[0_0_15px_rgba(0,255,136,0.3)]'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                ⌨️ Password Login
+              </button>
+              <button
+                type="button"
+                onClick={() => setLoginMode('cyberpass')}
+                className={`flex-1 py-2 px-3 rounded-lg font-mono text-xs font-bold transition-all ${
+                  loginMode === 'cyberpass'
+                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/50 shadow-[0_0_15px_rgba(0,191,255,0.3)]'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                🛡️ CyberPass™ QR
+              </button>
+            </div>
+
+            {/* CYBERPASS UNIVERSAL CLEARANCE VIEW */}
+            {loginMode === 'cyberpass' ? (
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="text-center mb-4 space-y-1">
+                  <h3 className="font-display font-black text-sm uppercase tracking-widest bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent animate-gradient-flow">
+                    UNIVERSAL CYBERPASS™ CLEARANCE
+                  </h3>
+                  <p className="text-[10px] text-slate-400 font-mono">
+                    Auto-routes Founder Admin & Operator accounts
+                  </p>
+                </div>
+
+                <CyberPassScanner
+                  onPasskeyDetected={handleCyberPassLogin}
+                  isAuthenticating={isAuthenticatingPasskey}
+                />
+
+                <div className="mt-6 pt-3 border-t border-white/10 text-center w-full">
+                  <p className="font-mono text-[10px] text-slate-400">
+                    Need a clearance badge?{' '}
+                    <Link to="/signup" className="text-cyan-400 hover:underline">
+                      Register & Get Badge →
+                    </Link>
+                  </p>
+                </div>
+              </div>
+            ) : (
             <AnimatePresence mode="wait">
               {step === 'creds' && (
                 <motion.div
@@ -304,6 +407,7 @@ export default function LoginPage() {
                 </motion.div>
               )}
             </AnimatePresence>
+            )}
           </div>
         </motion.div>
       </div>

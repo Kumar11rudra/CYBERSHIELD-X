@@ -9,7 +9,22 @@ CyberShield X uses a hybrid approach, transitioning from a legacy MVC monolith t
 - **Legacy Core**: Standard Express MVC paradigm for business logic (`server/controllers/`, `server/services/`, `server/routes/`).
 - **Modern Core (V62.4.0)**: Fully decoupled, event-driven orchestration layer located primarily in `server/services/chatbot_core/`, specialized feature folders (`server/services/intelligence/`, `server/services/datafabric/`, `server/services/automation/`, `server/services/soc/`, `server/services/observability/`, `server/services/jobs/`, `server/services/workflows/`, `server/services/scanners/`).
 
-## 2. Core V62.4.0 Modules
+## 2. Core V62.8.0 Modules
+
+- **CyberPass™ Universal Cryptographic QR & Passkey Authentication Engine (`v62.8.0`)**:
+  - **Cryptographic Engine Architecture (`server/services/cyberPassService.js`)**:
+    - **Payload Protocol**: Signed envelope format `CSX-PASSKEY:<role>:<id>:<timestamp>:<hmac>` generated using Node.js native `crypto.createHmac('sha256', secret)`.
+    - **Side-Channel Timing Attack Defense**: Payload validation enforces constant-time comparison via `crypto.timingSafeEqual(Buffer.from(providedHmac), Buffer.from(calculatedHmac))`.
+    - **Zero Database Password for Founder Admin**: Founder Anil Kumar's credentials derive from server environment variable `ADMIN_PASSKEY_SECRET`. No password hash or plaintext is stored in the database.
+    - **First-Time DB Auto-Bootstrap**: When the Founder Master Passkey is verified and no admin record exists in MongoDB, the engine automatically creates the Founder Admin user (`username: 'anil-kumar'`, `fullName: 'Anil Kumar'`, `role: 'admin'`) with a cryptographically randomized 32-byte temporary password.
+    - **In-Memory QR Badge Generation**: Pure client and server QR matrix compilation using lightweight `qrcode` library, encoding payload into base64 PNG data URLs with zero disk persistence.
+  - **Universal Smart Gateway (`LoginPage.jsx`, `CyberPassScanner.jsx`)**:
+    - Dual authentication mode toggle (`Password` vs `CyberPass™ QR`).
+    - Triple-input scanner: Live webcam via client-side `jsqr`, 1-click image file drop/upload (reading QR from photo/screenshot without camera hardware), and 32-character manual passkey entry.
+    - Role-based smart dispatch: automatically routes Admin to `/nexus-admin/dashboard` and standard users to `/dashboard`.
+  - **Digital Clearance ID Badge Generator (`CyberBadgeModal.jsx`, `SignupPage.jsx`)**:
+    - Automatic badge presentation on user signup with 1-click `.PNG` download for saving to mobile gallery or computer files.
+    - High-tech holographic aesthetics: horizontal neon laser sweep (`animate-laser-sweep`), glowing corner reticles, and Web Audio API synthesized verification tones.
 
 - **Phase 81 Enterprise External Workflow, Bidirectional Ticketing & SOAR Webhooks Architecture (Certified & Production-Ready)**:
   - **External Approval Callback Engine Architecture (`ExternalApprovalCallbackNormalizer.js`, `ExternalApprovalCallbackService.js`, `inboundWebhookController.js`)**:

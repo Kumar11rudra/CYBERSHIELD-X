@@ -4,13 +4,67 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import BrandLogo from '../components/common/BrandLogo';
+import api from '../services/api';
+import CyberPassScanner from '../components/auth/CyberPassScanner';
+import CyberBadgeModal from '../components/auth/CyberBadgeModal';
+import { Download } from 'lucide-react';
 
 export default function AdminLoginPage() {
   const [identity, setIdentity] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [authMode, setAuthMode] = useState('passkey');
+  const [founderBadge, setFounderBadge] = useState(null);
+  const [showBadgeModal, setShowBadgeModal] = useState(false);
+  const [isAuthenticatingPasskey, setIsAuthenticatingPasskey] = useState(false);
   const { adminLogin, user } = useAuth();
   const navigate = useNavigate();
+
+  const handleCyberPassLogin = async (passkeyData) => {
+    setIsAuthenticatingPasskey(true);
+    try {
+      const res = await api.post('/auth/cyberpass-login', { passkey: passkeyData });
+      const { token, refreshToken, role, redirectTo } = res.data;
+
+      if (token) {
+        try {
+          localStorage.setItem('cybershield_token', token);
+          if (refreshToken) localStorage.setItem('cybershield_refresh_token', refreshToken);
+          localStorage.setItem('cybershield_auth_event', `admin_passkey:${Date.now()}`);
+        } catch {}
+      }
+
+      toast.success('★ FOUNDER ADMIN CLEARANCE GRANTED ★', {
+        icon: '🛡️',
+        style: {
+          border: '1px solid #00bfff',
+          padding: '12px',
+          color: '#00bfff',
+          background: '#020814'
+        }
+      });
+
+      window.dispatchEvent(new Event('storage'));
+      navigate(redirectTo || '/nexus-admin/dashboard');
+    } catch (err) {
+      const errMsg = err.response?.data?.error || 'Invalid or unauthorized Admin Passkey';
+      toast.error(errMsg);
+    } finally {
+      setIsAuthenticatingPasskey(false);
+    }
+  };
+
+  const handleDownloadFounderBadge = async () => {
+    try {
+      const res = await api.get('/auth/founder-cyberpass-badge');
+      if (res.data && res.data.badge) {
+        setFounderBadge(res.data.badge);
+        setShowBadgeModal(true);
+      }
+    } catch (err) {
+      toast.error('Failed to generate Founder Master Badge');
+    }
+  };
 
   const handleAdminLogin = async (e) => {
     e.preventDefault();
@@ -138,6 +192,62 @@ export default function AdminLoginPage() {
               <p className="text-[10px] text-red-400 tracking-widest uppercase">Identity Verification</p>
             </div>
 
+            {/* ── HIGH-TECH MODE SWITCHER: CYBERPASS PASSKEY VS CLEARANCE ID ── */}
+            <div className="flex items-center justify-center p-1 rounded-xl bg-black/60 border border-red-500/20 mb-6 relative z-10 backdrop-blur-md">
+              <button
+                type="button"
+                onClick={() => setAuthMode('passkey')}
+                className={`flex-1 py-2 px-3 rounded-lg font-mono text-xs font-bold transition-all ${
+                  authMode === 'passkey'
+                    ? 'bg-red-500/20 text-red-400 border border-red-500/40 shadow-[0_0_15px_rgba(239,68,68,0.3)]'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                🛡️ CyberPass QR / Badge
+              </button>
+              <button
+                type="button"
+                onClick={() => setAuthMode('credentials')}
+                className={`flex-1 py-2 px-3 rounded-lg font-mono text-xs font-bold transition-all ${
+                  authMode === 'credentials'
+                    ? 'bg-red-500/20 text-red-400 border border-red-500/40 shadow-[0_0_15px_rgba(239,68,68,0.3)]'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                ⌨️ Clearance ID
+              </button>
+            </div>
+
+            {authMode === 'passkey' ? (
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="text-center mb-4 space-y-1">
+                  <h3 className="font-display font-black text-sm uppercase tracking-widest text-red-400">
+                    FOUNDER MASTER PASSKEY CLEARANCE
+                  </h3>
+                  <p className="text-[10px] text-slate-400 font-mono">
+                    Drop Founder Badge image or scan Master QR
+                  </p>
+                </div>
+
+                <CyberPassScanner
+                  theme="red"
+                  onPasskeyDetected={handleCyberPassLogin}
+                  isAuthenticating={isAuthenticatingPasskey}
+                />
+
+                <div className="mt-6 pt-3 border-t border-red-900/40 text-center w-full">
+                  <button
+                    type="button"
+                    onClick={handleDownloadFounderBadge}
+                    className="inline-flex items-center gap-1.5 text-xs font-mono text-cyan-400 hover:text-cyan-300 font-bold hover:underline transition-colors"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Generate / Download Founder Master Badge (.PNG)</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+            <>
             {/* Hidden honeypot fields — block browser autofill */}
             <div style={{ display: 'none' }} aria-hidden="true">
               <input type="text" name="username" tabIndex="-1" />
@@ -206,6 +316,8 @@ export default function AdminLoginPage() {
                 <div className="absolute inset-0 -translate-y-full group-hover:animate-[scanLine_2s_infinite] bg-gradient-to-b from-transparent via-white/30 to-transparent" />
               </motion.button>
             </form>
+            </>
+            )}
 
             <div className="mt-10 pt-6 border-t border-red-900/40 text-center relative z-10">
               <p className="text-[8px] text-red-500/40 tracking-[0.3em] mb-3 uppercase">Secure Authentication Gateway</p>
@@ -217,6 +329,13 @@ export default function AdminLoginPage() {
         </motion.div>
       </div>
 
+      {/* Founder Master Badge Modal */}
+      {showBadgeModal && founderBadge && (
+        <CyberBadgeModal
+          badge={founderBadge}
+          onClose={() => setShowBadgeModal(false)}
+        />
+      )}
     </div>
   );
 }

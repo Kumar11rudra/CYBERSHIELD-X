@@ -47,6 +47,7 @@
     "morgan": "^1.10.0",
     "nodemailer": "^8.0.7",
     "pdfkit": "^0.14.0",
+    "qrcode": "^1.5.4",
     "socket.io": "^4.7.4",
     "winston": "^3.11.0"
   },

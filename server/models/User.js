@@ -163,6 +163,23 @@ const userSchema = new mongoose.Schema(
       default: false,
       select: false,
     },
+
+    // CyberPass™ Cryptographic Passkey & QR
+    cyberPassSecret: {
+      type: String,
+      select: false,
+      index: true,
+      sparse: true,
+    },
+    cyberPassBackupCodes: {
+      type: [String],
+      select: false,
+      default: [],
+    },
+    cyberPassEnabled: {
+      type: Boolean,
+      default: true,
+    },
     blockedIPs: [{
       type: String,
       validate: {

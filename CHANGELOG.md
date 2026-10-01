@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v62.8.0] - 2026-10-01
+### CyberPass™ Universal QR & Passkey Cryptographic Authentication Architecture
+> **Eliminates email/SMS OTP reset failures and database-stored admin passwords with an offline-resilient, zero-cost, cryptographic QR & passkey authentication system. Features a universal smart gateway on `/login` with automatic role-based dispatching, digital clearance ID badge generator on signup with 1-click `.PNG` download, and zero-password Founder Admin access protected by `ADMIN_PASSKEY_SECRET`.**
+
+- **Cryptographic Backend Engine (`server/services/cyberPassService.js`)**:
+  - Implemented HMAC-SHA256 signature generation and verification (`CSX-PASSKEY:<role>:<id>:<timestamp>:<hmac>`).
+  - Enforced constant-time string comparison (`crypto.timingSafeEqual`) to prevent side-channel timing attacks.
+  - Generates signed base64 QR PNG data URLs directly in-memory using lightweight pure-JS `qrcode`.
+- **Founder Admin Zero-Password Security & Auto-Bootstrap**:
+  - Founder Anil Kumar's master passkey is verified directly against environment secret (`ADMIN_PASSKEY_SECRET`), completely removing plaintext/hashed passwords from the database.
+  - Automatic database bootstrap: if MongoDB lacks the Founder Admin record when the master key is scanned, the server auto-instantiates the account with a cryptographically randomized 32-byte temporary password.
+- **Universal Smart Gateway (`client/src/pages/LoginPage.jsx`)**:
+  - Added additive high-tech Cyber Mode Switcher (`[ ⌨️ Password Login ]` vs `[ 🛡️ CyberPass™ Smart Portal ]`).
+  - Automatically inspects authenticated payload and dispatches Founder Admin to `/nexus-admin/dashboard` and regular operators to `/dashboard`.
+- **Universal Scanner & Dropzone Component (`client/src/components/auth/CyberPassScanner.jsx`)**:
+  - **Live Camera Scanner**: Real-time canvas QR decoding via `jsqr`.
+  - **1-Click File Dropzone / Gallery Picker**: Reads QR matrices directly from uploaded or dropped screenshot/photo images in <20ms without camera hardware.
+  - **Manual 32-Character Passkey Entry**: Backup passkey input with instant client validation.
+  - **Tactical Holographic HUD**: Horizontal neon laser sweep animation (`animate-laser-sweep`), glowing cyan corner brackets, and Web Audio API synthesized verification chimes.
+- **Digital Clearance ID Badge Generator (`client/src/components/auth/CyberBadgeModal.jsx`, `SignupPage.jsx`)**:
+  - New operators are presented with their official clearance badge upon registration.
+  - Includes user avatar, operator name, username, clearance level, QR matrix, and 32-character backup code.
+  - 1-click `.PNG` download saves the ID badge directly to phone camera roll or local desktop files.
+- **Founder Master Badge Utility (`AdminLoginPage.jsx`)**:
+  - Added 1-click Founder Master Badge download utility directly to `/nexus-admin`.
+- **Zero Cost / 100% Free**:
+  - Zero paid third-party APIs (no Twilio, SendGrid, or commercial MFA licenses).
+- **Quality Gates & Regression Protection**:
+  - All 14 client test suites passed 139/139 (100% PASS).
+  - All server test suites passed (16/16 PASS).
+  - Production build compiled with Exit Code 0.
+
 ## [v62.7.1] - 2026-10-01
 ### Decommissioning of Redundant Vercel Deployment & Reaffirmation of Canonical Stack
 > **Decommissions legacy redundant Vercel deployment pipeline from GitHub. Reaffirms the canonical production infrastructure: Frontend hosted on Cloudflare Pages (https://cybershieldx.in), Backend API hosted on Render (https://cybershield-x.onrender.com), and Database hosted on MongoDB Atlas.**

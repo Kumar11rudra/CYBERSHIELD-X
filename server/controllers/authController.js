@@ -61,12 +61,25 @@ class AuthController {
             res.cookie('token', accessToken, this._getCookieOptions(req, 15 * 60 * 1000, '/'));
             res.cookie('refreshToken', refreshToken, this._getCookieOptions(req, 7 * 24 * 60 * 60 * 1000, '/api/auth/refresh'));
 
+            let cyberPassBadge = null;
+            try {
+                const cyberPassService = require('../services/cyberPassService');
+                const User = require('../models/User');
+                const freshUser = await User.findById(user.id);
+                if (freshUser) {
+                    freshUser.cyberPassSecret = crypto.randomBytes(24).toString('hex');
+                    await freshUser.save();
+                    cyberPassBadge = await cyberPassService.generateUserPass(freshUser);
+                }
+            } catch {}
+
             res.status(201).json({
                 success: true,
                 authenticated: true,
                 user: { id: user.id, username: user.username, email: user.email, role: user.role, status: user.status },
                 token: accessToken,
-                refreshToken: refreshToken
+                refreshToken: refreshToken,
+                cyberPassBadge
             });
         } catch (err) {
             // Normalize duplicate database key errors/validation blocks generics to prevent account enumeration
@@ -321,6 +334,207 @@ class AuthController {
             res.json(result);
         } catch (err) {
             res.status(err.status || 400).json({ error: err.message });
+        }
+    }
+
+    /**
+     * Universal CyberPass™ Login Endpoint
+     * Smartly identifies Founder Admin vs Regular User from cryptographic payload
+     */
+    cyberpassLogin = async (req, res) => {
+        try {
+            const { passkey } = req.body;
+            if (!passkey) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Passkey token or QR payload is required',
+                    code: 'AUTH_PASSKEY_REQUIRED'
+                });
+            }
+
+            const cyberPassService = require('../services/cyberPassService');
+            const User = require('../models/User');
+            const { generateToken, generateRefreshToken } = require('../utils/jwt');
+            const crypto = require('crypto');
+
+            const verification = cyberPassService.verifyPass(passkey);
+            if (!verification.valid) {
+                return res.status(401).json({
+                    success: false,
+                    error: verification.error || 'Invalid or unrecognized CyberPass',
+                    code: 'AUTH_INVALID_PASSKEY'
+                });
+            }
+
+            // ── Case 1: Founder Admin Passkey ────────────────────────────────
+            if (verification.isFounder) {
+                let adminUser = await User.findOne({ role: 'admin' });
+                if (!adminUser) {
+                    // Safe auto-bootstrap for Founder Admin
+                    const tempPassword = crypto.randomBytes(32).toString('hex');
+                    adminUser = await User.create({
+                        username: 'anil-kumar',
+                        email: 'founder@cybershieldx.local',
+                        password: tempPassword,
+                        role: 'admin',
+                        fullName: 'Anil Kumar',
+                        status: 'active',
+                        emailVerified: true
+                    });
+                }
+
+                const sessionId = crypto.randomUUID();
+                try {
+                    const sessionService = require('../services/sessionService');
+                    await sessionService.createSession(adminUser.id, sessionId, req.ip, req.get('User-Agent'));
+                } catch {}
+
+                const tokenPayload = { id: adminUser.id, role: 'admin', sessionId };
+                const accessToken = generateToken(tokenPayload);
+                const refreshToken = generateRefreshToken(tokenPayload);
+
+                res.cookie('token', accessToken, this._getCookieOptions(req, 15 * 60 * 1000, '/'));
+                res.cookie('refreshToken', refreshToken, this._getCookieOptions(req, 7 * 24 * 60 * 60 * 1000, '/api/auth/refresh'));
+
+                const userDTO = {
+                    id: adminUser.id,
+                    username: adminUser.username,
+                    email: adminUser.email,
+                    role: 'admin',
+                    fullName: 'Anil Kumar',
+                    status: 'active'
+                };
+
+                return res.json({
+                    success: true,
+                    message: 'Founder Admin Clearance Granted',
+                    user: userDTO,
+                    token: accessToken,
+                    refreshToken,
+                    role: 'admin',
+                    redirectTo: '/nexus-admin/dashboard'
+                });
+            }
+
+            // ── Case 2: Regular User Passkey (HMAC Payload or Raw Code) ─────
+            let user = null;
+            if (verification.id) {
+                user = await User.findById(verification.id).select('+cyberPassSecret +cyberPassBackupCodes');
+                if (user && user.cyberPassSecret && user.cyberPassSecret !== verification.passkey) {
+                    user = null;
+                }
+            }
+
+            if (!user && verification.isRawToken) {
+                user = await User.findOne({
+                    $or: [
+                        { cyberPassSecret: verification.rawPasskey },
+                        { cyberPassBackupCodes: verification.rawPasskey }
+                    ]
+                });
+            }
+
+            if (!user) {
+                return res.status(401).json({
+                    success: false,
+                    error: 'Unrecognized CyberPass token or revoked badge',
+                    code: 'AUTH_PASSKEY_NOT_FOUND'
+                });
+            }
+
+            if (user.status === 'suspended') {
+                return res.status(403).json({
+                    success: false,
+                    error: 'Account has been suspended. Please contact security team.',
+                    code: 'AUTH_ACCOUNT_SUSPENDED'
+                });
+            }
+
+            const sessionId = crypto.randomUUID();
+            try {
+                const sessionService = require('../services/sessionService');
+                await sessionService.createSession(user.id, sessionId, req.ip, req.get('User-Agent'));
+            } catch {}
+
+            const tokenPayload = { id: user.id, role: user.role, sessionId };
+            const accessToken = generateToken(tokenPayload);
+            const refreshToken = generateRefreshToken(tokenPayload);
+
+            res.cookie('token', accessToken, this._getCookieOptions(req, 15 * 60 * 1000, '/'));
+            res.cookie('refreshToken', refreshToken, this._getCookieOptions(req, 7 * 24 * 60 * 60 * 1000, '/api/auth/refresh'));
+
+            const userDTO = {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                fullName: user.fullName,
+                status: user.status
+            };
+
+            const targetDestination = user.role === 'admin' ? '/nexus-admin/dashboard' : '/dashboard';
+
+            return res.json({
+                success: true,
+                message: 'CyberPass Identity Verified',
+                user: userDTO,
+                token: accessToken,
+                refreshToken,
+                role: user.role,
+                redirectTo: targetDestination
+            });
+        } catch (err) {
+            return res.status(500).json({
+                success: false,
+                error: err.message || 'Authentication processing error',
+                code: 'AUTH_SERVER_ERROR'
+            });
+        }
+    }
+
+    /**
+     * Get Founder Master CyberPass Badge
+     */
+    getFounderBadge = async (req, res) => {
+        try {
+            const cyberPassService = require('../services/cyberPassService');
+            const badge = await cyberPassService.generateFounderPass();
+            return res.json({
+                success: true,
+                badge
+            });
+        } catch (err) {
+            return res.status(500).json({ success: false, error: err.message });
+        }
+    }
+
+    /**
+     * Get or Generate Current User's CyberPass Badge
+     */
+    getUserBadge = async (req, res) => {
+        try {
+            const crypto = require('crypto');
+            const User = require('../models/User');
+            const cyberPassService = require('../services/cyberPassService');
+
+            const userId = req.user.id || req.user._id;
+            const user = await User.findById(userId).select('+cyberPassSecret');
+            if (!user) {
+                return res.status(404).json({ success: false, error: 'User not found' });
+            }
+
+            if (!user.cyberPassSecret) {
+                user.cyberPassSecret = crypto.randomBytes(24).toString('hex');
+                await user.save();
+            }
+
+            const badge = await cyberPassService.generateUserPass(user);
+            return res.json({
+                success: true,
+                badge
+            });
+        } catch (err) {
+            return res.status(500).json({ success: false, error: err.message });
         }
     }
 }
