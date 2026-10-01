@@ -17,7 +17,7 @@ export default function LoginPage() {
   const [otp, setOtp] = useState('');
   const [otpLoad, setOtpLoad] = useState(false);
 
-  const { login } = useAuth();
+  const { login, cyberPassLogin } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -27,19 +27,11 @@ export default function LoginPage() {
   const [loginMode, setLoginMode] = useState(modeParam === 'cyberpass' ? 'cyberpass' : 'standard');
   const [isAuthenticatingPasskey, setIsAuthenticatingPasskey] = useState(false);
 
-  const handleCyberPassLogin = async (passkeyData) => {
+  const handleCyberPassLogin = async (passkeyData, identityInput = null) => {
     setIsAuthenticatingPasskey(true);
     try {
-      const res = await api.post('/auth/cyberpass-login', { passkey: passkeyData });
-      const { token, refreshToken, role, message, redirectTo } = res.data;
-
-      if (token) {
-        try {
-          localStorage.setItem('cybershield_token', token);
-          if (refreshToken) localStorage.setItem('cybershield_refresh_token', refreshToken);
-          localStorage.setItem('cybershield_auth_event', `cyberpass:${Date.now()}`);
-        } catch {}
-      }
+      const res = await cyberPassLogin(passkeyData, identityInput);
+      const { role, redirectTo } = res;
 
       if (role === 'admin') {
         toast.success('★ FOUNDER ADMIN CLEARANCE GRANTED ★', {
@@ -51,8 +43,9 @@ export default function LoginPage() {
             background: '#020814'
           }
         });
+        navigate('/nexus-admin/dashboard', { replace: true });
       } else {
-        toast.success(message || 'CyberPass Identity Verified!', {
+        toast.success('CyberPass Identity Verified!', {
           icon: '🟢',
           style: {
             border: '1px solid #00ff88',
@@ -61,10 +54,8 @@ export default function LoginPage() {
             background: '#020814'
           }
         });
+        navigate(redirectTo || getSafeReturnUrl(returnTo), { replace: true });
       }
-
-      window.dispatchEvent(new Event('storage'));
-      navigate(redirectTo || (role === 'admin' ? '/nexus-admin/dashboard' : getSafeReturnUrl(returnTo)));
     } catch (err) {
       const errMsg = err.response?.data?.error || 'Invalid or unrecognized CyberPass';
       toast.error(errMsg);
@@ -209,29 +200,42 @@ export default function LoginPage() {
             {/* Glowing background blob behind form */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyber-green/10 rounded-full blur-[80px] pointer-events-none" />
 
-            {/* ── HIGH-TECH MODE SELECTOR: STANDARD CREDENTIALS VS CYBERPASS SMART QR ── */}
-            <div className="flex items-center justify-center p-1 rounded-xl bg-black/60 border border-white/10 mb-6 relative z-10 backdrop-blur-md">
-              <button
-                type="button"
-                onClick={() => setLoginMode('standard')}
-                className={`flex-1 py-2 px-3 rounded-lg font-mono text-xs font-bold transition-all ${
-                  loginMode === 'standard'
-                    ? 'bg-cyber-green/20 text-cyber-green border border-cyber-green/40 shadow-[0_0_15px_rgba(0,255,136,0.3)]'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                ⌨️ Password Login
-              </button>
+            {/* ── HIGH-TECH MODE SELECTOR: STANDARD CREDENTIALS VS CYBERPASS SMART PORTAL ── */}
+            <div className="flex items-center justify-between p-1.5 rounded-2xl bg-black/75 border border-cyan-500/30 mb-6 relative z-10 backdrop-blur-2xl shadow-[0_0_20px_rgba(0,191,255,0.15)] gap-1">
               <button
                 type="button"
                 onClick={() => setLoginMode('cyberpass')}
-                className={`flex-1 py-2 px-3 rounded-lg font-mono text-xs font-bold transition-all ${
+                className={`flex-1 py-2.5 px-3 rounded-xl font-mono text-xs font-black tracking-wider uppercase transition-all duration-300 relative flex items-center justify-center gap-2 ${
                   loginMode === 'cyberpass'
-                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/50 shadow-[0_0_15px_rgba(0,191,255,0.3)]'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-gradient-to-r from-cyan-500/25 via-sky-500/30 to-emerald-500/25 text-white border border-cyan-400 shadow-[0_0_15px_rgba(0,191,255,0.4)]'
+                    : 'text-slate-400 hover:text-cyan-200 hover:bg-white/[0.04]'
                 }`}
               >
-                🛡️ CyberPass™ QR
+                <span>🛡️ CyberPass™ Portal</span>
+                {loginMode === 'cyberpass' && (
+                  <motion.div
+                    layoutId="loginModeUnderline"
+                    className="absolute bottom-0 left-3 right-3 h-[2px] bg-cyan-400 shadow-[0_0_8px_#00bfff]"
+                  />
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setLoginMode('standard')}
+                className={`flex-1 py-2.5 px-3 rounded-xl font-mono text-xs font-black tracking-wider uppercase transition-all duration-300 relative flex items-center justify-center gap-2 ${
+                  loginMode === 'standard'
+                    ? 'bg-gradient-to-r from-cyber-green/25 to-emerald-500/25 text-white border border-cyber-green/60 shadow-[0_0_15px_rgba(0,255,136,0.3)]'
+                    : 'text-slate-400 hover:text-cyber-green hover:bg-white/[0.04]'
+                }`}
+              >
+                <span>⌨️ Password Login</span>
+                {loginMode === 'standard' && (
+                  <motion.div
+                    layoutId="loginModeUnderline"
+                    className="absolute bottom-0 left-3 right-3 h-[2px] bg-cyber-green shadow-[0_0_8px_#00ff88]"
+                  />
+                )}
               </button>
             </div>
 

@@ -41,10 +41,51 @@ describe('CyberPass™ Authentication UI Components', () => {
 
     expect(container.textContent).toContain('Upload Badge');
     expect(container.textContent).toContain('Live Scan');
+    expect(container.textContent).toContain('Google Auth');
     expect(container.textContent).toContain('Passkey');
   });
 
-  test('2. CyberPassScanner allows switching to Manual Passkey tab and entering code', () => {
+  test('2. CyberPassScanner allows switching to Google Auth tab and entering 6-digit code', () => {
+    const handlePasskey = jest.fn();
+    act(() => {
+      root.render(<CyberPassScanner onPasskeyDetected={handlePasskey} />);
+    });
+
+    // Find and click Google Auth tab button
+    const buttons = Array.from(container.querySelectorAll('button'));
+    const totpTab = buttons.find(b => b.textContent.includes('Google Auth'));
+    expect(totpTab).toBeDefined();
+
+    act(() => {
+      totpTab.click();
+    });
+
+    const input = container.querySelector('input[placeholder="••••••"]');
+    expect(input).not.toBeNull();
+
+    act(() => {
+      const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+        window.HTMLInputElement.prototype,
+        'value'
+      ).set;
+      nativeInputValueSetter.call(input, '123456');
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    const submitBtn = Array.from(container.querySelectorAll('button')).find(b =>
+      b.textContent.includes('Verify Authenticator Code')
+    );
+    expect(submitBtn).toBeDefined();
+
+    act(() => {
+      submitBtn.click();
+    });
+
+    expect(handlePasskey).toHaveBeenCalledWith('123456');
+  });
+
+  test('3. CyberPassScanner allows switching to Manual Passkey tab and entering code', () => {
     const handlePasskey = jest.fn();
     act(() => {
       root.render(<CyberPassScanner onPasskeyDetected={handlePasskey} />);
@@ -63,7 +104,6 @@ describe('CyberPass™ Authentication UI Components', () => {
     expect(input).not.toBeNull();
 
     act(() => {
-      // Simulate typing in input
       const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
         window.HTMLInputElement.prototype,
         'value'
@@ -85,7 +125,7 @@ describe('CyberPass™ Authentication UI Components', () => {
     expect(handlePasskey).toHaveBeenCalledWith('CSX-TEST-PASSKEY-12345');
   });
 
-  test('3. CyberBadgeModal renders badge details and action buttons', () => {
+  test('4. CyberBadgeModal renders badge details and action buttons', () => {
     const mockBadge = {
       name: 'Anil Kumar',
       role: 'admin',

@@ -74,4 +74,31 @@ describe('CyberPass™ Cryptographic Authentication Service', () => {
     expect(cyberPassService.verifyPass('').valid).toBe(false);
     expect(cyberPassService.verifyPass(12345).valid).toBe(false);
   });
+
+  test('6. Should generate Google Authenticator TOTP setup and compute valid 6-digit rolling code', async () => {
+    const totpSetup = await cyberPassService.getFounderTotpSetup();
+    expect(totpSetup).toBeDefined();
+    expect(totpSetup.secret).toMatch(/^[A-Z2-7]{16}$/);
+    expect(totpSetup.uri).toContain('otpauth://totp/CyberShieldX:AnilKumar');
+    expect(totpSetup.qrDataUrl).toMatch(/^data:image\/png;base64,/);
+
+    // Compute rolling 6-digit code for current time
+    const rollingCode = cyberPassService.generateTotpCode(totpSetup.secret);
+    expect(rollingCode).toMatch(/^\d{6}$/);
+
+    // Verify rolling code passes RFC 6238 verification
+    const isValid = cyberPassService.verifyTotpCode(totpSetup.secret, rollingCode);
+    expect(isValid).toBe(true);
+  });
+
+  test('7. Should verify Founder Admin using live 6-digit Google Authenticator code in verifyPass', async () => {
+    const totpSetup = await cyberPassService.getFounderTotpSetup();
+    const liveCode = cyberPassService.generateTotpCode(totpSetup.secret);
+
+    const verified = cyberPassService.verifyPass(liveCode);
+    expect(verified.valid).toBe(true);
+    expect(verified.isFounder).toBe(true);
+    expect(verified.role).toBe('admin');
+    expect(verified.fullName).toBe('Anil Kumar');
+  });
 });

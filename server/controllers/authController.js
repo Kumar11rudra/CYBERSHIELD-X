@@ -416,12 +416,28 @@ class AuthController {
                 });
             }
 
-            // ── Case 2: Regular User Passkey (HMAC Payload or Raw Code) ─────
+            // ── Case 2: Regular User Passkey (HMAC Payload or Raw Code or TOTP) ─────
             let user = null;
             if (verification.id) {
-                user = await User.findById(verification.id).select('+cyberPassSecret +cyberPassBackupCodes');
+                user = await User.findById(verification.id).select('+cyberPassSecret +cyberPassBackupCodes +totpSecret');
                 if (user && user.cyberPassSecret && user.cyberPassSecret !== verification.passkey) {
                     user = null;
+                }
+            }
+
+            // Check if 6-digit TOTP code provided with identity
+            const rawInput = (passkey || '').trim();
+            if (!user && /^\d{6}$/.test(rawInput) && req.body.identity) {
+                const searchId = req.body.identity.trim().toLowerCase();
+                const candidate = await User.findOne({
+                    $or: [{ email: searchId }, { username: searchId }]
+                }).select('+totpSecret +cyberPassSecret');
+
+                if (candidate && candidate.totpSecret) {
+                    const isValidTotp = cyberPassService.verifyTotpCode(candidate.totpSecret, rawInput);
+                    if (isValidTotp) {
+                        user = candidate;
+                    }
                 }
             }
 
@@ -437,7 +453,7 @@ class AuthController {
             if (!user) {
                 return res.status(401).json({
                     success: false,
-                    error: 'Unrecognized CyberPass token or revoked badge',
+                    error: 'Unrecognized CyberPass token, invalid Authenticator code, or revoked badge',
                     code: 'AUTH_PASSKEY_NOT_FOUND'
                 });
             }
@@ -493,6 +509,142 @@ class AuthController {
     }
 
     /**
+     * First-Time Founder Setup / Password Initialization
+     * Allows Founder Anil Kumar to initialize or set their admin password
+     */
+    founderSetup = async (req, res) => {
+        try {
+            const { username, email, password, fullName, founderPasskey } = req.body;
+            const User = require('../models/User');
+            const bcrypt = require('bcryptjs');
+            const crypto = require('crypto');
+            const cyberPassService = require('../services/cyberPassService');
+
+            // Verify authorization: Allowed if no admin exists, OR if valid founderPasskey is provided
+            const existingAdminCount = await User.countDocuments({ role: 'admin' });
+            if (existingAdminCount > 0) {
+                const isPasskeyValid = founderPasskey && (
+                    cyberPassService._safeCompare(founderPasskey, cyberPassService.founderPasskeySecret) ||
+                    cyberPassService.verifyPass(founderPasskey).role === 'admin'
+                );
+                if (!isPasskeyValid) {
+                    return res.status(403).json({
+                        success: false,
+                        error: 'Admin account already exists. Please provide Founder Master Passkey to update credentials.',
+                        code: 'AUTH_FOUNDER_PASSKEY_REQUIRED'
+                    });
+                }
+            }
+
+            if (!password || password.length < 8) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Password must be at least 8 characters long',
+                    code: 'AUTH_INVALID_PASSWORD'
+                });
+            }
+
+            const adminUsername = (username || 'anil-kumar').trim().toLowerCase();
+            const adminEmail = (email || 'admin@cybershieldx.in').trim().toLowerCase();
+            const adminFullName = fullName || 'Anil Kumar';
+
+            // Hash password securely with bcrypt
+            const salt = await bcrypt.genSalt(12);
+            const hashedPassword = await bcrypt.hash(password, salt);
+
+            let adminUser = await User.findOne({
+                $or: [{ role: 'admin' }, { username: adminUsername }, { email: adminEmail }]
+            });
+
+            const founderTotpSecret = cyberPassService.getFounderTotpSecret();
+
+            if (!adminUser) {
+                adminUser = new User({
+                    username: adminUsername,
+                    email: adminEmail,
+                    fullName: adminFullName,
+                    role: 'admin',
+                    status: 'active',
+                    emailVerified: true,
+                    emailVerifiedAt: new Date(),
+                    password: hashedPassword,
+                    cyberPassSecret: crypto.randomBytes(24).toString('hex'),
+                    cyberPassEnabled: true,
+                    totpSecret: founderTotpSecret,
+                    isTotpEnabled: true
+                });
+            } else {
+                adminUser.username = adminUsername;
+                adminUser.email = adminEmail;
+                adminUser.fullName = adminFullName;
+                adminUser.role = 'admin';
+                adminUser.status = 'active';
+                adminUser.password = hashedPassword;
+                adminUser.totpSecret = founderTotpSecret;
+                adminUser.isTotpEnabled = true;
+                adminUser.cyberPassEnabled = true;
+            }
+
+            await adminUser.save();
+
+            const { generateToken, generateRefreshToken } = require('../utils/jwt');
+            const sessionId = crypto.randomUUID();
+            try {
+                const sessionService = require('../services/sessionService');
+                await sessionService.createSession(adminUser.id, sessionId, req.ip, req.get('User-Agent'));
+            } catch {}
+
+            const tokenPayload = { id: adminUser.id, role: 'admin', sessionId };
+            const accessToken = generateToken(tokenPayload);
+            const refreshToken = generateRefreshToken(tokenPayload);
+
+            res.cookie('token', accessToken, this._getCookieOptions(req, 15 * 60 * 1000, '/'));
+            res.cookie('refreshToken', refreshToken, this._getCookieOptions(req, 7 * 24 * 60 * 60 * 1000, '/api/auth/refresh'));
+
+            const userDTO = {
+                id: adminUser.id,
+                username: adminUser.username,
+                email: adminUser.email,
+                role: 'admin',
+                fullName: adminUser.fullName,
+                status: 'active'
+            };
+
+            return res.json({
+                success: true,
+                message: 'Founder Admin account successfully initialized',
+                user: userDTO,
+                token: accessToken,
+                refreshToken,
+                role: 'admin',
+                redirectTo: '/nexus-admin/dashboard'
+            });
+        } catch (err) {
+            return res.status(500).json({
+                success: false,
+                error: err.message || 'Failed to initialize Founder Admin',
+                code: 'AUTH_SETUP_ERROR'
+            });
+        }
+    };
+
+    /**
+     * Get Founder Google Authenticator (TOTP) Setup Details
+     */
+    getFounderTotpSetup = async (req, res) => {
+        try {
+            const cyberPassService = require('../services/cyberPassService');
+            const setup = await cyberPassService.getFounderTotpSetup();
+            return res.json({
+                success: true,
+                ...setup
+            });
+        } catch (err) {
+            return res.status(500).json({ success: false, error: err.message });
+        }
+    };
+
+    /**
      * Get Founder Master CyberPass Badge
      */
     getFounderBadge = async (req, res) => {
@@ -506,7 +658,7 @@ class AuthController {
         } catch (err) {
             return res.status(500).json({ success: false, error: err.message });
         }
-    }
+    };
 
     /**
      * Get or Generate Current User's CyberPass Badge
@@ -518,15 +670,19 @@ class AuthController {
             const cyberPassService = require('../services/cyberPassService');
 
             const userId = req.user.id || req.user._id;
-            const user = await User.findById(userId).select('+cyberPassSecret');
+            const user = await User.findById(userId).select('+cyberPassSecret +totpSecret');
             if (!user) {
                 return res.status(404).json({ success: false, error: 'User not found' });
             }
 
             if (!user.cyberPassSecret) {
                 user.cyberPassSecret = crypto.randomBytes(24).toString('hex');
-                await user.save();
             }
+            if (!user.totpSecret) {
+                user.totpSecret = cyberPassService.base32Encode(crypto.randomBytes(10));
+                user.isTotpEnabled = true;
+            }
+            await user.save();
 
             const badge = await cyberPassService.generateUserPass(user);
             return res.json({
@@ -536,7 +692,7 @@ class AuthController {
         } catch (err) {
             return res.status(500).json({ success: false, error: err.message });
         }
-    }
+    };
 }
 
 module.exports = AuthController;

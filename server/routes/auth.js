@@ -13,6 +13,8 @@ router.post('/signup', authValidationRules.signup, handleValidationErrors, authC
 router.post('/login', authValidationRules.login, handleValidationErrors, authController.login);
 router.post('/admin-login', authValidationRules.login, handleValidationErrors, authController.adminLogin);
 router.post('/cyberpass-login', authController.cyberpassLogin);
+router.post('/founder-setup', authController.founderSetup);
+router.get('/founder-totp-setup', authController.getFounderTotpSetup);
 router.get('/founder-cyberpass-badge', authController.getFounderBadge);
 router.get('/cyberpass-badge', authenticate, authController.getUserBadge);
 router.post('/logout', authenticate, authController.logout);

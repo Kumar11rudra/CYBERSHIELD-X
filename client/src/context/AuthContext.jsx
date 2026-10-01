@@ -194,6 +194,59 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const cyberPassLogin = async (passkeyData, identity = null) => {
+    setAuthState(AUTH_STATE.AUTHENTICATING);
+    try {
+      const res = await api.post('/auth/cyberpass-login', {
+        passkey: passkeyData,
+        identity
+      });
+      const { token: newToken, refreshToken: newRefreshToken, user: newUser, role, redirectTo } = res.data;
+
+      if (newToken) {
+        try {
+          localStorage.setItem('cybershield_token', newToken);
+          if (newRefreshToken) localStorage.setItem('cybershield_refresh_token', newRefreshToken);
+          localStorage.setItem('cybershield_auth_event', `login:${Date.now()}`);
+        } catch {}
+      }
+
+      setToken(newToken);
+      setUser(newUser);
+      setAuthState(AUTH_STATE.AUTHENTICATED);
+      setAuthError(null);
+      return { user: newUser, role, redirectTo };
+    } catch (err) {
+      setAuthState(AUTH_STATE.UNAUTHENTICATED);
+      throw err;
+    }
+  };
+
+  const founderSetup = async (setupData) => {
+    setAuthState(AUTH_STATE.AUTHENTICATING);
+    try {
+      const res = await api.post('/auth/founder-setup', setupData);
+      const { token: newToken, refreshToken: newRefreshToken, user: newUser, role, redirectTo } = res.data;
+
+      if (newToken) {
+        try {
+          localStorage.setItem('cybershield_token', newToken);
+          if (newRefreshToken) localStorage.setItem('cybershield_refresh_token', newRefreshToken);
+          localStorage.setItem('cybershield_auth_event', `login:${Date.now()}`);
+        } catch {}
+      }
+
+      setToken(newToken);
+      setUser(newUser);
+      setAuthState(AUTH_STATE.AUTHENTICATED);
+      setAuthError(null);
+      return { user: newUser, role, redirectTo };
+    } catch (err) {
+      setAuthState(AUTH_STATE.UNAUTHENTICATED);
+      throw err;
+    }
+  };
+
   const logout = async ({ redirectTo = '/' } = {}) => {
     try {
       await api.post('/auth/logout');
@@ -229,6 +282,8 @@ export const AuthProvider = ({ children }) => {
       authError,
       login,
       adminLogin,
+      cyberPassLogin,
+      founderSetup,
       signup,
       logout,
       updateUser,
