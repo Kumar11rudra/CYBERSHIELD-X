@@ -3,21 +3,18 @@
 All notable changes to this project will be documented in this file.
 
 ## [v62.7.1] - 2026-10-01
-### Vercel Deployment Pipeline Normalization & Monorepo Static Hosting Resolution
-> **Resolves failing GitHub-to-Vercel deployments. Creates root and client vercel.json configurations, adds legacy peer dependency npm configuration, configures monorepo build and install commands, un-ignores vercel.json from .gitignore, and authorizes *.vercel.app origins in Express CORS middleware.**
+### Decommissioning of Redundant Vercel Deployment & Reaffirmation of Canonical Stack
+> **Decommissions legacy redundant Vercel deployment pipeline from GitHub. Reaffirms the canonical production infrastructure: Frontend hosted on Cloudflare Pages (https://cybershieldx.in), Backend API hosted on Render (https://cybershield-x.onrender.com), and Database hosted on MongoDB Atlas.**
 
-- **Vercel Monorepo Deployment Configuration**:
-  - Created root `vercel.json` specifying `buildCommand: "cd client && npm install --legacy-peer-deps && CI=false npm run build"` and `outputDirectory: "client/build"`.
-  - Added SPA route rewrite (`/(.*) -> /index.html`) and backend API proxying (`/api/(.*) -> https://cybershield-x.onrender.com/api/$1`).
-  - Created fallback `client/vercel.json` if Vercel dashboard project root directory is configured as `client/`.
-  - Created `.vercelignore` to exclude backend, documentation, and scratch files from Vercel deployments.
-- **Dependency & Build Pipeline Resolution**:
-  - Removed `vercel.json` and `.vercelignore` from `.gitignore` to allow deployment configuration tracking.
-  - Added root `.npmrc` with `legacy-peer-deps=true` matching `client/.npmrc`.
-  - Updated root `package.json` with `postinstall`, `install:vercel`, and `build:vercel` scripts.
-  - Configured `CI=false` in root build scripts to prevent Create React App from treating non-fatal warnings as compilation errors in CI/CD.
-- **Backend CORS Authorization**:
-  - Updated `server/index.js` origin validator to authorize `https://*.vercel.app` domains alongside Cloudflare Pages (`*.pages.dev`) and canonical domains.
+- **Decommissioning of Vercel Integration**:
+  - Removed all transient Vercel configuration files (`vercel.json`, `client/vercel.json`, `.vercelignore`).
+  - Restored `.gitignore` rules to permanently ignore `.vercel/`, `vercel.json`, and `.vercelignore`.
+  - Cleaned root `package.json` scripts, retaining root `.npmrc` (`legacy-peer-deps=true`) for CI stability.
+  - Confirmed GitHub app de-linking to eliminate all future spurious Vercel deployment events.
+- **Canonical Production Verification**:
+  - Verified Cloudflare Pages frontend (`https://cybershieldx.in`) is active and responding with `HTTP 200 OK`.
+  - Verified Render backend API (`https://cybershield-x.onrender.com/health`) is active and healthy.
+  - Verified MongoDB Atlas connection (`Connected to MongoDB.`) is healthy with active metrics and zero queue latency.
 
 ## [v62.7.0] - 2026-09-30
 ### Comprehensive 1-to-1 Code Audit, Import Normalization, AI Resilience & CyberBot Face Restoration

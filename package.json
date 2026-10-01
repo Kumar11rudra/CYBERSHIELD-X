@@ -6,8 +6,6 @@
   "scripts": {
     "install:all": "npm install && cd server && npm install && cd ../client && npm install",
     "postinstall": "cd client && npm install --legacy-peer-deps",
-    "install:vercel": "cd client && npm install --legacy-peer-deps",
-    "build:vercel": "cd client && CI=false npm run build",
     "dev": "concurrently \"cd server && npm run dev\" \"cd client && npm start\"",
     "dev:server": "cd server && npm run dev",
     "dev:client": "cd client && npm start",

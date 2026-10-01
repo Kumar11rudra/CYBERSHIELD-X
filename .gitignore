@@ -42,8 +42,10 @@ Thumbs.db
 coverage/
 .nyc_output/
 
-# ─── Vercel ───────────────────────────────────────────────────────────────────
+# ─── Vercel (NOT USED — Hosted on Cloudflare Pages & Render) ───────────────────
 .vercel/
+vercel.json
+.vercelignore
 
 # ─── Scratch Scripts & Test Artifacts ──────────────────────────────────────────
 scratch/
