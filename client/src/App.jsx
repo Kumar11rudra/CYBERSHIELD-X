@@ -199,7 +199,7 @@ const AppRoutes = () => (
 );
 
 const ROUTE_TITLES = {
-  '/': 'CyberShield X',
+  '/': 'CyberShield X | Cyber Shield — Threat Intelligence & Scanner',
   '/reset-password': 'Reset Password — CyberShield X',
   '/dashboard': 'Dashboard — CyberShield X',
   '/scan': 'Live Scanner — CyberShield X',
@@ -258,7 +258,7 @@ function PageTitleController() {
       } else if (location.pathname.startsWith('/shared-scan/')) {
         title = 'Shared Audit Report — CyberShield X';
       } else {
-        title = 'CyberShield X';
+        title = 'CyberShield X | Cyber Shield — Threat Intelligence & Scanner';
       }
     }
     document.title = title;
