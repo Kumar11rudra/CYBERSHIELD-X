@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v62.7.1] - 2026-10-01
+### Vercel Deployment Pipeline Normalization & Monorepo Static Hosting Resolution
+> **Resolves failing GitHub-to-Vercel deployments. Creates root and client vercel.json configurations, adds legacy peer dependency npm configuration, configures monorepo build and install commands, un-ignores vercel.json from .gitignore, and authorizes *.vercel.app origins in Express CORS middleware.**
+
+- **Vercel Monorepo Deployment Configuration**:
+  - Created root `vercel.json` specifying `buildCommand: "cd client && npm install --legacy-peer-deps && CI=false npm run build"` and `outputDirectory: "client/build"`.
+  - Added SPA route rewrite (`/(.*) -> /index.html`) and backend API proxying (`/api/(.*) -> https://cybershield-x.onrender.com/api/$1`).
+  - Created fallback `client/vercel.json` if Vercel dashboard project root directory is configured as `client/`.
+  - Created `.vercelignore` to exclude backend, documentation, and scratch files from Vercel deployments.
+- **Dependency & Build Pipeline Resolution**:
+  - Removed `vercel.json` and `.vercelignore` from `.gitignore` to allow deployment configuration tracking.
+  - Added root `.npmrc` with `legacy-peer-deps=true` matching `client/.npmrc`.
+  - Updated root `package.json` with `postinstall`, `install:vercel`, and `build:vercel` scripts.
+  - Configured `CI=false` in root build scripts to prevent Create React App from treating non-fatal warnings as compilation errors in CI/CD.
+- **Backend CORS Authorization**:
+  - Updated `server/index.js` origin validator to authorize `https://*.vercel.app` domains alongside Cloudflare Pages (`*.pages.dev`) and canonical domains.
+
 ## [v62.7.0] - 2026-09-30
 ### Comprehensive 1-to-1 Code Audit, Import Normalization, AI Resilience & CyberBot Face Restoration
 > **Full-stack comprehensive 1-to-1 code and connection audit across all 57 client pages, Express routers, and backend services. Resolves legacy relative imports, restores high-definition CyberBot avatar with glowing status badge, fortifies multi-model AI resilience (`gemini-2.5-flash` primary with automatic fallback to `gemini-3.8-flash`), updates `README.md` to mirror live production architecture, and cleans git tree.**

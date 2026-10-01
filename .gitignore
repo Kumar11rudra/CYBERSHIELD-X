@@ -42,10 +42,8 @@ Thumbs.db
 coverage/
 .nyc_output/
 
-# ─── Vercel (NOT USED — Deployed on Google Cloud Run) ──────────────────────────
+# ─── Vercel ───────────────────────────────────────────────────────────────────
 .vercel/
-vercel.json
-.vercelignore
 
 # ─── Scratch Scripts & Test Artifacts ──────────────────────────────────────────
 scratch/

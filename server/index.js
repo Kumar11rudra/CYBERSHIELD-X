@@ -46,7 +46,8 @@ const isCloudflarePagesOrigin = (origin) => {
   if (typeof origin !== 'string') return false;
   return (
     /^https:\/\/([a-zA-Z0-9-]+\.)+pages\.dev$/.test(origin) ||
-    /^https:\/\/(www\.)?cybershieldx\.in$/.test(origin)
+    /^https:\/\/(www\.)?cybershieldx\.in$/.test(origin) ||
+    /^https:\/\/([a-zA-Z0-9-]+\.)*vercel\.app$/.test(origin)
   );
 };
 

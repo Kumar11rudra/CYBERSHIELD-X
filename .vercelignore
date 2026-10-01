@@ -1,0 +1,7 @@
+server/
+evidence/
+scratch/
+docs/
+.agents/
+*.md
+!README.md
