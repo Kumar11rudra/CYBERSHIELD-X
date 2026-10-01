@@ -18,10 +18,31 @@ Disallow: /settings/*
 Disallow: /history/*
 Disallow: /api/*
 
+User-agent: Googlebot
+Allow: /
+
 User-agent: Googlebot-Image
 Allow: /
 
 User-agent: Google-Favicon
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: msnbot
+Allow: /
+
+User-agent: Bravebot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: Slurp
 Allow: /
 
 Sitemap: https://www.cybershieldx.in/sitemap.xml
