@@ -568,11 +568,9 @@ describe('CyberToolCard Component — Step 4A Interaction Boundary', () => {
 
 
 
-  test('10. canonical 111-tool catalog renders without errors in CyberToolCard', () => {
-
+  test('10. canonical 125-tool catalog renders without errors in CyberToolCard', () => {
     const allTools = getAllTools();
-
-    expect(allTools.length).toBe(111);
+    expect(allTools.length).toBe(125);
 
 
 
@@ -597,13 +595,46 @@ describe('CyberToolCard Component — Step 4A Interaction Boundary', () => {
       });
 
       const heading = container.querySelector('h3');
-
       expect(heading).not.toBeNull();
-
       expect(heading.textContent).toBe(tool.name);
-
     });
-
   });
 
+  test('11. CyberToolCard renders High Demand and Trending badges correctly', () => {
+    // 1. Tool with isHighDemand
+    act(() => {
+      root.render(
+        <CyberToolCard
+          tool={{
+            id: 'test-high-demand',
+            name: 'Test High Demand Tool',
+            category: 'Vulnerability Assessment',
+            isHighDemand: true,
+          }}
+          onAlternatives={jest.fn()}
+        />
+      );
+    });
+    const highDemandBadge = container.querySelector('[data-testid="high-demand-badge"]');
+    expect(highDemandBadge).not.toBeNull();
+    expect(highDemandBadge.textContent).toContain('High Demand');
+
+    // 2. Tool with isTrending
+    act(() => {
+      root.render(
+        <CyberToolCard
+          tool={{
+            id: 'test-trending',
+            name: 'Test Trending Tool',
+            category: 'Reconnaissance',
+            isTrending: true,
+          }}
+          onAlternatives={jest.fn()}
+        />
+      );
+    });
+    const trendingBadge = container.querySelector('[data-testid="trending-badge"]');
+    expect(trendingBadge).not.toBeNull();
+    expect(trendingBadge.textContent).toContain('Trending');
+  });
 });

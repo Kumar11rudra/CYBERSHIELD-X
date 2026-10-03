@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import jsQR from 'jsqr';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, Upload, Key, ShieldCheck, AlertCircle, RefreshCw, CheckCircle2, Lock, FileImage, Smartphone } from 'lucide-react';
+import { Camera, Upload, Key, ShieldCheck, AlertCircle, RefreshCw, CheckCircle2, Lock, FileImage, Smartphone, HelpCircle } from 'lucide-react';
+import SecurityHelpModal from './SecurityHelpModal';
 import toast from 'react-hot-toast';
 
 export default function CyberPassScanner({ onPasskeyDetected, isAuthenticating = false, theme = 'cyan' }) {
@@ -14,6 +15,7 @@ export default function CyberPassScanner({ onPasskeyDetected, isAuthenticating =
   const [dragActive, setDragActive] = useState(false);
   const [isDecoding, setIsDecoding] = useState(false);
   const [decodedSuccess, setDecodedSuccess] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -476,9 +478,28 @@ export default function CyberPassScanner({ onPasskeyDetected, isAuthenticating =
               />
             </div>
 
-            <p className="text-[9px] text-slate-400 font-mono leading-relaxed">
-              Open your phone's Google Authenticator app and type the current 6-digit rolling code.
-            </p>
+            <div className="bg-slate-950/70 border border-cyan-500/20 rounded-xl p-2.5 text-left space-y-1.5 font-mono">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-cyan-400 font-bold flex items-center gap-1.5">
+                  <Smartphone className="w-3.5 h-3.5 text-cyan-400" />
+                  Google Authenticator Guide
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowHelpModal(true)}
+                  className="text-[9px] text-cyan-300 underline hover:text-white flex items-center gap-1"
+                >
+                  <HelpCircle className="w-3 h-3" />
+                  Need Help?
+                </button>
+              </div>
+              <p className="text-[9px] text-slate-300 leading-relaxed">
+                Open <strong>Google Authenticator</strong> app on your phone and type the current 6-digit rolling code.
+              </p>
+              <p className="text-[8.5px] text-slate-400 leading-relaxed">
+                (Search for <em>"Google Authenticator"</em> on Play Store / App Store to install).
+              </p>
+            </div>
           </div>
 
           <button
@@ -554,6 +575,11 @@ export default function CyberPassScanner({ onPasskeyDetected, isAuthenticating =
           </motion.div>
         )}
       </AnimatePresence>
+      {/* Security Help & Authentication Manual Modal */}
+      <SecurityHelpModal
+        isOpen={showHelpModal}
+        onClose={() => setShowHelpModal(false)}
+      />
     </div>
   );
 }

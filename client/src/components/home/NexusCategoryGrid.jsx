@@ -60,6 +60,17 @@ const CATEGORY_DESCS = {
   [CATEGORIES.UTILITIES]: 'Client-side JWT decoding, Base64 conversion, and text heuristics toolkits.',
 };
 
+const HIGH_DEMAND_CATEGORIES = new Set([
+  CATEGORIES.RECON,
+  CATEGORIES.VULN,
+  CATEGORIES.INTEL,
+  CATEGORIES.MALWARE,
+  CATEGORIES.FORENSICS,
+  CATEGORIES.DEVSECOPS,
+  CATEGORIES.AI,
+  CATEGORIES.WEB,
+]);
+
 export default function NexusCategoryGrid({ onAlternatives }) {
   const navigate = useNavigate();
   const shouldReduceMotion = useReducedMotion();
@@ -73,6 +84,7 @@ export default function NexusCategoryGrid({ onAlternatives }) {
         const desc = CATEGORY_DESCS[catName] || 'Security diagnostic tools and automated analysis.';
         const theme = getCategoryTheme(catName);
         const archetype = CATEGORY_ARCHETYPE_MAP[catName] || 'Cyber Scout';
+        const isHighDemand = HIGH_DEMAND_CATEGORIES.has(catName);
 
         const handleCategoryClick = () => {
           if (onAlternatives) {
@@ -103,7 +115,7 @@ export default function NexusCategoryGrid({ onAlternatives }) {
               }
             }}
             style={{
-              borderColor: 'rgba(0, 191, 255, 0.2)',
+              borderColor: isHighDemand ? 'rgba(251, 191, 36, 0.35)' : 'rgba(0, 191, 255, 0.2)',
             }}
             className="cursor-pointer p-5 sm:p-6 rounded-2xl border bg-[#0a1428]/85 hover:bg-[#0d1a34] backdrop-blur-xl transition-all duration-200 group flex flex-col justify-between shadow-[0_8px_30px_rgba(0,0,0,0.4)] hover:shadow-[0_12px_35px_rgba(0,191,255,0.15)] focus:outline-none focus:ring-2 focus:ring-cyan-400"
           >
@@ -117,22 +129,30 @@ export default function NexusCategoryGrid({ onAlternatives }) {
                   >
                     {icon}
                   </span>
-                  <span
-                    style={{
-                      background: theme.badgeBg,
-                      borderColor: theme.badgeBorder,
-                      color: theme.badgeText,
-                    }}
-                    className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full border flex items-center gap-1 uppercase tracking-wider"
-                  >
+                  <div className="flex flex-col gap-1 items-start">
                     <span
-                      style={{ background: theme.accent }}
-                      className="w-1.5 h-1.5 rounded-full animate-pulse"
-                    />
-                    <span>
-                      {catTools.length} {catTools.length === 1 ? 'MODEL' : 'MODELS'}
+                      style={{
+                        background: theme.badgeBg,
+                        borderColor: theme.badgeBorder,
+                        color: theme.badgeText,
+                      }}
+                      className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full border flex items-center gap-1 uppercase tracking-wider"
+                    >
+                      <span
+                        style={{ background: theme.accent }}
+                        className="w-1.5 h-1.5 rounded-full animate-pulse"
+                      />
+                      <span>
+                        {catTools.length} {catTools.length === 1 ? 'MODEL' : 'MODELS'}
+                      </span>
                     </span>
-                  </span>
+                    {isHighDemand && (
+                      <span className="text-[8px] font-mono font-extrabold px-1.5 py-0.2 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border border-amber-500/40 uppercase tracking-wider flex items-center gap-1 shadow-xs">
+                        <span>🔥</span>
+                        <span>HIGH DEMAND</span>
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Approved Expressive 3D Character Avatar with Floating Animation */}

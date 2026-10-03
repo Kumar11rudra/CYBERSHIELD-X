@@ -355,7 +355,7 @@ export default function ReliabilityCenterPage() {
     { id: 'capacity', label: 'Capacity & Saturation', icon: Cpu },
     { id: 'recovery', label: 'Backup & DR', icon: HardDrive },
     { id: 'events', label: 'Reliability Events', icon: ShieldAlert },
-    { id: 'tools', label: '111-Tool Runtime', icon: Terminal },
+    { id: 'tools', label: '125-Tool Runtime', icon: Terminal },
     { id: 'copilot', label: 'Reliability Copilot', icon: Sparkles },
   ];
 
@@ -539,11 +539,11 @@ export default function ReliabilityCenterPage() {
 
               <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-white">Canonical 111-Tool Runtime</span>
+                  <span className="font-semibold text-white">Canonical 125-Tool Runtime</span>
                   {getStatusBadge('HEALTHY')}
                 </div>
                 <p className="text-xs text-slate-400 mt-2">
-                  Authoritative Census: 102 Working / 9 Blocked Dependency
+                  Authoritative Census: 116 Working / 9 Blocked Dependency
                 </p>
                 <div className="mt-3 text-xs font-mono text-purple-400">Preserved Registry Integrity</div>
               </div>
@@ -962,17 +962,17 @@ export default function ReliabilityCenterPage() {
             <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800">
               <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                 <Terminal className="w-5 h-5 text-purple-400" />
-                Canonical 111-Tool Runtime Health
+                Canonical 125-Tool Runtime Health
               </h2>
               <p className="text-sm text-slate-400 mt-1">
-                Authoritative certification preserved: 102 Working / 9 Blocked Dependency.
+                Authoritative certification preserved: 116 Working / 9 Blocked Dependency.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800">
                 <span className="text-xs text-slate-400 uppercase font-medium">Total Canonical Tools</span>
-                <div className="text-2xl font-bold text-white mt-1">111</div>
+                <div className="text-2xl font-bold text-white mt-1">125</div>
                 <div className="text-xs text-slate-500 mt-1">Fully cataloged</div>
               </div>
 

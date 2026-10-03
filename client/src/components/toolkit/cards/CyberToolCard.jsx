@@ -102,18 +102,40 @@ function CyberToolCard({
       }
       transition={{ duration: 0.2, ease: 'easeOut' }}
     >
-      {/* ── Top Row: Category Pill (Left) & Expressive 3D Avatar (Right) ── */}
+      {/* ── Top Row: Category Pill & High Demand / Trending Badge (Left) & Expressive 3D Avatar (Right) ── */}
       <div className="flex items-start justify-between gap-2 mb-3 w-full">
-        <span
-          className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-extrabold tracking-wider uppercase truncate max-w-[calc(100%-60px)] shadow-xs shrink"
-          style={{
-            backgroundColor: theme.pastelPillBg || '#dbeafe',
-            color: theme.pastelPillText || '#1d4ed8',
-          }}
-          title={toolCategory}
-        >
-          {toolCategory}
-        </span>
+        <div className="flex flex-wrap items-center gap-1.5 max-w-[calc(100%-60px)] shrink">
+          <span
+            className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-extrabold tracking-wider uppercase truncate shadow-xs shrink"
+            style={{
+              backgroundColor: theme.pastelPillBg || '#dbeafe',
+              color: theme.pastelPillText || '#1d4ed8',
+            }}
+            title={toolCategory}
+          >
+            {toolCategory}
+          </span>
+          {(safeTool.isHighDemand || safeTool.badge === 'HIGH DEMAND') && (
+            <span
+              data-testid="high-demand-badge"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase text-amber-950 bg-gradient-to-r from-amber-400 to-orange-400 shadow-sm border border-amber-500/40 animate-pulse"
+              title="High Demand Security Tool"
+            >
+              <span className="text-[10px]">🔥</span>
+              <span>High Demand</span>
+            </span>
+          )}
+          {(safeTool.isTrending || safeTool.badge === 'TRENDING') && (
+            <span
+              data-testid="trending-badge"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase text-cyan-950 bg-gradient-to-r from-cyan-400 to-emerald-400 shadow-sm border border-cyan-500/40 animate-pulse"
+              title="Trending Security Tool"
+            >
+              <span className="text-[10px]">⚡</span>
+              <span>Trending</span>
+            </span>
+          )}
+        </div>
 
         {/* Top-Right 3D Character Avatar matching design reference */}
         <div className="shrink-0 -mt-1 -mr-1">

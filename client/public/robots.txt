@@ -6,6 +6,7 @@ Allow: /logo*.png
 Allow: /apple-touch-icon.png
 Allow: /og-banner.png
 Allow: /manifest.json
+Allow: /opensearch.xml
 Allow: /team
 Allow: /login
 Allow: /signup

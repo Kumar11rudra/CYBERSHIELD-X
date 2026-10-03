@@ -131,9 +131,9 @@ describe('Centralized Tool Card Flow — Step 4B External-Only Integration', () 
     expect(container.textContent).toContain('MXToolbox');
   });
 
-  test('4. all 111 tools remain renderable across catalog without errors', () => {
+  test('4. all 125 tools remain renderable across catalog without errors', () => {
     const allTools = getAllTools();
-    expect(allTools.length).toBe(111);
+    expect(allTools.length).toBe(125);
 
     const handleSelect = jest.fn();
 
@@ -147,7 +147,7 @@ describe('Centralized Tool Card Flow — Step 4B External-Only Integration', () 
     });
 
     const items = container.querySelectorAll('[role="listitem"]');
-    expect(items.length).toBe(111);
+    expect(items.length).toBe(125);
 
     // Verify key boundary tools render cleanly
     expect(container.textContent).toContain('DNS Enumeration Engine');

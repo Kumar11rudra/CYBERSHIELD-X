@@ -7,7 +7,8 @@ import BrandLogo from '../components/common/BrandLogo';
 import api from '../services/api';
 import CyberPassScanner from '../components/auth/CyberPassScanner';
 import CyberBadgeModal from '../components/auth/CyberBadgeModal';
-import { Download, Smartphone, QrCode, UserCheck, ShieldAlert, KeyRound, Sparkles, CheckCircle2, Lock } from 'lucide-react';
+import SecurityHelpModal from '../components/auth/SecurityHelpModal';
+import { Download, Smartphone, QrCode, UserCheck, ShieldAlert, KeyRound, Sparkles, CheckCircle2, Lock, HelpCircle } from 'lucide-react';
 
 export default function AdminLoginPage() {
   const [identity, setIdentity] = useState('');
@@ -18,6 +19,7 @@ export default function AdminLoginPage() {
   const [showBadgeModal, setShowBadgeModal] = useState(false);
   const [totpSetup, setTotpSetup] = useState(null);
   const [showTotpModal, setShowTotpModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
   const [isAuthenticatingPasskey, setIsAuthenticatingPasskey] = useState(false);
 
   // First-Time Founder Setup Form State
@@ -227,6 +229,21 @@ export default function AdminLoginPage() {
             <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-red-500 pointer-events-none rounded-tr-xl shadow-[0_0_10px_#ff0033]" />
             <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-red-500 pointer-events-none rounded-bl-xl shadow-[0_0_10px_#ff0033]" />
             <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-red-500 pointer-events-none rounded-br-xl shadow-[0_0_10px_#ff0033]" />
+
+            {/* Security Manual Quick Trigger */}
+            <div className="flex items-center justify-between mb-3 px-1">
+              <span className="text-[10px] font-mono text-red-400/80 uppercase tracking-widest font-bold">
+                Select Auth Protocol
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowHelpModal(true)}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-950/60 hover:bg-red-900/60 text-red-300 hover:text-white border border-red-500/30 text-[10px] font-mono transition-all shadow-sm"
+              >
+                <HelpCircle className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Security Manual & Guide</span>
+              </button>
+            </div>
 
             {/* ── REDESIGNED 4-WAY TACTICAL COMMAND TABS ── */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1.5 rounded-xl bg-black/80 border border-red-900/60 mb-6 relative z-10 shadow-[inset_0_0_15px_rgba(255,0,0,0.15)]">
@@ -564,12 +581,38 @@ export default function AdminLoginPage() {
               Scan this QR code with Google Authenticator or Microsoft Authenticator app on your phone.
             </p>
 
-            <div className="p-3 bg-white rounded-xl inline-block shadow-[0_0_20px_rgba(0,191,255,0.4)] mb-4">
+            <div className="p-3 bg-white rounded-xl inline-block shadow-[0_0_20px_rgba(0,191,255,0.4)] mb-3">
               <img
                 src={totpSetup.qrDataUrl}
                 alt="Google Authenticator QR Code"
                 className="w-52 h-52 object-contain"
               />
+            </div>
+
+            {/* Clear New User Guidance Box */}
+            <div className="bg-slate-950/80 border border-cyan-500/30 rounded-xl p-3 mb-3 text-left space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Smartphone className="w-3.5 h-3.5 text-cyan-400" />
+                  How to setup on your phone:
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowHelpModal(true)}
+                  className="text-[9px] text-cyan-300 underline hover:text-white"
+                >
+                  Need Help?
+                </button>
+              </div>
+              <p className="text-[10px] text-slate-300 font-mono leading-relaxed">
+                1. Search for <strong>"Google Authenticator"</strong> on Google Play Store or Apple App Store and install it.
+              </p>
+              <p className="text-[10px] text-slate-300 font-mono leading-relaxed">
+                2. Open the app, tap the <strong>"+" (Plus)</strong> button, and choose <strong>"Scan a QR code"</strong>.
+              </p>
+              <p className="text-[10px] text-slate-300 font-mono leading-relaxed">
+                3. Point your camera at this QR code. It will instantly start generating rolling 6-digit codes!
+              </p>
             </div>
 
             <div className="bg-black/60 border border-red-900/60 rounded-xl p-3 mb-4 text-left">
@@ -606,6 +649,12 @@ export default function AdminLoginPage() {
           </motion.div>
         </div>
       )}
+
+      {/* Security Help & Authentication Manual Modal */}
+      <SecurityHelpModal
+        isOpen={showHelpModal}
+        onClose={() => setShowHelpModal(false)}
+      />
     </div>
   );
 }

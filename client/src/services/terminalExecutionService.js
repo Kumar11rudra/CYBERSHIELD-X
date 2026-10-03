@@ -67,7 +67,7 @@ export async function cancelTerminalExecution(executionId) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Canonical 111-Tool CLI Command Matrix
+// Canonical 125-Tool CLI Command Matrix
 // ─────────────────────────────────────────────────────────────────────────────
 export const COMMAND_MAP = {
   // Diagnostic & System Commands
@@ -75,7 +75,7 @@ export const COMMAND_MAP = {
   doctor: { toolId: 'syscheck', label: 'Host System Health Doctor', category: 'Diagnostics', defaultTarget: 'localhost' },
   help: { toolId: 'help', label: 'Terminal Help & Command Index', category: 'System', defaultTarget: '' },
   clear: { toolId: 'clear', label: 'Clear Terminal Buffer', category: 'System', defaultTarget: '' },
-  tools: { toolId: 'tools', label: 'List All 111 Registered Tools', category: 'System', defaultTarget: '' },
+  tools: { toolId: 'tools', label: 'List All 125 Registered Tools', category: 'System', defaultTarget: '' },
 
   // Reconnaissance & OSINT (14 Tools)
   dns: { toolId: 'dns', label: 'DNS Dig Reconnaissance', category: 'DNS & Network', defaultTarget: 'example.com' },
@@ -238,7 +238,23 @@ export const COMMAND_MAP = {
   'base64-decoder': { toolId: 'base64-decoder', label: 'Base64 & Hex Converter', category: 'Utilities', defaultTarget: 'Q3liZXJTaGllbGQgWA==' },
   'url-sanitizer': { toolId: 'url-sanitizer', label: 'URL Cleaner & Parameter Defanger', category: 'Utilities', defaultTarget: 'https://evil.com/login?token=secret' },
   'hash-generator': { toolId: 'hash-generator', label: 'Cryptographic Hash Generator', category: 'Utilities', defaultTarget: 'CyberShieldX2026' },
-  'hex-editor': { toolId: 'hex-editor', label: 'Hexadecimal Stream Editor', category: 'Utilities', defaultTarget: 'CyberShield X Security' }
+  'hex-editor': { toolId: 'hex-editor', label: 'Hexadecimal Stream Editor', category: 'Utilities', defaultTarget: 'CyberShield X Security' },
+
+  // Curated High-Value Security Intelligence Tools (14 Tools)
+  'image-exif-metadata': { toolId: 'image-exif-metadata', label: 'ExifTool Image Metadata Inspector', category: 'Forensics', defaultTarget: 'sample_image.jpg' },
+  'steganography-detector': { toolId: 'steganography-detector', label: 'Aperi\'Solve Steganography Suite', category: 'Forensics', defaultTarget: 'stego_payload.png' },
+  'perceptual-image-hash': { toolId: 'perceptual-image-hash', label: 'Perceptual Image Hash Analyzer', category: 'Utilities', defaultTarget: 'evidence_render.png' },
+  'pcap-threat-analyzer': { toolId: 'pcap-threat-analyzer', label: 'A-Packets PCAP Network Threat Analyzer', category: 'Network Security', defaultTarget: 'traffic_capture.pcap' },
+  'cloudshark-viewer': { toolId: 'cloudshark-viewer', label: 'CloudShark PCAP Cloud Workspace', category: 'Network Security', defaultTarget: 'session_stream.pcap' },
+  'cisa-kev-catalog': { toolId: 'cisa-kev-catalog', label: 'CISA Known Exploited Vulnerabilities Explorer', category: 'Vulnerability', defaultTarget: 'CVE-2024-3094' },
+  'epss-risk-calculator': { toolId: 'epss-risk-calculator', label: 'FIRST EPSS Probability Forecaster', category: 'Vulnerability', defaultTarget: 'CVE-2023-38606' },
+  'secrets-gitguardian': { toolId: 'secrets-gitguardian', label: 'GitGuardian Secrets Detection Engine', category: 'DevSecOps', defaultTarget: 'repository-manifest' },
+  'trufflehog-secrets': { toolId: 'trufflehog-secrets', label: 'TruffleHog High-Entropy Leak Hunter', category: 'DevSecOps', defaultTarget: 'git-commit-history' },
+  'certificate-transparency-crt': { toolId: 'certificate-transparency-crt', label: 'Google Certificate Transparency Search', category: 'Reconnaissance', defaultTarget: 'cybershieldx.in' },
+  'malwarebazaar-lookup': { toolId: 'malwarebazaar-lookup', label: 'abuse.ch MalwareBazaar Sample Intel', category: 'Malware Analysis', defaultTarget: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855' },
+  'urlscan-sandbox': { toolId: 'urlscan-sandbox', label: 'urlscan.io Web Browser Sandbox', category: 'Threat Intelligence', defaultTarget: 'https://example.com' },
+  'osv-dependency-audit': { toolId: 'osv-dependency-audit', label: 'OSV Open Source Vulnerability DB', category: 'DevSecOps', defaultTarget: 'package-lock.json' },
+  'alienvault-otx-workspace': { toolId: 'alienvault-otx-workspace', label: 'AlienVault OTX Threat Intelligence Exchange', category: 'Threat Intelligence', defaultTarget: '8.8.8.8' }
 };
 
 // Auto-register any remaining canonical tools dynamically to ensure 100% catalog coverage
@@ -411,7 +427,7 @@ export async function executeSingleTool(toolId, target, options = {}) {
         `╚══════════════════════════════════════════════════════════════════════════════╝`,
         `SYSTEM COMMANDS:`,
         `  syscheck / doctor   - Run live host binary & environment audit`,
-        `  tools               - View catalog of all 111 registered security tools`,
+        `  tools               - View catalog of all 125 registered security tools`,
         `  clear               - Clear terminal output buffer`,
         ``,
         `CORE RECONNAISSANCE:`,

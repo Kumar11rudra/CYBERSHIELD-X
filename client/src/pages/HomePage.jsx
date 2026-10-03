@@ -1232,7 +1232,7 @@ export default function HomePage() {
             }}
           >
             {t('home.finalCta.desc') ||
-              'Access 111+ cybersecurity utilities, automated cloud telemetry, and centralized security workstations in one unified interface.'}
+              'Access 125+ cybersecurity utilities, automated cloud telemetry, and centralized security workstations in one unified interface.'}
           </p>
           <div
             style={{

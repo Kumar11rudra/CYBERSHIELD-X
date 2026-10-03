@@ -238,7 +238,7 @@ export default function SignupPage() {
 
           <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
             <div className="bg-white/[0.02] border border-white/5 p-4 rounded-xl">
-              <div className="font-mono text-cyber-green text-sm font-bold">111</div>
+              <div className="font-mono text-cyber-green text-sm font-bold">125</div>
               <div className="font-mono text-[9px] text-cyber-muted uppercase">Curated Tools</div>
             </div>
             <div className="bg-white/[0.02] border border-white/5 p-4 rounded-xl">

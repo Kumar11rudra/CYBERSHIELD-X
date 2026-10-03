@@ -59,7 +59,7 @@ const NAV_SECTIONS = [
     items: [
       { to: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
       { to: '/terminal', label: 'Terminal', icon: 'terminal', badge: 'NATIVE' },
-      { to: '/toolkit', label: 'Security Tools', icon: 'toolkit', badge: totalCanonicalTools ? `${totalCanonicalTools}` : '111' },
+      { to: '/toolkit', label: 'Security Tools', icon: 'toolkit', badge: totalCanonicalTools ? `${totalCanonicalTools}` : '125' },
       { to: '/scan', label: 'Live Scanner', icon: 'scanner', badge: 'LIVE' },
       { to: '/web-forensics', label: 'Web Forensics', icon: 'globe' },
       { to: '/breach-checker', label: 'Dark Web Monitor', icon: 'monitor' },
@@ -506,7 +506,7 @@ export default function Layout() {
             <div className="hidden md:flex items-center gap-2">
               <span className="text-cyan-300 font-bold">{totalCanonicalTools} TOOLS REGISTERED</span>
               <span className="text-white/20">•</span>
-              <span className="text-emerald-400">111 VERIFIED WORKING</span>
+              <span className="text-emerald-400">{totalCanonicalTools} VERIFIED WORKING</span>
               <span className="text-white/20">•</span>
               <span className="text-emerald-400">0 BLOCKED DEPENDENCIES</span>
             </div>

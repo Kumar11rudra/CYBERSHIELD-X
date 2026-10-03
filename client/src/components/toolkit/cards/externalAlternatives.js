@@ -119,24 +119,24 @@ export const EXTERNAL_ALTERNATIVES = {
   "subfinder": {
     "toolId": "subfinder",
     "status": "ONLINE",
-    "externalWebsite": "https://crt.sh/",
+    "externalWebsite": "https://subdomainfinder.c99.nl/",
     "officialRepository": "https://github.com/projectdiscovery/subfinder",
-    "serviceName": "crt.sh Certificate Search",
-    "rationale": "Authoritative browser-based Certificate Transparency log search for subdomain enumeration.",
+    "serviceName": "C99 Subdomain Finder",
+    "rationale": "Active browser-based subdomain discovery and enumeration search engine.",
     "accessModel": "Public / No login required",
     "privacyRisk": "LOW",
     "hasAlternative": true,
     "alternatives": [
       {
-        "provider": "crt.sh",
-        "product": "crt.sh Certificate Search",
-        "officialUrl": "https://crt.sh/",
+        "provider": "C99",
+        "product": "C99 Subdomain Finder",
+        "officialUrl": "https://subdomainfinder.c99.nl/",
         "capabilityMatch": "EXACT",
         "accessModel": "Public / No login required",
         "dataExposure": "Host / Domain / Target",
         "privacyRisk": "LOW",
         "verificationStatus": "VERIFIED",
-        "verifiedAt": "2026-09-28",
+        "verifiedAt": "2026-10-03",
         "recommendation": "INCLUDE"
       }
     ]
@@ -454,24 +454,24 @@ export const EXTERNAL_ALTERNATIVES = {
   "cors-scanner": {
     "toolId": "cors-scanner",
     "status": "ONLINE",
-    "externalWebsite": "https://test-cors.org/",
+    "externalWebsite": "https://hoppscotch.io/",
     "officialRepository": null,
-    "serviceName": "Test CORS Online",
-    "rationale": "Interactive web-based cross-origin resource sharing policy validator.",
+    "serviceName": "Hoppscotch API & CORS Tester",
+    "rationale": "Interactive web-based cross-origin resource sharing policy and HTTP header inspector.",
     "accessModel": "Public / No login required",
     "privacyRisk": "LOW",
     "hasAlternative": true,
     "alternatives": [
       {
-        "provider": "Test",
-        "product": "Test CORS Online",
-        "officialUrl": "https://test-cors.org/",
+        "provider": "Hoppscotch",
+        "product": "Hoppscotch API & CORS Client",
+        "officialUrl": "https://hoppscotch.io/",
         "capabilityMatch": "EXACT",
         "accessModel": "Public / No login required",
-        "dataExposure": "Host / Domain / Target",
+        "dataExposure": "Host / Target URL",
         "privacyRisk": "LOW",
         "verificationStatus": "VERIFIED",
-        "verifiedAt": "2026-09-28",
+        "verifiedAt": "2026-10-03",
         "recommendation": "INCLUDE"
       }
     ]
@@ -1877,6 +1877,356 @@ export const EXTERNAL_ALTERNATIVES = {
         "privacyRisk": "LOW",
         "verificationStatus": "VERIFIED",
         "verifiedAt": "2026-09-28",
+        "recommendation": "INCLUDE"
+      }
+    ]
+  },
+  "image-exif-metadata": {
+    "toolId": "image-exif-metadata",
+    "status": "ONLINE",
+    "externalWebsite": "https://jimpl.com/",
+    "officialRepository": null,
+    "serviceName": "Jimpl Online Exif & Metadata Inspector",
+    "rationale": "Interactive browser-based forensic EXIF, GPS location, and camera metadata extraction.",
+    "accessModel": "Public / No login required",
+    "privacyRisk": "LOW",
+    "hasAlternative": true,
+    "alternatives": [
+      {
+        "provider": "Jimpl",
+        "product": "Jimpl Online Exif Viewer",
+        "officialUrl": "https://jimpl.com/",
+        "capabilityMatch": "EXACT",
+        "accessModel": "Public / No login required",
+        "dataExposure": "Image file upload",
+        "privacyRisk": "LOW",
+        "verificationStatus": "VERIFIED",
+        "verifiedAt": "2026-10-03",
+        "recommendation": "INCLUDE"
+      }
+    ]
+  },
+  "steganography-detector": {
+    "toolId": "steganography-detector",
+    "status": "ONLINE",
+    "externalWebsite": "https://www.aperisolve.com/",
+    "officialRepository": null,
+    "serviceName": "Aperi'Solve Steganography Platform",
+    "rationale": "Comprehensive browser-based steganographic analyzer executing zsteg, steghide, and LSB extraction.",
+    "accessModel": "Public / No login required",
+    "privacyRisk": "LOW",
+    "hasAlternative": true,
+    "alternatives": [
+      {
+        "provider": "Aperi'Solve",
+        "product": "Aperi'Solve Web Stego Analyzer",
+        "officialUrl": "https://www.aperisolve.com/",
+        "capabilityMatch": "EXACT",
+        "accessModel": "Public / No login required",
+        "dataExposure": "Image file upload",
+        "privacyRisk": "LOW",
+        "verificationStatus": "VERIFIED",
+        "verifiedAt": "2026-10-03",
+        "recommendation": "INCLUDE"
+      }
+    ]
+  },
+  "perceptual-image-hash": {
+    "toolId": "perceptual-image-hash",
+    "status": "ONLINE",
+    "externalWebsite": "https://fotoforensics.com/",
+    "officialRepository": null,
+    "serviceName": "FotoForensics Image Error Level Analysis",
+    "rationale": "Browser-based perceptual image tampering and error level analysis (ELA) platform.",
+    "accessModel": "Public / No login required",
+    "privacyRisk": "LOW",
+    "hasAlternative": true,
+    "alternatives": [
+      {
+        "provider": "FotoForensics",
+        "product": "FotoForensics ELA & Digimarc Analyzer",
+        "officialUrl": "https://fotoforensics.com/",
+        "capabilityMatch": "EXACT",
+        "accessModel": "Public / No login required",
+        "dataExposure": "Image file upload",
+        "privacyRisk": "LOW",
+        "verificationStatus": "VERIFIED",
+        "verifiedAt": "2026-10-03",
+        "recommendation": "INCLUDE"
+      }
+    ]
+  },
+  "pcap-threat-analyzer": {
+    "toolId": "pcap-threat-analyzer",
+    "status": "ONLINE",
+    "externalWebsite": "https://apackets.com/",
+    "officialRepository": null,
+    "serviceName": "A-Packets Online PCAP Analyzer",
+    "rationale": "Free web-based packet capture analyzer providing interactive flow graphs, protocol dissection, and IOC extraction.",
+    "accessModel": "Public / Free community tier",
+    "privacyRisk": "LOW",
+    "hasAlternative": true,
+    "alternatives": [
+      {
+        "provider": "A-Packets",
+        "product": "A-Packets Cloud PCAP Analyzer",
+        "officialUrl": "https://apackets.com/",
+        "capabilityMatch": "EXACT",
+        "accessModel": "Public / Free community tier",
+        "dataExposure": "Network PCAP capture",
+        "privacyRisk": "LOW",
+        "verificationStatus": "VERIFIED",
+        "verifiedAt": "2026-10-03",
+        "recommendation": "INCLUDE"
+      }
+    ]
+  },
+  "cloudshark-viewer": {
+    "toolId": "cloudshark-viewer",
+    "status": "ONLINE",
+    "externalWebsite": "https://www.cloudshark.org/",
+    "officialRepository": null,
+    "serviceName": "CloudShark Packet Capture Workspace",
+    "rationale": "Web-based protocol inspection workspace for packet dissection and stream analysis.",
+    "accessModel": "Free trial / Community",
+    "privacyRisk": "LOW",
+    "hasAlternative": true,
+    "alternatives": [
+      {
+        "provider": "QA Cafe",
+        "product": "CloudShark Packet Decoder",
+        "officialUrl": "https://www.cloudshark.org/",
+        "capabilityMatch": "EXACT",
+        "accessModel": "Free trial / Community",
+        "dataExposure": "Packet capture dump",
+        "privacyRisk": "LOW",
+        "verificationStatus": "VERIFIED",
+        "verifiedAt": "2026-10-03",
+        "recommendation": "INCLUDE"
+      }
+    ]
+  },
+  "cisa-kev-catalog": {
+    "toolId": "cisa-kev-catalog",
+    "status": "ONLINE",
+    "externalWebsite": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+    "officialRepository": null,
+    "serviceName": "CISA Known Exploited Vulnerabilities Catalog",
+    "rationale": "Official federal registry of actively exploited CVEs and mandatory remediation guidelines.",
+    "accessModel": "Public / No login required",
+    "privacyRisk": "LOW",
+    "hasAlternative": true,
+    "alternatives": [
+      {
+        "provider": "CISA",
+        "product": "CISA KEV Interactive Catalog",
+        "officialUrl": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+        "capabilityMatch": "EXACT",
+        "accessModel": "Public / No login required",
+        "dataExposure": "CVE query string",
+        "privacyRisk": "LOW",
+        "verificationStatus": "VERIFIED",
+        "verifiedAt": "2026-10-03",
+        "recommendation": "INCLUDE"
+      }
+    ]
+  },
+  "epss-risk-calculator": {
+    "toolId": "epss-risk-calculator",
+    "status": "ONLINE",
+    "externalWebsite": "https://www.first.org/epss/",
+    "officialRepository": null,
+    "serviceName": "FIRST EPSS Threat Probability Forecaster",
+    "rationale": "Machine-learning vulnerability scoring forecasting 30-day exploit probability.",
+    "accessModel": "Public / No login required",
+    "privacyRisk": "LOW",
+    "hasAlternative": true,
+    "alternatives": [
+      {
+        "provider": "FIRST.org",
+        "product": "EPSS Threat Forecaster",
+        "officialUrl": "https://www.first.org/epss/",
+        "capabilityMatch": "EXACT",
+        "accessModel": "Public / No login required",
+        "dataExposure": "CVE identifier query",
+        "privacyRisk": "LOW",
+        "verificationStatus": "VERIFIED",
+        "verifiedAt": "2026-10-03",
+        "recommendation": "INCLUDE"
+      }
+    ]
+  },
+  "secrets-gitguardian": {
+    "toolId": "secrets-gitguardian",
+    "status": "ONLINE",
+    "externalWebsite": "https://www.gitguardian.com/",
+    "officialRepository": null,
+    "serviceName": "GitGuardian Secrets Detection Platform",
+    "rationale": "Enterprise secrets scanner identifying leaked API keys, tokens, and credentials.",
+    "accessModel": "Free community account",
+    "privacyRisk": "LOW",
+    "hasAlternative": true,
+    "alternatives": [
+      {
+        "provider": "GitGuardian",
+        "product": "GitGuardian Internal & Public Secret Monitor",
+        "officialUrl": "https://www.gitguardian.com/",
+        "capabilityMatch": "EXACT",
+        "accessModel": "Free community account",
+        "dataExposure": "Code snippet / Repo link",
+        "privacyRisk": "LOW",
+        "verificationStatus": "VERIFIED",
+        "verifiedAt": "2026-10-03",
+        "recommendation": "INCLUDE"
+      }
+    ]
+  },
+  "trufflehog-secrets": {
+    "toolId": "trufflehog-secrets",
+    "status": "ONLINE",
+    "externalWebsite": "https://trufflesecurity.com/trufflehog",
+    "officialRepository": "https://github.com/trufflesecurity/trufflehog",
+    "serviceName": "TruffleHog Credentials Hunter",
+    "rationale": "High-entropy secrets detector verifying leaked credentials in real-time.",
+    "accessModel": "Open source / Free community",
+    "privacyRisk": "LOW",
+    "hasAlternative": true,
+    "alternatives": [
+      {
+        "provider": "Truffle Security",
+        "product": "TruffleHog Leak Detector",
+        "officialUrl": "https://trufflesecurity.com/trufflehog",
+        "capabilityMatch": "EXACT",
+        "accessModel": "Open source / Free community",
+        "dataExposure": "Git repository string",
+        "privacyRisk": "LOW",
+        "verificationStatus": "VERIFIED",
+        "verifiedAt": "2026-10-03",
+        "recommendation": "INCLUDE"
+      }
+    ]
+  },
+  "certificate-transparency-crt": {
+    "toolId": "certificate-transparency-crt",
+    "status": "ONLINE",
+    "externalWebsite": "https://transparencyreport.google.com/https/certificates",
+    "officialRepository": null,
+    "serviceName": "Google Certificate Transparency Explorer",
+    "rationale": "Authoritative search engine over append-only Certificate Transparency logs for subdomain and SSL intelligence.",
+    "accessModel": "Public / No login required",
+    "privacyRisk": "LOW",
+    "hasAlternative": true,
+    "alternatives": [
+      {
+        "provider": "Google",
+        "product": "Google Certificate Transparency Search",
+        "officialUrl": "https://transparencyreport.google.com/https/certificates",
+        "capabilityMatch": "EXACT",
+        "accessModel": "Public / No login required",
+        "dataExposure": "Domain query",
+        "privacyRisk": "LOW",
+        "verificationStatus": "VERIFIED",
+        "verifiedAt": "2026-10-03",
+        "recommendation": "INCLUDE"
+      }
+    ]
+  },
+  "malwarebazaar-lookup": {
+    "toolId": "malwarebazaar-lookup",
+    "status": "ONLINE",
+    "externalWebsite": "https://bazaar.abuse.ch/",
+    "officialRepository": null,
+    "serviceName": "MalwareBazaar Sample Intelligence",
+    "rationale": "Abuse.ch community platform indexing malware samples, hashes, and YARA signatures.",
+    "accessModel": "Public / No login required",
+    "privacyRisk": "LOW",
+    "hasAlternative": true,
+    "alternatives": [
+      {
+        "provider": "abuse.ch",
+        "product": "MalwareBazaar Threat DB",
+        "officialUrl": "https://bazaar.abuse.ch/",
+        "capabilityMatch": "EXACT",
+        "accessModel": "Public / No login required",
+        "dataExposure": "Hash query string",
+        "privacyRisk": "LOW",
+        "verificationStatus": "VERIFIED",
+        "verifiedAt": "2026-10-03",
+        "recommendation": "INCLUDE"
+      }
+    ]
+  },
+  "urlscan-sandbox": {
+    "toolId": "urlscan-sandbox",
+    "status": "ONLINE",
+    "externalWebsite": "https://urlscan.io/",
+    "officialRepository": null,
+    "serviceName": "urlscan.io Web Browser Sandbox",
+    "rationale": "Automated website scanner recording HTTP transactions, DOM state, and visual screenshots.",
+    "accessModel": "Public / Free community tier",
+    "privacyRisk": "LOW",
+    "hasAlternative": true,
+    "alternatives": [
+      {
+        "provider": "urlscan.io",
+        "product": "urlscan.io Community Scanner",
+        "officialUrl": "https://urlscan.io/",
+        "capabilityMatch": "EXACT",
+        "accessModel": "Public / Free community tier",
+        "dataExposure": "URL target query",
+        "privacyRisk": "LOW",
+        "verificationStatus": "VERIFIED",
+        "verifiedAt": "2026-10-03",
+        "recommendation": "INCLUDE"
+      }
+    ]
+  },
+  "osv-dependency-audit": {
+    "toolId": "osv-dependency-audit",
+    "status": "ONLINE",
+    "externalWebsite": "https://osv.dev/",
+    "officialRepository": null,
+    "serviceName": "OSV Open Source Vulnerability DB",
+    "rationale": "Distributed open-source vulnerability database querying package risks across ecosystems.",
+    "accessModel": "Public / No login required",
+    "privacyRisk": "LOW",
+    "hasAlternative": true,
+    "alternatives": [
+      {
+        "provider": "Google Open Source",
+        "product": "OSV.dev Vulnerability Search",
+        "officialUrl": "https://osv.dev/",
+        "capabilityMatch": "EXACT",
+        "accessModel": "Public / No login required",
+        "dataExposure": "Package name string",
+        "privacyRisk": "LOW",
+        "verificationStatus": "VERIFIED",
+        "verifiedAt": "2026-10-03",
+        "recommendation": "INCLUDE"
+      }
+    ]
+  },
+  "alienvault-otx-workspace": {
+    "toolId": "alienvault-otx-workspace",
+    "status": "ONLINE",
+    "externalWebsite": "https://otx.alienvault.com/",
+    "officialRepository": null,
+    "serviceName": "AlienVault OTX Threat Intelligence Exchange",
+    "rationale": "Global crowdsourced threat intelligence exchange correlating threat pulses and IOCs.",
+    "accessModel": "Public / Free community account",
+    "privacyRisk": "LOW",
+    "hasAlternative": true,
+    "alternatives": [
+      {
+        "provider": "AT&T Cybersecurity",
+        "product": "AlienVault OTX Community Portal",
+        "officialUrl": "https://otx.alienvault.com/",
+        "capabilityMatch": "EXACT",
+        "accessModel": "Public / Free community account",
+        "dataExposure": "IOC query string",
+        "privacyRisk": "LOW",
+        "verificationStatus": "VERIFIED",
+        "verifiedAt": "2026-10-03",
         "recommendation": "INCLUDE"
       }
     ]

@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-describe('🛡️ Canonical 111-Tool Catalog & Consistency Verification', () => {
+describe('🛡️ Canonical 125-Tool Catalog & Consistency Verification', () => {
   let toolConfig;
   let allTools;
 
@@ -32,8 +32,8 @@ describe('🛡️ Canonical 111-Tool Catalog & Consistency Verification', () => 
     fs.unlinkSync(tmpPath);
   });
 
-  it('canonical tool catalog contains exactly 111 tools', () => {
-    expect(allTools.length).toBe(111);
+  it('canonical tool catalog contains exactly 125 tools', () => {
+    expect(allTools.length).toBe(125);
   });
 
   it('every tool has a unique toolId and valid metadata', () => {
@@ -49,10 +49,10 @@ describe('🛡️ Canonical 111-Tool Catalog & Consistency Verification', () => 
       expect(typeof tool.name).toBe('string');
       expect(tool.category).toBeDefined();
     });
-    expect(idSet.size).toBe(111);
+    expect(idSet.size).toBe(125);
   });
 
-  it('terminalExecutionService COMMAND_MAP covers all 111 canonical tools', () => {
+  it('terminalExecutionService COMMAND_MAP covers all 125 canonical tools', () => {
     const termServicePath = path.resolve(__dirname, '../../client/src/services/terminalExecutionService.js');
     const termContent = fs.readFileSync(termServicePath, 'utf8');
 

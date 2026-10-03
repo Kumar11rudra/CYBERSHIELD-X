@@ -237,7 +237,7 @@ export default function DashboardPage() {
               </span>
             </h1>
             <p className="mt-2 text-sm sm:text-base text-slate-400 max-w-3xl leading-relaxed mx-auto text-center">
-              Explore 111+ curated cybersecurity tools with trusted external resources. No complex setup — just click and start.
+              Explore 125+ curated cybersecurity tools with trusted external resources. No complex setup — just click and start.
             </p>
           </div>
 
@@ -420,7 +420,7 @@ export default function DashboardPage() {
               <div className="grid grid-cols-2 gap-2 text-left pt-1">
                 <div className="flex items-center gap-2 p-2 rounded-xl bg-white/[0.03] border border-white/10">
                   <Wrench size={13} className="text-cyan-400 shrink-0" />
-                  <span className="text-[11px] font-medium text-slate-200 truncate">111 Security Tools</span>
+                  <span className="text-[11px] font-medium text-slate-200 truncate">125 Security Tools</span>
                 </div>
                 <div className="flex items-center gap-2 p-2 rounded-xl bg-white/[0.03] border border-white/10">
                   <Shield size={13} className="text-emerald-400 shrink-0" />

@@ -5,7 +5,7 @@ import api from '../../services/api';
 
 const INITIAL_MESSAGE = {
   role: 'assistant',
-  content: "Welcome to the CyberSOC Workstation. I am your AI Security Copilot. I analyze live telemetry, reason over scan evidence, and guide security operations across our 111 cybersecurity tools.",
+  content: "Welcome to the CyberSOC Workstation. I am your AI Security Copilot. I analyze live telemetry, reason over scan evidence, and guide security operations across our 125 cybersecurity tools.",
   model: 'Google Gemini 2.5 Flash',
   provider: 'Google AI Studio'
 };
@@ -21,15 +21,15 @@ const QUICK_PROMPTS = [
 const KNOWLEDGE_BASE_ENTRIES = [
   {
     triggers: ['hi', 'hello', 'hey', 'namaste', 'greetings', 'sup', 'good morning', 'good evening', 'how are you', 'kaise ho', 'kya haal', 'kese ho'],
-    reply: "Hello! I am your CyberSOC Security Copilot for CyberShield X. I'm active and ready to assist with live tool execution, vulnerability analysis, or automated playbooks across our 111 registered security tools."
+    reply: "Hello! I am your CyberSOC Security Copilot for CyberShield X. I'm active and ready to assist with live tool execution, vulnerability analysis, or automated playbooks across our 125 registered security tools."
   },
   {
     triggers: ['who are you', 'what are you', 'about cybershield', 'what is cybershield', 'introduce yourself', 'help me', 'what can you do'],
-    reply: "**CyberShield X** is a certified cybersecurity operations platform featuring:\n- **111 Canonical Tools** (6 Host Native, 91 API Engine, 5 Browser, 9 Blocked Dependency).\n- **CyberSOC Operator Terminal** with real CLI execution and authenticated cancellation.\n- **7 Multi-Vector Automated Playbooks** (Perimeter, Web DAST, API, Cloud, Forensics, Social, AI Red-Team).\n- **Enterprise Dossier Exporters** (OASIS SARIF v2.1.0, STIX 2.1, CSV, JSON, PDF).\n\nWhat target or tool would you like to investigate?"
+    reply: "**CyberShield X** is a certified cybersecurity operations platform featuring:\n- **125 Canonical Tools** across 24 security domains.\n- **CyberSOC Operator Terminal** with real CLI execution and authenticated cancellation.\n- **7 Multi-Vector Automated Playbooks** (Perimeter, Web DAST, API, Cloud, Forensics, Social, AI Red-Team).\n- **Enterprise Dossier Exporters** (OASIS SARIF v2.1.0, STIX 2.1, CSV, JSON, PDF).\n\nWhat target or tool would you like to investigate?"
   },
   {
     triggers: ['tools', 'what tools', 'catalog', 'list tools', 'categories', 'all tools'],
-    reply: "CyberShield X offers **111 canonical tools** categorized across 24 domains:\n1. **Reconnaissance & OSINT**: Subfinder, Shodan, Censys, theHarvester, Dirsearch\n2. **Web & DAST Security**: SQLMap, Nikto, Burp Suite, WPScan, OWASP ZAP, CORS/CSP\n3. **Network & Host Native**: Nmap, Dig, Curl, Whois, OpenSSL, Traceroute\n4. **Cloud & DevSecOps**: Prowler AWS CIS, Kube-Bench, Snyk, Gitleaks, Docker Bench\n5. **Malware & Forensics**: YARA, PEframe, Volatility, Ghidra, Radare2, Autopsy\n6. **AI Security & Red-Teaming**: Garak LLM Scanner, Adversarial Redteam, Prompt Fuzzer\n7. **Identity & Phishing**: Dark Web Breach Checker, Phishing Analyzer, SPF/DMARC\n\nAll tools are accessible in the **Toolkit Hub** (`/toolkit`) or via the **CyberSOC Terminal** (`>_`)."
+    reply: "CyberShield X offers **125 canonical tools** categorized across 24 domains:\n1. **Reconnaissance & OSINT**: Subfinder, Shodan, Censys, crt.sh, theHarvester, Dirsearch\n2. **Web & DAST Security**: SQLMap, Nikto, Burp Suite, WPScan, OWASP ZAP, CORS/CSP\n3. **Network & Host Native**: Nmap, Dig, Curl, Whois, OpenSSL, PacketTotal, Traceroute\n4. **Cloud & DevSecOps**: Prowler AWS CIS, Kube-Bench, Snyk, GitGuardian, TruffleHog, OSV\n5. **Malware & Forensics**: YARA, PEframe, Volatility, Ghidra, ExifTool, Aperi'Solve, MalwareBazaar\n6. **AI Security & Red-Teaming**: Garak LLM Scanner, Adversarial Redteam, Prompt Fuzzer\n7. **Identity & Phishing**: Dark Web Breach Checker, Phishing Analyzer, SPF/DMARC\n\nAll tools are accessible in the **Toolkit Hub** (`/toolkit`) or via the **CyberSOC Terminal** (`>_`)."
   },
   {
     triggers: ['playbook', 'playbooks', 'automated', 'chain', 'chained'],
@@ -62,7 +62,7 @@ const getFallbackReply = (query) => {
   for (const entry of KNOWLEDGE_BASE_ENTRIES) {
     if (entry.triggers.some(t => q.includes(t))) return entry.reply;
   }
-  return `I am specialized in cybersecurity intelligence and the **CyberShield X** platform.\n\nI can assist with:\n- Running security scans (Nmap, DNS, SSL, HTTP Headers, Tech Stack)\n- Analyzing threats (Phishing URLs, Dark Web Breaches, Malware Hashes)\n- Navigating our **111 canonical tools** across 24 categories\n- Running **7 Automated SOC Playbooks** in the Terminal\n- Exporting audit dossiers in **SARIF, STIX 2.1, CSV, JSON, or PDF**\n\nWhat target domain, IP, or security task would you like help with?`;
+  return `I am specialized in cybersecurity intelligence and the **CyberShield X** platform.\n\nI can assist with:\n- Running security scans (Nmap, DNS, SSL, HTTP Headers, Tech Stack)\n- Analyzing threats (Phishing URLs, Dark Web Breaches, Malware Hashes)\n- Navigating our **125 canonical tools** across 24 categories\n- Running **7 Automated SOC Playbooks** in the Terminal\n- Exporting audit dossiers in **SARIF, STIX 2.1, CSV, JSON, or PDF**\n\nWhat target domain, IP, or security task would you like help with?`;
 };
 
 export default function SecurityCopilot() {
