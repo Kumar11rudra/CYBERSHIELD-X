@@ -9,9 +9,9 @@
 </p>
 
 <p align="center">
-  <a href="https://www.cybershieldx.in"><img src="https://img.shields.io/badge/Platform-v62.7.1%20Production-00ff88?style=for-the-badge&logo=cloudflare&logoColor=black" alt="Production Version" /></a>
+  <a href="https://www.cybershieldx.in"><img src="https://img.shields.io/badge/Platform-v63.1.0%20Production-00ff88?style=for-the-badge&logo=cloudflare&logoColor=black" alt="Production Version" /></a>
   <a href="https://www.cybershieldx.in/terminal"><img src="https://img.shields.io/badge/CyberSOC%20Terminal-Host%20Native%20Online-00bfff?style=for-the-badge&logo=gnubash&logoColor=white" alt="Terminal" /></a>
-  <a href="https://www.cybershieldx.in/dashboard"><img src="https://img.shields.io/badge/Security%20Catalog-111%20Canonical%20Tools-b400ff?style=for-the-badge" alt="Security Catalog" /></a>
+  <a href="https://www.cybershieldx.in/dashboard"><img src="https://img.shields.io/badge/Security%20Catalog-125%20Canonical%20Tools-b400ff?style=for-the-badge" alt="Security Catalog" /></a>
   <a href="https://cybershield-x.onrender.com/health"><img src="https://img.shields.io/badge/Backend%20API-HTTP%20200%20OK-00ff88?style=for-the-badge&logo=render&logoColor=white" alt="Render API" /></a>
   <a href="https://www.cybershieldx.in"><img src="https://img.shields.io/badge/CyberBot%20AI-Dual--Model%20Resilient-cyan?style=for-the-badge&logo=google&logoColor=white" alt="CyberBot AI" /></a>
   <a href="#-mit-license"><img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge" alt="License" /></a>
@@ -23,7 +23,7 @@
   <a href="https://www.cybershieldx.in/team"><b>👥 Core Team</b></a> •
   <a href="https://cybershield-x.onrender.com/health"><b>⚡ Health Telemetry</b></a> •
   <a href="#-system-architecture"><b>📐 Architecture</b></a> •
-  <a href="#-111-canonical-security-tools--24-domains"><b>🧰 Tools Registry</b></a> •
+  <a href="#-125-canonical-security-tools--24-domains"><b>🧰 Tools Registry</b></a> •
   <a href="#-quickstart--local-development"><b>🚀 Quick Start</b></a>
 </p>
 
@@ -33,13 +33,13 @@
 
 **CyberShield X** is a production-grade, full-stack cybersecurity operations platform engineered for Security Operations Centers (SOC), Red/Blue Teams, DevSecOps professionals, and security researchers.
 
-Built on a zero-trust, defense-in-depth philosophy, CyberShield X fuses **live CISA exploit monitoring**, an authoritative **111-tool operational security registry**, a sandboxed **host-native diagnostic terminal**, a **resilient dual-model AI Copilot (CyberBot)**, and a **multi-cloud event normalization fabric** into a unified, high-performance cyber command center.
+Built on a zero-trust, defense-in-depth philosophy, CyberShield X fuses **live CISA exploit monitoring**, an authoritative **125-tool operational security registry**, a sandboxed **host-native diagnostic terminal**, a **resilient dual-model AI Copilot (CyberBot)**, and a **multi-cloud event normalization fabric** into a unified, high-performance cyber command center.
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
 │                        CYBERSHIELD X AT A GLANCE                       │
 ├────────────────────────────────────────────────────────────────────────┤
-│  • 111 Canonical Security Tools across 24 Specialized Domains          │
+│  • 125 Canonical Security Tools across 24 Specialized Domains          │
 │  • Real-Time CISA KEV Live Exploit Stream with 15-Min Cache Proxy      │
 │  • Subprocess-Sandboxed Interactive CyberSOC Terminal (/terminal)      │
 │  • 7 Automated Multi-Vector Offensive & Defensive SOC Playbooks        │
@@ -82,7 +82,7 @@ CyberShield X enforces a decoupled client-server architecture with strict separa
 ┌────────────────────────────────────────────────────────────────────────┐
 │                    Frontend Tier (React 18 SPA)                        │
 │  • HomePage: CISA KEV Live Marquee, HIBP Gateway, Matrix Rain Canvas   │
-│  • Dashboard: 111 Canonical Tool Cards, 24 Categories, Welcome Modal   │
+│  • Dashboard: 125 Canonical Tool Cards, 24 Categories, Welcome Modal   │
 │  • CyberSOC Terminal: Standalone Host-Native Console (/terminal)       │
 │  • CyberBot Copilot: Resilient Multi-Model AI with Restored HD Avatar   │
 │  • Core Team Hub: Standalone Team Roster & Clearance Workstation       │
@@ -113,9 +113,9 @@ CyberShield X enforces a decoupled client-server architecture with strict separa
 
 ## 🌟 Core Platform Pillars
 
-### 1. 🧰 111 Canonical Security Tools Across 24 Domains
+### 1. 🧰 125 Canonical Security Tools Across 24 Domains
 An exhaustive, standardized security intelligence and testing catalog spanning every modern cyber discipline:
-* **41 ONLINE Tools**: Direct browser-based scanners and diagnostic interfaces (SSL Labs, MXToolbox, Shodan, Port Scanners, DNS Enumeration, Breach Detection).
+* **55 ONLINE Tools**: Direct browser-based scanners and diagnostic interfaces (SSL Labs, MXToolbox, Shodan, Port Scanners, DNS Enumeration, Breach Detection, CISA KEV, EPSS, CloudShark, crt.sh).
 * **70 COMING_SOON Tools**: Curated native and enterprise tools with direct references to official repositories and secure alternative advisory modals.
 * **Zero Misleading CTAs**: Absolute invariant — external tools link strictly to verified services or official GitHub repositories, never obfuscated.
 
@@ -139,46 +139,64 @@ An omniscient, multi-model technical companion designed for real-time security a
 * Features a backend cache proxy with a **15-minute Time-To-Live (TTL)** to eliminate third-party rate limits.
 * Client privacy guaranteed: browsers query the backend proxy (`GET /api/threat-feed`), never making direct outbound requests to government endpoints.
 
-### 5. ☁️ Multi-Cloud Telemetry Ingestion (Phase 80)
+### 5. 🔍 Zero-Redirect Homepage Inline Tools Directory & Domain Filtering
+* Seamless, unauthenticated exploration of the entire 125-tool matrix directly on the homepage beneath the hero section.
+* Interactive category pills with live tool counts across all 24 canonical security domains.
+* Instant debounced search filtering by name, ID, category, or keywords.
+* Zero login barrier when discovering verified public tools, documentation, and cloud scanners.
+
+### 6. 🛡️ Universal CyberPass™ & Google Authenticator (RFC 6238 TOTP)
+* 4-factor flexible authentication architecture:
+  * **Google Authenticator (RFC 6238)**: Standard 6-digit time-based rolling codes with ±30s clock drift tolerance.
+  * **Digital Security Badges**: One-click upload and camera scanner for cryptographic SVG/PNG credentials.
+  * **Zero-Password Founder Passkey**: 32-character cryptographically salted master key with zero DB password exposure.
+  * **Universal 3-Way Identity**: Log in seamlessly with Username, Email, or Phone number.
+
+### 7. ⚡ 24/7 Cloud Container Keep-Alive Heartbeat
+* Silent client-side background heartbeat pinging `/health` every 9 minutes during active user sessions.
+* Completely eliminates Render free-tier container sleep, cold-start latency, and API timeouts.
+* Automatic 6-second resilient timeout on threat feed polling ensures instantaneous page loads.
+
+### 8. ☁️ Multi-Cloud Telemetry Ingestion (Phase 80)
 * Normalized event pipeline accepting **AWS CloudTrail**, **Google Cloud Platform (GCP) Cloud Audit**, and **Microsoft Azure Activity Logs**.
 * Canonical security schema normalization with real-time risk scoring, MITRE ATT&CK mapping, and event correlation.
 
-### 6. 🚀 Enterprise ITSM & SOAR Dispatch Fabric (Phase 81)
+### 9. 🚀 Enterprise ITSM & SOAR Dispatch Fabric (Phase 81)
 * Automated outbound incident routing to **Jira**, **ServiceNow**, **PagerDuty**, **Slack**, and **Microsoft Teams**.
 * HMAC-SHA256 signature verification on webhooks with automatic retries and dead-letter queue (DLQ) isolation.
 
 ---
 
-## 🧰 111 Canonical Security Tools / 24 Domains
+## 🧰 125 Canonical Security Tools / 24 Domains
 
-The canonical registry defines exactly **111 tools** across **24 domains**:
+The canonical registry defines exactly **125 tools** across **24 domains**:
 
 | # | Operational Domain | Tools | Active Scanners & Reference Platforms |
 | :---: | :--- | :---: | :--- |
-| **01** | **Reconnaissance & OSINT** | 10 | DNS Enumerator, WHOIS Engine, Subdomain Discovery, Shodan Search, theHarvester, Sherlock, Amass |
-| **02** | **Web & DAST Security** | 8 | Port Scanner, Service Fingerprinting, HTTP Header Auditor, SSL/TLS Handshake, Nikto, OWASP ZAP |
-| **03** | **Vulnerability Scanning** | 8 | CVE Inspector, SQLmap Database Auditor, Trivy Container Auditor, WPScan, Nuclei, OpenVAS |
-| **04** | **Threat Intelligence** | 8 | URL Threat Intel, Dark Web Breach Checker, AlienVault OTX, VirusShare Hash Search, Maltiverse |
-| **05** | **Cloud Security & Posture** | 4 | Prowler AWS CIS Benchmark, Scout Suite Multi-Cloud, S3 Bucket Finder, Cloud IAM Linter |
-| **06** | **API Security & Cryptography** | 4 | Postman Auditor, JWT Strength & Entropy Auditor, API Endpoint Fuzzer, Swagger Spec Linter |
-| **07** | **Authentication & Identity** | 4 | Hydra Protocol Auditor, LDAP Policy Auditor, SAML Security Decoder, OAuth 2.0 Flow Validator |
-| **08** | **Mobile AppSec (iOS & Android)** | 4 | MobSF Android Manifest, iOS IPA Binary Validator, APK Secrets Extractor, Androguard Decompiler |
-| **09** | **Container & Kubernetes** | 4 | Kube-Bench CIS, Kubesec Pod Linter, Docker CIS Benchmark, Falco Runtime Syscall Inspector |
-| **10** | **DevSecOps / Supply Chain** | 4 | Semgrep SAST Engine, Gitleaks Secrets Scanner, Dependency-Track SBOM, Snyk Vulnerability Checker |
-| **11** | **Malware Analysis & Reversing** | 4 | YARA Pattern Matcher, PE Binary Header Analyzer, Cuckoo Sandbox Interface, PDF Document Inspector |
-| **12** | **Digital Forensics & IR** | 4 | Autopsy Digital Forensics, Volatility Memory Analysis, Sleuth Kit Filesystem, Plaso Timeline Engine |
-| **13** | **Reverse Engineering** | 4 | Ghidra Headless Decompiler, Radare2 Shellcode Inspector, Binwalk Firmware Extractor, Capstone Engine |
-| **14** | **Wireless Security** | 4 | Aircrack-ng Suite, Kismet Wireless Survey, Wifite Audit Interface, Bluetooth Low Energy (BLE) Scanner |
-| **15** | **Email Security & Phishing** | 4 | Email Spoofing & DMARC/SPF, MX Blacklist Auditor, Email Hop Analyzer, Phishing Link Detector |
-| **16** | **Social Engineering Defense** | 4 | GoPhish Campaign Simulator, Domain Typosquatting Analyzer, Evilginx MFA Bypass Guard, Profiler |
-| **17** | **AI & LLM Security** | 4 | Prompt Injection Guard, Garak LLM Vulnerability Scanner, AI Adversarial Red-Team, Boundary Fuzzer |
-| **18** | **Privacy & Data Protection** | 4 | GDPR Cookie Auditor, Image EXIF Metadata Stripper, Sensitive PII Scanner, Compliance Planner |
-| **19** | **Security Operations & SOAR** | 4 | TheHive Incident Manager, MISP Threat Publisher, SOC Playbook Orchestrator, Wazuh SIEM Connector |
-| **20** | **Network Traffic Analysis** | 4 | Zeek Transaction Parser, Suricata NIDS Rule Tester, Snort Rule Generator, Tcpdump Capture Filter |
-| **21** | **Threat Hunting & Detection** | 4 | Sigma Rule Compiler, Atomic Red Team Runner, MITRE ATT&CK Matrix Navigator, OSQuery Engine |
-| **22** | **Active Directory Security** | 4 | BloodHound Graph Ingest, Kerberoasting Detector, Mimikatz Output Parser, AD ACL Auditor |
-| **23** | **IoT & ICS / SCADA Security** | 4 | Modbus Protocol Auditor, DNP3 Packet Inspector, MQTT Broker Security Checker, Shodan ICS Search |
-| **24** | **Compliance & Governance** | 5 | SOC 2 Posture Evaluator, HIPAA ePHI Auditor, PCI-DSS Assessment, NIST CSF 2.0, ISO 27001 Auditor |
+| **01** | **Reconnaissance & OSINT** | 9 | DNS Enumerator, WHOIS Engine, Subdomain Discovery, Shodan Search, theHarvester, Sherlock, Amass, crt.sh Certificate Transparency Explorer |
+| **02** | **DNS & Network Intelligence** | 8 | DNS Propagation, Reverse DNS, MX Lookup, Traceroute, ASN Lookup, PacketTotal PCAP Analyzer, CloudShark Cloud PCAP Workspace |
+| **03** | **Web & DAST Security** | 8 | Port Scanner, Service Fingerprinting, HTTP Header Auditor, SSL/TLS Handshake, Nikto, OWASP ZAP |
+| **04** | **Vulnerability Assessment** | 10 | CVE Inspector, SQLmap Database Auditor, Trivy Container Auditor, WPScan, Nuclei, OpenVAS, CISA Known Exploited Vulnerabilities (KEV), FIRST EPSS Risk Calculator |
+| **05** | **Threat Intelligence** | 8 | URL Threat Intel, Dark Web Breach Checker, AlienVault OTX Threat Exchange, abuse.ch MalwareBazaar Sample Intel, urlscan.io Web Browser Sandbox |
+| **06** | **OSINT** | 4 | Search Engine Dorking, Public Leak Databases, Exposed Metadata Registries, Email Breach Explorer |
+| **07** | **Cloud Security & Posture** | 4 | Prowler AWS CIS Benchmark, Scout Suite Multi-Cloud, S3 Bucket Finder, Cloud IAM Linter |
+| **08** | **API Security & Cryptography** | 4 | Postman Auditor, JWT Strength & Entropy Auditor, API Endpoint Fuzzer, Swagger Spec Linter |
+| **09** | **Authentication & Identity** | 4 | Hydra Protocol Auditor, LDAP Policy Auditor, SAML Security Decoder, OAuth 2.0 Flow Validator |
+| **10** | **Mobile AppSec (iOS & Android)** | 4 | MobSF Android Manifest, iOS IPA Binary Validator, APK Secrets Extractor, Androguard Decompiler |
+| **11** | **Container & Kubernetes** | 4 | Kube-Bench CIS, Kubesec Pod Linter, Docker CIS Benchmark, Falco Runtime Syscall Inspector |
+| **12** | **DevSecOps / Supply Chain** | 7 | Semgrep SAST Engine, Gitleaks Secrets Scanner, Dependency-Track SBOM, Snyk Vulnerability Checker, GitGuardian Secrets Hunter, TruffleHog Leak Finder, OSV Dependency Audit |
+| **13** | **Malware Analysis & Reversing** | 5 | YARA Pattern Matcher, PE Binary Header Analyzer, Cuckoo Sandbox Interface, PDF Document Inspector, Strings Extractor |
+| **14** | **Digital Forensics & IR** | 6 | Autopsy Digital Forensics, Volatility Memory Analysis, Sleuth Kit Filesystem, Plaso Timeline Engine, ExifTool Web Inspector, Aperi'Solve Steganography Suite |
+| **15** | **Binary / Reverse Engineering** | 4 | Ghidra Headless Decompiler, Radare2 Shellcode Inspector, Binwalk Firmware Extractor, Capstone Engine |
+| **16** | **Wireless Security** | 4 | Aircrack-ng Suite, Kismet Wireless Survey, Wifite Audit Interface, Bluetooth Low Energy (BLE) Scanner |
+| **17** | **Email Security & Phishing** | 3 | Email Spoofing & DMARC/SPF, MX Blacklist Auditor, Email Hop Analyzer |
+| **18** | **Social Engineering Defense** | 4 | GoPhish Campaign Simulator, Domain Typosquatting Analyzer, Evilginx MFA Bypass Guard, Profiler |
+| **19** | **AI & LLM Security** | 4 | Prompt Injection Guard, Garak LLM Vulnerability Scanner, AI Adversarial Red-Team, Boundary Fuzzer |
+| **20** | **Privacy & Data Protection** | 3 | GDPR Cookie Auditor, Sensitive PII Scanner, Compliance Planner |
+| **21** | **Incident Response** | 4 | TheHive Incident Manager, MISP Threat Publisher, SOC Playbook Orchestrator, Remediation Planner |
+| **22** | **Security Monitoring** | 3 | Wazuh SIEM Connector, Zeek Transaction Parser, Suricata NIDS Rule Tester |
+| **23** | **Compliance & Governance** | 3 | SOC 2 Posture Evaluator, HIPAA ePHI Auditor, PCI-DSS Assessment |
+| **24** | **Utilities / Encoding / Cryptography** | 8 | JWT Inspector, Base64 Codec, Hash Identifier, Perceptual pHash/dHash Analyzer, Text Heuristics, Entropy Calculator, CIDR Calculator, URL Codec |
 
 ---
 
@@ -281,19 +299,23 @@ Open **[http://localhost:3000](http://localhost:3000)** in your browser.
 All quality gates are 100% green across both frontend and backend suites:
 
 ```bash
-# ─── Run Complete Client Test Battery (13 Suites, 136 Tests) ─────────────
-npm --prefix client test -- --watchAll=false
+# ─── Run Complete Client Test Battery (17 Suites, 153 Tests) ─────────────
+CI=true npm --prefix client test -- --watchAll=false
 
 # ─── Compile Production Frontend Bundle (Zero Warnings as Errors) ────────
 npm --prefix client run build
 
-# ─── Run Server Core Test Suites (Threat Feed, AI Failover, Registry) ───
-npm --prefix server test -- tests/threatFeed.test.js tests/ai_provider_routing.test.js tests/canonical_111_tool_registry.test.js
+# ─── Run Server Core Test Suites (125 Registry, Auth, Threat Feed, AI) ───
+npm --prefix server test -- tests/canonical_125_tool_registry.test.js tests/canonical_111_tool_registry.test.js tests/cyberpass_authentication.test.js tests/threatFeed.test.js tests/ai_provider_routing.test.js
+
+# ─── Verify Backend Release Manifests & Infrastructure ───────────────────
+node server/scripts/releaseCheck.js
 ```
 
-* **Client Test Pass Rate**: `136 / 136 tests (100% PASS)`
-* **Server Core Pass Rate**: `20 / 20 tests (100% PASS)`
-* **Production Build Output**: `Exit Code 0` (Clean bundle with zero circular imports)
+* **Client Test Pass Rate**: `153 / 153 tests (100% PASS across all 17 suites)`
+* **Server Core Pass Rate**: `31 / 31 tests (100% PASS across all 5 suites)`
+* **Production Build Output**: `Exit Code 0` (Optimized bundle with zero circular imports)
+* **Release Verification**: `READY_FOR_RELEASE` (Exit Code 0)
 
 ---
 

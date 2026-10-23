@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { motion, useReducedMotion } from 'framer-motion';
 import { CATEGORIES, getAllTools } from '../toolkit/toolConfig';
 import { getCategoryTheme, CATEGORY_ARCHETYPE_MAP } from '../toolkit/cards/toolThemes';
@@ -71,8 +72,9 @@ const HIGH_DEMAND_CATEGORIES = new Set([
   CATEGORIES.WEB,
 ]);
 
-export default function NexusCategoryGrid({ onAlternatives }) {
+export default function NexusCategoryGrid({ onAlternatives, onSelectCategory }) {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const shouldReduceMotion = useReducedMotion();
   const tools = getAllTools();
 
@@ -89,8 +91,11 @@ export default function NexusCategoryGrid({ onAlternatives }) {
         const handleCategoryClick = () => {
           if (onAlternatives) {
             onAlternatives(catTools[0] || { id: catName.toLowerCase(), name: catName, category: catName });
-          } else {
-            navigate(`/toolkit?category=${encodeURIComponent(catName)}`);
+          }
+          if (onSelectCategory) {
+            onSelectCategory(catName);
+          } else if (!onAlternatives) {
+            navigate('/dashboard');
           }
         };
 

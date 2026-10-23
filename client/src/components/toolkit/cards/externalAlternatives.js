@@ -1,9 +1,9 @@
 /**
- * 🌐 EXTERNAL ALTERNATIVES REGISTRY — CyberShield X (v62.5.3)
+ * 🌐 EXTERNAL ALTERNATIVES REGISTRY — CyberShield X (v63.1.0)
  *
- * MANDATORY 111-TOOL EXTERNAL WEBSITE POLICY ENFORCEMENT:
+ * MANDATORY 125-TOOL EXTERNAL WEBSITE POLICY ENFORCEMENT:
  *
- * 1. Exactly 111 canonical tools across 24 categories.
+ * 1. Exactly 125 canonical tools across 24 categories.
  * 2. Every tool has exactly one status: "ONLINE" or "COMING_SOON".
  * 3. ONLINE: Only genuine, verified browser-based security services accessible
  *    in a standard web browser for security workflows.

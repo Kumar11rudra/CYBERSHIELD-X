@@ -2,7 +2,7 @@
  * 🛰️ Terminal Execution Service — CyberShield X
  * System-Aware Orchestrator for Native Host Execution, CyberShield API Engine,
  * Host Environment Pre-Flight Checks, and Automated Chained Playbooks.
- * Canonical coverage across all 111 Cybersecurity Tools.
+ * Canonical coverage across all 125 Cybersecurity Tools.
  */
 
 import api from './api';

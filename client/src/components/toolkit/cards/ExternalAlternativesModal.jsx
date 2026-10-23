@@ -567,7 +567,7 @@ export default function ExternalAlternativesModal({
                     No Genuine Browser Alternative Available
                   </div>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    This security tool operates as a command-line binary, desktop software, self-hosted platform, or proprietary native engine. In accordance with the 111-Tool External Website Policy, no genuine browser-based service is currently available.
+                    This security tool operates as a command-line binary, desktop software, self-hosted platform, or proprietary native engine. In accordance with the 125-Tool External Website Policy, no genuine browser-based service is currently available.
                   </p>
                 </div>
 
@@ -627,7 +627,7 @@ export default function ExternalAlternativesModal({
 
             <span className="font-mono text-[11px]">
 
-              CyberShield X Security Registry v62.2.0
+              CyberShield X Security Registry v63.1.0
 
             </span>
 

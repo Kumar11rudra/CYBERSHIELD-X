@@ -5,8 +5,8 @@
  *
  * CRITICAL ARCHITECTURAL BOUNDARY:
  * This registry represents ONLY the tools supported natively by HostEnvironmentService.
- * It does NOT mirror the 111-tool product catalog.
- * The 111 canonical tools remain the broader product catalog (accessible via /toolkit).
+ * It does NOT mirror the 125-tool product catalog.
+ * The 125 canonical tools remain the broader product catalog (accessible via /toolkit).
  * This registry is strictly for local host execution via POST /api/terminal/execute-native.
  */
 

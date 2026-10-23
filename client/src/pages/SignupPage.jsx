@@ -263,7 +263,7 @@ export default function SignupPage() {
             </motion.div>
             <div className="flex items-center justify-center gap-2">
               <h1 className="font-display text-xl font-bold text-white tracking-widest">CYBERSHIELD X</h1>
-              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyber-green/10 text-cyber-green border border-cyber-green/30">v62.5.1</span>
+              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyber-green/10 text-cyber-green border border-cyber-green/30">v63.1.0</span>
             </div>
           </div>
 

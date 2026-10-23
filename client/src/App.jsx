@@ -18,6 +18,7 @@ import CookieConsentBanner from './components/common/CookieConsentBanner';
 import SecurityCopilot from './components/chatbot/SecurityCopilot';
 
 import NotificationService from './services/NotificationService';
+import api from './services/api';
 
 // Lazy-loaded Pages
 const HomePage         = lazy(() => import('./pages/HomePage'));
@@ -170,7 +171,7 @@ const AppRoutes = () => (
       <Route path="integrations" element={<PrivateRoute><IntegrationsPage /></PrivateRoute>} />
       <Route path="remediation" element={<PrivateRoute><RemediationPage /></PrivateRoute>} />
       <Route path="system-health" element={<PrivateRoute><SystemHealthPage /></PrivateRoute>} />
-      <Route path="toolkit" element={<PrivateRoute><ToolkitPage /></PrivateRoute>} />
+      <Route path="toolkit" element={<Navigate replace to="/dashboard" />} />
       <Route path="threat-intel" element={<PrivateRoute><ThreatIntelligencePage /></PrivateRoute>} />
       <Route path="privacy" element={<PrivacyPolicyPage />} />
       <Route path="terms" element={<TermsOfServicePage />} />
@@ -273,6 +274,14 @@ export default function App() {
     } catch (err) {
       console.warn('[INIT] Notification service init error:', err);
     }
+
+    // ── Keep-Alive Heartbeat: Prevent Render backend from sleeping during user sessions
+    const keepAlive = () => {
+      api.get('/health', { timeout: 5000 }).catch(() => {});
+    };
+    keepAlive();
+    const interval = setInterval(keepAlive, 9 * 60 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
   return (

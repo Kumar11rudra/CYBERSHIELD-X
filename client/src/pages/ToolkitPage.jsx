@@ -10,7 +10,7 @@
 
  * - Direct visual alignment with the approved dark navy cyber-glass design language (#020814 / #0c162d)
 
- * - Single source of truth: Consumes canonical 111 tools from toolConfig.js
+ * - Single source of truth: Consumes canonical 125 tools from toolConfig.js
 
  * - Search bar with 150ms debounce and keyboard shortcut '/'
 
@@ -168,7 +168,7 @@ export default function ToolkitPage() {
 
 
 
-  // Canonical 111 tools with avatar archetype
+  // Canonical 125 tools with avatar archetype
 
   const canonicalTools = useMemo(() => {
 

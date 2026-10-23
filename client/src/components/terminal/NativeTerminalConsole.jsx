@@ -183,7 +183,7 @@ export default function NativeTerminalConsole({
 
         '[*] Native Tools     : nmap, dig, curl, whois, openssl, ping, traceroute (Verified Only)',
 
-        '[*] Product Catalog  : 111 Canonical Tools reside in Security Tools (/toolkit)',
+        '[*] Product Catalog  : 125 Canonical Tools reside in Security Tools (/toolkit)',
 
         '[*] Shortcuts        : [Enter] Execute | [Esc] Abort | [Ctrl+L] Clear | [↑ / ↓] History',
 
@@ -811,7 +811,7 @@ export default function NativeTerminalConsole({
 
               '--------------------------------------------------------------------------------',
 
-              '[*] Note: The 111 canonical CyberShield tools represent the broader product catalog.',
+              '[*] Note: The 125 canonical CyberShield tools represent the broader product catalog.',
 
               '[*] To view external alternatives & cloud services, visit Security Tools (/toolkit).'
 
@@ -987,7 +987,7 @@ export default function NativeTerminalConsole({
 
             `[-] This workstation executes ONLY verified host security binaries (nmap, dig, curl, whois, openssl, ping, traceroute).`,
 
-            `[-] The 111 canonical CyberShield tools represent the broader catalog available at Security Tools (/toolkit).`
+            `[-] The 125 canonical CyberShield tools represent the broader catalog available at Security Tools (/toolkit).`
 
           ].join('\n')
 
@@ -1443,7 +1443,7 @@ export default function NativeTerminalConsole({
 
             <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 font-bold">
 
-              v62.2.0 • LOCAL WORKSTATION
+              v63.1.0 • LOCAL WORKSTATION
 
             </span>
 

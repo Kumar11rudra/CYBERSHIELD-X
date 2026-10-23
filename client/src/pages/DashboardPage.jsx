@@ -14,7 +14,7 @@ import { Search, X, Terminal, LogOut, Sparkles, Shield, Wrench, Activity, Compas
  * Clean, modern dashboard matching Step 209 specifications:
  * - Completely disconnected from old sidebar
  * - Clean top header: BrandLogo (left), Terminal, User info, Logout (right)
- * - Main area containing ONLY the 111-tool catalog grid
+ * - Main area containing ONLY the 125-tool catalog grid
  * - 4-column responsive grid with colorful pastel cards
  */
 export default function DashboardPage() {
@@ -82,7 +82,7 @@ export default function DashboardPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [searchQuery, alternativeToolModal, welcomeModalOpen]);
 
-  // Canonical 111-tool catalog with persona archetypes
+  // Canonical 125-tool catalog with persona archetypes
   const canonicalTools = useMemo(() => {
     const rawTools = getAllTools();
     return rawTools.map((tool) => ({
@@ -196,6 +196,20 @@ export default function DashboardPage() {
               <Terminal size={14} className="text-cyan-400 shrink-0" />
               <span className="hidden sm:inline">Terminal</span>
             </button>
+
+            {/* Founder Admin Command Nexus (Visible only for admin role) */}
+            {user?.role === 'admin' && (
+              <button
+                type="button"
+                onClick={() => navigate('/nexus-admin/dashboard')}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-colors shadow-xs cursor-pointer"
+                title="Founder Command Nexus"
+                aria-label="Founder Command Nexus"
+              >
+                <Shield size={14} className="text-amber-400 shrink-0" />
+                <span className="hidden sm:inline">NEXUS COMMAND</span>
+              </button>
+            )}
 
             {/* Current User's Name / Information */}
             <div className="flex items-center gap-1.5 px-2 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-slate-900/90 border border-slate-800 text-xs font-medium text-slate-300 shadow-xs max-w-[85px] xs:max-w-[120px] sm:max-w-[180px]">

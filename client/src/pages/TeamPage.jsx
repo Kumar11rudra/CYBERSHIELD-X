@@ -321,12 +321,6 @@ export default function TeamPage() {
             >
               Home
             </Link>
-            <Link
-              to="/dashboard"
-              className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-cyan-400 hover:text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 transition-colors shadow-xs"
-            >
-              Dashboard
-            </Link>
           </div>
         </div>
       </header>

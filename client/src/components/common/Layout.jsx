@@ -12,7 +12,7 @@ import api from '../../services/api';
 import { getAllTools } from '../toolkit/toolConfig';
 
 const totalCanonicalTools = getAllTools().length;
-const PLATFORM_VERSION = 'v62.7.1';
+const PLATFORM_VERSION = 'v63.1.0';
 
 // ── Icon Helper ─────────────────────────────────────────────────────────────
 const Icon = ({ d, size = 16, className = '' }) => (
@@ -59,7 +59,7 @@ const NAV_SECTIONS = [
     items: [
       { to: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
       { to: '/terminal', label: 'Terminal', icon: 'terminal', badge: 'NATIVE' },
-      { to: '/toolkit', label: 'Security Tools', icon: 'toolkit', badge: totalCanonicalTools ? `${totalCanonicalTools}` : '125' },
+      { to: '/dashboard', label: 'Security Tools', icon: 'toolkit', badge: totalCanonicalTools ? `${totalCanonicalTools}` : '125' },
       { to: '/scan', label: 'Live Scanner', icon: 'scanner', badge: 'LIVE' },
       { to: '/web-forensics', label: 'Web Forensics', icon: 'globe' },
       { to: '/breach-checker', label: 'Dark Web Monitor', icon: 'monitor' },
@@ -299,7 +299,7 @@ export default function Layout() {
                     const isActive = isRouteActive(item.to);
                     return (
                       <Link
-                        key={item.to}
+                        key={`${item.to}-${item.label}`}
                         to={item.to}
                         title={item.label}
                         className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all group ${
