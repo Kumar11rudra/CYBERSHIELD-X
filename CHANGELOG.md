@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 - **Overhauled Conversational & Knowledge Engine**:
   - Updated all knowledge base entries to reference 125 canonical tools and `/dashboard` (purged stale 111 tools and dead `/toolkit` paths).
   - Added warm, structured natural language greeting handlers and removed canned "syncing" disclaimers.
+  - Implemented dynamic temporal awareness with live calendar date and post-2024 leadership transitions (e.g. Gurpreet Singh Sandhu succeeding Sunil Chhetri as Indian football captain).
 - **Quality Gates**:
   - 17/17 client unit test suites passed (153/153 tests, 100% PASS).
   - Server releaseCheck passed (Exit Code 0).
