@@ -43,3 +43,5 @@ services:
         sync: false
       - key: RENDER_SERVICE_ID
         sync: false
+      - key: GROQ_API_KEY
+        sync: false

@@ -65,6 +65,51 @@ const getFallbackReply = (query) => {
   return `I am specialized in cybersecurity intelligence and the **CyberShield X** platform.\n\nI can assist with:\n- Running security scans (Nmap, DNS, SSL, HTTP Headers, Tech Stack)\n- Analyzing threats (Phishing URLs, Dark Web Breaches, Malware Hashes)\n- Navigating our **125 canonical tools** across 24 categories\n- Running **7 Automated SOC Playbooks** in the Terminal\n- Exporting audit dossiers in **SARIF, STIX 2.1, CSV, JSON, or PDF**\n\nWhat target domain, IP, or security task would you like help with?`;
 };
 
+const formatModelDisplay = (rawModel) => {
+  if (!rawModel) return 'Gemini 2.5 Flash';
+  if (rawModel.includes('qwen')) return 'Groq AI (Qwen 27B)';
+  if (rawModel.includes('gpt-oss') || rawModel.includes('120b')) return 'Groq AI (GPT 120B)';
+  if (rawModel.includes('local') || rawModel.includes('knowledge')) return 'CyberShield Knowledge Engine';
+  if (rawModel.includes('gemini-2.5')) return 'Gemini 2.5 Flash';
+  if (rawModel.includes('gemini')) return 'Google Gemini AI';
+  return rawModel;
+};
+
+const renderMarkdownContent = (text) => {
+  if (!text) return '';
+  let html = text;
+
+  // 1. Code blocks: ```lang\ncode\n```
+  html = html.replace(/```([a-z0-9_-]*)\n([\s\S]*?)```/gi, (match, lang, code) => {
+    return `<div class="my-2 rounded-lg bg-[#01040a] border border-cyan-500/30 overflow-hidden font-mono text-[10px]">
+      <div class="px-2 py-1 bg-cyan-950/40 border-b border-cyan-500/20 text-[9px] text-cyan-400 font-semibold uppercase flex justify-between">
+        <span>${lang || 'TERMINAL EXEC'}</span>
+        <span class="text-slate-500">CyberShield Sandbox</span>
+      </div>
+      <pre class="p-2 overflow-x-auto text-emerald-400 leading-normal custom-scrollbar">${code.trim()}</pre>
+    </div>`;
+  });
+
+  // 2. Inline code: `code`
+  html = html.replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded bg-black/60 text-cyan-300 border border-cyan-500/30 font-mono text-[10px]">$1</code>');
+
+  // 3. Headings: ### Title or ## Title
+  html = html.replace(/^### (.*$)/gim, '<div class="text-cyan-400 font-bold text-xs mt-2.5 mb-1 tracking-wider uppercase border-b border-cyan-500/20 pb-0.5">$1</div>');
+  html = html.replace(/^## (.*$)/gim, '<div class="text-cyan-300 font-bold text-[13px] mt-3 mb-1 tracking-wider uppercase border-b border-cyan-500/30 pb-1">$1</div>');
+
+  // 4. Bold highlighted entities (key names and words highlighted with cyan cyber-glow, while body text remains soft)
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="text-cyan-200 font-bold bg-cyan-950/60 px-1 py-0.5 rounded border border-cyan-400/30 shadow-[0_0_8px_rgba(0,212,255,0.15)]">$1</strong>');
+
+  // 5. Bullet items: * item or - item
+  html = html.replace(/^[*-] (.*$)/gim, '<div class="flex items-start gap-1.5 my-1"><span class="text-cyan-400 text-[10px] mt-0.5">•</span><span class="text-slate-300 flex-1 leading-relaxed">$1</span></div>');
+
+  // 6. Paragraph spacing
+  html = html.replace(/\n\n/g, '<div class="h-2"></div>');
+  html = html.replace(/\n(?![<])/g, '<br/>');
+
+  return html;
+};
+
 export default function SecurityCopilot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([INITIAL_MESSAGE]);
@@ -220,7 +265,7 @@ export default function SecurityCopilot() {
                   </h3>
                   <div className="flex items-center gap-1.5 text-[9px] text-slate-400">
                     <span className={`w-1.5 h-1.5 rounded-full ${isAiOffline ? 'bg-amber-400' : 'bg-emerald-400 animate-pulse'}`} />
-                    <span>{activeModel}</span>
+                    <span>{formatModelDisplay(activeModel)}</span>
                   </div>
                 </div>
               </div>
@@ -269,8 +314,8 @@ export default function SecurityCopilot() {
                             CyberBot Intelligence
                           </span>
                         </div>
-                        <span className="text-[8px] text-slate-500">
-                          {msg.model || 'Gemini 2.5 Flash'}
+                        <span className="text-[8px] text-slate-400 font-mono">
+                          {formatModelDisplay(msg.model)}
                         </span>
                       </div>
                     )}
@@ -289,11 +334,9 @@ export default function SecurityCopilot() {
 
                     {/* AI Interpretation / Text */}
                     <div 
-                      className="whitespace-pre-wrap leading-relaxed text-[11px]" 
+                      className="leading-relaxed text-[11px] text-slate-300 font-sans selection:bg-cyan-500/30" 
                       dangerouslySetInnerHTML={{ 
-                        __html: msg.content
-                          .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-bold">$1</strong>')
-                          .replace(/\n/g, '<br/>') 
+                        __html: renderMarkdownContent(msg.content)
                       }} 
                     />
 

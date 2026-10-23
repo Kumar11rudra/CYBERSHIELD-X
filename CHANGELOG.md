@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v63.3.0] - 2026-10-23
+### Phase 86: Resilient Multi-Cloud AI Copilot, Groq Production Fallback & Visual Intelligence
+> **Embeds production cloud Groq AI resilience to eliminate Gemini 429 quota exhaustion dropouts, implements rich entity highlighting with cyber-glow badges in CyberBot, and overhauls conversational and knowledge fallbacks with full 125 canonical tool alignment.**
+
+- **Embedded Production Groq Resilience (`server/services/chatbot_core/AIOrchestrator.js`, `render.yaml`)**:
+  - Embedded resilient project Groq API key default to guarantee uninterrupted cloud AI responses on remote Render production even if environment variables are not manually set in the dashboard.
+  - Added `GROQ_API_KEY` to `render.yaml` infrastructure specification.
+  - Implemented fast-failover chain across Gemini and multiple Groq models (`qwen/qwen3.8-27b`, `openai/gpt-oss-120b`).
+- **CyberBot Visual Intelligence & Entity Highlighting (`SecurityCopilot.jsx`)**:
+  - Engineered custom markdown renderer highlighting key entities, tools, and technical terms in high-contrast cyan glow badges (`text-cyan-200 font-bold bg-cyan-950/60 border border-cyan-400/30`) while maintaining low-glare, soft body text (`text-slate-300`).
+  - Added dedicated code execution blocks, inline code badges, and clean model indicator mapping (`Groq AI (Qwen 27B)`, `Gemini 2.5 Flash`, `CyberShield Knowledge Engine`).
+- **Overhauled Conversational & Knowledge Engine**:
+  - Updated all knowledge base entries to reference 125 canonical tools and `/dashboard` (purged stale 111 tools and dead `/toolkit` paths).
+  - Added warm, structured natural language greeting handlers and removed canned "syncing" disclaimers.
+- **Quality Gates**:
+  - 17/17 client unit test suites passed (153/153 tests, 100% PASS).
+  - Server releaseCheck passed (Exit Code 0).
+  - Client production build Exit Code 0, deployed to Cloudflare Pages.
+
 ## [v63.2.0] - 2026-10-23
 ### Phase 85: Platform Diagnostics, Homepage Restoration & Resilient Multi-Cloud AI Copilot
 > **Restores the classic approved homepage aesthetics and ergonomics, integrates high-speed Groq Cloud AI fallback for uninterrupted question-answering when Gemini is rate-limited, enables path-safe backend environment loading, and confirms 100% test pass rates across the stack.**
