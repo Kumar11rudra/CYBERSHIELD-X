@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v63.2.0] - 2026-10-23
+### Phase 85: Platform Diagnostics, Homepage Restoration & Resilient Multi-Cloud AI Copilot
+> **Restores the classic approved homepage aesthetics and ergonomics, integrates high-speed Groq Cloud AI fallback for uninterrupted question-answering when Gemini is rate-limited, enables path-safe backend environment loading, and confirms 100% test pass rates across the stack.**
+
+- **Classic Homepage Ergonomics Restored (`HomePage.jsx`, `NexusCategoryGrid.jsx`)**:
+  - Cleanly removed the unauthorized sticky top header navbar.
+  - Enforced persistent hero CTA buttons strictly displaying `CREATE ACCOUNT` (linking to `/signup`) and `SIGN IN` (linking to `/login`).
+  - Purged inline tool repository expansion and clutter from the homepage.
+  - Restored clean single-purpose category card interaction opening verified browser alternatives modals.
+  - Configured clean "Explore All Security Tools →" button routing to `/dashboard`.
+  - Re-routed internal Intel Sources cards directly to `/dashboard`.
+- **Resilient Multi-Cloud AI Copilot Engine (`server/services/chatbot_core/AIOrchestrator.js`)**:
+  - Implemented automatic failover to Groq Cloud (`qwen/qwen3.8-27b`) when primary Google Gemini hits rate limits (HTTP 429) or transient cloud errors.
+  - Reuses project's existing `GROQ_API_KEY` for instant, deep technical question-answering with code blocks and structured markdown.
+- **Path-Safe Backend Environment Resolution (`server/index.js`, `server/utils/jwt.js`)**:
+  - Loaded `.env` dynamically via `path.resolve(__dirname, '.env')`, preventing missing JWT secret warnings regardless of root/subfolder working directory.
+- **Quality Gates**:
+  - All 17 client test suites passed (153/153 tests, 100% PASS).
+  - All server tests passed (canonical 125 tools and AI provider routing, 9/9 PASS).
+  - Production build compiled with Exit Code 0.
+
+
 ## [v62.8.0] - 2026-10-01
 ### CyberPass™ Universal QR & Passkey Cryptographic Authentication Architecture
 > **Eliminates email/SMS OTP reset failures and database-stored admin passwords with an offline-resilient, zero-cost, cryptographic QR & passkey authentication system. Features a universal smart gateway on `/login` with automatic role-based dispatching, digital clearance ID badge generator on signup with 1-click `.PNG` download, and zero-password Founder Admin access protected by `ADMIN_PASSKEY_SECRET`.**

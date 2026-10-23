@@ -1,9 +1,9 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 const crypto = require('crypto');
 const dns = require('dns');
 dns.setServers(['8.8.8.8', '1.1.1.1']);
 const express = require('express');
-const path = require('path');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');

@@ -178,15 +178,13 @@ class AIOrchestrator {
         }
       }
 
-      // 2. Query Gemini AI provider with multi-model resilience and automatic retry
-      if (this.genAI) {
-        // Multi-turn conversation history for rich context
-        const conversationHistory = (messages || [])
-          .slice(-6)
-          .map(m => `${m.role === 'user' ? 'User' : 'CyberBot'}: ${m.content}`)
-          .join('\n\n');
+      // Prepare system prompt & multi-turn history for all cloud LLM providers
+      const conversationHistory = (messages || [])
+        .slice(-6)
+        .map(m => `${m.role === 'user' ? 'User' : 'CyberBot'}: ${m.content}`)
+        .join('\n\n');
 
-        const systemPrompt = `You are CyberBot (Security Copilot), an expert, versatile, and highly knowledgeable AI Assistant for CyberShield X and all domains of Cybersecurity, Computer Science, IT Infrastructure, and Software Engineering.
+      const systemPrompt = `You are CyberBot (Security Copilot), an expert, versatile, and highly knowledgeable AI Assistant for CyberShield X and all domains of Cybersecurity, Computer Science, IT Infrastructure, and Software Engineering.
 
 Core Knowledge & Answering Capabilities:
 1. You are fully capable of answering ANY user query with depth, clarity, and authority:
@@ -197,7 +195,7 @@ Core Knowledge & Answering Capabilities:
    - General & Conversational: Answer general technical questions, greetings, everyday inquiries, and career guidance warmly, politely, and comprehensively.
 
 2. CyberShield X Platform Integration:
-   - When a user's question relates to a security capability, proactively reference relevant tools from CyberShield X's 111 canonical security tools in the Tools Hub (/toolkit) or CLI commands in the interactive CyberSOC Terminal (/terminal) to give hands-on assistance.
+   - When a user's question relates to a security capability, proactively reference relevant tools from CyberShield X's 125 canonical security tools in the Workstation Dashboard (/dashboard) or CLI commands in the interactive CyberSOC Terminal (/terminal) to give hands-on assistance.
    - Mention automated SOC playbooks (Perimeter Recon, Web DAST, API Security, Cloud CIS, Threat Forensics, Phishing Defense, AI Red-Teaming) where applicable.
 
 3. Formatting & Style:
@@ -214,13 +212,15 @@ ${conversationHistory || latestMessage}
 
 Respond directly to the user's latest query:`;
 
-        // Multi-model hierarchy: Try primary model first, with automatic retry and secondary fallback
+      let geminiSuccess = false;
+
+      // 2. Query Gemini AI provider with multi-model resilience and automatic retry
+      if (this.genAI) {
         const candidateModels = [
           process.env.AI_TRIAGE_MODEL || 'gemini-2.5-flash',
           'gemini-3.8-flash'
         ];
 
-        let geminiSuccess = false;
         let lastGeminiError = null;
 
         const callWithTimeout = (promise, ms = 8000) => {
@@ -282,11 +282,64 @@ Respond directly to the user's latest query:`;
 
         if (!geminiSuccess) {
           fallbackUsed = true;
-          fallbackReason = 'Cloud AI service temporarily experiencing high traffic';
+          fallbackReason = 'Cloud AI primary model reached quota limit or is busy';
         }
       }
 
-      // 3. Fallback to built-in cybersecurity knowledge base (clean, friendly presentation)
+      // 3. Resilient Secondary Cloud Provider: Groq (via GROQ_API_KEY)
+      const groqApiKey = process.env.GROQ_API_KEY;
+      if (!geminiSuccess && groqApiKey) {
+        try {
+          const axios = require('axios');
+          const groqModel = process.env.GROQ_MODEL || 'qwen/qwen3.8-27b';
+          const groqMessages = [
+            { role: 'system', content: systemPrompt },
+            ...(messages || []).map(m => ({
+              role: m.role === 'user' ? 'user' : 'assistant',
+              content: m.content
+            }))
+          ];
+
+          const groqRes = await axios.post(
+            'https://api.groq.com/openai/v1/chat/completions',
+            {
+              model: groqModel,
+              messages: groqMessages,
+              temperature: 0.7,
+              max_tokens: 1800
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${groqApiKey}`,
+                'Content-Type': 'application/json'
+              },
+              timeout: 12000
+            }
+          );
+
+          const groqText = groqRes.data?.choices?.[0]?.message?.content;
+          if (groqText && groqText.trim().length > 0) {
+            actualModelUsed = groqModel;
+            provider = 'Groq Cloud';
+
+            const latencyMs = Date.now() - startTime;
+            return this.responseFormatter.formatResponse(groqText.trim(), {
+              status: 'COMPLETED',
+              requestedModel,
+              actualModelUsed,
+              provider,
+              fallbackUsed: true,
+              fallbackReason: 'Primary cloud model quota exceeded — routed to high-speed secondary cloud LLM',
+              latencyMs
+            });
+          }
+        } catch (groqErr) {
+          fallbackUsed = true;
+          fallbackReason = `Secondary cloud AI error: ${groqErr.message}`;
+        }
+      }
+
+      // 4. Fallback to built-in cybersecurity knowledge base (clean, friendly presentation)
       let fallbackText = generateIntelligentFallback(latestMessage);
       if (fallbackUsed && fallbackReason) {
         fallbackText = `> *[Operating via CyberShield Security Knowledge Engine]*\n\n` + fallbackText;

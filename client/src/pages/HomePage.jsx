@@ -1,18 +1,15 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
-import { getAllTools, getAllCategories } from '../components/toolkit/toolConfig';
+import { motion } from 'framer-motion';
+import { getAllTools } from '../components/toolkit/toolConfig';
 import NexusCategoryGrid from '../components/home/NexusCategoryGrid';
-import ToolGrid from '../components/toolkit/cards/ToolGrid';
-import { CATEGORY_ARCHETYPE_MAP } from '../components/toolkit/cards/toolThemes';
 import BrandLogo from '../components/common/BrandLogo';
 import GlitchText from '../components/home/GlitchText';
 import BinaryMatrixRain from '../components/home/BinaryMatrixRain';
 import ExternalAlternativesModal from '../components/toolkit/cards/ExternalAlternativesModal';
 import api from '../services/api';
-import { Search, X, Shield, Terminal } from 'lucide-react';
 
 // ─── Animated counter ─────────────────────────────────────────────────────────
 function Counter({ to, suffix = '' }) {
@@ -174,43 +171,7 @@ export default function HomePage() {
   const navigate = useNavigate();
   const [typedText, setTypedText] = useState('');
   const [selectedAlternativeTool, setSelectedAlternativeTool] = useState(null);
-  const [isToolsExpanded, setIsToolsExpanded] = useState(false);
-  const [toolSearchQuery, setToolSearchQuery] = useState('');
-  const [selectedToolCategory, setSelectedToolCategory] = useState('ALL');
   const fullText = t('home.hero.subtitle') || 'Enterprise Cyber Threat Intelligence & SOC Workstation';
-
-  // Canonical 125 tools with persona archetypes for inline expansion
-  const canonicalTools = useMemo(() => {
-    const rawTools = getAllTools();
-    return rawTools.map((tool) => ({
-      ...tool,
-      avatarArchetype:
-        tool.avatarArchetype || CATEGORY_ARCHETYPE_MAP[tool.category] || 'Cyber Scout',
-    }));
-  }, []);
-
-  const categoriesList = useMemo(() => ['ALL', ...getAllCategories()], []);
-
-  const filteredCanonicalTools = useMemo(() => {
-    const query = toolSearchQuery.trim().toLowerCase();
-    return canonicalTools.filter((tool) => {
-      if (selectedToolCategory !== 'ALL' && tool.category !== selectedToolCategory) {
-        return false;
-      }
-      if (!query) return true;
-      const nameMatch = tool.name?.toLowerCase().includes(query);
-      const idMatch = tool.id?.toLowerCase().includes(query);
-      const catMatch = tool.category?.toLowerCase().includes(query);
-      const descMatch =
-        (tool.description || tool.tagline || '').toLowerCase().includes(query);
-      const keywordsMatch = Array.isArray(tool.keywords)
-        ? tool.keywords.some(
-            (kw) => typeof kw === 'string' && kw.toLowerCase().includes(query)
-          )
-        : false;
-      return nameMatch || idMatch || catMatch || descMatch || keywordsMatch;
-    });
-  }, [canonicalTools, selectedToolCategory, toolSearchQuery]);
 
   // Typewriter effect
   useEffect(() => {
@@ -291,91 +252,17 @@ export default function HomePage() {
       <ScanLine />
       <LiveTicker />
 
-      {/* ── Top Cyber Navbar ── */}
-      <header
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 25,
-          marginTop: 39,
-          background: 'rgba(2, 8, 20, 0.92)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          borderBottom: '1px solid rgba(0, 191, 255, 0.18)',
-          boxShadow: '0 4px 25px rgba(0, 0, 0, 0.5)',
-        }}
-        className="w-full"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2.5 group" title="CyberShield X Home">
-            <BrandLogo size={28} />
-            <div className="flex flex-col">
-              <span className="font-extrabold text-sm sm:text-base tracking-tight text-white group-hover:text-cyan-400 transition-colors font-mono">
-                CYBERSHIELD <span className="text-emerald-400">X</span>
-              </span>
-              <span className="text-[8px] sm:text-[9px] font-mono tracking-widest text-cyan-500/70 uppercase -mt-0.5 hidden xs:block">
-                NEXT-GEN CYBERSOC
-              </span>
-            </div>
-          </Link>
-
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link
-              to="/team"
-              className="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800/80 border border-transparent hover:border-slate-700 transition-colors hidden sm:block"
-            >
-              Core Team
-            </Link>
-            {user ? (
-              <>
-                <Link
-                  to="/dashboard"
-                  data-testid="homepage-dashboard-tab"
-                  className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-cyan-300 bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/40 transition-all flex items-center gap-1.5 shadow-[0_0_15px_rgba(0,191,255,0.25)] hover:shadow-[0_0_20px_rgba(0,191,255,0.45)]"
-                >
-                  <Shield className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>DASHBOARD</span>
-                  <span className="text-cyan-400 font-mono">→</span>
-                </Link>
-                <Link
-                  to="/terminal"
-                  className="hidden md:flex px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 transition-colors items-center gap-1.5"
-                >
-                  <Terminal className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>TERMINAL</span>
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800/80 border border-transparent hover:border-slate-700 transition-colors"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  to="/signup"
-                  className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-cyan-400 hover:text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 transition-colors shadow-xs"
-                >
-                  Get Started
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
-
       {/* ── HERO ── */}
       <section
         style={{
           position: 'relative',
           zIndex: 2,
-          minHeight: '80vh',
+          minHeight: '88vh',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '55px 24px 55px',
+          padding: '95px 24px 55px',
           textAlign: 'center',
         }}
       >
@@ -595,55 +482,20 @@ export default function HomePage() {
             marginBottom: 52,
           }}
         >
-          {user ? (
-            <>
-              <button
-                className="btn-primary"
-                onClick={() => navigate('/dashboard')}
-                style={{
-                  fontSize: 14,
-                  padding: '14px 36px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 8,
-                }}
-              >
-                <Shield className="w-4 h-4 text-white" />
-                <span>OPEN WORKSTATION DASHBOARD →</span>
-              </button>
-              <button
-                className="btn-secondary"
-                onClick={() => navigate('/terminal')}
-                style={{
-                  fontSize: 14,
-                  padding: '14px 36px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 8,
-                }}
-              >
-                <Terminal className="w-4 h-4 text-cyan-400" />
-                <span>LAUNCH TERMINAL</span>
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                className="btn-primary"
-                onClick={() => navigate('/signup')}
-                style={{ fontSize: 14, padding: '14px 36px' }}
-              >
-                {t('home.hero.ctaCreate') || 'CREATE ACCOUNT'}
-              </button>
-              <button
-                className="btn-secondary"
-                onClick={() => navigate('/login')}
-                style={{ fontSize: 14, padding: '14px 36px' }}
-              >
-                {t('home.hero.ctaSignIn') || 'SIGN IN'}
-              </button>
-            </>
-          )}
+          <button
+            className="btn-primary"
+            onClick={() => navigate('/signup')}
+            style={{ fontSize: 14, padding: '14px 36px' }}
+          >
+            {t('home.hero.ctaCreate') || 'CREATE ACCOUNT'}
+          </button>
+          <button
+            className="btn-secondary"
+            onClick={() => navigate('/login')}
+            style={{ fontSize: 14, padding: '14px 36px' }}
+          >
+            {t('home.hero.ctaSignIn') || 'SIGN IN'}
+          </button>
         </motion.div>
 
         {/* Stats Row */}
@@ -977,23 +829,9 @@ export default function HomePage() {
           </div>
 
           {/* Nexus Category Grid Selector with approved 3D faces and animations */}
-          <NexusCategoryGrid
-            onSelectCategory={(catName) => {
-              setSelectedToolCategory(catName);
-              setIsToolsExpanded(true);
-              setTimeout(() => {
-                const el = document.getElementById('homepage-expanded-tools-section');
-                if (el) {
-                  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-              }, 80);
-            }}
-            onAlternatives={(tool) => {
-              setSelectedAlternativeTool(tool);
-            }}
-          />
+          <NexusCategoryGrid onAlternatives={(tool) => setSelectedAlternativeTool(tool)} />
 
-          {/* Explore / Collapse Toggle Button */}
+          {/* Explore Button */}
           <div
             style={{
               display: 'flex',
@@ -1002,129 +840,34 @@ export default function HomePage() {
             }}
           >
             <button
-              onClick={() => setIsToolsExpanded((prev) => !prev)}
-              data-testid="explore-all-tools-toggle"
+              onClick={() => navigate(user ? '/dashboard' : '/login?returnTo=%2Fdashboard')}
               style={{
-                background: isToolsExpanded ? 'rgba(0,191,255,0.18)' : 'rgba(0,191,255,0.06)',
-                border: isToolsExpanded ? '1px solid #00bfff' : '1px solid rgba(0,191,255,0.3)',
-                boxShadow: isToolsExpanded ? '0 0 25px rgba(0,191,255,0.35)' : 'none',
-                padding: '14px 36px',
-                borderRadius: '10px',
+                background: 'rgba(0,191,255,0.06)',
+                border: '1px solid rgba(0,191,255,0.3)',
+                padding: '12px 32px',
+                borderRadius: '8px',
                 color: '#fff',
-                fontSize: '12px',
+                fontSize: '11px',
                 textTransform: 'uppercase',
                 letterSpacing: '2px',
                 fontWeight: 'bold',
                 cursor: 'pointer',
                 transition: 'all 0.3s',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 10,
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(0,191,255,0.22)';
+                e.currentTarget.style.background = 'rgba(0,191,255,0.12)';
                 e.currentTarget.style.borderColor = '#00bfff';
-                e.currentTarget.style.boxShadow = '0 0 30px rgba(0,191,255,0.35)';
+                e.currentTarget.style.boxShadow = '0 0 20px rgba(0,191,255,0.2)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = isToolsExpanded
-                  ? 'rgba(0,191,255,0.18)'
-                  : 'rgba(0,191,255,0.06)';
-                e.currentTarget.style.borderColor = isToolsExpanded
-                  ? '#00bfff'
-                  : 'rgba(0,191,255,0.3)';
-                e.currentTarget.style.boxShadow = isToolsExpanded
-                  ? '0 0 25px rgba(0,191,255,0.35)'
-                  : 'none';
+                e.currentTarget.style.background = 'rgba(0,191,255,0.06)';
+                e.currentTarget.style.borderColor = 'rgba(0,191,255,0.3)';
+                e.currentTarget.style.boxShadow = 'none';
               }}
             >
-              <span>{isToolsExpanded ? '▲' : '▼'}</span>
-              <span>
-                {isToolsExpanded
-                  ? 'COLLAPSE SECURITY TOOLS REPOSITORY'
-                  : 'EXPLORE ALL 125 SECURITY TOOLS & CAPABILITIES'}
-              </span>
+              Explore All Security Tools →
             </button>
           </div>
-
-          {/* ── Dynamic Inline Tools Repository Expansion ── */}
-          <AnimatePresence>
-            {isToolsExpanded && (
-              <motion.div
-                initial={{ opacity: 0, height: 0, y: -20 }}
-                animate={{ opacity: 1, height: 'auto', y: 0 }}
-                exit={{ opacity: 0, height: 0, y: -20 }}
-                transition={{ duration: 0.4, ease: 'easeInOut' }}
-                id="homepage-expanded-tools-section"
-                data-testid="homepage-expanded-tools-section"
-                className="mt-10 pt-10 border-t border-cyan-500/20"
-              >
-                {/* Search & Category Filter Controls */}
-                <div className="max-w-4xl mx-auto mb-8 space-y-5">
-                  <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-cyan-400 pointer-events-none" />
-                    <input
-                      type="text"
-                      value={toolSearchQuery}
-                      onChange={(e) => setToolSearchQuery(e.target.value)}
-                      placeholder="Filter 125 canonical tools by name, ID, category or keyword..."
-                      data-testid="homepage-tool-search-input"
-                      className="w-full pl-11 pr-10 py-3 rounded-xl bg-[#071124] border border-cyan-500/30 text-white placeholder-slate-400 text-xs sm:text-sm font-mono focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all shadow-[inset_0_2px_8px_rgba(0,0,0,0.6)]"
-                    />
-                    {toolSearchQuery && (
-                      <button
-                        onClick={() => setToolSearchQuery('')}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-1"
-                        title="Clear search"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Horizontal Scrollable Category Filter Pills */}
-                  <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-cyan-500/20">
-                    {categoriesList.map((cat) => {
-                      const isActive = selectedToolCategory === cat;
-                      const count =
-                        cat === 'ALL'
-                          ? canonicalTools.length
-                          : canonicalTools.filter((t) => t.category === cat).length;
-                      return (
-                        <button
-                          key={cat}
-                          onClick={() => setSelectedToolCategory(cat)}
-                          className={`px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-mono font-bold whitespace-nowrap transition-all border shrink-0 ${
-                            isActive
-                              ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-[0_0_12px_rgba(0,191,255,0.3)]'
-                              : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
-                          }`}
-                        >
-                          {cat} <span className="opacity-60 text-[9px]">({count})</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Inline ToolGrid */}
-                <ToolGrid
-                  tools={filteredCanonicalTools}
-                  onExternalDiscovery={(tool) => {
-                    setSelectedAlternativeTool(tool);
-                  }}
-                  onOpenTool={(tool) => {
-                    if (user) {
-                      navigate('/dashboard');
-                    } else {
-                      setSelectedAlternativeTool(tool);
-                    }
-                  }}
-                  emptyMessage="No security tools match your search criteria."
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
       </section>
 
@@ -1294,43 +1037,43 @@ export default function HomePage() {
                 name: 'UrlEngine',
                 desc: t('home.intelSources.vtDesc') || 'Malware & URL scanner',
                 color: '#00bfff',
-                path: '/toolkit/url-engine',
+                path: '/dashboard',
               },
               {
                 name: 'UrlEngine Abuse',
                 desc: t('home.intelSources.abuseDesc') || 'Global IP abuse reporter',
                 color: '#ff8c00',
-                path: '/toolkit/ip-reputation',
+                path: '/dashboard',
               },
               {
                 name: 'Pulsedive',
                 desc: 'Real-time threat feeds & risk scoring',
                 color: '#00ff88',
-                path: '/toolkit/threat-intel',
+                path: '/dashboard',
               },
               {
                 name: 'AlienVault OTX',
                 desc: 'World largest open threat community',
                 color: '#b400ff',
-                path: '/toolkit/cve-search',
+                path: '/dashboard',
               },
               {
                 name: 'GreyNoise',
                 desc: 'Analyzing global internet scanning noise',
                 color: '#ff2244',
-                path: '/toolkit/port-scanner',
+                path: '/dashboard',
               },
               {
                 name: 'PortEngine',
                 desc: 'Deep device & network discovery intel',
                 color: '#00d4ff',
-                path: '/toolkit/dns-enum',
+                path: '/dashboard',
               },
               {
                 name: 'Cisco Talos',
                 desc: 'Industry-leading threat intelligence',
                 color: '#ffffff',
-                path: '/toolkit/ssl-checker',
+                path: '/dashboard',
               },
               {
                 name: 'HIBP (Breach)',
@@ -1342,7 +1085,7 @@ export default function HomePage() {
                 name: 'TLS / OpenSSL',
                 desc: t('home.intelSources.tlsDesc') || 'SSL certificate validation',
                 color: '#00ff88',
-                path: '/toolkit/ssl-checker',
+                path: '/dashboard',
               },
             ].map((src, i) => (
               <motion.div

@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 import { motion, useReducedMotion } from 'framer-motion';
 import { CATEGORIES, getAllTools } from '../toolkit/toolConfig';
 import { getCategoryTheme, CATEGORY_ARCHETYPE_MAP } from '../toolkit/cards/toolThemes';
@@ -74,7 +73,6 @@ const HIGH_DEMAND_CATEGORIES = new Set([
 
 export default function NexusCategoryGrid({ onAlternatives, onSelectCategory }) {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const shouldReduceMotion = useReducedMotion();
   const tools = getAllTools();
 

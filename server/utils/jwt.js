@@ -1,5 +1,10 @@
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const path = require('path');
+
+if (!process.env.JWT_SECRET) {
+  require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+}
 
 // ─── Startup Validation ──────────────────────────────────────────────────────
 if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 64) {
