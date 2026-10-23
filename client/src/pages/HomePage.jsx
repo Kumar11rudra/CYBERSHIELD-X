@@ -219,6 +219,28 @@ export default function HomePage() {
           0%,100%{border-color:rgba(0,191,255,0.3)}
           50%{border-color:rgba(0,191,255,0.8)}
         }
+        @keyframes neonBreathing {
+          0%, 100% {
+            color: #00d2ff;
+            text-shadow: 0 0 35px rgba(0,210,255,0.85), 0 0 70px rgba(0,191,255,0.45);
+          }
+          50% {
+            color: #818cf8;
+            text-shadow: 0 0 50px rgba(129,140,248,0.9), 0 0 90px rgba(168,85,247,0.5);
+          }
+        }
+        @keyframes xNeonPulse {
+          0%, 100% {
+            color: #00ff88;
+            text-shadow: 0 0 20px rgba(0,255,136,0.9), 0 0 40px rgba(0,255,136,0.5);
+            transform: scale(1);
+          }
+          50% {
+            color: #00ffff;
+            text-shadow: 0 0 35px rgba(0,255,255,0.95), 0 0 60px rgba(0,255,255,0.6);
+            transform: scale(1.08);
+          }
+        }
         @keyframes gridFade { from{opacity:0} to{opacity:1} }
 
         .hero-title { font-family:'Orbitron',monospace; }
@@ -354,6 +376,8 @@ export default function HomePage() {
               style={{
                 color: '#00bfff',
                 marginLeft: '0.18em',
+                display: 'inline-block',
+                animation: 'neonBreathing 4s ease-in-out infinite',
                 textShadow:
                   '0 0 40px rgba(0,191,255,0.8), 0 0 80px rgba(0,191,255,0.4)',
               }}
@@ -367,6 +391,8 @@ export default function HomePage() {
                 fontSize: '0.6em',
                 marginLeft: '0.2em',
                 verticalAlign: 'middle',
+                display: 'inline-block',
+                animation: 'xNeonPulse 3s ease-in-out infinite',
                 textShadow: '0 0 20px rgba(0,255,136,0.8)',
               }}
             >

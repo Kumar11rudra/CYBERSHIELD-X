@@ -147,4 +147,23 @@ describe('Dashboard Tools Breakdown & Welcome Modal Reliability', () => {
     expect(sessionStorage.getItem('cybershield_show_welcome')).toBeNull();
     expect(sessionStorage.getItem('cybershield_dashboard_welcome_seen')).toBe('true');
   });
+
+  test('4. Renders Google Gemini-style pill search bar and hero headline with RGB accent', () => {
+    act(() => {
+      root.render(
+        <MemoryRouter initialEntries={['/dashboard']}>
+          <DashboardPage />
+        </MemoryRouter>
+      );
+    });
+
+    // Verify headline content
+    expect(container.textContent).toContain('Powerful Tools for a');
+    expect(container.textContent).toContain('Safer Digital World');
+
+    // Verify Gemini-style pill search container exists with rounded-full
+    const searchPill = container.querySelector('.rounded-full input[type="text"]');
+    expect(searchPill).not.toBeNull();
+    expect(searchPill.getAttribute('placeholder')).toContain("Search tools");
+  });
 });

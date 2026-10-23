@@ -56,6 +56,45 @@ export default function DashboardPage() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
+  // ── Typewriter & Chromatic RGB Effect for Dashboard Headline ──
+  const FULL_HEADLINE_PREFIX = 'Powerful Tools for a ';
+  const FULL_HEADLINE_ACCENT = 'Safer Digital World';
+  const FULL_HEADLINE = FULL_HEADLINE_PREFIX + FULL_HEADLINE_ACCENT;
+
+  const [typedCharCount, setTypedCharCount] = useState(
+    process.env.NODE_ENV === 'test' ? FULL_HEADLINE.length : 0
+  );
+
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'test') {
+      setTypedCharCount(FULL_HEADLINE.length);
+      return;
+    }
+    if (welcomeModalOpen) return;
+
+    let count = 0;
+    const timer = setInterval(() => {
+      count++;
+      setTypedCharCount(count);
+      if (count >= FULL_HEADLINE.length) {
+        clearInterval(timer);
+      }
+    }, 28);
+    return () => clearInterval(timer);
+  }, [welcomeModalOpen]);
+
+  const typedPrefix =
+    typedCharCount <= FULL_HEADLINE_PREFIX.length
+      ? FULL_HEADLINE_PREFIX.slice(0, typedCharCount)
+      : FULL_HEADLINE_PREFIX;
+
+  const typedAccent =
+    typedCharCount > FULL_HEADLINE_PREFIX.length
+      ? FULL_HEADLINE_ACCENT.slice(0, typedCharCount - FULL_HEADLINE_PREFIX.length)
+      : '';
+
+  const isTypingComplete = typedCharCount >= FULL_HEADLINE.length;
+
   // Keyboard Shortcuts: '/' to focus search, 'Escape' to clear or close modal
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -256,55 +295,111 @@ export default function DashboardPage() {
       </header>
 
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 relative z-10">
-        {/* ── Section Header (Dark Cyber Reference) ── */}
+        {/* ── Dynamic Keyframe Styles for RGB Flow & Gemini Search Bar ── */}
+        <style>{`
+          @keyframes rgbFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+          }
+          @keyframes geminiBorderShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+          }
+          @keyframes cursorBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+          }
+        `}</style>
+
+        {/* ── Section Header (Dark Cyber Reference + RGB Typewriter Stream) ── */}
         <div className="flex flex-col items-center text-center space-y-4">
           <div className="flex flex-col items-center text-center">
-            <div className="text-xs sm:text-sm font-mono font-extrabold tracking-widest text-cyan-400 uppercase mb-2">
-              CYBERSHIELD X
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/25 text-xs font-mono font-extrabold tracking-widest text-cyan-400 uppercase mb-3 shadow-[0_0_15px_rgba(0,212,255,0.15)]">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+              <span>CYBERSHIELD X</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight text-center">
-              Powerful Tools for a{' '}
-              <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                Safer Digital World
-              </span>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight text-center min-h-[48px] sm:min-h-[56px] flex items-center justify-center flex-wrap">
+              <span>{typedPrefix}</span>
+              {typedAccent && (
+                <span
+                  className="bg-gradient-to-r from-cyan-400 via-indigo-400 via-fuchsia-400 to-emerald-400 bg-clip-text text-transparent inline-block transition-all duration-300 ml-1.5"
+                  style={{
+                    backgroundSize: '250% 250%',
+                    animation: 'rgbFlow 5s ease infinite',
+                    filter: 'drop-shadow(0 0 16px rgba(0, 212, 255, 0.4))',
+                  }}
+                >
+                  {typedAccent}
+                </span>
+              )}
+              {!isTypingComplete && (
+                <span
+                  className="inline-block w-1.5 h-7 sm:h-9 bg-cyan-400 ml-1.5 align-middle shadow-[0_0_8px_#00d2ff]"
+                  style={{ animation: 'cursorBlink 0.7s infinite' }}
+                />
+              )}
             </h1>
-            <p className="mt-2 text-sm sm:text-base text-slate-400 max-w-3xl leading-relaxed mx-auto text-center">
+            <p className="mt-3 text-sm sm:text-base text-slate-400 max-w-3xl leading-relaxed mx-auto text-center">
               Explore 125+ curated cybersecurity tools with trusted external resources. No complex setup — just click and start.
             </p>
           </div>
 
-          {/* ── Search Bar ── */}
-          <div className="relative w-full max-w-2xl pt-2 mx-auto">
-            <div className="absolute inset-y-0 left-0 pl-4 pt-2 flex items-center pointer-events-none text-slate-400">
-              <Search size={18} />
-            </div>
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search tools, categories, capabilities... (Press '/' to focus)"
-              aria-label="Search tools"
-              className="w-full pl-11 pr-20 py-3 rounded-2xl bg-slate-900/90 border border-cyan-500/30 hover:border-cyan-500/60 focus:border-cyan-400 text-sm text-white placeholder-slate-400 shadow-[0_0_20px_rgba(0,191,255,0.08)] transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+          {/* ── Google Gemini-Style RGB Pill Search Bar (Full Circular Edges) ── */}
+          <div className="relative w-full max-w-2xl pt-2 mx-auto group">
+            {/* Ambient dynamic RGB glow aura */}
+            <div
+              className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-cyan-500 via-purple-600 via-pink-500 to-emerald-400 opacity-55 blur-md group-hover:opacity-90 group-focus-within:opacity-100 transition-opacity duration-500"
+              style={{
+                backgroundSize: '200% 200%',
+                animation: 'geminiBorderShift 4s ease infinite',
+              }}
             />
-            <div className="absolute inset-y-0 right-0 pr-3.5 pt-2 flex items-center gap-1.5">
-              {searchQuery ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearchQuery('');
-                    searchInputRef.current?.focus();
-                  }}
-                  aria-label="Clear search"
-                  className="p-1 rounded-lg text-slate-400 hover:text-white transition-colors"
-                >
-                  <X size={16} />
-                </button>
-              ) : (
-                <kbd className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono text-slate-400 bg-slate-800 border border-slate-700">
-                  /
-                </kbd>
-              )}
+
+            {/* Pill Border Container */}
+            <div
+              className="relative p-[1.5px] rounded-full bg-gradient-to-r from-cyan-400 via-indigo-500 via-fuchsia-500 to-emerald-400 transition-all duration-300 shadow-[0_0_20px_rgba(0,191,255,0.12)] group-hover:shadow-[0_0_30px_rgba(0,191,255,0.25)] group-focus-within:shadow-[0_0_35px_rgba(0,191,255,0.4)]"
+              style={{
+                backgroundSize: '200% 200%',
+                animation: 'geminiBorderShift 4s ease infinite',
+              }}
+            >
+              {/* Inner Dark Glass Pill */}
+              <div className="flex items-center w-full rounded-full bg-[#070d1c]/95 backdrop-blur-xl px-4 sm:px-5 py-2.5 sm:py-3">
+                <Search
+                  size={19}
+                  className="text-cyan-400 shrink-0 mr-3 transition-transform duration-200 group-focus-within:scale-110"
+                />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search tools, categories, capabilities... (Press '/' to focus)"
+                  aria-label="Search tools"
+                  className="w-full bg-transparent border-none text-sm sm:text-base text-white placeholder-slate-400 focus:outline-none focus:ring-0 selection:bg-cyan-500/30"
+                />
+                <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                  {searchQuery ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchQuery('');
+                        searchInputRef.current?.focus();
+                      }}
+                      aria-label="Clear search"
+                      className="p-1 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                    >
+                      <X size={16} />
+                    </button>
+                  ) : (
+                    <kbd className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-bold text-cyan-300 bg-cyan-950/70 border border-cyan-500/30 shadow-xs">
+                      /
+                    </kbd>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
