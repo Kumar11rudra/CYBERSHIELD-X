@@ -98,6 +98,20 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token, loadUser]);
 
+  const triggerWelcomeOnNextLanding = () => {
+    try {
+      sessionStorage.setItem('cybershield_show_welcome', 'true');
+      sessionStorage.removeItem('cybershield_dashboard_welcome_seen');
+    } catch {}
+  };
+
+  const clearWelcomeFlags = () => {
+    try {
+      sessionStorage.removeItem('cybershield_show_welcome');
+      sessionStorage.removeItem('cybershield_dashboard_welcome_seen');
+    } catch {}
+  };
+
   const login = async (email, password, otp = null) => {
     setAuthState(AUTH_STATE.AUTHENTICATING);
     const location = await captureBrowserLocation();
@@ -125,6 +139,7 @@ export const AuthProvider = ({ children }) => {
       setUser(newUser);
       setAuthState(AUTH_STATE.AUTHENTICATED);
       setAuthError(null);
+      triggerWelcomeOnNextLanding();
       return newUser;
     } catch (err) {
       setAuthState(AUTH_STATE.UNAUTHENTICATED);
@@ -152,6 +167,7 @@ export const AuthProvider = ({ children }) => {
       setUser(newUser);
       setAuthState(AUTH_STATE.AUTHENTICATED);
       setAuthError(null);
+      triggerWelcomeOnNextLanding();
       return newUser;
     } catch (err) {
       setAuthState(AUTH_STATE.UNAUTHENTICATED);
@@ -187,6 +203,7 @@ export const AuthProvider = ({ children }) => {
       setUser(newUser);
       setAuthState(AUTH_STATE.AUTHENTICATED);
       setAuthError(null);
+      triggerWelcomeOnNextLanding();
       return { user: newUser, cyberPassBadge: res.data?.cyberPassBadge };
     } catch (err) {
       setAuthState(AUTH_STATE.UNAUTHENTICATED);
@@ -215,6 +232,7 @@ export const AuthProvider = ({ children }) => {
       setUser(newUser);
       setAuthState(AUTH_STATE.AUTHENTICATED);
       setAuthError(null);
+      triggerWelcomeOnNextLanding();
       return { user: newUser, role, redirectTo };
     } catch (err) {
       setAuthState(AUTH_STATE.UNAUTHENTICATED);
@@ -240,6 +258,7 @@ export const AuthProvider = ({ children }) => {
       setUser(newUser);
       setAuthState(AUTH_STATE.AUTHENTICATED);
       setAuthError(null);
+      triggerWelcomeOnNextLanding();
       return { user: newUser, role, redirectTo };
     } catch (err) {
       setAuthState(AUTH_STATE.UNAUTHENTICATED);
@@ -260,6 +279,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('cybershield_auth_event', `logout:${Date.now()}`);
       } catch {}
 
+      clearWelcomeFlags();
       setToken(null);
       setUser(null);
       setAuthState(AUTH_STATE.UNAUTHENTICATED);

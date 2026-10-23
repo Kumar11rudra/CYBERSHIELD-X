@@ -43,6 +43,8 @@ export default function LoginPage() {
             background: '#020814'
           }
         });
+        sessionStorage.setItem('cybershield_show_welcome', 'true');
+        sessionStorage.removeItem('cybershield_dashboard_welcome_seen');
         navigate(redirectTo || getSafeReturnUrl(returnTo) || '/dashboard', { replace: true });
       } else {
         toast.success('CyberPass Identity Verified!', {
@@ -54,6 +56,8 @@ export default function LoginPage() {
             background: '#020814'
           }
         });
+        sessionStorage.setItem('cybershield_show_welcome', 'true');
+        sessionStorage.removeItem('cybershield_dashboard_welcome_seen');
         navigate(redirectTo || getSafeReturnUrl(returnTo), { replace: true });
       }
     } catch (err) {
@@ -85,6 +89,8 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(identity, password);
+      sessionStorage.setItem('cybershield_show_welcome', 'true');
+      sessionStorage.removeItem('cybershield_dashboard_welcome_seen');
       toast.success(t('auth.validation.welcomeOperator') || 'Welcome, Operator.');
       navigate(getSafeReturnUrl(returnTo));
     } catch (err) {
@@ -119,6 +125,8 @@ export default function LoginPage() {
     setOtpLoad(true);
     try {
       await login(identity, password, otp);
+      sessionStorage.setItem('cybershield_show_welcome', 'true');
+      sessionStorage.removeItem('cybershield_dashboard_welcome_seen');
       toast.success(t('auth.validation.verified') || 'Authentication verified.');
       navigate(getSafeReturnUrl(returnTo));
     } catch (err) {

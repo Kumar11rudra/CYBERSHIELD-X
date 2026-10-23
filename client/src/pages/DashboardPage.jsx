@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getAllTools, getAllCategories } from '../components/toolkit/toolConfig';
 import { getCategoryTheme, CATEGORY_ARCHETYPE_MAP } from '../components/toolkit/cards/toolThemes';
+import { isToolOnline } from '../components/toolkit/cards/externalAlternatives';
 import ToolGrid from '../components/toolkit/cards/ToolGrid';
 import ExternalAlternativesModal from '../components/toolkit/cards/ExternalAlternativesModal';
 import BrandLogo from '../components/common/BrandLogo';
@@ -32,17 +33,20 @@ export default function DashboardPage() {
 
   const searchInputRef = useRef(null);
 
-  // Trigger welcome modal on Dashboard route entry (once per session, not on search/filter/re-renders)
+  // Trigger welcome modal on Dashboard route entry or fresh login
   useEffect(() => {
     if (process.env.NODE_ENV === 'test' && !sessionStorage.getItem('cybershield_show_welcome_in_test')) {
       return;
     }
+    const forceWelcome = sessionStorage.getItem('cybershield_show_welcome');
     const welcomeSeen = sessionStorage.getItem('cybershield_dashboard_welcome_seen');
-    if (!welcomeSeen) {
+
+    if (forceWelcome || !welcomeSeen) {
       setWelcomeModalOpen(true);
+      sessionStorage.removeItem('cybershield_show_welcome');
       sessionStorage.setItem('cybershield_dashboard_welcome_seen', 'true');
     }
-  }, []);
+  }, [user]);
 
   // 150ms Search Debounce
   useEffect(() => {
@@ -122,6 +126,20 @@ export default function DashboardPage() {
       return nameMatch || idMatch || catMatch || descMatch || keywordsMatch;
     });
   }, [canonicalTools, selectedCategory, debouncedQuery]);
+
+  // Dynamic breakdown of working external websites vs coming soon / repository tools
+  const { workingCount, comingSoonCount } = useMemo(() => {
+    let working = 0;
+    let comingSoon = 0;
+    filteredTools.forEach((tool) => {
+      if (isToolOnline(tool.id)) {
+        working++;
+      } else {
+        comingSoon++;
+      }
+    });
+    return { workingCount: working, comingSoonCount: comingSoon };
+  }, [filteredTools]);
 
   // Navigation Handler for "Open Tool ↗"
   const handleOpenTool = (tool) => {
@@ -320,20 +338,23 @@ export default function DashboardPage() {
         </div>
 
         {/* ── Results Info Bar ── */}
-        <div className="flex items-center justify-between text-xs text-slate-400 px-1">
-          <div>
+        <div className="flex flex-wrap items-center justify-between gap-y-2 text-xs text-slate-400 px-1">
+          <div className="flex flex-wrap items-center gap-x-2">
             <span className="font-semibold text-slate-200">
               {filteredTools.length} {filteredTools.length === 1 ? 'tool' : 'tools'} available
             </span>
+            <span className="text-slate-400 text-xs font-normal">
+              (<span className="text-emerald-400 font-semibold">{workingCount} Working Websites</span>
+              <span className="text-slate-500 mx-1.5">•</span>
+              <span className="text-amber-400 font-semibold">{comingSoonCount} Coming Soon / Repository</span>)
+            </span>
             {selectedCategory !== 'ALL' && (
               <span>
-                {' '}
                 in <span className="font-medium text-cyan-400">{selectedCategory}</span>
               </span>
             )}
             {debouncedQuery && (
               <span>
-                {' '}
                 matching <span className="font-medium text-cyan-400">"{debouncedQuery}"</span>
               </span>
             )}
@@ -346,7 +367,7 @@ export default function DashboardPage() {
                 setSelectedCategory('ALL');
                 setSearchQuery('');
               }}
-              className="font-semibold text-cyan-400 hover:text-cyan-300 transition-colors underline underline-offset-4"
+              className="font-semibold text-cyan-400 hover:text-cyan-300 transition-colors underline underline-offset-4 cursor-pointer"
             >
               Reset filters
             </button>

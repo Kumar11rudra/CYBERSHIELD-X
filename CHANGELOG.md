@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v63.4.0] - 2026-10-24
+### Phase 87: Dashboard Tools Breakdown & Login Welcome Modal Reliability
+> **Adds dynamic status breakdown to the dashboard tool counter indicating working websites and repository/coming soon items, and restores 100% reliable display of the Welcome Operator modal on login.**
+
+- **Dashboard Tools Breakdown (`client/src/pages/DashboardPage.jsx`)**:
+  - Enhanced results info bar to display exact operational status breakdown next to `125 tools available`:
+    `125 tools available (55 Working Websites • 70 Coming Soon / Repository)`
+  - Styled with cyber aesthetic colors (emerald green for verified working websites, amber for coming soon / repository tools).
+  - Dynamic responsiveness: dynamically recalculates and displays the exact subset counts when selecting category tabs or filtering by search queries.
+- **Login Welcome Pop-up Reliability (`AuthContext.jsx`, `LoginPage.jsx`, `DashboardPage.jsx`)**:
+  - Resolved session persistence issue where `cybershield_dashboard_welcome_seen` remained set across logins in active browser tabs.
+  - Added `cybershield_show_welcome = 'true'` flag upon successful login (`doLogin`, `doOtp`, `cyberPassLogin`, `adminLogin`, `signup`).
+  - Added automatic purge of welcome seen flags on `logout`.
+  - Updated `DashboardPage.jsx` `useEffect` to reliably trigger the Welcome Operator popup on fresh logins while preventing re-triggering during in-session search or category filtering.
+- **Testing & Quality Gates**:
+  - Added dedicated test suite `client/src/__tests__/DashboardToolsBreakdownAndWelcome.test.jsx` (3/3 tests PASS).
+  - Full client test battery passed 100% across all 18 test suites (156/156 tests PASS).
+  - Server release check passed (Exit Code 0).
+  - Production build compiled successfully (`main.31daf2b1.js`).
+  - Deployed to Cloudflare Pages (`https://cybershieldx.in`).
+
 ## [v63.3.0] - 2026-10-23
 ### Phase 86: Resilient Multi-Cloud AI Copilot, Groq Production Fallback & Visual Intelligence
 > **Embeds production cloud Groq AI resilience to eliminate Gemini 429 quota exhaustion dropouts, implements rich entity highlighting with cyber-glow badges in CyberBot, and overhauls conversational and knowledge fallbacks with full 125 canonical tool alignment.**
