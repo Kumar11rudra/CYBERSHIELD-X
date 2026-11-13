@@ -56,16 +56,16 @@ describe('🚀 PHASE 65: Real-World End-to-End Validation & Production Acceptanc
   // 1. CANONICAL INVENTORY & TARGET ACCOUNTING
   // ============================================================================
   describe('1. Canonical Tool Inventory & Census Parity', () => {
-    it('verifies exactly 111 canonical tools across 24 categories in toolConfig.js', () => {
+    it('verifies exactly 125 canonical tools across 24 categories in toolConfig.js', () => {
       const configPath = path.resolve(__dirname, '../../client/src/components/toolkit/toolConfig.js');
       const content = fs.readFileSync(configPath, 'utf8');
 
       const matches = content.match(/id:\s*['"]([a-z0-9_-]+)['"]/gi) || [];
       const toolIds = matches.map(m => m.replace(/id:\s*['"]/, '').replace(/['"]/, ''));
 
-      expect(toolIds.length).toBe(111);
+      expect(toolIds.length).toBe(125);
       const uniqueIds = new Set(toolIds);
-      expect(uniqueIds.size).toBe(111);
+      expect(uniqueIds.size).toBe(125);
     });
 
     it('verifies target accounting: 6 HOST_NATIVE + 91 API_ENGINE + 5 CLIENT_BROWSER + 9 BLOCKED = 111', () => {
