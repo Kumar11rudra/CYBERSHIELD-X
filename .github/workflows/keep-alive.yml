@@ -2,8 +2,8 @@ name: Render Backend Keep-Alive
 
 on:
   schedule:
-    # Runs every 10 minutes to prevent Render free-tier from entering sleep mode
-    - cron: '*/10 * * * *'
+    # Runs every 9 minutes to prevent Render free-tier from entering sleep mode (Phase 84 heartbeat)
+    - cron: '*/9 * * * *'
   workflow_dispatch: # Allows manual trigger from GitHub Actions tab
 
 jobs:

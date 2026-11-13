@@ -627,7 +627,7 @@ export default function ExternalAlternativesModal({
 
             <span className="font-mono text-[11px]">
 
-              CyberShield X Security Registry v63.1.0
+              CyberShield X Security Registry v63.5.0
 
             </span>
 

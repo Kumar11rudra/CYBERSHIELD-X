@@ -1443,7 +1443,7 @@ export default function NativeTerminalConsole({
 
             <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 font-bold">
 
-              v63.1.0 • LOCAL WORKSTATION
+              v63.5.0 • LOCAL WORKSTATION
 
             </span>
 

@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://www.cybershieldx.in"><img src="https://img.shields.io/badge/Platform-v63.1.0%20Production-00ff88?style=for-the-badge&logo=cloudflare&logoColor=black" alt="Production Version" /></a>
+  <a href="https://www.cybershieldx.in"><img src="https://img.shields.io/badge/Platform-v63.5.0%20Production-00ff88?style=for-the-badge&logo=cloudflare&logoColor=black" alt="Production Version" /></a>
   <a href="https://www.cybershieldx.in/terminal"><img src="https://img.shields.io/badge/CyberSOC%20Terminal-Host%20Native%20Online-00bfff?style=for-the-badge&logo=gnubash&logoColor=white" alt="Terminal" /></a>
   <a href="https://www.cybershieldx.in/dashboard"><img src="https://img.shields.io/badge/Security%20Catalog-125%20Canonical%20Tools-b400ff?style=for-the-badge" alt="Security Catalog" /></a>
   <a href="https://cybershield-x.onrender.com/health"><img src="https://img.shields.io/badge/Backend%20API-HTTP%20200%20OK-00ff88?style=for-the-badge&logo=render&logoColor=white" alt="Render API" /></a>

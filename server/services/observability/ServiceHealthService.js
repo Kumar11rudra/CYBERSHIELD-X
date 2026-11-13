@@ -210,14 +210,14 @@ class ServiceHealthService {
   }
 
   /**
-   * Probe Canonical 111-Tool Runtime State.
-   * Authoritative census: 102 Working, 9 Blocked Dependency.
+   * Probe Canonical 125-Tool Runtime State.
+   * Authoritative census: 116 Working, 9 Blocked Dependency.
    */
   async probeToolRuntimeHealth() {
     try {
-      const totalCanonical = 111;
+      const totalCanonical = 125;
       const blockedCount = CANONICAL_BLOCKED_TOOLS.size; // 9
-      const workingCount = totalCanonical - blockedCount; // 102
+      const workingCount = totalCanonical - blockedCount; // 116
 
       // Query recent executions if present
       let recentExecutions = [];
@@ -232,7 +232,7 @@ class ServiceHealthService {
 
       return {
         serviceId: 'tool_runtime',
-        serviceName: 'Canonical 111-Tool Runtime Engine',
+        serviceName: 'Canonical 125-Tool Runtime Engine',
         status: 'HEALTHY',
         latencyMs: null,
         errorRate: 0.0,
@@ -240,7 +240,7 @@ class ServiceHealthService {
           workingCount,
           blockedDependencyCount: blockedCount,
           totalTools: totalCanonical,
-          certificationStatus: '102 Working / 9 Blocked Dependency',
+          certificationStatus: '116 Working / 9 Blocked Dependency',
         },
         details: {
           authoritativeCensus: {
@@ -252,14 +252,14 @@ class ServiceHealthService {
           recentInvocationsSample: recentExecutions.length,
         },
         evidenceReferences: [
-          'TOOL_CENSUS_102_WORKING',
+          'TOOL_CENSUS_116_WORKING',
           'TOOL_CENSUS_9_BLOCKED_DEPENDENCY',
         ],
       };
     } catch (err) {
       return {
         serviceId: 'tool_runtime',
-        serviceName: 'Canonical 111-Tool Runtime Engine',
+        serviceName: 'Canonical 125-Tool Runtime Engine',
         status: 'UNKNOWN',
         latencyMs: null,
         errorRate: null,

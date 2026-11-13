@@ -2,7 +2,7 @@
 
 This document outlines the current state and the intended future target state of the CyberShield X architecture, establishing a migration strategy for long-term scalability.
 
-## 1. Current Architecture (Version 62.4.0)
+## 1. Current Architecture (Version 63.5.0)
 
 CyberShield X uses a hybrid approach, transitioning from a legacy MVC monolith to an Event-Driven Service-Oriented Architecture using Dependency Injection.
 

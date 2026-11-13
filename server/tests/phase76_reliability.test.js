@@ -5,7 +5,7 @@
  * 1. Service Health: Bounded, read-only subsystem probes and truthful unknown states.
  * 2. API Observability: Real request telemetry, latency percentiles, and strict credential redaction.
  * 3. Database Health: Bounded ping latency probe with 2000ms ceiling.
- * 4. Canonical 111-Tool Runtime: Authoritative preservation of 102 Working / 9 Blocked Dependency.
+ * 4. Canonical 125-Tool Runtime: Authoritative preservation of 116 Working / 9 Blocked Dependency.
  * 5. SLO Engine: Real window evaluation, truthful insufficient-data handling, breach detection.
  * 6. Capacity Engine: Real memory and event loop lag saturation detection.
  * 7. Reliability Correlation: Evidence-backed temporal correlation without fabricated root causes.
@@ -85,12 +85,12 @@ describe('Phase 76 — Enterprise Observability, Reliability, Capacity & Disaste
       expect(apiHealth.evidenceReferences[0]).toContain('API_UPTIME_');
     });
 
-    it('preserves the canonical 111-tool census: 102 working and 9 blocked dependency tools', async () => {
+    it('preserves the canonical 125-tool census: 116 working and 9 blocked dependency tools', async () => {
       const toolHealth = await serviceHealthService.probeToolRuntimeHealth();
       expect(toolHealth.serviceId).toBe('tool_runtime');
       expect(toolHealth.status).toBe('HEALTHY');
-      expect(toolHealth.dependencyStatus.totalTools).toBe(111);
-      expect(toolHealth.dependencyStatus.workingCount).toBe(102);
+      expect(toolHealth.dependencyStatus.totalTools).toBe(125);
+      expect(toolHealth.dependencyStatus.workingCount).toBe(116);
       expect(toolHealth.dependencyStatus.blockedDependencyCount).toBe(9);
       expect(toolHealth.details.authoritativeCensus.blockedList).toEqual(
         expect.arrayContaining(['sqlmap', 'trivy', 'nikto', 'aircrack-ng', 'ghidra', 'yara-rules', 'radare2', 'semgrep', 'gitleaks'])

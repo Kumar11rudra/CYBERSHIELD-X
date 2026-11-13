@@ -1478,7 +1478,7 @@ export default function HomePage() {
                 border: '1px solid rgba(0, 212, 255, 0.25)',
               }}
             >
-              v63.1.0
+              v63.5.0
             </span>
           </div>
 

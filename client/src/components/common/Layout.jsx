@@ -12,7 +12,7 @@ import api from '../../services/api';
 import { getAllTools } from '../toolkit/toolConfig';
 
 const totalCanonicalTools = getAllTools().length;
-const PLATFORM_VERSION = 'v63.1.0';
+const PLATFORM_VERSION = 'v63.5.0';
 
 // ── Icon Helper ─────────────────────────────────────────────────────────────
 const Icon = ({ d, size = 16, className = '' }) => (
