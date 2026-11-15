@@ -1,0 +1,18 @@
+/* TEAM */
+Founder & Lead Architect: Anil Kumar
+Contact: official.cybershieldx@gmail.com
+Platform: https://www.cybershieldx.in
+GitHub: https://github.com/Kumar11rudra
+
+/* THANKS */
+Core Team: Suryansh, Aryan Patel, Pranav, Ankita, Sushant
+
+/* SITE */
+Language: JavaScript (React 18 + Node.js)
+Platform: Cloudflare Pages + Render
+Database: MongoDB Atlas
+CDN: Cloudflare
+Standards: HTML5, CSS3, WCAG 2.1, RFC 9116, RFC 6238
+Version: v63.5.0
+Last update: 2026-11-16
+

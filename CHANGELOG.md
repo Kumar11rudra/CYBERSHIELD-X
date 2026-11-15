@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v63.5.1] - 2026-11-16
+### Audit Remediation: SEO, Security, Headers & Production Hardening
+> **Full platform + GitHub + Google Search Console audit with all identified mismatches fixed and production hardening applied.**
+
+- **Google Search Console Verification**: Added `<meta name="google-site-verification" ...>` tag to `client/public/index.html`. Platform now fully verified on Google Search Console, Bing Webmaster Tools (BingSiteAuth.xml), and IndexNow protocol.
+- **sitemap.xml**: Added 4 missing active routes (`/contact`, `/security-info`, `/cookie-policy`, `/acceptable-use`). Updated all 12 `<lastmod>` dates to `2026-11-13`.
+- **Canonical URL Normalization**: Fixed trailing slash inconsistency — `og:url` and `Organization.url` Schema.org now consistently use `https://www.cybershieldx.in/` matching `canonical` and `WebSite.url`.
+- **Favicon Cache Buster**: Updated all 8 favicon `?v=` params from `33.0.0` → `v63.5.0`.
+- **Version String Sync**: Updated `v63.1.0` → `v63.5.0` across 8 files: README.md badge, Layout.jsx, NativeTerminalConsole.jsx, LoginPage.jsx, SignupPage.jsx, HomePage.jsx, ExternalAlternativesModal.jsx, externalAlternatives.js.
+- **ServiceHealthService Observability**: Updated canonical tool census from 111 → 125 (`totalCanonical`, service name, `certificationStatus`, working count 102 → 116). Updated phase76_reliability.test.js assertions to match.
+- **ARCHITECTURE.md**: Updated version header from `62.4.0` → `63.5.0`.
+- **Keep-Alive Cron**: Updated GitHub Actions schedule from `*/10` → `*/9` minutes (Phase 84 documented heartbeat interval).
+- **robots.txt**: Added 4 missing active routes (`/contact`, `/security-info`, `/cookie-policy`, `/acceptable-use`), `/sitemap.xml`, `/.well-known/security.txt`, `/.well-known/humans.txt`.
+- **Security Headers (_headers)**: Added `Permissions-Policy` (camera, microphone, geolocation, payment, USB, interest-cohort all denied), `X-DNS-Prefetch-Control: on`, `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-site`. Added `base-uri 'self'` and `form-action 'self'` to CSP. Added backend API origin to `connect-src`.
+- **RFC 9116 security.txt**: Created `client/public/.well-known/security.txt` with Contact, Expires, Policy, Acknowledgments, Preferred-Languages per RFC 9116 standard.
+- **humans.txt**: Created `client/public/.well-known/humans.txt` crediting team and technology stack.
+- **index.html**: Added `<link rel="author" href="/.well-known/humans.txt" />` per HTML best practice.
+- **README.md**: Complete professional rewrite — world-class GitHub README with platform overview, tech stack table, architecture diagram, feature pillars, team, quickstart, API reference, testing guide.
+
 ## [v63.5.0] - 2026-10-24
 ### Phase 88: Dashboard RGB Typewriter Animation, Gemini-Style Pill Search Bar & Living Homepage Brand
 > **Introduces character-by-character typewriter streaming on the dashboard headline with continuous chromatic RGB gradient lighting, upgrades the search bar to a Google Gemini-style full pill (`rounded-full`) with animated RGB border and ambient aura, and brings the homepage `CYBERSHIELD X` brand lockup alive with breathing neon holographics.**

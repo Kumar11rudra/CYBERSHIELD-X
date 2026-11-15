@@ -13,6 +13,13 @@ Allow: /signup
 Allow: /security
 Allow: /privacy
 Allow: /terms
+Allow: /contact
+Allow: /security-info
+Allow: /cookie-policy
+Allow: /acceptable-use
+Allow: /sitemap.xml
+Allow: /.well-known/security.txt
+Allow: /.well-known/humans.txt
 Disallow: /dashboard/*
 Disallow: /nexus-admin/*
 Disallow: /settings/*
