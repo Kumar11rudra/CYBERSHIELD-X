@@ -15,8 +15,9 @@
   <a href="https://cybershield-x.onrender.com/health"><img src="https://img.shields.io/badge/Backend%20API-HTTP%20200%20OK-00ff88?style=for-the-badge&logo=render&logoColor=white" alt="Render API" /></a>
   <a href="https://www.cybershieldx.in/dashboard"><img src="https://img.shields.io/badge/Security%20Catalog-125%20Canonical%20Tools-b400ff?style=for-the-badge" alt="Security Catalog" /></a>
   <a href="https://www.cybershieldx.in/terminal"><img src="https://img.shields.io/badge/CyberSOC%20Terminal-Host%20Native%20Online-00bfff?style=for-the-badge&logo=gnubash&logoColor=white" alt="Terminal" /></a>
+  <br/>
   <a href="https://www.cybershieldx.in"><img src="https://img.shields.io/badge/CyberBot%20AI-Dual--Model%20Resilient-cyan?style=for-the-badge&logo=google&logoColor=white" alt="CyberBot AI" /></a>
-  <a href="#-testing--verification"><img src="https://img.shields.io/badge/Tests-157%2F157%20PASS%20(100%25)-00ff88?style=for-the-badge&logo=jest&logoColor=white" alt="Tests" /></a>
+  <a href="#testing"><img src="https://img.shields.io/badge/Tests-157%2F157%20PASS%20(100%25)-00ff88?style=for-the-badge&logo=jest&logoColor=white" alt="Tests" /></a>
   <a href="https://search.google.com/search-console"><img src="https://img.shields.io/badge/Google%20Search%20Console-Verified-4285F4?style=for-the-badge&logo=google" alt="Google Search Console Verified" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge" alt="License" /></a>
 </p>
@@ -26,10 +27,10 @@
   <a href="https://www.cybershieldx.in/terminal"><strong>💻 CyberSOC Terminal</strong></a> ·
   <a href="https://www.cybershieldx.in/team"><strong>👥 Core Team</strong></a> ·
   <a href="https://cybershield-x.onrender.com/health"><strong>⚡ Health Telemetry</strong></a> ·
-  <a href="#-system-architecture"><strong>📐 Architecture</strong></a> ·
-  <a href="#-125-canonical-security-tools--24-domains"><strong>🧰 Tools Registry</strong></a> ·
-  <a href="#-quickstart--local-development"><strong>🚀 Quickstart</strong></a> ·
-  <a href="#-contact--communications"><strong>📬 Contact</strong></a>
+  <a href="#architecture"><strong>📐 Architecture</strong></a> ·
+  <a href="#tools-registry"><strong>🧰 Tools Registry</strong></a> ·
+  <a href="#quickstart"><strong>🚀 Quickstart</strong></a> ·
+  <a href="#contact"><strong>📬 Contact</strong></a>
 </p>
 
 ---
@@ -116,6 +117,7 @@ A standalone, high-octane command-line workstation embedded directly in the brow
 
 ---
 
+<a id="architecture"></a><a id="system-architecture"></a>
 ## 📐 System Architecture
 
 CyberShield X follows a decoupled client-server architecture with strict separation of concerns, the Repository Pattern, and defense-in-depth isolation:
@@ -158,6 +160,7 @@ CyberShield X follows a decoupled client-server architecture with strict separat
 
 ---
 
+<a id="tools-registry"></a><a id="tools"></a>
 ## 🧰 125 Canonical Security Tools / 24 Domains
 
 > [!NOTE]
@@ -192,6 +195,7 @@ CyberShield X follows a decoupled client-server architecture with strict separat
 
 ---
 
+<a id="team"></a><a id="core-team"></a>
 ## 👥 Core Team & Leadership
 
 CyberShield X is architected and actively maintained by a dedicated team of cybersecurity analysts, AI researchers, and systems engineers:
@@ -234,6 +238,7 @@ CyberShield X is architected and actively maintained by a dedicated team of cybe
 
 ---
 
+<a id="quickstart"></a>
 ## 🚀 Quickstart & Local Development
 
 ### 1. Prerequisites
@@ -295,6 +300,7 @@ Open **[http://localhost:3000](http://localhost:3000)** in your browser.
 
 ---
 
+<a id="testing"></a>
 ## 🧪 Testing & Verification
 
 All quality gates are 100% green across frontend and backend suites:
@@ -406,6 +412,7 @@ SOFTWARE.
 
 ---
 
+<a id="contact"></a>
 ## 📬 Contact & Communications
 
 | Channel | Destination | Description |

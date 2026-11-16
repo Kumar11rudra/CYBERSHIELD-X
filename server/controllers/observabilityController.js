@@ -425,7 +425,7 @@ class ObservabilityController {
   }
 
   // ==========================================
-  // 8. CANONICAL 111-TOOL RUNTIME HEALTH
+  // 8. CANONICAL 125-TOOL RUNTIME HEALTH
   // ==========================================
 
   async getToolRuntimeHealth(req, res) {

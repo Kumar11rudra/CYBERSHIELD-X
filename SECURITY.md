@@ -11,7 +11,8 @@ The CyberShield X team takes platform security and threat safety seriously. If y
 > [!IMPORTANT]
 > **Please do NOT publicly disclose unpatched vulnerabilities** in public GitHub issues, forum discussions, or pull requests.
 
-1. **Private Reporting**: Contact the CyberShield X Core Security Team via our official disclosure portal or security advisory interface on GitHub ([GitHub Security Advisories](https://github.com/Kumar11rudra/CYBERSHIELD-X/security/advisories/new)).
+1. **Private Reporting**: Contact the CyberShield X Core Security Team via our official disclosure portal or security advisory interface on GitHub ([GitHub Security Advisories](https://github.com/Kumar11rudra/CYBERSHIELD-X/security/advisories/new)), or via official security email at **[official.cybershieldx@gmail.com](mailto:official.cybershieldx@gmail.com)**.
+   - Authoritative RFC 9116 security policy: [`https://www.cybershieldx.in/.well-known/security.txt`](https://www.cybershieldx.in/.well-known/security.txt)
 2. **Details to Include**:
    - Description of the issue and affected component (`server/middleware`, `HttpClient.js`, etc.).
    - Step-by-step proof-of-concept (PoC) or reproduction steps.

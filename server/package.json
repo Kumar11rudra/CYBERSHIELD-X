@@ -1,6 +1,6 @@
 {
   "name": "cybershield-x-server",
-  "version": "1.0.0",
+  "version": "63.5.0",
   "description": "CyberShield X - Cybersecurity Threat Detection Platform API",
   "main": "index.js",
   "scripts": {
