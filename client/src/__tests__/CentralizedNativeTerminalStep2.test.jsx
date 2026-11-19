@@ -264,7 +264,7 @@ describe('Centralized Native Terminal — Step 2 Native Tool Discovery & Registr
   });
 
   // ── 6. Help and Tools Commands ────────────────────────────────────────────
-  test('tools command lists the 7 native tools and mentions the 111 canonical catalog separation', async () => {
+  test('tools command lists the 7 native tools and mentions the 125 canonical catalog separation', async () => {
     await act(async () => {
       root.render(<NativeTerminalConsole />);
     });

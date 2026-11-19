@@ -786,8 +786,8 @@ describe('Centralized Native Terminal — Step 3 Operator-Grade UX & Presentatio
     expect(container.textContent).toContain('Ctrl+L: Clear');
   });
 
-  // ── AD. Architecture Separation (111 Tools vs 7 Native Binaries) ───────────
-  test('AD. strictly maintains separation: 7 native tools in registry, 111 canonical tools in /toolkit', () => {
+  // ── AD. Architecture Separation (125 Tools vs 7 Native Binaries) ───────────
+  test('AD. strictly maintains separation: 7 native tools in registry, 125 canonical tools in /toolkit', () => {
     expect(TERMINAL_NATIVE_REGISTRY.length).toBe(7);
     expect(NATIVE_EXECUTABLES_SET.size).toBe(7);
     expect(Array.from(NATIVE_EXECUTABLES_SET).sort()).toEqual([
